@@ -1,0 +1,6 @@
+[plugin]
+id = "fhir-compiler-plugin"
+class = "io.ballerinax.fhirr4.compiler.FHIRCompilerPlugin"
+
+[[dependency]]
+path = "./fhirr4-compiler-plugin-${project.version}.jar"
