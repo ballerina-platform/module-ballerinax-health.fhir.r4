@@ -1,0 +1,22 @@
+[package]
+org = "ballerinax"
+name = "health.fhirr4"
+version = "${project.version}"
+distribution = "2201.4.1"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "service"]
+repository="https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+
+[build-options]
+observabilityIncluded = true
+
+[[dependency]]
+org="ballerinax"
+name="health.fhir.r4"
+version="${r4.version}"
+
+[[platform.java11.dependency]]
+groupId = "io.ballerinax"
+artifactId = "fhirr4-native"
+version = "${project.version}"
+path = "./fhirr4-native-${project.version}.jar"
