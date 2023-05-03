@@ -1,0 +1,14 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.r4.aubase410"
+version = "1.0.0"
+distribution = "2201.4.1"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "AUBase"]
+export = ["health.fhir.r4.aubase410"]
+repository="https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+
+[[dependency]]
+org = "ballerinax"
+name = "health.fhir.r4"
+version="1.0.0"
