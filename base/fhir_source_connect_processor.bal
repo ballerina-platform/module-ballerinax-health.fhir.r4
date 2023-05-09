@@ -101,13 +101,10 @@ public isolated function processFHIRSourceConnections(FHIRSourceConnectInteracti
         return;
     } else if fhirContext.getInteraction().interaction.equalsIgnoreCaseAscii(UPDATE) {
         //respond 200 if updated, 201 with location header if created
-        string resourceId = (<FHIRReadInteraction>fhirContext.getInteraction()).id;
-        FHIRRequest? fhirRequest = fhirContext.getFHIRRequest();
         return;
 
     } else if fhirContext.getInteraction().interaction.equalsIgnoreCaseAscii(DELETE) {
         //if system keeps version history, delete operation should not remove version history
-        FHIRRequest? fhirRequest = fhirContext.getFHIRRequest();
         return;
 
     }
