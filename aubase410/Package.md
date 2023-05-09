@@ -1,3 +1,5 @@
+Package containing the AU Base FHIR resource types
+
 # FHIR R4 AUBase package
 
 ## Package Overview

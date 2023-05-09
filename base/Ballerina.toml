@@ -5,7 +5,7 @@ version = "1.0.0"
 distribution = "2201.4.1"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4"]
-repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4/base"
+repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
 export = [
     "health.fhir.r4",
     "health.fhir.r4.parser",

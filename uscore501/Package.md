@@ -1,3 +1,5 @@
+Package containing USCore FHIR resource types
+
 # FHIR R4 USCore package
 
 ## Package Overview

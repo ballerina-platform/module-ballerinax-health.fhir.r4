@@ -1,3 +1,6 @@
+Package containing FHIR related processors and utilities for implementing FHIR APIs, FHIR
+related integrations, etc
+
 # FHIR R4 Utils package
 
 ## Package Overview
@@ -11,5 +14,3 @@ related integrations, etc.
 | Implementation Guide | http://hl7.org/fhir/ |
 
 This package includes, Miscellaneous utilities required to create, access elements, manipulate FHIR resources
-
-## Capabilities and features
