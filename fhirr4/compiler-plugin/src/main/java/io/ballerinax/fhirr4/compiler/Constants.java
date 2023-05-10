@@ -27,7 +27,7 @@ public class Constants {
     public static final String ALLOWED_RETURN_UNION = "anydata|http:Response|http:StatusCodeResponse|error";
     public static final String SERVICE = "Service";
     public static final String FHIR_CONTEXT = "FHIRContext";
-    public static final String HEALTHCARE_PKG = "healthcare.fhir.r4";
-    public static final String FHIR = "fhir";
-    public static final String WSO2_HEALTHCARE = "wso2healthcare";
+    public static final String HEALTHCARE_PKG = "health.fhir.r4";
+    public static final String FHIR_R4 = "health.fhirr4";
+    public static final String BALLERINAX = "ballerinax";
 }

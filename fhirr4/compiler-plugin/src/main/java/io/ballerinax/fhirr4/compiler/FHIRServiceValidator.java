@@ -97,7 +97,7 @@ public class FHIRServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
     }
 
     private boolean isFHIRModule(ModuleSymbol moduleSymbol) {
-        return Constants.FHIR.equals(moduleSymbol.getName().get()) && Constants.WSO2_HEALTHCARE.equals(moduleSymbol.id().orgName());
+        return Constants.FHIR_R4.equals(moduleSymbol.getName().get()) && Constants.BALLERINAX.equals(moduleSymbol.id().orgName());
     }
 
     private void reportInvalidFunctionType(SyntaxNodeAnalysisContext ctx, FunctionDefinitionNode node) {
