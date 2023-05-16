@@ -759,5 +759,5 @@ function init() returns FHIRError? {
     FHIRImplementationGuide baseImplementationGuide = new (baseIgRecord);
     check fhirRegistry.addImplementationGuide(baseImplementationGuide);
 
-    log:printInfo("FHIR R4 Module initialized.");
+    log:printDebug("FHIR R4 Module initialized.");
 }
