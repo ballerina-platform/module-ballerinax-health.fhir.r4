@@ -35,6 +35,18 @@ Execute the commands below to build from the source.
     ```shell
     mvn clean install
     ```
+    Note: FHIR services use some Ballerina language Java dependecies and these will be pulled from the Github packeges. To do that, it requires authentication credentials, hence add the [below server config to your m2 settings.xml file](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-with-a-personal-access-token) resides under <M2_Home>/configs/ directory.
+    ```shell
+      <servers>
+        . . .
+
+        <server>
+            <id>ballerina-language-repo</id>
+            <username>Github_user_name</username>
+            <password>Github_personal_access_token</password>
+        </server>
+      <servers>
+    ```
 
 ## Contributing to Ballerina
 
