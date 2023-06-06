@@ -25,10 +25,28 @@ const FHIR_IG = "international";
 # + return - returns error if error occurred
 function init() returns FHIRError? {
     // Anything to initialize should happen here here
+    // We should create terminology as json string variables
+    // We can't pack those static files with r4 modules to Ballerina central.
+    // https://github.com/ballerina-platform/ballerina-spec/issues/1100
 
-    //update terminology processor
+    json codeSystemsJsonArray = [];
+    json valueSetsJsonArray = [];
+    do {
+        // We should create terminology as json string constants
+        // We can't pack those static files with r4 modules to Ballerina central.
+        // https://github.com/ballerina-platform/ballerina-spec/issues/1100
+
+        codeSystemsJsonArray = check DEFAULT_FHIR_CODE_SYSTEMS.fromJsonString();
+        valueSetsJsonArray = check DEFAULT_FHIR_VALUE_SETS.fromJsonString();
+    } on fail var e {
+        FHIRError fHIRError = createFHIRError("Error occurred while type casting json string Terminologies json objects", ERROR,
+                                                                        PROCESSING, diagnostic = e.message(), cause = e);
+        log:printError(fHIRError.toBalString());
+    }
+
+    // Update terminology processor
     // TODO: https://github.com/wso2-enterprise/open-healthcare/issues/1047
-    InMemoryTerminologyLoader terminologyLoader = new(FHIR_CODE_SYSTEMS, FHIR_VALUE_SETS);
+    InMemoryTerminologyLoader terminologyLoader = new (<json[]>codeSystemsJsonArray, <json[]>valueSetsJsonArray);
     Terminology terminology = check terminologyLoader.load();
 
     readonly & IGInfoRecord baseIgRecord = {
