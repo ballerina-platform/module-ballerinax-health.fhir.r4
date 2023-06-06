@@ -14,6 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/log;
+
 # Holds Terminology information.
 #
 # + codeSystems - CodeSystems belong to the terminology
@@ -46,25 +48,27 @@ public class InMemoryTerminologyLoader {
     # load terminology
     # + return - Terminology populated
     public function load() returns Terminology|FHIRError {
-        ValueSet[] valueSetArray = [];
-        foreach json jValueSet in self.valueSets {
-            do {
-                ValueSet valueSet = check jValueSet.cloneWithType();
-                valueSetArray.push(valueSet);
-            } on fail error e {
-                return createFHIRError("Error occurred while type casting json value set to ValueSet type", ERROR,
-                                                                    PROCESSING, diagnostic = e.message(), cause = e);
+        CodeSystem[] codeSystemArray = [];
+        foreach json jCodeSystem in self.codeSystems {
+            CodeSystem|error converted = jCodeSystem.cloneWithType(CodeSystem);
+            if converted is error {
+                FHIRError fHIRError = createFHIRError("Error occurred while type casting json code system to CodeSystem type", ERROR,
+                                                                        PROCESSING, diagnostic = converted.message(), cause = converted);
+                log:printError(fHIRError.toBalString());
+            } else {
+                codeSystemArray.push(converted);
             }
         }
 
-        CodeSystem[] codeSystemArray = [];
-        foreach json jCodeSystem in self.codeSystems {
-            do {
-                CodeSystem codeSystem = check jCodeSystem.cloneWithType();
-                codeSystemArray.push(codeSystem);
-            } on fail error e {
-              return createFHIRError("Error occurred while type casting json code system to CodeSystem type", ERROR,
-                                                                    PROCESSING, diagnostic = e.message(), cause = e);
+        ValueSet[] valueSetArray = [];
+        foreach json jValueSet in self.valueSets {
+            ValueSet|error converted = jValueSet.cloneWithType(ValueSet);
+            if converted is error {
+                FHIRError fHIRError = createFHIRError("Error occurred while type casting json value set to ValueSet type", ERROR,
+                                                                        PROCESSING, diagnostic = converted.message(), cause = converted);
+                log:printError(fHIRError.toBalString());
+            } else {
+                valueSetArray.push(converted);
             }
         }
 

@@ -14,6 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/regex;
+
 type CodeConceptDetails record {
     uri url;
     CodeSystemConcept|ValueSetComposeIncludeConcept concept;
@@ -22,7 +24,7 @@ type CodeConceptDetails record {
 # Function definition for code system finder implementations
 public type CodeSystemFinder isolated function (uri system, code code) returns CodeSystem | ValueSet | FHIRError;
 
-# A processor to process terminology data and create relevent data elements
+# A processor to process terminology data and create relevant data elements
 public class TerminologyProcessor {
     
     private map<CodeSystem> codeSystems = {};
@@ -45,6 +47,113 @@ public class TerminologyProcessor {
     public function addValueSets(ValueSet[] valueSets) {
         foreach ValueSet valueSet in valueSets {
             self.valueSets[<string>valueSet.url] = valueSet;
+        }
+    }
+
+    # Find a Code System for a provided Id.
+    #
+    # + id - Id of the Code System
+    # + return - Return Code system data, return FHIR error if no data found for the provided Id
+    public isolated function getCodeSystemById(string id) returns CodeSystem|FHIRError {
+        foreach var item in self.codeSystems.keys() {
+            if regex:matches(item, string `.*/${id}$`) {
+                CodeSystem? codeSystem = self.codeSystems[item];
+                string msg = string `Unknown CodeSystem : ${id}`;
+                return codeSystem ?: createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+            }
+        }
+
+        string msg = string `Unknown CodeSystem : ${id}`;
+        return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+    }
+
+    # Find a Value Set for a provided Id.
+    #
+    # + id - Id of the Value Set
+    # + return - Return Value set data, return FHIR error if no data found for the provided Id
+    public isolated function getValueSetById(string id) returns ValueSet|FHIRError {
+        foreach var item in self.valueSets.keys() {
+            if regex:matches(item, string `.*/${id}$`) {
+                ValueSet? valueSet = self.valueSets[item];
+                string msg = string `Unknown ValueSet : ${id}`;
+                return valueSet ?: createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+            }
+        }
+
+        string msg = string `Unknown ValueSet : ${id}`;
+        return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+    }
+
+    # Search for Code systems for the provided search parameters.
+    # Allowed search parameters are name, title, url, version, status.
+    #
+    # + searchParameters - List of search parameters, should be passed as map of string arrays 
+    # + return - Return array of Code System data
+    public isolated function searchCodeSystems(map<string[]> searchParameters) returns CodeSystem[] {
+
+        string[] searchParamNames = ["name", "title", "url", "version", "status"];
+        CodeSystem[] codeSystemArray = self.codeSystems.toArray();
+
+        foreach var searchParam in searchParamNames {
+            string[] searchParamValues = searchParameters[searchParam] ?: [];
+            CodeSystem[] filteredList = [];
+            if searchParamValues.length() != 0 {
+                foreach var queriedValue in searchParamValues {
+                    CodeSystem[] result = from CodeSystem entry in codeSystemArray
+                        where entry[searchParam] == queriedValue
+                        select entry;
+                    filteredList.push(...result);
+                }
+                codeSystemArray = filteredList;
+            }
+        }
+        return codeSystemArray;
+    }
+
+    # Search for Value Sets for the provided search parameters.
+    # Allowed search parameters are name, title, url, version, status.
+    #
+    # + searchParameters - List of search parameters, should be passed as map of string arrays 
+    # + return - Return array of Value Set data
+    public isolated function searchValueSets(map<string[]> searchParameters) returns ValueSet[] {
+
+        string[] searchParamNames = ["name", "title", "url", "version", "status"];
+        ValueSet[] valueSetArray = self.valueSets.toArray();
+
+        foreach var searchParam in searchParamNames {
+            string[] searchParamValues = searchParameters[searchParam] ?: [];
+
+            ValueSet[] filteredList = [];
+            if searchParamValues.length() != 0 {
+                foreach var queriedValue in searchParamValues {
+                    ValueSet[] result = from ValueSet entry in valueSetArray
+                        where entry[searchParam] == queriedValue
+                        select entry;
+                    filteredList.push(...result);
+                }
+                valueSetArray = filteredList;
+            }
+        }
+        return valueSetArray;
+    }
+
+    public isolated function codeSystemLookUp(uri? system, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
+
+        if system != () && codeValue != () && self.codeSystems.hasKey(system) {
+            return self.findConceptInCodeSystem(self.codeSystems.get(system), codeValue);
+        } else if coding != () {
+            uri? system1 = coding.system;
+            code? code1 = coding.code;
+
+            if system1 != () && code1 != () {
+                return self.findConceptInCodeSystem(self.codeSystems.get(system1), code1);
+            } else {
+                string msg = string `Unknown CodeSystem : ${system}`;
+                return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+            }
+        } else {
+            string msg = string `System URL/code not present or invalide Coding : ${coding.toBalString()}`;
+            return createFHIRError(msg, ERROR, INVALID);
         }
     }
 
@@ -83,7 +192,7 @@ public class TerminologyProcessor {
     }
 
 
-    private isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    public isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
                                                                                 returns (CodeConceptDetails|FHIRError)? {
         if codeSystemFinder != () {
             (CodeSystem|ValueSet) & readonly result = check codeSystemFinder(system, code).cloneReadOnly();
