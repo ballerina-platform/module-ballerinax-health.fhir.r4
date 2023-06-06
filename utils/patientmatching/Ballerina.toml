@@ -1,0 +1,9 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.r4utils.patientmatching"
+version = "0.1.0"
+distribution = "2201.7.0"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "Utils", "FHIRPath"]
+export = ["health.fhir.r4utils.patientmatching"]
+repository="https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
