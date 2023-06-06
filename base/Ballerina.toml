@@ -17,3 +17,8 @@ export = [
 org = "ballerinax"
 name = "health.base"
 version = "1.0.3"
+
+[[dependency]]
+org = "ballerinax"
+name = "health.fhir.r4utils.fhirpath"
+version = "1.0.0"
