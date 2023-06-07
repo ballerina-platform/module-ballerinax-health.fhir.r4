@@ -21,12 +21,12 @@ import ballerina/log;
 # + codeSystems - CodeSystems belong to the terminology
 # + valueSets - ValueSets belong to the terminology
 public type TerminologyRecord record {|
-    readonly map<CodeSystem> codeSystems;
-    readonly map<ValueSet> valueSets;
+    map<CodeSystem> codeSystems;
+    map<ValueSet> valueSets;
 |};
 
 # Record type ro represent terminology
-public type Terminology readonly & TerminologyRecord;
+public type Terminology TerminologyRecord;
 
 # Terminology loader definition
 public type TerminologyLoader distinct object {
@@ -73,8 +73,8 @@ public class InMemoryTerminologyLoader {
         }
 
         Terminology terminology = {
-          codeSystems: codeSystemMap.cloneReadOnly(),
-          valueSets: valueSetMap.cloneReadOnly()
+          codeSystems: codeSystemMap,
+          valueSets: valueSetMap
         };
         return terminology;
     }
