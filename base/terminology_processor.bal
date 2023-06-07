@@ -33,21 +33,85 @@ public class TerminologyProcessor {
     public function init() {
     }
 
-    public function addTerminology(Terminology terminology) {
-        self.codeSystems = terminology.codeSystems.clone();
-        self.valueSets = terminology.valueSets.clone();
+    // To initialize the Terminology map
+    // This will delete existing records if you re-initialized
+    public function initTerminology(Terminology terminology) {
+        self.codeSystems = terminology.codeSystems;
+        self.valueSets = terminology.valueSets;
     }
 
-    public function addCodeSystems(CodeSystem[] codeSystems) {
+    public function addCodeSystems(CodeSystem[] codeSystems) returns FHIRError[]? {
+        FHIRError[] errors = [];
         foreach CodeSystem codeSystem in codeSystems {
-            self.codeSystems[<string>codeSystem.url] = codeSystem;
+            FHIRError? result = self.addCodeSystem(codeSystem);
+
+            if result is FHIRError {
+                errors.push(result);
+            }
         }
+
+        return errors;
     }
 
-    public function addValueSets(ValueSet[] valueSets) {
+    public function addValueSets(ValueSet[] valueSets) returns FHIRError[]? {
+        FHIRError[] errors = [];
         foreach ValueSet valueSet in valueSets {
-            self.valueSets[<string>valueSet.url] = valueSet;
+            FHIRError? result = self.addValueSet(valueSet);
+
+            if result is FHIRError{
+                errors.push(result);
+            }
         }
+
+        return errors;
+    }
+
+    public function addCodeSystem(CodeSystem codeSystem) returns FHIRError? {
+
+        if codeSystem.url == () {
+            return createFHIRError("Can not find the URL of the CodeSystem",
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = "Add a proper URL for the resource: https://www.hl7.org/fhir/codesystem-definitions.html#CodeSystem.url",
+            errorType = VALIDATION_ERROR
+            );
+        }
+
+        string url = <string>codeSystem.url;
+        if self.codeSystems.hasKey(url) {
+            return createFHIRError("Duplicate entry",
+            ERROR,
+            PROCESSING_DUPLICATE,
+            diagnostic = "Already there is a CodeSystem exists in the registry with the URL: " + url,
+            errorType = VALIDATION_ERROR
+            );
+        }
+
+        self.codeSystems[<string>codeSystem.url] = codeSystem;
+    }
+
+    public function addValueSet(ValueSet valueSet) returns FHIRError? {
+
+        if valueSet.url == () {
+            return createFHIRError("Can not find the URL of the ValueSet",
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = "Add a proper URL for the resource: https://www.hl7.org/fhir/valueset-definitions.html#ValueSet.url",
+            errorType = VALIDATION_ERROR
+            );
+        }
+
+        string url = <string>valueSet.url;
+        if self.valueSets.hasKey(url) {
+            return createFHIRError("Duplicate entry",
+            ERROR,
+            PROCESSING_DUPLICATE,
+            diagnostic = "Already there is a ValueSet exists in the registry with the URL: " + url,
+            errorType = VALIDATION_ERROR
+            );
+        }
+
+        self.valueSets[url] = valueSet.cloneReadOnly();
     }
 
     # Find a Code System for a provided Id.

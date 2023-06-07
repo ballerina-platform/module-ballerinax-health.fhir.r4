@@ -52,7 +52,7 @@ function init() returns FHIRError? {
     readonly & IGInfoRecord baseIgRecord = {
         title: "international",
         name: "international",
-        terminology: terminology,
+        terminology: terminology.cloneReadOnly(),
         profiles: {
         "http://hl7.org/fhir/StructureDefinition/Appointment": {
             url: "http://hl7.org/fhir/StructureDefinition/Appointment",
@@ -779,6 +779,9 @@ function init() returns FHIRError? {
     };
     FHIRImplementationGuide baseImplementationGuide = new(baseIgRecord);
     check fhirRegistry.addImplementationGuide(baseImplementationGuide);
+    
+    // Update terminology processor
+    terminologyProcessor.initTerminology(terminology);
 
     log:printDebug("FHIR R4 Base Module initialized.");
 }
