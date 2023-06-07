@@ -42,7 +42,7 @@ public type MPIDbConfig record {
 public class RuleBasedPatientMatching {
     *PatientMatcher;
 
-    public isolated function verifyPatient(r4:Patient newPatient, r4:Patient oldPatient, json config) returns error|http:Response {
+    public isolated function verifyPatient(r4:Patient sourcePatient, r4:Patient targetPatient, json config) returns error|http:Response {
 
         RulesRecord|error rulesRecord = self.getPatientMatcherRuleData(config);
         http:Response response = new;
@@ -54,8 +54,8 @@ public class RuleBasedPatientMatching {
         int score = 0;
         foreach string fhirpathRule in rulesRecord.fhirpathArray {
             string fhirPathRule = fhirpathRule;
-            FhirPathResult resultMapPatientOne = getFhirPathResult(<map<json>>newPatient.toJson(), fhirPathRule);
-            FhirPathResult resultMapPatientTwo = getFhirPathResult(<map<json>>oldPatient.toJson(), fhirPathRule);
+            FhirPathResult resultMapPatientOne = getFhirPathResult(<map<json>>sourcePatient.toJson(), fhirPathRule);
+            FhirPathResult resultMapPatientTwo = getFhirPathResult(<map<json>>targetPatient.toJson(), fhirPathRule);
             if resultMapPatientOne.hasKey(RESULT) && resultMapPatientTwo.hasKey(RESULT) {
                 if resultMapPatientOne.get(RESULT) is string && resultMapPatientTwo.get(RESULT) is string {
                     string str1 = <string>resultMapPatientOne.get(RESULT);

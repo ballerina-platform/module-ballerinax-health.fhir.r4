@@ -24,11 +24,11 @@ public type PatientMatcher distinct object {
 
     # Abstract Method to verify patients
     #
-    # + newPatient - new Patient who is being added to the system  
-    # + oldPatient - old Patient who is already in the system  
+    # + sourcePatient - new Patient who is being added to the system  
+    # + targetPatient - old Patient who is already in the system  
     # + config - Configuration for Patient Matching Algorithm
     # + return - return true if the two patients are matched, false otherwise
-    public isolated function verifyPatient(r4:Patient newPatient, r4:Patient oldPatient, json config) returns error|http:Response;
+    public isolated function verifyPatient(r4:Patient sourcePatient, r4:Patient targetPatient, json config) returns error|http:Response;
 
     # Abstract Method to get MPI DB Client
     #
