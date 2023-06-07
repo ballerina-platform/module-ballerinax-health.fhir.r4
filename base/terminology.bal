@@ -21,8 +21,8 @@ import ballerina/log;
 # + codeSystems - CodeSystems belong to the terminology
 # + valueSets - ValueSets belong to the terminology
 public type TerminologyRecord record {|
-    readonly CodeSystem[] codeSystems;
-    readonly ValueSet[] valueSets;
+    readonly map<CodeSystem> codeSystems;
+    readonly map<ValueSet> valueSets;
 |};
 
 # Record type ro represent terminology
@@ -48,7 +48,7 @@ public class InMemoryTerminologyLoader {
     # load terminology
     # + return - Terminology populated
     public function load() returns Terminology|FHIRError {
-        CodeSystem[] codeSystemArray = [];
+        map<CodeSystem> codeSystemMap = {};
         foreach json jCodeSystem in self.codeSystems {
             CodeSystem|error converted = jCodeSystem.cloneWithType(CodeSystem);
             if converted is error {
@@ -56,11 +56,11 @@ public class InMemoryTerminologyLoader {
                                                                         PROCESSING, diagnostic = converted.message(), cause = converted);
                 log:printError(fHIRError.toBalString());
             } else {
-                codeSystemArray.push(converted);
+                codeSystemMap[<string>converted.url] = converted;
             }
         }
 
-        ValueSet[] valueSetArray = [];
+        map<ValueSet> valueSetMap = {};
         foreach json jValueSet in self.valueSets {
             ValueSet|error converted = jValueSet.cloneWithType(ValueSet);
             if converted is error {
@@ -68,13 +68,13 @@ public class InMemoryTerminologyLoader {
                                                                         PROCESSING, diagnostic = converted.message(), cause = converted);
                 log:printError(fHIRError.toBalString());
             } else {
-                valueSetArray.push(converted);
+                valueSetMap[<string>converted.url] = converted;
             }
         }
 
         Terminology terminology = {
-          codeSystems: codeSystemArray.cloneReadOnly(),
-          valueSets: valueSetArray.cloneReadOnly()
+          codeSystems: codeSystemMap.cloneReadOnly(),
+          valueSets: valueSetMap.cloneReadOnly()
         };
         return terminology;
     }

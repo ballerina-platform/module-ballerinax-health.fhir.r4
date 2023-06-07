@@ -34,8 +34,8 @@ public class TerminologyProcessor {
     }
 
     public function addTerminology(Terminology terminology) {
-        self.addCodeSystems(terminology.codeSystems);
-        self.addValueSets(terminology.valueSets);
+        self.codeSystems = terminology.codeSystems.clone();
+        self.valueSets = terminology.valueSets.clone();
     }
 
     public function addCodeSystems(CodeSystem[] codeSystems) {
@@ -89,13 +89,34 @@ public class TerminologyProcessor {
     #
     # + searchParameters - List of search parameters, should be passed as map of string arrays 
     # + return - Return array of Code System data
-    public isolated function searchCodeSystems(map<string[]> searchParameters) returns CodeSystem[] {
+    public isolated function searchCodeSystems(map<string[]> searchParameters) returns CodeSystem[]|FHIRError {
 
-        string[] searchParamNames = ["name", "title", "url", "version", "status"];
+        // TThese are the support search parameters for Code systems.
+        // These define as a map because to make the search process ease
+        map<string> searchParamNames = {
+            "name": "name",
+            "title": "title",
+            "url": "url",
+            "version": "version",
+            "status": "status"
+        };
+
+        // Validate the requested search parameters in the allowed list
+        foreach var param in searchParameters.keys() {
+            if !searchParamNames.hasKey(param) {
+                return createFHIRError("Unsupported search parameter",
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = "Unsupported search parameter: " + param,
+                errorType = VALIDATION_ERROR);
+            }
+        }
+
         CodeSystem[] codeSystemArray = self.codeSystems.toArray();
 
-        foreach var searchParam in searchParamNames {
+           foreach var searchParam in searchParameters.keys() {
             string[] searchParamValues = searchParameters[searchParam] ?: [];
+            
             CodeSystem[] filteredList = [];
             if searchParamValues.length() != 0 {
                 foreach var queriedValue in searchParamValues {
