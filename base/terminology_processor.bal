@@ -155,7 +155,7 @@ public class TerminologyProcessor {
     # + return - Return array of Code System data
     public isolated function searchCodeSystems(map<string[]> searchParameters) returns CodeSystem[]|FHIRError {
 
-        // TThese are the support search parameters for Code systems.
+        // These are the support search parameters for Code systems.
         // These define as a map because to make the search process ease
         map<string> searchParamNames = {
             "name": "name",
@@ -200,9 +200,29 @@ public class TerminologyProcessor {
     #
     # + searchParameters - List of search parameters, should be passed as map of string arrays 
     # + return - Return array of Value Set data
-    public isolated function searchValueSets(map<string[]> searchParameters) returns ValueSet[] {
+    public isolated function searchValueSets(map<string[]> searchParameters) returns FHIRError|ValueSet[] {
 
-        string[] searchParamNames = ["name", "title", "url", "version", "status"];
+        // These are the support search parameters for Code systems.
+        // These define as a map because to make the search process ease
+        map<string> searchParamNames = {
+            "name": "name",
+            "title": "title",
+            "url": "url",
+            "version": "version",
+            "status": "status"
+        };
+
+        // Validate the requested search parameters in the allowed list
+        foreach var param in searchParameters.keys() {
+            if !searchParamNames.hasKey(param) {
+                return createFHIRError("Unsupported search parameter",
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = "Unsupported search parameter: " + param,
+                errorType = VALIDATION_ERROR);
+            }
+        }
+
         ValueSet[] valueSetArray = self.valueSets.toArray();
 
         foreach var searchParam in searchParamNames {
@@ -222,7 +242,7 @@ public class TerminologyProcessor {
         return valueSetArray;
     }
 
-    public isolated function codeSystemLookUp(uri? system, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
+    public isolated function codeSystemLookUpList(uri? system, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
 
         if system != () && codeValue != () && self.codeSystems.hasKey(system) {
             return self.findConceptInCodeSystem(self.codeSystems.get(system), codeValue);
@@ -233,14 +253,38 @@ public class TerminologyProcessor {
             if system1 != () && code1 != () {
                 return self.findConceptInCodeSystem(self.codeSystems.get(system1), code1);
             } else {
-                string msg = string `Unknown CodeSystem : ${system}`;
+                string msg = "No system URL or code value found in the Coding";
                 return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
             }
         } else {
-            string msg = string `System URL/code not present or invalide Coding : ${coding.toBalString()}`;
+            string msg = "Either code or Coding should be provided as input";
             return createFHIRError(msg, ERROR, INVALID);
         }
     }
+
+    public isolated function codeSystemLookUpSingle(CodeSystem codeSystem, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
+
+        if codeValue != () {
+            return self.findConceptInCodeSystem(codeSystem, codeValue);
+        } else if coding != () {
+            code? code1 = coding.code;
+
+            if code1 != () {
+                return self.findConceptInCodeSystem(codeSystem, code1);
+            } else {
+                string msg = string `No code value or in-valide code value found in the Coding: ${code1.toBalString()}`;
+                return createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+            }
+        } else {
+            string msg = "Either code or Coding should be provided as input";
+            return createFHIRError(msg, ERROR, INVALID_REQUIRED);
+        }
+    }
+
+    //  public isolated function codeSystemValidateCode(){
+
+    //  }
+
 
     # Create CodeableConcept for given code in a given system.
     # 
