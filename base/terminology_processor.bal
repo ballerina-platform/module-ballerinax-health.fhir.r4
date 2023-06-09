@@ -22,11 +22,11 @@ type CodeConceptDetails record {
 };
 
 # Function definition for code system finder implementations
-public type CodeSystemFinder isolated function (uri system, code code) returns CodeSystem | ValueSet | FHIRError;
+public type CodeSystemFinder isolated function (uri system, code code) returns CodeSystem|ValueSet|FHIRError;
 
 # A processor to process terminology data and create relevant data elements
 public class TerminologyProcessor {
-    
+
     private map<CodeSystem> codeSystems = {};
     private map<ValueSet> valueSets = {};
 
@@ -58,7 +58,7 @@ public class TerminologyProcessor {
         foreach ValueSet valueSet in valueSets {
             FHIRError? result = self.addValueSet(valueSet);
 
-            if result is FHIRError{
+            if result is FHIRError {
                 errors.push(result);
             }
         }
@@ -178,9 +178,9 @@ public class TerminologyProcessor {
 
         CodeSystem[] codeSystemArray = self.codeSystems.toArray();
 
-           foreach var searchParam in searchParameters.keys() {
+        foreach var searchParam in searchParameters.keys() {
             string[] searchParamValues = searchParameters[searchParam] ?: [];
-            
+
             CodeSystem[] filteredList = [];
             if searchParamValues.length() != 0 {
                 foreach var queriedValue in searchParamValues {
@@ -242,58 +242,151 @@ public class TerminologyProcessor {
         return valueSetArray;
     }
 
-    public isolated function codeSystemLookUpList(uri? system, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
+    // public isolated function lookUpCodeSystem(uri? system, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
 
-        if system != () && codeValue != () && self.codeSystems.hasKey(system) {
-            return self.findConceptInCodeSystem(self.codeSystems.get(system), codeValue);
+    //     if system != () && codeValue != () && self.codeSystems.hasKey(system) {
+    //         return self.findConceptInCodeSystem(self.codeSystems.get(system), codeValue);
+    //     } else if coding != () {
+    //         uri? system1 = coding.system;
+    //         code? code1 = coding.code;
+
+    //         if system1 != () && code1 != () {
+    //             return self.findConceptInCodeSystem(self.codeSystems.get(system1), code1);
+    //         } else {
+    //             string msg = "No system URL or code value found in the Coding";
+    //             return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+    //         }
+    //     } else {
+    //         string msg = "Either code or Coding should be provided as input";
+    //         return createFHIRError(msg, ERROR, INVALID);
+    //     }
+    // }
+
+    // public isolated function lookUpCodeSystems(CodeSystem codeSystem, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
+
+    //     if codeValue != () {
+    //         return self.findConceptInCodeSystem(codeSystem, codeValue);
+    //     } else if coding != () {
+    //         code? code1 = coding.code;
+
+    //         if code1 != () {
+    //             return self.findConceptInCodeSystem(codeSystem, code1);
+    //         } else {
+    //             string msg = string `No code value or in-valide code value found in the Coding: ${code1.toBalString()}`;
+    //             return createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+    //         }
+    //     } else {
+    //         string msg = "Either code or Coding should be provided as input";
+    //         return createFHIRError(msg, ERROR, INVALID_REQUIRED);
+    //     }
+    // }
+
+    public isolated function lookUpCodeSystem(CodeSystem? cs, uri? system, code? codeValue,
+            Coding? coding, CodeableConcept? codeableConcept) returns CodeConceptDetails?[]|FHIRError {
+
+        // Create and initialize a CodeSystem record with the mandatory fields
+        CodeSystem codeSystem = {content: "example", status: "unknown"};
+        CodeConceptDetails?[] codeConceptDetailsList = [];
+
+        CodeSystem|error ensured = cs.ensureType();
+        if !(ensured is error) {
+            codeSystem = ensured;
+        }
+
+        if system != () && codeValue != () {
+            if ensured is error {
+                codeSystem = self.codeSystems.get(system);
+            }
+            codeConceptDetailsList.push(self.findConceptInCodeSystem(codeSystem, codeValue));
+            return codeConceptDetailsList;
         } else if coding != () {
-            uri? system1 = coding.system;
-            code? code1 = coding.code;
+            if ensured is error {
+                string url = <string>system;
+                codeSystem = self.codeSystems.get(url);
+            }
+            codeConceptDetailsList.push(check self.findConceptInCodeSystemFromCoding(codeSystem, coding));
+            return codeConceptDetailsList;
+        } else if codeableConcept != () {
+            if ensured is error {
+                string url = <string>system;
+                codeSystem = self.codeSystems.get(url);
+            }
 
-            if system1 != () && code1 != () {
-                return self.findConceptInCodeSystem(self.codeSystems.get(system1), code1);
+            Coding[]? codings = codeableConcept.coding;
+
+            if codings != () {
+                foreach var c in codings {
+                    codeConceptDetailsList.push(check self.findConceptInCodeSystemFromCoding(
+                        codeSystem.cloneReadOnly(), c));
+                }
+                return codeConceptDetailsList;
             } else {
-                string msg = "No system URL or code value found in the Coding";
+                string msg = "Can not find any valid Codings in the provide CodeableConcept data";
                 return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
             }
         } else {
-            string msg = "Either code or Coding should be provided as input";
-            return createFHIRError(msg, ERROR, INVALID);
+            string msg = "Either code or Coding or CodeableConcept should be provided as input";
+            return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
         }
     }
 
-    public isolated function codeSystemLookUpSingle(CodeSystem codeSystem, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
+    public isolated function lookUpValueSet(ValueSet? vs, uri? system, code? codeValue,
+            Coding? coding, CodeableConcept? codeableConcept) returns CodeConceptDetails?[]|FHIRError {
 
-        if codeValue != () {
-            return self.findConceptInCodeSystem(codeSystem, codeValue);
+        // Create and initialize a ValueSet record with the mandatory fields
+        ValueSet valueSet = {status: "unknown"};
+        CodeConceptDetails?[] codeConceptDetailsList = [];
+
+        ValueSet|error ensured = vs.ensureType();
+        if !(ensured is error) {
+            valueSet = ensured;
+        }
+
+        if system != () && codeValue != () {
+            if ensured is error {
+                valueSet = self.valueSets.get(system);
+            }
+            codeConceptDetailsList.push(self.findConceptInValueSet(valueSet, codeValue));
+            return codeConceptDetailsList;
         } else if coding != () {
-            code? code1 = coding.code;
+            if ensured is error {
+                string url = <string>system;
+                valueSet = self.valueSets.get(url);
+            }
+            codeConceptDetailsList.push(check self.findConceptInValueSetFromCoding(valueSet, coding));
+            return codeConceptDetailsList;
+        } else if codeableConcept != () {
+            if ensured is error {
+                string url = <string>system;
+                valueSet = self.valueSets.get(url);
+            }
 
-            if code1 != () {
-                return self.findConceptInCodeSystem(codeSystem, code1);
+            Coding[]? codings = codeableConcept.coding;
+
+            if codings != () {
+                foreach var c in codings {
+                    codeConceptDetailsList.push(check self.findConceptInValueSetFromCoding(
+                        valueSet.cloneReadOnly(), c));
+                }
+                return codeConceptDetailsList;
             } else {
-                string msg = string `No code value or in-valide code value found in the Coding: ${code1.toBalString()}`;
-                return createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+                string msg = "Can not find any valid Codings in the provide CodeableConcept data";
+                return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
             }
         } else {
-            string msg = "Either code or Coding should be provided as input";
-            return createFHIRError(msg, ERROR, INVALID_REQUIRED);
+            string msg = "Either code or Coding or CodeableConcept should be provided as input";
+            return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
         }
     }
 
-    //  public isolated function codeSystemValidateCode(){
-
-    //  }
-
-
     # Create CodeableConcept for given code in a given system.
-    # 
+    #
     # + system - system uri of the code system or value set
     # + code - code interested
     # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code 
-    #                       system in a external source system)
+    # system in a external source system)
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCodeableConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    public isolated function createCodeableConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                     returns CodeableConcept|FHIRError {
         CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder);
         if conceptResult != () {
@@ -304,13 +397,13 @@ public class TerminologyProcessor {
     }
 
     # Create Coding for given code in a given system.
-    # 
+    #
     # + system - system uri of the code system or value set
     # + code - code interested
     # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code 
-    #                       system in a external source system)
+    # system in a external source system)
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCoding(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    public isolated function createCoding(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                                 returns Coding|FHIRError {
         CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder);
         if conceptResult != () {
@@ -320,8 +413,7 @@ public class TerminologyProcessor {
         return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
     }
 
-
-    public isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    public isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                 returns (CodeConceptDetails|FHIRError)? {
         if codeSystemFinder != () {
             (CodeSystem|ValueSet) & readonly result = check codeSystemFinder(system, code).cloneReadOnly();
@@ -341,11 +433,11 @@ public class TerminologyProcessor {
     }
 
     # Function to find code system concept within a CodeSystem.
-    # 
+    #
     # + codeSystem - Target CodeSystem
     # + code - code searching for
     # + return - Code system concept found in the CodeSystem 
-    private isolated function findConceptInCodeSystem(CodeSystem codeSystem, code code) returns CodeConceptDetails? {
+    public isolated function findConceptInCodeSystem(CodeSystem codeSystem, code code) returns CodeConceptDetails? {
         CodeSystemConcept[]? concepts = codeSystem.concept;
         uri? url = codeSystem.url;
         if concepts != () && url != () {
@@ -354,7 +446,7 @@ public class TerminologyProcessor {
                     CodeConceptDetails codeConcept = {
                         url: url,
                         concept: concept
-                    }; 
+                    };
                     return codeConcept;
                 }
             }
@@ -362,12 +454,23 @@ public class TerminologyProcessor {
         return;
     }
 
+    public isolated function findConceptInCodeSystemFromCoding(CodeSystem codeSystem, Coding coding) returns CodeConceptDetails?|FHIRError? {
+        code? code = coding.code;
+
+        if code != () {
+            return self.findConceptInCodeSystem(codeSystem, code);
+        } else {
+            string msg = "No valid code found in the Coding";
+            return createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+        }
+    }
+
     # Function to find code system concept within a ValueSet.
-    # 
+    #
     # + valueSet - Target ValueSet
     # + code - code searching for
     # + return - ValueSet/CodeSystem concept found 
-    private isolated function findConceptInValueSet(ValueSet valueSet, code code) returns (CodeConceptDetails)? {
+    public isolated function findConceptInValueSet(ValueSet valueSet, code code) returns (CodeConceptDetails)? {
         ValueSetCompose? composeBBE = valueSet.compose;
         if composeBBE != () {
             foreach ValueSetComposeInclude includeBBE in composeBBE.include {
@@ -408,12 +511,23 @@ public class TerminologyProcessor {
                                 }
                             }
                         }
-                        
+
                     }
                 }
             }
         }
         return;
+    }
+
+    public isolated function findConceptInValueSetFromCoding(ValueSet valueSet, Coding coding) returns CodeConceptDetails?|FHIRError? {
+        code? code = coding.code;
+
+        if code != () {
+            return self.findConceptInValueSet(valueSet, code);
+        } else {
+            string msg = "No valid code found in the Coding";
+            return createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+        }
     }
 
     private isolated function conceptToCodeableConcept(
@@ -440,9 +554,9 @@ public class TerminologyProcessor {
             }
         }
         return cConcept;
-    } 
+    }
 
-    private isolated function conceptToCoding (CodeSystemConcept|ValueSetComposeIncludeConcept concept, uri system) returns Coding {
+    private isolated function conceptToCoding(CodeSystemConcept|ValueSetComposeIncludeConcept concept, uri system) returns Coding {
 
         Coding codingValue = {
             code: concept.code,
@@ -453,5 +567,5 @@ public class TerminologyProcessor {
             codingValue.display = displayValue;
         }
         return codingValue;
-    } 
+    }
 }
