@@ -13,14 +13,17 @@ import ballerinax/health.fhir.r4;
 import ballerina/http;
 import ballerina/sql;
 
+public final PMRegistry patientMatcherRegistry = new PMRegistry();
+
+
 # Abstract Patient Matcher
-public type PatientMatcher distinct object {
+public type PatientMatcher object {
     # Abstract Method to match patients
     #
-    # + newPatient - new Patient who is being added to the system  
+    # + sourcePatient - new Patient who is being added to the system  
     # + config - Configuration for Patient Matching Algorithm
     # + return - Return Value Description
-    public isolated function matchPatients(r4:Patient newPatient, json config) returns error|http:Response;
+    public isolated function matchPatients(r4:Patient sourcePatient, json config) returns error|http:Response;
 
     # Abstract Method to verify patients
     #
@@ -35,29 +38,12 @@ public type PatientMatcher distinct object {
     # + config - Configuration for Patient Matching Algorithm
     # + return - return MPI DB Client
     public isolated function getMpiDbClient(json config) returns sql:Client|error;
-
 };
 
-# Record to store matching result
-#
-# + newPatient - new Patient who is being added to the system
-# + matchedPatient - Matched Patient 
-# + ismatch - flag to indicate whether the two patients are matched 
-public type MatchingResult record {
-    r4:Patient newPatient;
-    r4:Patient?|record {}? matchedPatient;
-    boolean ismatch;
-};
+// public type verifyPatientFunct isolated function (r4:Patient sourcePatient, r4:Patient targetPatient, json config) returns error|http:Response;
+// public type matchPatientsFunct isolated function (r4:Patient sourcePatient, json config) returns error|http:Response;
 
-# Method to get Patient Matching Configuration
-#
-# + fileContend - Parameter Description
-# + return - PatientMatcher Object or error
-public isolated function getPatientMatcher(json fileContend) returns PatientMatcher|error {
-    json|error algorithm = fileContend.algorithm;
-    if algorithm is "rulebased" {
-        return new RuleBasedPatientMatching();
-    } else {
-        return createPatientMatchingError("Could not find the type of the matching algorithm in the configuration file");
-    }
-}
+// public type PatientMatcherType record {|
+//     readonly verifyPatientFunct verifyPatient;
+//     readonly matchPatientsFunct matchPatients;
+// |};

@@ -13,6 +13,7 @@ import ballerinax/health.fhir.r4;
 import ballerinax/mysql;
 import ballerina/sql;
 import ballerina/http;
+import ballerinax/health.fhir.r4utils.fhirpath as fhirpath;
 
 const RESULT = "result";
 
@@ -22,6 +23,8 @@ const RESULT = "result";
 public type RulesRecord record {
     string[] fhirpathArray;
 };
+
+
 
 # Record to hold MPI database configuration details
 #
@@ -38,12 +41,19 @@ public type MPIDbConfig record {
     string database;
 };
 
+
+// isolated final readonly & PatientMatcherType patientMatcherType = {
+//     verifyPatient:  verifyPatient,
+//     matchPatients:  matchPatients
+// };
+
 # Implementation of the RuleBasedPatientMatching Algorithm
-public class RuleBasedPatientMatching {
+public isolated class RuleBasedPatientMatching {
     *PatientMatcher;
 
     public isolated function verifyPatient(r4:Patient sourcePatient, r4:Patient targetPatient, json config) returns error|http:Response {
 
+        // RulesRecord|error rulesRecord = self.getPatientMatcherRuleData(config);
         RulesRecord|error rulesRecord = self.getPatientMatcherRuleData(config);
         http:Response response = new;
 
@@ -54,8 +64,8 @@ public class RuleBasedPatientMatching {
         int score = 0;
         foreach string fhirpathRule in rulesRecord.fhirpathArray {
             string fhirPathRule = fhirpathRule;
-            FhirPathResult resultMapPatientOne = getFhirPathResult(<map<json>>sourcePatient.toJson(), fhirPathRule);
-            FhirPathResult resultMapPatientTwo = getFhirPathResult(<map<json>>targetPatient.toJson(), fhirPathRule);
+            fhirpath:FhirPathResult resultMapPatientOne = fhirpath:getFhirPathResult(<map<json>>sourcePatient.toJson(), fhirPathRule);
+            fhirpath:FhirPathResult resultMapPatientTwo = fhirpath:getFhirPathResult(<map<json>>targetPatient.toJson(), fhirPathRule);
             if resultMapPatientOne.hasKey(RESULT) && resultMapPatientTwo.hasKey(RESULT) {
                 if resultMapPatientOne.get(RESULT) is string && resultMapPatientTwo.get(RESULT) is string {
                     string str1 = <string>resultMapPatientOne.get(RESULT);
@@ -79,7 +89,7 @@ public class RuleBasedPatientMatching {
                 }
 
             } else {
-                return createFhirPathError("No result found for the given FHIRPath expression in one of the patient: ", fhirPathRule);
+                return fhirpath:createFhirPathError("No result found for the given FHIRPath expression in one of the patient: ", fhirPathRule);
             }
         }
 
@@ -92,8 +102,8 @@ public class RuleBasedPatientMatching {
 
     }
 
-    public isolated function matchPatients(r4:Patient newPatient, json config) returns error|http:Response {
-        record {}|error|() patient = self.getMatchingPatients(newPatient, config);
+    public isolated function matchPatients(r4:Patient sourcePatient, json config) returns error|http:Response {
+        record {}|error|() patient = self.getMatchingPatients(sourcePatient, config);
         if patient is () {
             http:Response response = new;
             response.setJsonPayload("No matching patient found");
@@ -198,10 +208,10 @@ public class RuleBasedPatientMatching {
 
             foreach int i in 0 ... parameters.length() {
                 string fhirPathRule = rulesTable.fhirpathArray[i];
-                FhirPathResult fhirPathResult = getFhirPathResult(<map<json>>patient.toJson(), fhirPathRule);
+                fhirpath:FhirPathResult fhirPathResult = fhirpath:getFhirPathResult(<map<json>>patient.toJson(), fhirPathRule);
                 if i == lastIndex {
                     string fhirPathRuleLastIndex = rulesTable.fhirpathArray[i];
-                    map<anydata> resultMapLastIndex = getFhirPathResult(<map<json>>patient.toJson(), fhirPathRuleLastIndex);
+                    map<anydata> resultMapLastIndex = fhirpath:getFhirPathResult(<map<json>>patient.toJson(), fhirPathRuleLastIndex);
                     if resultMapLastIndex.hasKey(RESULT) {
                         string|json|int|float|boolean|byte resultValue = <string|json|int|float|boolean|byte>fhirPathResult.get(RESULT);
                         if fhirPathResult.get(RESULT) is json[] {
@@ -215,7 +225,7 @@ public class RuleBasedPatientMatching {
                         }
                         break;
                     } else {
-                        return createFhirPathError("No result found for the given FHIRPath expression in the patient: ", fhirPathRuleLastIndex);
+                        return fhirpath:createFhirPathError("No result found for the given FHIRPath expression in the patient: ", fhirPathRuleLastIndex);
                     }
                 }
 
@@ -232,7 +242,7 @@ public class RuleBasedPatientMatching {
                     }
 
                 } else {
-                    return createFhirPathError("No result found for the given FHIRPath expression in the patient: ", fhirPathRule);
+                    return fhirpath:createFhirPathError("No result found for the given FHIRPath expression in the patient: ", fhirPathRule);
                 }
             }
             return query;
@@ -257,5 +267,4 @@ public class RuleBasedPatientMatching {
             return rulesRecord;
         }
     }
-
 };

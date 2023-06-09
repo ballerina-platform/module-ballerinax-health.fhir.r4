@@ -26,15 +26,3 @@ public isolated function createFhirPathError(string errorMsg, string? fhirPath) 
     FHIRPathError fhirPathError = error(errorMsg, fhirpath = fhirPath);
     return fhirPathError;
 }
-
-# Error type to handle errors in patient matching
-public type PatientMatchingError distinct error;
-
-# Method to create a PatientMatchingError
-#
-# + errorMsg - the reason for the occurence of error
-# + return - the error object
-public isolated function createPatientMatchingError(string errorMsg) returns error {
-    PatientMatchingError patientMatchingError = error(errorMsg);
-    return patientMatchingError;
-}

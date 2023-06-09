@@ -155,9 +155,6 @@ dependencies = [
 	{org = "ballerina", name = "lang.__internal"},
 	{org = "ballerina", name = "lang.object"}
 ]
-modules = [
-	{org = "ballerina", packageName = "lang.int", moduleName = "lang.int"}
-]
 
 [[package]]
 org = "ballerina"
@@ -255,9 +252,6 @@ version = "1.4.3"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.string"}
-]
-modules = [
-	{org = "ballerina", packageName = "regex", moduleName = "regex"}
 ]
 
 [[package]]
@@ -360,20 +354,31 @@ modules = [
 
 [[package]]
 org = "ballerinax"
-name = "health.fhir.r4utils"
-version = "1.0.3-snapshot"
+name = "health.fhir.r4utils.fhirpath"
+version = "1.0.2"
+dependencies = [
+	{org = "ballerina", name = "lang.int"},
+	{org = "ballerina", name = "regex"}
+]
+modules = [
+	{org = "ballerinax", packageName = "health.fhir.r4utils.fhirpath", moduleName = "health.fhir.r4utils.fhirpath"}
+]
+
+[[package]]
+org = "ballerinax"
+name = "health.fhir.r4utils.patientmatching"
+version = "0.1.0"
 dependencies = [
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "io"},
-	{org = "ballerina", name = "lang.int"},
-	{org = "ballerina", name = "regex"},
 	{org = "ballerina", name = "sql"},
 	{org = "ballerina", name = "test"},
 	{org = "ballerinax", name = "health.fhir.r4"},
+	{org = "ballerinax", name = "health.fhir.r4utils.fhirpath"},
 	{org = "ballerinax", name = "mysql"}
 ]
 modules = [
-	{org = "ballerinax", packageName = "health.fhir.r4utils", moduleName = "health.fhir.r4utils"}
+	{org = "ballerinax", packageName = "health.fhir.r4utils.patientmatching", moduleName = "health.fhir.r4utils.patientmatching"}
 ]
 
 [[package]]
