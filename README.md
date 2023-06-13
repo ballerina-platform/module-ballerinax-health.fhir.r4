@@ -43,7 +43,7 @@ Execute the commands below to build from the source.
     bal push --repository=local
     ```
 
-    Note: FHIR services use some Ballerina language Java dependecies and these will be pulled from the Github packages. To do that, it requires an [access token from Github](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages), hence add the below server config to your m2 settings.xml file resides under <M2_Home>/confs/ directory.
+    Note: FHIR service uses some Ballerina language Java dependencies available as Github packages. To access them during the build, it requires an [access token from Github](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages)  with the scope `read:packages`. Hence add the below server config to your Maven's settings.xml file resides under `<M2_Home>/confs/` directory.
     ```shell
       <servers>
         . . .
