@@ -34,3 +34,33 @@ public const FHIR_BASE_IG = "international";
 
 # This is the regex for validating canonical URLs
 const CANONICAL_REGEX = "^(https?|http)\\:\\/\\/[-a-zA-Z0-9+&@#\\/%~_!:,\\.;]*[-a-zA-Z0-9\\+&@#\\/%=~_](\\|[-a-zA-Z0-9]*)?";
+
+# This is a map of implemented search params for CodeSystems.
+# These are defined as a map because to make the search process ease.
+public const map<string> CODESYSTEMS_SEARCH_PARAMS = {
+            "name": "",
+            "title": "",
+            "url": "",
+            "version": "",
+            "status": "",
+            "system": "",
+            "description": "",
+            "publisher": "",
+            "content": "",
+            "jurisdiction": ""
+        };
+
+ 
+# This is a map of implemented search params for ValueSets.
+# These define as a map because to make the search process ease
+public const map<string> VALUESETS_SEARCH_PARAMS = {
+            "name": "",
+            "title": "",
+            "url": "",
+            "version": "",
+            "status": "",
+            "description": "",
+            "publisher": "",
+            "identifier": "",
+            "jurisdiction": ""
+        };
