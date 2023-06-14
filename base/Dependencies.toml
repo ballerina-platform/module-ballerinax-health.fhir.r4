@@ -167,6 +167,9 @@ dependencies = [
 	{org = "ballerina", name = "lang.__internal"},
 	{org = "ballerina", name = "lang.object"}
 ]
+modules = [
+	{org = "ballerina", packageName = "lang.int", moduleName = "lang.int"}
+]
 
 [[package]]
 org = "ballerina"
@@ -361,6 +364,7 @@ dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "jwt"},
+	{org = "ballerina", name = "lang.int"},
 	{org = "ballerina", name = "lang.value"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "regex"},

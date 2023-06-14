@@ -64,3 +64,6 @@ public const map<string> VALUESETS_SEARCH_PARAMS = {
             "identifier": "",
             "jurisdiction": ""
         };
+
+public const int TERMINOLOGY_SEARCH_DEFAULT_COUNT = 20;
+public const int TERMINOLOGY_SEARCH_MAXIMUM_COUNT = 300;
