@@ -20,7 +20,7 @@ import ballerina/http;
 import ballerina/lang.'int as langint;
 
 //It is a custom record to hold system URLs and a related concept.  
-public type CodeConceptDetails record {
+type CodeConceptDetails record {
     //System URL of a CodeSystem or ValueSet.
     uri url;
     CodeSystemConcept|ValueSetComposeIncludeConcept concept;
@@ -362,56 +362,17 @@ public class TerminologyProcessor {
         return valueSetArray.slice(<int>offset);
     }
 
-    // public isolated function lookUpCodeSystem(uri? system, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
-
-    //     if system != () && codeValue != () && self.codeSystems.hasKey(system) {
-    //         return self.findConceptInCodeSystem(self.codeSystems.get(system), codeValue);
-    //     } else if coding != () {
-    //         uri? system1 = coding.system;
-    //         code? code1 = coding.code;
-
-    //         if system1 != () && code1 != () {
-    //             return self.findConceptInCodeSystem(self.codeSystems.get(system1), code1);
-    //         } else {
-    //             string msg = "No system URL or code value found in the Coding";
-    //             return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
-    //         }
-    //     } else {
-    //         string msg = "Either code or Coding should be provided as input";
-    //         return createFHIRError(msg, ERROR, INVALID);
-    //     }
-    // }
-
-    // public isolated function lookUpCodeSystems(CodeSystem codeSystem, code? codeValue, Coding? coding) returns (CodeConceptDetails|FHIRError)? {
-
-    //     if codeValue != () {
-    //         return self.findConceptInCodeSystem(codeSystem, codeValue);
-    //     } else if coding != () {
-    //         code? code1 = coding.code;
-
-    //         if code1 != () {
-    //             return self.findConceptInCodeSystem(codeSystem, code1);
-    //         } else {
-    //             string msg = string `No code value or in-valide code value found in the Coding: ${code1.toBalString()}`;
-    //             return createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
-    //         }
-    //     } else {
-    //         string msg = "Either code or Coding should be provided as input";
-    //         return createFHIRError(msg, ERROR, INVALID_REQUIRED);
-    //     }
-    // }
-
-    # Description
-    # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#lookup
+    # Extract the respective concepts from a given CodeSystem based on the give code or Coding or CodeableConcept data
+    # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#lookup.
     #
+    # + codeValue - Code or Coding or CodeableConcept data type value to process with the CodeSystem
     # + cs - CodeSystem record to be processed, this is an optional field, 
     # if system parameter is not supplied then this value shoud be mandatory 
     # + system - System URL of the CodeSystem to be processed, if system CodeSystem(cs) is not supplied then 
     # this value shoud be mandatory 
-    # + codeValue - Code or Coding or CodeableConcept data type value to process with the CodeSystem, Optional field
-    # + return - Return list of Concepts is success, FHIRError if fails
+    # + return - Return list of Concepts if processing is successful, FHIRError if fails
     public isolated function codeSystemLookUp(code|Coding|CodeableConcept codeValue, CodeSystem? cs = (), uri? system = ())
-    returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
+                                                                    returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
 
         // Create and initialize a CodeSystem record with the mandatory fields
         CodeSystem codeSystem = {content: "example", status: "unknown"};
@@ -496,15 +457,17 @@ public class TerminologyProcessor {
 
     }
 
-    # Description
-    # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#validation
+    # Extract the respective concepts from a given ValueSet based on the give code or Coding or CodeableConcept data
+    # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#validation.
     #
-    # + vs - Parameter Description  
-    # + system - Parameter Description  
-    # + codeValue - Parameter Description  
-    # + return - Return Value Description
+    # + codeValue - Code or Coding or CodeableConcept data type value to process with the ValueSet 
+    # + vs - ValueSet record to be processed, this is an optional field,
+    # if system parameter is not supplied then this value shoud be mandatory
+    # + system - System URL of the ValueSet to be processed, if system ValueSet(vs) is not supplied then  
+    # this value shoud be mandatory
+    # + return - Return list of Concepts if processing is successful, FHIRError if fails
     public isolated function valueSetLookUp(code|Coding|CodeableConcept codeValue, ValueSet? vs = (), uri? system = ())
-                            returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
+                                                                returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
 
         // Create and initialize a ValueSet record with the mandatory fields
         ValueSet valueSet = {status: "unknown"};
@@ -520,7 +483,7 @@ public class TerminologyProcessor {
             return createFHIRError(msg,
             ERROR,
             INVALID_REQUIRED,
-            diagnostic = "ValueSet record or system URL should be provided as input",
+            diagnostic = "Either ValueSet record or system URL should be provided as input",
             errorType = PROCESSING_ERROR,
             httpStatusCode = http:STATUS_BAD_REQUEST);
         }
@@ -589,16 +552,16 @@ public class TerminologyProcessor {
         }
     }
 
-    # Description
+    # This method with compare concepts
     # This method was implemented based on: http://hl7.org/fhir/R4/terminology-service.html#subsumes
     #
-    # + cs - Parameter Description  
-    # + system - Parameter Description  
-    # + conceptA - Parameter Description  
-    # + conceptB - Parameter Description
-    # + return - Return Value Description
+    # + cs - CodeSystem value  
+    # + system - System uri of the codeSystem  
+    # + conceptA - Concept 1  
+    # + conceptB - Concept 2
+    # + return - Return Values either equivalent or not-subsumed if processing is successful, FHIRError processing fails
     public isolated function subsumes(code|Coding conceptA, code|Coding conceptB, CodeSystem? cs = (), uri? system = ())
-                returns string|FHIRError {
+                                                                                                returns string|FHIRError {
 
         // Create and initialize a CodeSystem record with the mandatory fields
         CodeSystem codeSystem = {content: "example", status: "unknown"};
@@ -642,32 +605,7 @@ public class TerminologyProcessor {
         }
     }
 
-    private isolated function retrieveCodeSystemConcept(CodeSystem codeSystem, code|Coding concept) returns CodeSystemConcept? {
-        if concept is code {
-            CodeConceptDetails? conceptDetails = self.findConceptInCodeSystem(
-                codeSystem, concept);
-            if conceptDetails is CodeConceptDetails {
-                CodeSystemConcept|ValueSetComposeIncludeConcept temp = conceptDetails.concept;
-                if temp is CodeSystemConcept {
-                    return temp;
-                }
-            }
-
-        } else {
-            CodeConceptDetails? conceptDetails = self.findConceptInCodeSystemFromCoding(
-                codeSystem, concept);
-
-            if conceptDetails is CodeConceptDetails {
-                CodeSystemConcept|ValueSetComposeIncludeConcept temp = conceptDetails.concept;
-                if temp is CodeSystemConcept {
-                    return temp;
-                }
-            }
-        }
-        return;
-    }
-
-    # Create CodeableConcept for given code in a given system.
+    # Create CodeableConcept data type for given code in a given system.
     #
     # + system - system uri of the code system or value set
     # + code - code interested
@@ -684,9 +622,9 @@ public class TerminologyProcessor {
         return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
     }
 
-    # Create Coding for given code in a given system.
+    # Create Coding data type for given code in a given system.
     #
-    # + system - system uri of the code system or value set
+    # + system - System uri of the CodeSystem or valueSet
     # + code - code interested
     # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code 
     # system in a external source system)
@@ -701,7 +639,8 @@ public class TerminologyProcessor {
         return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
     }
 
-    public isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
+    // Function to find concept within a CodeSystem or ValueSet by passing code data type parameter.
+    private isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                 returns (CodeConceptDetails|FHIRError)? {
         if codeSystemFinder != () {
             (CodeSystem|ValueSet) & readonly result = check codeSystemFinder(system, code).cloneReadOnly();
@@ -720,12 +659,8 @@ public class TerminologyProcessor {
         }
     }
 
-    # Function to find code system concept within a CodeSystem.
-    #
-    # + codeSystem - Target CodeSystem
-    # + code - code searching for
-    # + return - Code system concept found in the CodeSystem 
-    public isolated function findConceptInCodeSystem(CodeSystem codeSystem, code code) returns CodeConceptDetails? {
+    // Function to find concept within a CodeSystem by passing code data type parameter. 
+    private isolated function findConceptInCodeSystem(CodeSystem codeSystem, code code) returns CodeConceptDetails? {
         CodeSystemConcept[]? concepts = codeSystem.concept;
         uri? url = codeSystem.url;
         if concepts != () && url != () {
@@ -742,7 +677,8 @@ public class TerminologyProcessor {
         return;
     }
 
-    public isolated function findConceptInCodeSystemFromCoding(CodeSystem codeSystem, Coding coding) returns CodeConceptDetails? {
+    // Function to find concept within a CodeSystem by passing Coding data type parameter.
+    private isolated function findConceptInCodeSystemFromCoding(CodeSystem codeSystem, Coding coding) returns CodeConceptDetails? {
         code? code = coding.code;
 
         if code != () {
@@ -754,12 +690,8 @@ public class TerminologyProcessor {
         return;
     }
 
-    # Function to find code system concept within a ValueSet.
-    #
-    # + valueSet - Target ValueSet
-    # + code - code searching for
-    # + return - ValueSet/CodeSystem concept found 
-    public isolated function findConceptInValueSet(ValueSet valueSet, code code) returns (CodeConceptDetails)? {
+    // Function to find concept within a ValueSet by passing code data type parameter. 
+    private isolated function findConceptInValueSet(ValueSet valueSet, code code) returns (CodeConceptDetails)? {
         ValueSetCompose? composeBBE = valueSet.compose;
         if composeBBE != () {
             foreach ValueSetComposeInclude includeBBE in composeBBE.include {
@@ -808,7 +740,8 @@ public class TerminologyProcessor {
         return;
     }
 
-    public isolated function findConceptInValueSetFromCoding(ValueSet valueSet, Coding coding) returns CodeConceptDetails? {
+    // Function to find concept within a ValueSet by passing Coding data type parameter.
+    private isolated function findConceptInValueSetFromCoding(ValueSet valueSet, Coding coding) returns CodeConceptDetails? {
         code? code = coding.code;
 
         if code != () {
@@ -817,6 +750,7 @@ public class TerminologyProcessor {
             string msg = "No valid code found in the Coding";
             log:printDebug(createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND).toBalString());
         }
+        return;
     }
 
     private isolated function conceptToCodeableConcept(
@@ -856,5 +790,30 @@ public class TerminologyProcessor {
             codingValue.display = displayValue;
         }
         return codingValue;
+    }
+
+    private isolated function retrieveCodeSystemConcept(CodeSystem codeSystem, code|Coding concept) returns CodeSystemConcept? {
+        if concept is code {
+            CodeConceptDetails? conceptDetails = self.findConceptInCodeSystem(
+                codeSystem, concept);
+            if conceptDetails is CodeConceptDetails {
+                CodeSystemConcept|ValueSetComposeIncludeConcept temp = conceptDetails.concept;
+                if temp is CodeSystemConcept {
+                    return temp;
+                }
+            }
+
+        } else {
+            CodeConceptDetails? conceptDetails = self.findConceptInCodeSystemFromCoding(
+                codeSystem, concept);
+
+            if conceptDetails is CodeConceptDetails {
+                CodeSystemConcept|ValueSetComposeIncludeConcept temp = conceptDetails.concept;
+                if temp is CodeSystemConcept {
+                    return temp;
+                }
+            }
+        }
+        return;
     }
 }
