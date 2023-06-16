@@ -259,7 +259,7 @@ public class TerminologyProcessor {
             if searchParamValues.length() != 0 {
                 foreach var queriedValue in searchParamValues {
                     CodeSystem[] result = from CodeSystem entry in codeSystemArray
-                        where entry[searchParam] == queriedValue
+                        where entry[CODESYSTEMS_SEARCH_PARAMS.get(searchParam)] == queriedValue
                         select entry;
                     filteredList.push(...result);
                 }
@@ -339,7 +339,7 @@ public class TerminologyProcessor {
             if searchParamValues.length() != 0 {
                 foreach var queriedValue in searchParamValues {
                     ValueSet[] result = from ValueSet entry in valueSetArray
-                        where entry[searchParam] == queriedValue
+                        where entry[VALUESETS_SEARCH_PARAMS.get(searchParam)] == queriedValue
                         select entry;
                     filteredList.push(...result);
                 }
@@ -359,7 +359,11 @@ public class TerminologyProcessor {
                 }
             }
         }
-        return valueSetArray.slice(<int>offset);
+        if valueSetArray.length() > offset {
+            return valueSetArray.slice(offset);
+        } else {
+            return [];
+        }
     }
 
     # Extract the respective concepts from a given CodeSystem based on the give code or Coding or CodeableConcept data
