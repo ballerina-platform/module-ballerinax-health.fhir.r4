@@ -38,32 +38,37 @@ const CANONICAL_REGEX = "^(https?|http)\\:\\/\\/[-a-zA-Z0-9+&@#\\/%~_!:,\\.;]*[-
 # This is a map of implemented search params for CodeSystems.
 # These are defined as a map because to make the search process ease.
 public const map<string> CODESYSTEMS_SEARCH_PARAMS = {
-            "name": "",
-            "title": "",
-            "url": "",
-            "version": "",
-            "status": "",
-            "system": "",
-            "description": "",
-            "publisher": "",
-            "content": "",
-            "jurisdiction": ""
-        };
+    "_id": "id",
+    "name": "name",
+    "title": "title",
+    "url": "url",
+    "version": "version",
+    "status": "status",
+    "system": "system",
+    "description": "description",
+    "publisher": "publisher"
+};
 
- 
 # This is a map of implemented search params for ValueSets.
 # These define as a map because to make the search process ease
 public const map<string> VALUESETS_SEARCH_PARAMS = {
-            "name": "",
-            "title": "",
-            "url": "",
-            "version": "",
-            "status": "",
-            "description": "",
-            "publisher": "",
-            "identifier": "",
-            "jurisdiction": ""
-        };
+    "_id": "id",
+    "name": "name",
+    "title": "title",
+    "url": "url",
+    "version": "version",
+    "status": "status",
+    "description": "description",
+    "publisher": "publisher"
+};
+
+# This is a map of implemented search params for ValueSets.
+# These define as a map because to make the search process ease
+public const map<string> VALUESETS_EXPANSION_PARAMS = {
+    "url": "",
+    "version": "",
+    "filter": ""
+};
 
 public const int TERMINOLOGY_SEARCH_DEFAULT_COUNT = 20;
 public const int TERMINOLOGY_SEARCH_MAXIMUM_COUNT = 300;
