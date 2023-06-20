@@ -65,8 +65,8 @@ public const map<string> VALUESETS_SEARCH_PARAMS = {
 # This is a map of implemented search params for ValueSets.
 # These define as a map because to make the search process ease
 public const map<string> VALUESETS_EXPANSION_PARAMS = {
-    "url": "",
-    "version": "",
+    "url": "url",
+    "valueSetVersion": "version",
     "filter": ""
 };
 

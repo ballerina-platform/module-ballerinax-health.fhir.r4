@@ -18,12 +18,19 @@ import ballerina/regex;
 import ballerina/log;
 import ballerina/http;
 import ballerina/lang.'int as langint;
+import ballerina/time;
 
 //It is a custom record to hold system URLs and a related concept.  
 type CodeConceptDetails record {
-    //System URL of a CodeSystem or ValueSet.
+    //System URL of the concept.
     uri url;
     CodeSystemConcept|ValueSetComposeIncludeConcept concept;
+};
+
+type ValueSetExpansionDetails record {
+    //System URL of the concepts.
+    uri url;
+    CodeSystemConcept[]|ValueSetComposeIncludeConcept[] concepts;
 };
 
 # The function definition for code system finder implementations.
@@ -264,9 +271,11 @@ public class TerminologyProcessor {
                     filteredList.push(...result);
                 }
                 codeSystemArray = filteredList;
+            }
+        }
 
-                if codeSystemArray.length() > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
-                    return createFHIRError(
+        if codeSystemArray.length() > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            return createFHIRError(
                         "The response size is too large",
                         ERROR,
                         PROCESSING_TOO_COSTLY,
@@ -274,13 +283,14 @@ public class TerminologyProcessor {
                         errorType = PROCESSING_ERROR,
                         httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
                         );
-                } else if codeSystemArray.length() > offset + count - 1 {
-                    return codeSystemArray.slice(0, <int>(count - 1));
-                }
-            }
+        } else if codeSystemArray.length() >= offset + count - 1 {
+            return codeSystemArray.slice(offset, offset + count);
+        } else if codeSystemArray.length() >= offset {
+            return codeSystemArray.slice(offset);
         }
-
-        return codeSystemArray.slice(<int>offset);
+        else {
+            return [];
+        }
     }
 
     # Search for Value Sets for the provided search parameters.
@@ -345,8 +355,11 @@ public class TerminologyProcessor {
                 }
                 valueSetArray = filteredList;
 
-                if valueSetArray.length() > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
-                    return createFHIRError(
+            }
+        }
+
+        if valueSetArray.length() > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            return createFHIRError(
                         "The response size is too large",
                         ERROR,
                         PROCESSING_TOO_COSTLY,
@@ -354,12 +367,9 @@ public class TerminologyProcessor {
                         errorType = PROCESSING_ERROR,
                         httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
                         );
-                } else if valueSetArray.length() > offset + count - 1 {
-                    return valueSetArray.slice(0, <int>(count - 1));
-                }
-            }
-        }
-        if valueSetArray.length() > offset {
+        } else if valueSetArray.length() >= offset + count - 1 {
+            return valueSetArray.slice(offset, offset + count);
+        } else if valueSetArray.length() >= offset {
             return valueSetArray.slice(offset);
         } else {
             return [];
@@ -459,6 +469,173 @@ public class TerminologyProcessor {
         string msg = "Either code or Coding or CodeableConcept should be provided as input";
         return createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND, httpStatusCode = http:STATUS_BAD_REQUEST);
 
+    }
+
+    # Extract all the concepts from a given valueSet based on the given filter parameters
+    # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#expand.
+    #
+    # + searchParameters - List of search parameters to filter concepts, should be passed as map of string arrays  
+    # + vs - ValueSet record to be processed, this is an optional field,  
+    # if system parameter is not supplied then this value shoud be mandatory  
+    # + system - System URL of the ValueSet to be processed, if system ValueSet(vs) is not supplied then  
+    # this value shoud be mandatory
+    # + return - List of concepts is successful,  FHIRError if fails
+    public isolated function valueSetExpansion(map<string[]> searchParameters, ValueSet? vs = (), uri? system = ())
+                                                                returns ValueSet|FHIRError {
+        int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
+        if searchParameters.hasKey("_count") {
+            int|error y = langint:fromString(searchParameters.get("_count")[0]);
+            if y is int {
+                count = y;
+            }
+            _ = searchParameters.remove("_count");
+        }
+
+        int offset = 0;
+        if searchParameters.hasKey("_offset") {
+            int|error y = langint:fromString(searchParameters.get("_offset")[0]);
+            if y is int {
+                offset = y;
+            }
+            _ = searchParameters.remove("_offset");
+        }
+
+        if count > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            return createFHIRError(
+                string `Requested size of the response: ${count.toBalString()} is too large`,
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = "Allowed maximum size of output is: 50, so reduce the value of size parameter accordingly",
+                errorType = PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
+                );
+        }
+
+        // Create and initialize a ValueSet record with the mandatory fields
+        ValueSet valueSet = {status: "unknown"};
+
+        ValueSet|error ensured = vs.ensureType();
+        if !(ensured is error) {
+            valueSet = ensured;
+        } else if system is string {
+            map<string[]> clone = searchParameters.clone();
+            _ = clone.remove("filter");
+            if !clone.hasKey("system") {
+                clone["system"] = [system];
+            }
+            ValueSet[] v = check self.searchValueSets(clone);
+            valueSet = v[0];
+        } else {
+            string msg = "Can not find a ValueSet";
+            return createFHIRError(msg,
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = "Either ValueSet record or system URL should be provided as input",
+            errorType = PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+        // Validate the requested search parameters in the allowed list
+        foreach var param in searchParameters.keys() {
+            if !VALUESETS_EXPANSION_PARAMS.hasKey(param) {
+                return createFHIRError(string `This search parameter is not implemented yet: ${param}`,
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toBalString()}`,
+                errorType = VALIDATION_ERROR);
+            }
+        }
+
+        ValueSetExpansionDetails? details = self.getAllConceptInValueSet(valueSet);
+
+        if details is ValueSetExpansionDetails {
+            CodeSystemConcept[]|ValueSetComposeIncludeConcept[] concepts = details.concepts;
+
+            if concepts is ValueSetComposeIncludeConcept[] {
+                if searchParameters.hasKey("filter") {
+                    string filter = searchParameters.get("filter")[0];
+                    ValueSetComposeIncludeConcept[] result = from ValueSetComposeIncludeConcept entry in concepts
+                        where entry["display"] is string && regex:matches((<string>entry["display"]).toUpperAscii(),
+                        string `.*${filter.toUpperAscii()}.*`)
+                        select entry;
+                    concepts = result;
+                }
+
+                int totalCount = concepts.length();
+
+                if concepts.length() > offset + count {
+                    concepts = concepts.slice(offset, offset + count);
+                } else if concepts.length() >= offset {
+                    concepts = concepts.slice(offset);
+                } else {
+                    CodeSystemConcept[] temp = [];
+                    concepts = temp;
+                }
+
+                ValueSetExpansion expansion = self.createExpandedValueSet(valueSet, concepts);
+                expansion.offset = offset;
+                expansion.total = totalCount;
+                valueSet.expansion = expansion;
+
+            } else {
+                if searchParameters.hasKey("filter") {
+                    string filter = searchParameters.get("filter")[0];
+                    CodeSystemConcept[] result = from CodeSystemConcept entry in concepts
+                        where entry["display"] is string && regex:matches((<string>entry["display"]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
+                        || entry["definition"] is string && regex:matches((<string>entry["definition"]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
+                        select entry;
+                    concepts = result;
+                }
+
+                int totalCount = concepts.length();
+
+                if concepts.length() > offset + count {
+                    concepts = concepts.slice(offset, offset + count);
+                } else if concepts.length() >= offset {
+                    concepts = concepts.slice(offset);
+                } else {
+                    CodeSystemConcept[] temp = [];
+                    concepts = temp;
+                }
+
+                ValueSetExpansion expansion = self.createExpandedValueSet(valueSet, concepts);
+                expansion.offset = offset;
+                expansion.total = totalCount;
+                valueSet.expansion = expansion;
+            }
+        }
+        return valueSet;
+    }
+
+    private isolated function createExpandedValueSet(ValueSet vs, CodeSystemConcept[]|ValueSetComposeIncludeConcept[] concepts) returns ValueSetExpansion {
+
+        ValueSetExpansionContains[] contains = [];
+        if concepts is ValueSetComposeIncludeConcept[] {
+            foreach ValueSetComposeIncludeConcept concept in concepts {
+                ValueSetExpansionContains c = {};
+                c.code = concept.code;
+                c.display = concept.display;
+                c.id = concept.id;
+
+                contains.push(c);
+            }
+
+        } else {
+            foreach CodeSystemConcept concept in concepts {
+                ValueSetExpansionContains c = {};
+                c.code = concept.code;
+                c.display = concept.display;
+                c.id = concept.id;
+
+                contains.push(c);
+            }
+        }
+
+        ValueSetExpansion expansion = {timestamp: ""};
+        expansion.contains = contains;
+        expansion.timestamp = time:utcToString(time:utcNow());
+
+        return expansion;
     }
 
     # Extract the respective concepts from a given ValueSet based on the give code or Coding or CodeableConcept data
@@ -681,6 +858,20 @@ public class TerminologyProcessor {
         return;
     }
 
+    // Function to get all concept within a CodeSystem.
+    private isolated function getAllConceptInCodeSystem(CodeSystem codeSystem) returns ValueSetExpansionDetails? {
+        CodeSystemConcept[]? concepts = codeSystem.concept;
+        uri? url = codeSystem.url;
+        if concepts != () && url != () {
+            ValueSetExpansionDetails codeConcept = {
+                url: url,
+                concepts: concepts
+            };
+            return codeConcept;
+        }
+        return;
+    }
+
     // Function to find concept within a CodeSystem by passing Coding data type parameter.
     private isolated function findConceptInCodeSystemFromCoding(CodeSystem codeSystem, Coding coding) returns CodeConceptDetails? {
         code? code = coding.code;
@@ -731,6 +922,51 @@ public class TerminologyProcessor {
                         foreach canonical valueSetEntry in valueSetResult {
                             if self.valueSets.hasKey(valueSetEntry) {
                                 CodeConceptDetails? concept = self.findConceptInValueSet(self.valueSets.get(valueSetEntry), code);
+                                if concept != () {
+                                    return concept;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        return;
+    }
+
+    // Function to get all concept within a ValueSet. 
+    private isolated function getAllConceptInValueSet(ValueSet valueSet) returns (ValueSetExpansionDetails)? {
+        ValueSetCompose? composeBBE = valueSet.compose;
+        if composeBBE != () {
+            foreach ValueSetComposeInclude includeBBE in composeBBE.include {
+                uri? systemValue = includeBBE.system;
+
+                if systemValue != () {
+                    ValueSetComposeIncludeConcept[]? includeConcepts = includeBBE.concept;
+                    if includeConcepts != () {
+                        ValueSetExpansionDetails concepts = {
+                            url: systemValue,
+                            concepts: includeConcepts
+                        };
+                        return concepts;
+                    } else {
+                        // Find CodeSystem
+                        if self.codeSystems.hasKey(systemValue) {
+                            ValueSetExpansionDetails? result = self.getAllConceptInCodeSystem(self.codeSystems.get(systemValue));
+                            if result != () {
+                                return result;
+                            }
+                        }
+                    }
+                } else {
+                    // check the contents included in this value set
+                    canonical[]? valueSetResult = includeBBE.valueSet;
+                    if valueSetResult != () {
+                        //+ Rule: A value set include/exclude SHALL have a value set or a system
+                        foreach canonical valueSetEntry in valueSetResult {
+                            if self.valueSets.hasKey(valueSetEntry) {
+                                ValueSetExpansionDetails? concept = self.getAllConceptInValueSet(self.valueSets.get(valueSetEntry));
                                 if concept != () {
                                     return concept;
                                 }
