@@ -36,3 +36,8 @@ isolated function executeCreate(anydata payload, r4:FHIRContext fhirCtx, service
     returns anydata|error = @java:Method {
     'class: "io.ballerinax.fhirr4.HTTPToFHIRAdaptor"
 } external;
+
+isolated function isHavingPathParam(handle resourceMethod)
+    returns boolean = @java:Method {
+    'class: "io.ballerinax.fhirr4.HTTPToFHIRAdaptor"
+} external;
