@@ -43,10 +43,10 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
             string accessor = req.method;
             if accessor == "GET" {
                 handle? resourceMethod = getResourceMethod(fhirService, split, "get");
-                map<string[]> queryParams = req.getQueryParams();
                 if resourceMethod is handle {
+                    boolean hasPathParam = isHavingPathParam(resourceMethod);
                     anydata|error executeResourceResult;
-                    if queryParams.length() == 0 {
+                    if hasPathParam {
                         string id = args[args.length() - 1];
                         executeResourceResult = executeReadByID(id, fhirContext, fhirService, resourceMethod);
                     } else {

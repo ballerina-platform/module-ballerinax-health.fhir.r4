@@ -42,6 +42,8 @@ import static io.ballerinax.fhirr4.Utils.isPathsMatching;
  */
 public class HTTPToFHIRAdaptor {
 
+    public static final String PATH_PARAM_IDENTIFIER = "^";
+
     private HTTPToFHIRAdaptor(){}
 
     public static final StrandMetadata EXECUTE_READ_BY_ID = new StrandMetadata(getModule().getOrg(),
@@ -131,6 +133,17 @@ public class HTTPToFHIRAdaptor {
         ServiceType serviceType = (ServiceType) service.getType();
         List<String> pathList = getPathList(path);
         return getResourceMethod(serviceType, pathList, accessor.getValue());
+    }
+
+    public static Object isHavingPathParam(ResourceMethodType resourceMethod) {
+
+        String[] paths = resourceMethod.getResourcePath();
+        for (String s : paths) {
+            if (PATH_PARAM_IDENTIFIER.equals(s)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static List<String> getPathList(BArray pathArray) {
