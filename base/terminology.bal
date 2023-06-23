@@ -36,7 +36,7 @@ public type TerminologyLoader distinct object {
 # An in-memory implementation of a terminology loader
 public class InMemoryTerminologyLoader {
     *TerminologyLoader;
-    
+
     final json[] codeSystems;
     final json[] valueSets;
 
@@ -48,33 +48,40 @@ public class InMemoryTerminologyLoader {
     # load terminology
     # + return - Terminology populated
     public function load() returns Terminology|FHIRError {
+
         map<CodeSystem> codeSystemMap = {};
         foreach json jCodeSystem in self.codeSystems {
-            CodeSystem|error converted = jCodeSystem.cloneWithType(CodeSystem);
-            if converted is error {
+            CodeSystem|error c = jCodeSystem.cloneWithType(CodeSystem);
+            if c is error {
                 FHIRError fHIRError = createFHIRError("Error occurred while type casting json code system to CodeSystem type", ERROR,
-                                                                        PROCESSING, diagnostic = converted.message(), cause = converted);
+                                                                        PROCESSING, diagnostic = c.message(), cause = c);
                 log:printError(fHIRError.toBalString());
             } else {
-                codeSystemMap[<string>converted.url] = converted;
+                string url = <string>c.url;
+                string version = <string>c.version;
+                string key = string `${url}|${version}`;
+                codeSystemMap[key] = c;
             }
         }
 
         map<ValueSet> valueSetMap = {};
         foreach json jValueSet in self.valueSets {
-            ValueSet|error converted = jValueSet.cloneWithType(ValueSet);
-            if converted is error {
+            ValueSet|error v = jValueSet.cloneWithType(ValueSet);
+            if v is error {
                 FHIRError fHIRError = createFHIRError("Error occurred while type casting json value set to ValueSet type", ERROR,
-                                                                        PROCESSING, diagnostic = converted.message(), cause = converted);
+                                                                        PROCESSING, diagnostic = v.message(), cause = v);
                 log:printError(fHIRError.toBalString());
             } else {
-                valueSetMap[<string>converted.url] = converted;
+                string url = <string>v.url;
+                string version = <string>v.version;
+                string key = string `${url}|${version}`;
+                valueSetMap[key] = v;
             }
         }
 
         Terminology terminology = {
-          codeSystems: codeSystemMap,
-          valueSets: valueSetMap
+            codeSystems: codeSystemMap,
+            valueSets: valueSetMap
         };
         return terminology;
     }
