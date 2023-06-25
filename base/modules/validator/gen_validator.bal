@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import health.fhir.r4;
+import ballerinax/health.fhir.r4;
 
 # Function to validate FHIR Payload
 #

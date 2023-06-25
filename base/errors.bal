@@ -17,20 +17,25 @@
 import ballerina/http;
 import ballerina/uuid;
 
-
 //public type FHIRErrorType distinct (base:HealthcareError & error<FHIRErrorDetail>);
 # FHIR Error type
 public type FHIRErrorType distinct (error<FHIRErrorDetail>);
+
 # Base FHIR error type
 public type FHIRError distinct FHIRErrorType;
+
 # FHIR validation related error
 public type FHIRValidationError distinct FHIRError;
+
 # FHIR validation related error
 public type FHIRParseError distinct FHIRError;
+
 # FHIR processing related issue related error
 public type FHIRProcessingError distinct FHIRError;
+
 # FHIR serializer error
 public type FHIRSerializerError distinct FHIRError;
+
 # FHIR data/resource type related error
 public type FHIRTypeError distinct FHIRError;
 
@@ -87,7 +92,7 @@ enum FHIRErrorTypes {
 }
 
 # FHIR Error Detail structure.
-# 
+#
 # + severity - severity of the issue
 # + code - Error or warning code
 # + details - Additional details about the error
@@ -105,10 +110,10 @@ public type FHIRIssueDetail record {
 #
 # + issues - FHIR issues
 # + internalError - flag to indicate the FHIRError is an internal error
-# + httpStatusCode - HTTP status code to return to the client  
+# + httpStatusCode - HTTP status code to return to the client
 # + uuid - UUID of the error
 public type FHIRErrorDetail record {
-    [FHIRIssueDetail, FHIRIssueDetail ...] issues;
+    [FHIRIssueDetail, FHIRIssueDetail...] issues;
     boolean internalError = false;
     int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR;
     string uuid = uuid:createType1AsString();
@@ -117,55 +122,57 @@ public type FHIRErrorDetail record {
 // TODO : Create separate functions to create each error type
 # Utility function to create FHIRError.
 #
-# + message - Message to be added to the error  
-# + errServerity - serverity of the error  
-# + code - error code  
-# + diagnostic - (optional) diagnostic message  
+# + message - Message to be added to the error
+# + errServerity - serverity of the error
+# + code - error code
+# + diagnostic - (optional) diagnostic message
 # + expression - (optional) FHIR Path expression to the error location
 # + cause - (optional) original error
 # + errorType - (optional) type of the error
 # + httpStatusCode - (optional) [default: 500] HTTP status code to return to the client
 # + return - Return Value Description
-public isolated function createFHIRError(string message, Severity errServerity, IssueType code, 
-                                string? diagnostic = (), string[]? expression = (), error? cause = (),
-                                FHIRErrorTypes? errorType = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR) 
+public isolated function createFHIRError(string message, Severity errServerity, IssueType code,
+        string? diagnostic = (), string[]? expression = (), error? cause = (),
+        FHIRErrorTypes? errorType = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR)
                                                                                                     returns FHIRError {
-    return createTypedError(message, errServerity, code, diagnostic, expression, cause, errorType, 
+    return createTypedError(message, errServerity, code, diagnostic, expression, cause, errorType,
                                 internal = false, httpStatusCode = httpStatusCode);
 }
 
 # Utility function to create internal FHIRError.
 #
-# + message - Message to be added to the error  
-# + errServerity - serverity of the error  
-# + code - error code  
-# + diagnostic - (optional) diagnostic message  
+# + message - Message to be added to the error
+# + errServerity - serverity of the error
+# + code - error code
+# + diagnostic - (optional) diagnostic message
 # + expression - (optional) FHIR Path expression to the error location
 # + cause - (optional) original error
 # + errorType - (optional) type of the error
 # + return - Created FHIRError error
-public isolated function createInternalFHIRError(string message, Severity errServerity, IssueType code, 
-                                string? diagnostic = (), string[]? expression = (), error? cause = (),
-                                FHIRErrorTypes? errorType = ()) returns FHIRError {
-    
+public isolated function createInternalFHIRError(string message, Severity errServerity, IssueType code,
+        string? diagnostic = (), string[]? expression = (), error? cause = (),
+        FHIRErrorTypes? errorType = ()) returns FHIRError {
+
     return createTypedError(message, errServerity, code, diagnostic, expression, cause, errorType, internal = true);
 }
 
-isolated function createTypedError (string message, Severity errServerity, IssueType code, 
-                                string? diagnostic = (), string[]? expression = (), error? cause = (),
-                                FHIRErrorTypes? errorType = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR,
-                                boolean internal = false) 
+isolated function createTypedError(string message, Severity errServerity, IssueType code,
+        string? diagnostic = (), string[]? expression = (), error? cause = (),
+        FHIRErrorTypes? errorType = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR,
+        boolean internal = false)
                                 returns FHIRError {
     FHIRIssueDetail issue = {
-        severity: errServerity, 
-        code: code, 
-        diagnostic: diagnostic, 
+        severity: errServerity,
+        code: code,
+        diagnostic: diagnostic,
         expression: expression,
         details: {
-            coding: [{
-                system: "http://hl7.org/fhir/issue-type",
-                code: httpStatusCode.toString()
-            }],
+            coding: [
+                {
+                    system: "http://hl7.org/fhir/issue-type",
+                    code: httpStatusCode.toString()
+                }
+            ],
             text: message
         }
     };
@@ -181,7 +188,7 @@ isolated function createTypedError (string message, Severity errServerity, Issue
             return fError;
         }
         _ => {
-            FHIRError fError = error(message, cause, issues = [issue], httpStatusCode = httpStatusCode, 
+            FHIRError fError = error(message, cause, issues = [issue], httpStatusCode = httpStatusCode,
                                                 internalError = internal);
             return fError;
         }
@@ -194,9 +201,9 @@ isolated function createTypedError (string message, Severity errServerity, Issue
 # + return - Created FHIR Parser Error
 public isolated function createParserErrorFrom(FHIRError fhirError) returns FHIRParseError {
     FHIRErrorDetail & readonly detail = fhirError.detail();
-    FHIRParseError fError = error(fhirError.message(), fhirError, issues = detail.issues, 
-                                    httpStatusCode = detail.httpStatusCode,internalError = detail.internalError);
-     return fError;
+    FHIRParseError fError = error(fhirError.message(), fhirError, issues = detail.issues,
+                                    httpStatusCode = detail.httpStatusCode, internalError = detail.internalError);
+    return fError;
 }
 
 # Utility function to create OperationOutcome from FHIRError.
@@ -209,7 +216,7 @@ public isolated function errorToOperationOutcome(FHIRError fhirError) returns Op
     [OperationOutcomeIssue, OperationOutcomeIssue...] issueBBEs = [issueDetailToOperationOutcomeIssue(issues[0], detail.uuid)];
 
     if issues.length() > 1 {
-        foreach int i in 1...(issues.length() - 1) {
+        foreach int i in 1 ... (issues.length() - 1) {
             issueBBEs.push(issueDetailToOperationOutcomeIssue(issues[i], detail.uuid));
         }
     }
@@ -220,7 +227,7 @@ public isolated function errorToOperationOutcome(FHIRError fhirError) returns Op
 }
 
 isolated function issueDetailToOperationOutcomeIssue(FHIRIssueDetail & readonly detail, string uuid) returns OperationOutcomeIssue {
-    
+
     OperationOutcomeIssue issueBBE = {
         severity: detail.severity,
         code: detail.code
@@ -249,6 +256,7 @@ isolated function issueDetailToOperationOutcomeIssue(FHIRIssueDetail & readonly 
 isolated function createHttpErrorResponse(FHIRError fhirError) returns http:BadRequest|http:InternalServerError {
     FHIRErrorDetail & readonly detail = fhirError.detail();
     OperationOutcome operationOutcome = errorToOperationOutcome(fhirError);
+
     match detail.httpStatusCode {
         http:STATUS_BAD_REQUEST => {
             http:BadRequest badRequest = {

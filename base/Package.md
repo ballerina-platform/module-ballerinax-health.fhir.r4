@@ -1,5 +1,3 @@
-Package containing the FHIR R4 resources types
-
 # FHIR R4 Base package
 
 ## Package Overview
@@ -9,7 +7,7 @@ Package containing the FHIR R4 resources types
 | FHIR version         | R4                   |
 | Implementation Guide | http://hl7.org/fhir/               |
 
-This package includes
+This package includes,
 
 1. FHIR R4 Data types
 2. FHIR Base Resource types
@@ -22,9 +20,6 @@ This package includes
 **This package only supports FHIR JSON payload format only. FHIR XML payload support will be added soon.**
 
 ## Capabilities and features
-
-### Supported FHIR data types
-This package supports all the data types defined in specification [Data Types](https://www.hl7.org/fhir/datatypes.html).
 
 ### Supported FHIR resource types
 
@@ -184,151 +179,155 @@ This package supports all the data types defined in specification [Data Types](h
 | [Terminology][mod2] | Sub module related to Terminology requirements                       |
 | [Validator][mod3]   | Sub module related to FHIR Validation                                |
 
-[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Appointment
-[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Account
-[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Invoice
-[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#CatalogEntry
-[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#EventDefinition
-[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#DocumentManifest
-[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MessageDefinition
-[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Goal
-[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProductPackaged
-[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Endpoint
-[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#EnrollmentRequest
-[m12]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Consent
-[m13]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#CapabilityStatement
-[m14]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Medication
-[m15]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Measure
-[m16]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ResearchSubject
-[m17]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Subscription
-[m18]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#GraphDefinition
-[m19]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#DocumentReference
-[m20]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#CoverageEligibilityResponse
-[m21]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MeasureReport
-[m22]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SubstanceReferenceInformation
-[m23]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#PractitionerRole
-[m24]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#RelatedPerson
-[m25]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ServiceRequest
-[m26]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SupplyRequest
-[m27]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Practitioner
-[m28]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#VerificationResult
-[m29]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SubstanceProtein
-[m30]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#BodyStructure
-[m31]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Slot
-[m32]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Contract
-[m33]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Person
-[m34]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#RiskAssessment
-[m35]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Group
-[m36]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ResearchDefinition
-[m37]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#PaymentNotice
-[m38]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProductManufactured
-[m39]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Organization
-[m40]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ImplementationGuide
-[m41]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#CareTeam
-[m42]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ImagingStudy
-[m43]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#FamilyMemberHistory
-[m44]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ChargeItem
-[m45]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ResearchElementDefinition
-[m46]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ObservationDefinition
-[m47]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SubstanceSpecification
-[m48]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Encounter
-[m49]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Substance
-[m50]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SearchParameter
-[m51]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Communication
-[m52]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#InsurancePlan
-[m53]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Linkage
-[m54]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SubstanceSourceMaterial
-[m55]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ImmunizationEvaluation
-[m56]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#DeviceUseStatement
-[m57]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#RequestGroup
-[m58]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MessageHeader
-[m59]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#DeviceRequest
-[m60]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ImmunizationRecommendation
-[m61]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Task
-[m62]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Provenance
-[m63]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Questionnaire
-[m64]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ExplanationOfBenefit
-[m65]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProductPharmaceutical
-[m66]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ResearchStudy
-[m67]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Specimen
-[m68]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#CarePlan
-[m69]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#AllergyIntolerance
-[m70]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#StructureDefinition
-[m71]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ChargeItemDefinition
-[m72]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#EpisodeOfCare
-[m73]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#OperationOutcome
-[m74]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Procedure
-[m75]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#List
-[m76]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ConceptMap
-[m77]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ValueSet
-[m78]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#OperationDefinition
-[m79]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Immunization
-[m80]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicationRequest
-[m81]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#EffectEvidenceSynthesis
-[m82]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#BiologicallyDerivedProduct
-[m83]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Device
-[m84]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#VisionPrescription
-[m85]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Media
-[m86]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProductContraindication
-[m87]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MolecularSequence
-[m88]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#EvidenceVariable
-[m89]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProduct
-[m90]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#DeviceMetric
-[m91]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Flag
-[m92]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#CodeSystem
-[m93]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SubstanceNucleicAcid
-[m94]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#RiskEvidenceSynthesis
-[m95]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#observation-vitalsigns
-[m96]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#AppointmentResponse
-[m97]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#StructureMap
-[m98]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#AdverseEvent
-[m99]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#GuidanceResponse
-[m100]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Observation
-[m101]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicationAdministration
-[m102]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#EnrollmentResponse
-[m103]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Library
-[m104]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Binary
-[m105]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProductInteraction
-[m106]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicationStatement
-[m107]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#CommunicationRequest
-[m108]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#TestScript
-[m109]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SubstancePolymer
-[m110]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Basic
-[m111]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#TestReport
-[m112]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ClaimResponse
-[m113]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicationDispense
-[m114]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#DiagnosticReport
-[m115]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#OrganizationAffiliation
-[m116]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#HealthcareService
-[m117]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProductIndication
-[m118]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#NutritionOrder
-[m119]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#TerminologyCapabilities
-[m120]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Evidence
-[m121]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#AuditEvent
-[m122]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#PaymentReconciliation
-[m123]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Condition
-[m124]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SpecimenDefinition
-[m125]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Composition
-[m126]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#DetectedIssue
-[m127]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Bundle
-[m128]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#CompartmentDefinition
-[m129]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProductIngredient
-[m130]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicationKnowledge
-[m131]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Patient
-[m132]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Coverage
-[m133]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#QuestionnaireResponse
-[m134]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#CoverageEligibilityRequest
-[m135]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#NamingSystem
-[m136]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProductUndesirableEffect
-[m137]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ExampleScenario
-[m138]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#SupplyDelivery
-[m139]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Schedule
-[m140]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#DeviceDefinition
-[m141]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#ClinicalImpression
-[m142]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#PlanDefinition
-[m143]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#MedicinalProductAuthorization
-[m144]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Claim
-[m145]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.3/#Location
+[mod1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.parser/1.0.4
+[mod2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.terminology/1.0.4
+[mod3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.validator/1.0.4
+
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Appointment
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Account
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Invoice
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#CatalogEntry
+[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#EventDefinition
+[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#DocumentManifest
+[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MessageDefinition
+[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Goal
+[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProductPackaged
+[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Endpoint
+[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#EnrollmentRequest
+[m12]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Consent
+[m13]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#CapabilityStatement
+[m14]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Medication
+[m15]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Measure
+[m16]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ResearchSubject
+[m17]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Subscription
+[m18]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#GraphDefinition
+[m19]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#DocumentReference
+[m20]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#CoverageEligibilityResponse
+[m21]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MeasureReport
+[m22]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SubstanceReferenceInformation
+[m23]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#PractitionerRole
+[m24]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#RelatedPerson
+[m25]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ServiceRequest
+[m26]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SupplyRequest
+[m27]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Practitioner
+[m28]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#VerificationResult
+[m29]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SubstanceProtein
+[m30]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#BodyStructure
+[m31]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Slot
+[m32]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Contract
+[m33]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Person
+[m34]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#RiskAssessment
+[m35]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Group
+[m36]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ResearchDefinition
+[m37]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#PaymentNotice
+[m38]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProductManufactured
+[m39]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Organization
+[m40]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ImplementationGuide
+[m41]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#CareTeam
+[m42]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ImagingStudy
+[m43]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#FamilyMemberHistory
+[m44]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ChargeItem
+[m45]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ResearchElementDefinition
+[m46]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ObservationDefinition
+[m47]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SubstanceSpecification
+[m48]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Encounter
+[m49]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Substance
+[m50]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SearchParameter
+[m51]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Communication
+[m52]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#InsurancePlan
+[m53]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Linkage
+[m54]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SubstanceSourceMaterial
+[m55]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ImmunizationEvaluation
+[m56]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#DeviceUseStatement
+[m57]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#RequestGroup
+[m58]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MessageHeader
+[m59]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#DeviceRequest
+[m60]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ImmunizationRecommendation
+[m61]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Task
+[m62]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Provenance
+[m63]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Questionnaire
+[m64]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ExplanationOfBenefit
+[m65]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProductPharmaceutical
+[m66]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ResearchStudy
+[m67]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Specimen
+[m68]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#CarePlan
+[m69]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#AllergyIntolerance
+[m70]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#StructureDefinition
+[m71]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ChargeItemDefinition
+[m72]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#EpisodeOfCare
+[m73]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#OperationOutcome
+[m74]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Procedure
+[m75]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#List
+[m76]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ConceptMap
+[m77]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ValueSet
+[m78]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#OperationDefinition
+[m79]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Immunization
+[m80]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicationRequest
+[m81]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#EffectEvidenceSynthesis
+[m82]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#BiologicallyDerivedProduct
+[m83]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Device
+[m84]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#VisionPrescription
+[m85]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Media
+[m86]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProductContraindication
+[m87]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MolecularSequence
+[m88]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#EvidenceVariable
+[m89]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProduct
+[m90]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#DeviceMetric
+[m91]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Flag
+[m92]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#CodeSystem
+[m93]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SubstanceNucleicAcid
+[m94]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#RiskEvidenceSynthesis
+[m95]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Observation
+[m96]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#AppointmentResponse
+[m97]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#StructureMap
+[m98]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#AdverseEvent
+[m99]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#GuidanceResponse
+[m100]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Observation
+[m101]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicationAdministration
+[m102]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#EnrollmentResponse
+[m103]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Library
+[m104]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Binary
+[m105]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProductInteraction
+[m106]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicationStatement
+[m107]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#CommunicationRequest
+[m108]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#TestScript
+[m109]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SubstancePolymer
+[m110]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Basic
+[m111]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#TestReport
+[m112]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ClaimResponse
+[m113]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicationDispense
+[m114]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#DiagnosticReport
+[m115]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#OrganizationAffiliation
+[m116]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#HealthcareService
+[m117]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProductIndication
+[m118]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#NutritionOrder
+[m119]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#TerminologyCapabilities
+[m120]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Evidence
+[m121]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#AuditEvent
+[m122]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#PaymentReconciliation
+[m123]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Condition
+[m124]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SpecimenDefinition
+[m125]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Composition
+[m126]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#DetectedIssue
+[m127]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Bundle
+[m128]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#CompartmentDefinition
+[m129]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProductIngredient
+[m130]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicationKnowledge
+[m131]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Patient
+[m132]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Coverage
+[m133]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#QuestionnaireResponse
+[m134]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#CoverageEligibilityRequest
+[m135]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#NamingSystem
+[m136]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProductUndesirableEffect
+[m137]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ExampleScenario
+[m138]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#SupplyDelivery
+[m139]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Schedule
+[m140]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#DeviceDefinition
+[m141]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#ClinicalImpression
+[m142]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#PlanDefinition
+[m143]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#MedicinalProductAuthorization
+[m144]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Claim
+[m145]: https://lib.ballerina.io/ballerinax/health.fhir.r4/1.0.4#Location
 
 [s1]: http://hl7.org/fhir/StructureDefinition/Appointment
 [s2]: http://hl7.org/fhir/StructureDefinition/Account
@@ -475,7 +474,3 @@ This package supports all the data types defined in specification [Data Types](h
 [s143]: http://hl7.org/fhir/StructureDefinition/MedicinalProductAuthorization
 [s144]: http://hl7.org/fhir/StructureDefinition/Claim
 [s145]: http://hl7.org/fhir/StructureDefinition/Location
-
-[mod1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.parser/1.0.3
-[mod2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.terminology/1.0.3
-[mod3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.validator/1.0.3

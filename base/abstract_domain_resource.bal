@@ -68,11 +68,10 @@
         'json: fhirResourceJsonSerializer
     }
 }
-public type DomainResource record {|
+public type DomainResource record {
     *Resource;
     Narrative text?;
     Resource[] contained?;
     Extension[] extension?;
     Extension[] modifierExtension?;
-    Element ...;
-|};
+};

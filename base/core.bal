@@ -88,10 +88,10 @@ public enum FHIRInteractionLevel {
     FHIR_INTERACTION_SYSTEM = "SYSTEM"
 }
 
-# For the ordered parameter types of number, date, and quantity, a prefix to the parameter value may be used to 
+# For the ordered parameter types of number, date, and quantity, a prefix to the parameter value may be used to
 # control the nature of the matching
 public enum Prefix {
-    eq,ne,gt,lt,ge,le,sa,eb,ap
+    eq, ne, gt, lt, ge, le, sa, eb, ap
 }
 
 # Represents a profile, containing summary information.
@@ -106,7 +106,7 @@ public type Profile record {|
 |};
 
 # Holds information about MIME details of the request.
-# 
+#
 # + contentType - request content type
 # + acceptType - request accept type, JSON will be set as default
 type FHIRRequestMimeHeaders record {|
@@ -116,8 +116,8 @@ type FHIRRequestMimeHeaders record {|
 
 # Search parameter definition representing summary information reqiored for processing from spec.
 #
-# + name - name of the search parameter 
-# + 'type -   type of the search parameter
+# + name - name of the search parameter
+# + 'type - type of the search parameter
 # + base - The resource type this search parameter applies to
 # + expression - expression bound to the resource type
 public type FHIRSearchParameterDefinition record {
@@ -142,7 +142,7 @@ public type FHIROperationDefinition record {|
 
 # Record type that holds original incoming values and processed information about the request search parameter.
 #
-# + 'type - Type of search parameter  
+# + 'type - Type of search parameter
 # + name - Name of the search parameter (Key of the query parameter)
 # + value - Original incoming search parameter value in string format
 # + typedValue - Parsed/Decoded search parameter value based on the type of the search parameter
@@ -154,7 +154,7 @@ public type RequestSearchParameter record {
 };
 
 # Base type of decoded/processed search parameter value.
-# 
+#
 # + name - Name of the search parameter
 # + modifier - FHIR Search parameter modifier
 public type FHIRTypedSearchParameter record {
@@ -210,7 +210,7 @@ public type TokenSearchParameter record {
 };
 
 # Reference type search parameter information.
-# 
+#
 # + resourceType - Referenced resource type
 # + id - The logical [id] of a resource using a local reference (i.e. a relative reference)
 # + url - Absolute URL - a reference to a resource by its absolute location
@@ -222,7 +222,7 @@ public type ReferenceSearchParameter record {
 };
 
 # Composite type search parameter information record.
-# 
+#
 # + value - Composite search parameter value
 public type CompositeSearchParameter record {
     *FHIRTypedSearchParameter;
@@ -231,7 +231,7 @@ public type CompositeSearchParameter record {
 };
 
 # A quantity parameter searches on the Quantity data type.
-# 
+#
 # + prefix - Prefix to the parameter value may be used to control the nature of the matching
 # + number - Numerical value (with implicit precision). The number part can be a decimal in exponential format
 # + system - System that defines coded unit form
@@ -245,7 +245,7 @@ public type QuantitySearchParameter record {
 };
 
 # Special type search parameter information record.
-# 
+#
 # + value - Composite search parameter value
 public type SpecialSearchParameter record {
     *FHIRTypedSearchParameter;
@@ -326,7 +326,7 @@ public type HTTPRequest record {
 # Class representing FHIR request
 public isolated class FHIRRequest {
     private final FHIRResourceEntity? resourceEntity;
-    
+
     // Request is bounded to this resource type. Only system level requests result resourceType to be nil
     private final string? resourceType;
 
@@ -337,10 +337,10 @@ public isolated class FHIRRequest {
     private final FHIRPayloadFormat clientAcceptFormat;
 
     isolated function init(readonly & FHIRInteraction interaction,
-                            string? resourceType,
-                            FHIRResourceEntity? resourceEntity,
-                            readonly & map<readonly & RequestSearchParameter[]> searchParameters,
-                            readonly & FHIRPayloadFormat clientAcceptFormat) {
+            string? resourceType,
+            FHIRResourceEntity? resourceEntity,
+            readonly & map<readonly & RequestSearchParameter[]> searchParameters,
+            readonly & FHIRPayloadFormat clientAcceptFormat) {
         self.resourceEntity = resourceEntity;
         self.searchParameters = searchParameters;
         self.clientAcceptFormat = clientAcceptFormat;
@@ -352,7 +352,7 @@ public isolated class FHIRRequest {
         return self.resourceEntity;
     }
 
-    public isolated function getSearchParameters() returns readonly & map<readonly & RequestSearchParameter[]>{
+    public isolated function getSearchParameters() returns readonly & map<readonly & RequestSearchParameter[]> {
         return self.searchParameters;
     }
 
@@ -382,7 +382,7 @@ public type FHIRInteraction record {
 # + id - target resource id
 public type FHIRReadInteraction record {
     *FHIRInteraction;
-    
+
     READ interaction = READ;
     string id;
 };
@@ -393,7 +393,7 @@ public type FHIRReadInteraction record {
 # + defaultProfile - International resource URL will set as default.
 public type FHIRSearchInteraction record {
     *FHIRInteraction;
-    
+
     SEARCH interaction = SEARCH;
     string defaultProfile?;
 };
@@ -403,7 +403,7 @@ public type FHIRSearchInteraction record {
 # + interaction - Interaction type
 public type FHIRCreateInteraction record {
     *FHIRInteraction;
-    
+
     CREATE interaction = CREATE;
 };
 

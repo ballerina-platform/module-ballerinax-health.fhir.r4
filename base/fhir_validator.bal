@@ -50,3 +50,13 @@ public isolated function validate(json|anydata data, typedesc<anydata>? targetFH
     }
 
 }
+
+# This method will validate parsed FHIR resource.
+# Validation consist of Structure, cardinality, Value domain, Profile.
+# This is only for internal use.
+#
+# + data - parsed FHIR resource
+# + return - If the validation fails, return validation error
+isolated function validateFhirResource(anydata data) returns FHIRValidationError? {
+    return validate(data);
+}
