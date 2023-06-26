@@ -24,7 +24,6 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
             new r4:FHIRReadRequestInterceptor(apiConfig),
             new r4:FHIRCreateRequestInterceptor(apiConfig),
             new r4:FHIRSearchRequestInterceptor(apiConfig),
-            new r4:FHIRResponseErrorInterceptor(),
             new r4:FHIRRequestErrorInterceptor(),
             new r4:FHIRResponseInterceptor(apiConfig)
         ]
@@ -51,6 +50,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                         executeResourceResult = executeReadByID(id, fhirContext, fhirService, resourceMethod);
                     } else {
                         executeResourceResult = executeSearch(fhirContext, fhirService, resourceMethod);
+                    }
+                    if (executeResourceResult is error) {
+                        fhirContext.setInErrorState(true);
+                        fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                        return r4:handleErrorResponse(executeResourceResult);
                     }
                     return executeResourceResult;
                 }

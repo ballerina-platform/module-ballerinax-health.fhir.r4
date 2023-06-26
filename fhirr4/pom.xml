@@ -18,14 +18,14 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.ballerinax</groupId>
     <artifactId>fhirr4</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.5-snapshot</version>
+    <version>1.0.5</version>
     <modules>
         <module>compiler-plugin</module>
         <module>native</module>
@@ -37,7 +37,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <ballerina.version>2201.6.0</ballerina.version>
         <gson.version>2.8.6</gson.version>
-        <r4.version>1.0.3</r4.version>
+        <r4.version>1.0.4</r4.version>
     </properties>
 
     <dependencyManagement>
@@ -77,11 +77,11 @@
 
     <repositories>
         <repository>
-          <id>ballerina-language-repo</id>
-          <url>https://maven.pkg.github.com/ballerina-platform/ballerina-lang</url>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
+            <id>ballerina-language-repo</id>
+            <url>https://maven.pkg.github.com/ballerina-platform/ballerina-lang</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 </project>
