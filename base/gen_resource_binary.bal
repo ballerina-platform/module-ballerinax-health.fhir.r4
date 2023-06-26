@@ -114,6 +114,7 @@ public type Binary record {|
     string id?;
     Reference securityContext?;
     code contentType;
+    never...;
 |};
 
 @DataTypeDefinition {

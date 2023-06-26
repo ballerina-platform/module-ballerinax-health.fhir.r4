@@ -183,6 +183,7 @@ public type MedicinalProductIngredient record {|
     string id?;
     Narrative text?;
     MedicinalProductIngredientSpecifiedSubstance[] specifiedSubstance?;
+    never...;
 |};
 
 @DataTypeDefinition {

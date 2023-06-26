@@ -173,6 +173,7 @@ public type MedicinalProductUndesirableEffect record {|
     CodeableConcept symptomConditionEffect?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

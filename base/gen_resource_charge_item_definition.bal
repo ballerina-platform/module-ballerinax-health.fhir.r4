@@ -356,6 +356,7 @@ public type ChargeItemDefinition record {|
     ChargeItemDefinitionApplicability[] applicability?;
     UsageContext[] useContext?;
     ChargeItemDefinitionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -254,6 +254,7 @@ public type CatalogEntry record {|
     Reference referencedItem;
     CatalogEntryStatus status?;
     dateTime validTo?;
+    never...;
 |};
 
 @DataTypeDefinition {

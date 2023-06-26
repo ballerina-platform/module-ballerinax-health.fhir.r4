@@ -379,6 +379,7 @@ public type Condition record {|
     uri implicitRules?;
     CodeableConcept[] category?;
     Age abatementAge?;
+    never...;
 |};
 
 @DataTypeDefinition {

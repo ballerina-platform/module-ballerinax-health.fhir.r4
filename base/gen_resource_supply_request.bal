@@ -309,6 +309,7 @@ public type SupplyRequest record {|
     dateTime occurrenceDateTime?;
     CodeableConcept category?;
     SupplyRequestStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

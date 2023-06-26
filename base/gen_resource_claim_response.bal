@@ -392,6 +392,7 @@ public type ClaimResponse record {|
     uri implicitRules?;
     CodeableConcept subType?;
     ClaimResponseStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

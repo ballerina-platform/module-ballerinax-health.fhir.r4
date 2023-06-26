@@ -326,6 +326,7 @@ public type ConceptMap record {|
     string publisher?;
     UsageContext[] useContext?;
     ConceptMapStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -280,6 +280,7 @@ public type CoverageEligibilityRequest record {|
     Narrative text?;
     Reference facility?;
     CoverageEligibilityRequestStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

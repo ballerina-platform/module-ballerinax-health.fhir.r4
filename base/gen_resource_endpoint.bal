@@ -241,6 +241,7 @@ public type Endpoint record {|
     Narrative text?;
     code[] payloadMimeType?;
     EndpointStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

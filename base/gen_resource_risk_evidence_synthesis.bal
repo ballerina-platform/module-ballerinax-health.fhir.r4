@@ -438,6 +438,7 @@ public type RiskEvidenceSynthesis record {|
     CodeableConcept[] topic?;
     UsageContext[] useContext?;
     RiskEvidenceSynthesisStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

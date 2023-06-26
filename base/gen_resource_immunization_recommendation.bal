@@ -177,6 +177,7 @@ public type ImmunizationRecommendation record {|
     uri implicitRules?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

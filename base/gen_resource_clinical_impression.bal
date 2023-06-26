@@ -335,6 +335,7 @@ public type ClinicalImpression record {|
     uri implicitRules?;
     ClinicalImpressionInvestigation[] investigation?;
     ClinicalImpressionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -297,6 +297,7 @@ public type NutritionOrder record {|
     uri implicitRules?;
     Reference[] allergyIntolerance?;
     NutritionOrderStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

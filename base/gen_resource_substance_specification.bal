@@ -303,6 +303,7 @@ public type SubstanceSpecification record {|
     uri implicitRules?;
     string comment?;
     CodeableConcept status?;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -186,6 +186,7 @@ public type SpecimenDefinition record {|
     Narrative text?;
     CodeableConcept typeCollected?;
     SpecimenDefinitionTypeTested[] typeTested?;
+    never...;
 |};
 
 @DataTypeDefinition {

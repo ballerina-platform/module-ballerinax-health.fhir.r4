@@ -449,6 +449,7 @@ public type Library record {|
     CodeableConcept[] topic?;
     UsageContext[] useContext?;
     LibraryStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

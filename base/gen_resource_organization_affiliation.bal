@@ -245,6 +245,7 @@ public type OrganizationAffiliation record {|
     ContactPoint[] telecom?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -204,6 +204,7 @@ public type ResearchSubject record {|
     Narrative text?;
     string assignedArm?;
     ResearchSubjectStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

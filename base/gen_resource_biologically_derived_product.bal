@@ -235,6 +235,7 @@ public type BiologicallyDerivedProduct record {|
     Narrative text?;
     BiologicallyDerivedProductManipulation manipulation?;
     BiologicallyDerivedProductStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

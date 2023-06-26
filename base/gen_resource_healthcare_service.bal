@@ -370,6 +370,7 @@ public type HealthcareService record {|
     markdown extraDetails?;
     string availabilityExceptions?;
     Reference[] coverageArea?;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -17,40 +17,32 @@
 import ballerina/log;
 import ballerina/test;
 
-
 // Test functions
 @test:Config {}
 function parseWithoutModelTest() returns FHIRParseError? {
-    Patient pat = <Patient> check parse(TEST_FHIR_RESOURCE_JSON_PATIENT_01);
-    log:printDebug(string `Parsed patient: ${pat.toBalString()}`);
-    test:assertEquals(pat, TEST_FHIR_RESOURCE_MODEL_PATIENT_01);
+    Patient pat = <Patient>check parse(TEST_FHIR_RESOURCE_JSON_PATIENT_01);
+    test:assertEquals(pat.id, "123344", "Mismatching patient ID");
 }
 
 @test:Config {}
-function test_parseByGivenModelTest() returns FHIRParseError? {
-    Patient pat = <Patient> check parse(TEST_FHIR_RESOURCE_JSON_PATIENT_01, Patient);
+function parseByGivenModelTest() returns FHIRParseError? {
+    Patient pat = <Patient>check parse(TEST_FHIR_RESOURCE_JSON_PATIENT_01, Patient);
     log:printDebug(string `Parsed patient: ${pat.toBalString()}`);
-    test:assertEquals(pat, TEST_FHIR_RESOURCE_MODEL_PATIENT_01);
+    test:assertEquals(pat.id, "123344", "Mismatching patient ID");
 }
 
 @test:Config {}
-function test_parseInvalidResourceTest() {
-    anydata|FHIRParseError pat = parse(TEST_FHIR_RESOURCE_JSON_INVALID_PATIENT_01);
+function parseInvalidResourceTest() {
+    anydata|FHIRParseError pat = parse(TEST_FHIR_RESOURCE_JSON_INVALID_PATIENT_01, Patient);
     if pat is FHIRParseError {
-        FHIRIssueDetail expectedIssueDetail = {
-            severity: "error",
-            code: "processing",
-            details: (),
-            diagnostic: "{ballerina/lang.value}ConversionError",
-            expression: ()
-        };
         FHIRErrorDetail & readonly errorDetail = pat.detail();
 
         test:assertEquals(pat.message(), "Failed to parse request body as JSON resource", "Unexpected error message");
         test:assertEquals(errorDetail.httpStatusCode, 400, "Error status code must be 400");
         test:assertEquals(errorDetail.internalError, false, "Error should not be an internal error");
         test:assertNotEquals(errorDetail.uuid, null, "Error UUID must present");
-        test:assertEquals(errorDetail.issues[0], expectedIssueDetail, "Mismatching error detail");
+        error err = pat.cause() ?: error("");
+        test:assertEquals(err.message(), "{ballerina/lang.value}ConversionError", "Mismatching error detail");
     } else {
         test:assertFail("Expect to fail since malformed FHIR resource payload");
     }

@@ -245,6 +245,7 @@ public type PaymentNotice record {|
     date paymentDate?;
     CodeableConcept paymentStatus?;
     PaymentNoticeStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

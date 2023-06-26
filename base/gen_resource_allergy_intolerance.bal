@@ -330,6 +330,7 @@ public type AllergyIntolerance record {|
     Reference asserter?;
     uri implicitRules?;
     AllergyIntoleranceCategory[] category?;
+    never...;
 |};
 
 @DataTypeDefinition {

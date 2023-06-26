@@ -306,6 +306,7 @@ public type ValueSet record {|
     string publisher?;
     UsageContext[] useContext?;
     ValueSetStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

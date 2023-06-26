@@ -292,6 +292,7 @@ public type DocumentReference record {|
     DocumentReferenceRelatesTo[] relatesTo?;
     Reference authenticator?;
     DocumentReferenceStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

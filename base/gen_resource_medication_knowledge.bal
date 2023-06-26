@@ -348,6 +348,7 @@ public type MedicationKnowledge record {|
     uri implicitRules?;
     MedicationKnowledgeKinetics[] kinetics?;
     MedicationKnowledgeStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

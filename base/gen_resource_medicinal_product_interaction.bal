@@ -193,6 +193,7 @@ public type MedicinalProductInteraction record {|
     MedicinalProductInteractionInteractant[] interactant?;
     Narrative text?;
     CodeableConcept incidence?;
+    never...;
 |};
 
 @DataTypeDefinition {

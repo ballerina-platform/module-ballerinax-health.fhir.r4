@@ -174,6 +174,7 @@ public type Basic record {|
     uri implicitRules?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

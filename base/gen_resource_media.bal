@@ -359,6 +359,7 @@ public type Media record {|
     uri implicitRules?;
     Reference device?;
     MediaStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

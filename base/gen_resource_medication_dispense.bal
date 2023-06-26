@@ -390,6 +390,7 @@ public type MedicationDispense record {|
     Reference location?;
     CodeableConcept category?;
     MedicationDispenseStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

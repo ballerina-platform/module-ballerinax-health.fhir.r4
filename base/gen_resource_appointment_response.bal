@@ -205,6 +205,7 @@ public type AppointmentResponse record {|
     AppointmentResponseParticipantStatus participantStatus;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

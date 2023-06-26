@@ -197,6 +197,7 @@ public type MedicinalProductPharmaceutical record {|
     string id?;
     Narrative text?;
     Reference[] device?;
+    never...;
 |};
 
 @DataTypeDefinition {

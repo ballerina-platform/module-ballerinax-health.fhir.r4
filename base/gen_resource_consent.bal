@@ -271,6 +271,7 @@ public type Consent record {|
     ConsentVerification[] verification?;
     ConsentPolicy[] policy?;
     ConsentStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

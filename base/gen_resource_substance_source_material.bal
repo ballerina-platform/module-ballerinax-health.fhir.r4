@@ -253,6 +253,7 @@ public type SubstanceSourceMaterial record {|
     Narrative text?;
     Identifier[] parentSubstanceId?;
     SubstanceSourceMaterialFractionDescription[] fractionDescription?;
+    never...;
 |};
 
 @DataTypeDefinition {

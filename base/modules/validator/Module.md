@@ -1,15 +1,15 @@
-FHIR Validator module
+# FHIR Validator module
 
 ## Overview
 
-This module provides utility functions required for validating FHIR resource payloads against corresponding FHIR 
+This module provides utility functions required for validating FHIR resource payloads against corresponding FHIR
 resource models.
 
 ### Usage : Validate
 
 **01. Validate against FHIR base resource model**
 
-In this approach user just need to provide only the FHIR resource payload. Based on the resource type, validator will validate 
+In this approach user just need to provide only the FHIR resource payload. Based on the resource type, validator will validate
 against to it's base profile model.
 
 ```ballerina

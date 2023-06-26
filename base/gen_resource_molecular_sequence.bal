@@ -284,6 +284,7 @@ public type MolecularSequence record {|
     Narrative text?;
     Reference device?;
     MolecularSequenceReferenceSeq referenceSeq?;
+    never...;
 |};
 
 @DataTypeDefinition {
@@ -311,13 +312,6 @@ public type BaseMolecularSequenceMeta record {|
     Coding[] tag?;
 |};
 
-# MolecularSequenceType enum
-public enum MolecularSequenceType {
-   CODE_TYPE_AA = "aa",
-   CODE_TYPE_RNA = "rna",
-   CODE_TYPE_DNA = "dna"
-}
-
 # MolecularSequenceRepositoryType enum
 public enum MolecularSequenceRepositoryType {
    CODE_TYPE_DIRECTLINK = "directlink",
@@ -326,234 +320,6 @@ public enum MolecularSequenceRepositoryType {
    CODE_TYPE_LOGIN = "login",
    CODE_TYPE_OAUTH = "oauth"
 }
-
-# FHIR MolecularSequenceVariant datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + cigar - Extended CIGAR string for aligning the sequence with reference bases. See detailed documentation [here](http://support.illumina.com/help/SequencingAnalysisWorkflow/Content/Vault/Informatics/Sequencing_Analysis/CASAVA/swSEQ_mCA_ExtendedCIGARFormat.htm).
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + 'start - Start position of the variant on the reference sequence. If the coordinate system is either 0-based or 1-based, then start position is inclusive.
-# + end - End position of the variant on the reference sequence. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.
-# + observedAllele - An allele is one of a set of coexisting sequence variants of a gene ([SO:0001023](http://www.sequenceontology.org/browser/current_svn/term/SO:0001023)). Nucleotide(s)/amino acids from start position of sequence to stop position of sequence on the positive (+) strand of the observed sequence. When the sequence type is DNA, it should be the sequence on the positive (+) strand. This will lay in the range between variant.start and variant.end.
-# + referenceAllele - An allele is one of a set of coexisting sequence variants of a gene ([SO:0001023](http://www.sequenceontology.org/browser/current_svn/term/SO:0001023)). Nucleotide(s)/amino acids from start position of sequence to stop position of sequence on the positive (+) strand of the reference sequence. When the sequence type is DNA, it should be the sequence on the positive (+) strand. This will lay in the range between variant.start and variant.end.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + variantPointer - A pointer to an Observation containing variant information.
-@DataTypeDefinition {
-    name: "MolecularSequenceVariant",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "MolecularSequence.variant.extension"
-        },
-        "cigar": {
-            name: "cigar",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Extended CIGAR string for aligning the sequence with reference bases. See detailed documentation [here](http://support.illumina.com/help/SequencingAnalysisWorkflow/Content/Vault/Informatics/Sequencing_Analysis/CASAVA/swSEQ_mCA_ExtendedCIGARFormat.htm).",
-            path: "MolecularSequence.variant.cigar"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "MolecularSequence.variant.modifierExtension"
-        },
-        "start": {
-            name: "start",
-            dataType: integer,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Start position of the variant on the reference sequence. If the coordinate system is either 0-based or 1-based, then start position is inclusive.",
-            path: "MolecularSequence.variant.start"
-        },
-        "end": {
-            name: "end",
-            dataType: integer,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "End position of the variant on the reference sequence. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.",
-            path: "MolecularSequence.variant.end"
-        },
-        "observedAllele": {
-            name: "observedAllele",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "An allele is one of a set of coexisting sequence variants of a gene ([SO:0001023](http://www.sequenceontology.org/browser/current_svn/term/SO:0001023)). Nucleotide(s)/amino acids from start position of sequence to stop position of sequence on the positive (+) strand of the observed sequence. When the sequence type is DNA, it should be the sequence on the positive (+) strand. This will lay in the range between variant.start and variant.end.",
-            path: "MolecularSequence.variant.observedAllele"
-        },
-        "referenceAllele": {
-            name: "referenceAllele",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "An allele is one of a set of coexisting sequence variants of a gene ([SO:0001023](http://www.sequenceontology.org/browser/current_svn/term/SO:0001023)). Nucleotide(s)/amino acids from start position of sequence to stop position of sequence on the positive (+) strand of the reference sequence. When the sequence type is DNA, it should be the sequence on the positive (+) strand. This will lay in the range between variant.start and variant.end.",
-            path: "MolecularSequence.variant.referenceAllele"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "MolecularSequence.variant.id"
-        },
-        "variantPointer": {
-            name: "variantPointer",
-            dataType: Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A pointer to an Observation containing variant information.",
-            path: "MolecularSequence.variant.variantPointer"
-        }
-    },
-    serializers: {
-        'xml: complexDataTypeXMLSerializer,
-        'json: complexDataTypeJsonSerializer
-    }
-}
-public type MolecularSequenceVariant record {|
-    Extension[] extension?;
-    string cigar?;
-    Extension[] modifierExtension?;
-    integer 'start?;
-    integer end?;
-    string observedAllele?;
-    string referenceAllele?;
-    string id?;
-    Reference variantPointer?;
-|};
-
-# FHIR MolecularSequenceRepository datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + readsetId - Id of the read in this external repository.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + name - URI of an external repository which contains further details about the genetics data.
-# + datasetId - Id of the variant in this external repository. The server will understand how to use this id to call for more info about datasets in external repository.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'type - Click and see / RESTful API / Need login to see / RESTful API with authentication / Other ways to see resource.
-# + variantsetId - Id of the variantset in this external repository. The server will understand how to use this id to call for more info about variantsets in external repository.
-# + url - URI of an external repository which contains further details about the genetics data.
-@DataTypeDefinition {
-    name: "MolecularSequenceRepository",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "MolecularSequence.repository.extension"
-        },
-        "readsetId": {
-            name: "readsetId",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Id of the read in this external repository.",
-            path: "MolecularSequence.repository.readsetId"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "MolecularSequence.repository.modifierExtension"
-        },
-        "name": {
-            name: "name",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "URI of an external repository which contains further details about the genetics data.",
-            path: "MolecularSequence.repository.name"
-        },
-        "datasetId": {
-            name: "datasetId",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Id of the variant in this external repository. The server will understand how to use this id to call for more info about datasets in external repository.",
-            path: "MolecularSequence.repository.datasetId"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "MolecularSequence.repository.id"
-        },
-        "type": {
-            name: "type",
-            dataType: MolecularSequenceRepositoryType,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Click and see / RESTful API / Need login to see / RESTful API with authentication / Other ways to see resource.",
-            path: "MolecularSequence.repository.type"
-        },
-        "variantsetId": {
-            name: "variantsetId",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Id of the variantset in this external repository. The server will understand how to use this id to call for more info about variantsets in external repository.",
-            path: "MolecularSequence.repository.variantsetId"
-        },
-        "url": {
-            name: "url",
-            dataType: uri,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "URI of an external repository which contains further details about the genetics data.",
-            path: "MolecularSequence.repository.url"
-        }
-    },
-    serializers: {
-        'xml: complexDataTypeXMLSerializer,
-        'json: complexDataTypeJsonSerializer
-    }
-}
-public type MolecularSequenceRepository record {|
-    Extension[] extension?;
-    string readsetId?;
-    Extension[] modifierExtension?;
-    string name?;
-    string datasetId?;
-    string id?;
-    MolecularSequenceRepositoryType 'type;
-    string variantsetId?;
-    uri url?;
-|};
 
 # FHIR MolecularSequenceStructureVariant datatype record.
 #
@@ -634,7 +400,7 @@ public type MolecularSequenceRepository record {|
         },
         "inner": {
             name: "inner",
-            dataType: MolecularSequenceStructureVariantOuter,
+            dataType: MolecularSequenceStructureVariantInner,
             min: 0,
             max: 1,
             isArray: false,
@@ -655,290 +421,7 @@ public type MolecularSequenceStructureVariant record {|
     integer length?;
     MolecularSequenceStructureVariantOuter 'outer?;
     string id?;
-    MolecularSequenceStructureVariantOuter inner?;
-|};
-
-# FHIR MolecularSequenceQuality datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + fScore - Harmonic mean of Recall and Precision, computed as: 2 * precision * recall / (precision + recall).
-# + method - Which method is used to get sequence quality.
-# + truthTP - True positives, from the perspective of the truth data, i.e. the number of sites in the Truth Call Set for which there are paths through the Query Call Set that are consistent with all of the alleles at this site, and for which there is an accurate genotype call for the event.
-# + gtFP - The number of false positives where the non-REF alleles in the Truth and Query Call Sets match (i.e. cases where the truth is 1/1 and the query is 0/1 or similar).
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + precision - QUERY.TP / (QUERY.TP + QUERY.FP).
-# + roc - Receiver Operator Characteristic (ROC) Curve to give sensitivity/specificity tradeoff.
-# + queryTP - True positives, from the perspective of the query data, i.e. the number of sites in the Query Call Set for which there are paths through the Truth Call Set that are consistent with all of the alleles at this site, and for which there is an accurate genotype call for the event.
-# + 'start - Start position of the sequence. If the coordinate system is either 0-based or 1-based, then start position is inclusive.
-# + 'type - INDEL / SNP / Undefined variant.
-# + score - The score of an experimentally derived feature such as a p-value ([SO:0001685](http://www.sequenceontology.org/browser/current_svn/term/SO:0001685)).
-# + standardSequence - Gold standard sequence used for comparing against.
-# + truthFN - False negatives, i.e. the number of sites in the Truth Call Set for which there is no path through the Query Call Set that is consistent with all of the alleles at this site, or sites for which there is an inaccurate genotype call for the event. Sites with correct variant but incorrect genotype are counted here.
-# + recall - TRUTH.TP / (TRUTH.TP + TRUTH.FN).
-# + end - End position of the sequence. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + queryFP - False positives, i.e. the number of sites in the Query Call Set for which there is no path through the Truth Call Set that is consistent with this site. Sites with correct variant but incorrect genotype are counted here.
-@DataTypeDefinition {
-    name: "MolecularSequenceQuality",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "MolecularSequence.quality.extension"
-        },
-        "fScore": {
-            name: "fScore",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Harmonic mean of Recall and Precision, computed as: 2 * precision * recall / (precision + recall).",
-            path: "MolecularSequence.quality.fScore"
-        },
-        "method": {
-            name: "method",
-            dataType: CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Which method is used to get sequence quality.",
-            path: "MolecularSequence.quality.method"
-        },
-        "truthTP": {
-            name: "truthTP",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "True positives, from the perspective of the truth data, i.e. the number of sites in the Truth Call Set for which there are paths through the Query Call Set that are consistent with all of the alleles at this site, and for which there is an accurate genotype call for the event.",
-            path: "MolecularSequence.quality.truthTP"
-        },
-        "gtFP": {
-            name: "gtFP",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The number of false positives where the non-REF alleles in the Truth and Query Call Sets match (i.e. cases where the truth is 1/1 and the query is 0/1 or similar).",
-            path: "MolecularSequence.quality.gtFP"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "MolecularSequence.quality.modifierExtension"
-        },
-        "precision": {
-            name: "precision",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "QUERY.TP / (QUERY.TP + QUERY.FP).",
-            path: "MolecularSequence.quality.precision"
-        },
-        "roc": {
-            name: "roc",
-            dataType: MolecularSequenceQualityRoc,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Receiver Operator Characteristic (ROC) Curve to give sensitivity/specificity tradeoff.",
-            path: "MolecularSequence.quality.roc"
-        },
-        "queryTP": {
-            name: "queryTP",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "True positives, from the perspective of the query data, i.e. the number of sites in the Query Call Set for which there are paths through the Truth Call Set that are consistent with all of the alleles at this site, and for which there is an accurate genotype call for the event.",
-            path: "MolecularSequence.quality.queryTP"
-        },
-        "start": {
-            name: "start",
-            dataType: integer,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Start position of the sequence. If the coordinate system is either 0-based or 1-based, then start position is inclusive.",
-            path: "MolecularSequence.quality.start"
-        },
-        "type": {
-            name: "type",
-            dataType: MolecularSequenceQualityType,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "INDEL / SNP / Undefined variant.",
-            path: "MolecularSequence.quality.type"
-        },
-        "score": {
-            name: "score",
-            dataType: Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The score of an experimentally derived feature such as a p-value ([SO:0001685](http://www.sequenceontology.org/browser/current_svn/term/SO:0001685)).",
-            path: "MolecularSequence.quality.score"
-        },
-        "standardSequence": {
-            name: "standardSequence",
-            dataType: CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Gold standard sequence used for comparing against.",
-            path: "MolecularSequence.quality.standardSequence"
-        },
-        "truthFN": {
-            name: "truthFN",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "False negatives, i.e. the number of sites in the Truth Call Set for which there is no path through the Query Call Set that is consistent with all of the alleles at this site, or sites for which there is an inaccurate genotype call for the event. Sites with correct variant but incorrect genotype are counted here.",
-            path: "MolecularSequence.quality.truthFN"
-        },
-        "recall": {
-            name: "recall",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "TRUTH.TP / (TRUTH.TP + TRUTH.FN).",
-            path: "MolecularSequence.quality.recall"
-        },
-        "end": {
-            name: "end",
-            dataType: integer,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "End position of the sequence. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.",
-            path: "MolecularSequence.quality.end"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "MolecularSequence.quality.id"
-        },
-        "queryFP": {
-            name: "queryFP",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "False positives, i.e. the number of sites in the Query Call Set for which there is no path through the Truth Call Set that is consistent with this site. Sites with correct variant but incorrect genotype are counted here.",
-            path: "MolecularSequence.quality.queryFP"
-        }
-    },
-    serializers: {
-        'xml: complexDataTypeXMLSerializer,
-        'json: complexDataTypeJsonSerializer
-    }
-}
-public type MolecularSequenceQuality record {|
-    Extension[] extension?;
-    decimal fScore?;
-    CodeableConcept method?;
-    decimal truthTP?;
-    decimal gtFP?;
-    Extension[] modifierExtension?;
-    decimal precision?;
-    MolecularSequenceQualityRoc roc?;
-    decimal queryTP?;
-    integer 'start?;
-    MolecularSequenceQualityType 'type;
-    Quantity score?;
-    CodeableConcept standardSequence?;
-    decimal truthFN?;
-    decimal recall?;
-    integer end?;
-    string id?;
-    decimal queryFP?;
-|};
-
-# FHIR MolecularSequenceStructureVariantOuter datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + 'start - Structural variant outer start. If the coordinate system is either 0-based or 1-based, then start position is inclusive.
-# + end - Structural variant outer end. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-@DataTypeDefinition {
-    name: "MolecularSequenceStructureVariantOuter",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "MolecularSequence.structureVariant.outer.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "MolecularSequence.structureVariant.outer.modifierExtension"
-        },
-        "start": {
-            name: "start",
-            dataType: integer,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Structural variant outer start. If the coordinate system is either 0-based or 1-based, then start position is inclusive.",
-            path: "MolecularSequence.structureVariant.outer.start"
-        },
-        "end": {
-            name: "end",
-            dataType: integer,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Structural variant outer end. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.",
-            path: "MolecularSequence.structureVariant.outer.end"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "MolecularSequence.structureVariant.outer.id"
-        }
-    },
-    serializers: {
-        'xml: complexDataTypeXMLSerializer,
-        'json: complexDataTypeJsonSerializer
-    }
-}
-public type MolecularSequenceStructureVariantOuter record {|
-    Extension[] extension?;
-    Extension[] modifierExtension?;
-    integer 'start?;
-    integer end?;
-    string id?;
+    MolecularSequenceStructureVariantInner inner?;
 |};
 
 # FHIR MolecularSequenceReferenceSeq datatype record.
@@ -1213,13 +696,6 @@ public type MolecularSequenceQualityRoc record {|
     decimal[] sensitivity?;
 |};
 
-# MolecularSequenceQualityType enum
-public enum MolecularSequenceQualityType {
-   CODE_TYPE_SNP = "snp",
-   CODE_TYPE_INDEL = "indel",
-   CODE_TYPE_UNKNOWN = "unknown"
-}
-
 # MolecularSequenceReferenceSeqOrientation enum
 public enum MolecularSequenceReferenceSeqOrientation {
    CODE_ORIENTATION_SENSE = "sense",
@@ -1230,5 +706,600 @@ public enum MolecularSequenceReferenceSeqOrientation {
 public enum MolecularSequenceReferenceSeqStrand {
    CODE_STRAND_WATSON = "watson",
    CODE_STRAND_CRICK = "crick"
+}
+
+# MolecularSequenceType enum
+public enum MolecularSequenceType {
+   CODE_TYPE_AA = "aa",
+   CODE_TYPE_RNA = "rna",
+   CODE_TYPE_DNA = "dna"
+}
+
+# FHIR MolecularSequenceVariant datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + cigar - Extended CIGAR string for aligning the sequence with reference bases. See detailed documentation [here](http://support.illumina.com/help/SequencingAnalysisWorkflow/Content/Vault/Informatics/Sequencing_Analysis/CASAVA/swSEQ_mCA_ExtendedCIGARFormat.htm).
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + 'start - Start position of the variant on the reference sequence. If the coordinate system is either 0-based or 1-based, then start position is inclusive.
+# + end - End position of the variant on the reference sequence. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.
+# + observedAllele - An allele is one of a set of coexisting sequence variants of a gene ([SO:0001023](http://www.sequenceontology.org/browser/current_svn/term/SO:0001023)). Nucleotide(s)/amino acids from start position of sequence to stop position of sequence on the positive (+) strand of the observed sequence. When the sequence type is DNA, it should be the sequence on the positive (+) strand. This will lay in the range between variant.start and variant.end.
+# + referenceAllele - An allele is one of a set of coexisting sequence variants of a gene ([SO:0001023](http://www.sequenceontology.org/browser/current_svn/term/SO:0001023)). Nucleotide(s)/amino acids from start position of sequence to stop position of sequence on the positive (+) strand of the reference sequence. When the sequence type is DNA, it should be the sequence on the positive (+) strand. This will lay in the range between variant.start and variant.end.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + variantPointer - A pointer to an Observation containing variant information.
+@DataTypeDefinition {
+    name: "MolecularSequenceVariant",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MolecularSequence.variant.extension"
+        },
+        "cigar": {
+            name: "cigar",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Extended CIGAR string for aligning the sequence with reference bases. See detailed documentation [here](http://support.illumina.com/help/SequencingAnalysisWorkflow/Content/Vault/Informatics/Sequencing_Analysis/CASAVA/swSEQ_mCA_ExtendedCIGARFormat.htm).",
+            path: "MolecularSequence.variant.cigar"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "MolecularSequence.variant.modifierExtension"
+        },
+        "start": {
+            name: "start",
+            dataType: integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Start position of the variant on the reference sequence. If the coordinate system is either 0-based or 1-based, then start position is inclusive.",
+            path: "MolecularSequence.variant.start"
+        },
+        "end": {
+            name: "end",
+            dataType: integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "End position of the variant on the reference sequence. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.",
+            path: "MolecularSequence.variant.end"
+        },
+        "observedAllele": {
+            name: "observedAllele",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "An allele is one of a set of coexisting sequence variants of a gene ([SO:0001023](http://www.sequenceontology.org/browser/current_svn/term/SO:0001023)). Nucleotide(s)/amino acids from start position of sequence to stop position of sequence on the positive (+) strand of the observed sequence. When the sequence type is DNA, it should be the sequence on the positive (+) strand. This will lay in the range between variant.start and variant.end.",
+            path: "MolecularSequence.variant.observedAllele"
+        },
+        "referenceAllele": {
+            name: "referenceAllele",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "An allele is one of a set of coexisting sequence variants of a gene ([SO:0001023](http://www.sequenceontology.org/browser/current_svn/term/SO:0001023)). Nucleotide(s)/amino acids from start position of sequence to stop position of sequence on the positive (+) strand of the reference sequence. When the sequence type is DNA, it should be the sequence on the positive (+) strand. This will lay in the range between variant.start and variant.end.",
+            path: "MolecularSequence.variant.referenceAllele"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MolecularSequence.variant.id"
+        },
+        "variantPointer": {
+            name: "variantPointer",
+            dataType: Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A pointer to an Observation containing variant information.",
+            path: "MolecularSequence.variant.variantPointer"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type MolecularSequenceVariant record {|
+    Extension[] extension?;
+    string cigar?;
+    Extension[] modifierExtension?;
+    integer 'start?;
+    integer end?;
+    string observedAllele?;
+    string referenceAllele?;
+    string id?;
+    Reference variantPointer?;
+|};
+
+# FHIR MolecularSequenceRepository datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + readsetId - Id of the read in this external repository.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + name - URI of an external repository which contains further details about the genetics data.
+# + datasetId - Id of the variant in this external repository. The server will understand how to use this id to call for more info about datasets in external repository.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - Click and see / RESTful API / Need login to see / RESTful API with authentication / Other ways to see resource.
+# + variantsetId - Id of the variantset in this external repository. The server will understand how to use this id to call for more info about variantsets in external repository.
+# + url - URI of an external repository which contains further details about the genetics data.
+@DataTypeDefinition {
+    name: "MolecularSequenceRepository",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MolecularSequence.repository.extension"
+        },
+        "readsetId": {
+            name: "readsetId",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Id of the read in this external repository.",
+            path: "MolecularSequence.repository.readsetId"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "MolecularSequence.repository.modifierExtension"
+        },
+        "name": {
+            name: "name",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "URI of an external repository which contains further details about the genetics data.",
+            path: "MolecularSequence.repository.name"
+        },
+        "datasetId": {
+            name: "datasetId",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Id of the variant in this external repository. The server will understand how to use this id to call for more info about datasets in external repository.",
+            path: "MolecularSequence.repository.datasetId"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MolecularSequence.repository.id"
+        },
+        "type": {
+            name: "type",
+            dataType: MolecularSequenceRepositoryType,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Click and see / RESTful API / Need login to see / RESTful API with authentication / Other ways to see resource.",
+            path: "MolecularSequence.repository.type"
+        },
+        "variantsetId": {
+            name: "variantsetId",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Id of the variantset in this external repository. The server will understand how to use this id to call for more info about variantsets in external repository.",
+            path: "MolecularSequence.repository.variantsetId"
+        },
+        "url": {
+            name: "url",
+            dataType: uri,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "URI of an external repository which contains further details about the genetics data.",
+            path: "MolecularSequence.repository.url"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type MolecularSequenceRepository record {|
+    Extension[] extension?;
+    string readsetId?;
+    Extension[] modifierExtension?;
+    string name?;
+    string datasetId?;
+    string id?;
+    MolecularSequenceRepositoryType 'type;
+    string variantsetId?;
+    uri url?;
+|};
+
+# FHIR MolecularSequenceQuality datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + fScore - Harmonic mean of Recall and Precision, computed as: 2 * precision * recall / (precision + recall).
+# + method - Which method is used to get sequence quality.
+# + truthTP - True positives, from the perspective of the truth data, i.e. the number of sites in the Truth Call Set for which there are paths through the Query Call Set that are consistent with all of the alleles at this site, and for which there is an accurate genotype call for the event.
+# + gtFP - The number of false positives where the non-REF alleles in the Truth and Query Call Sets match (i.e. cases where the truth is 1/1 and the query is 0/1 or similar).
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + precision - QUERY.TP / (QUERY.TP + QUERY.FP).
+# + roc - Receiver Operator Characteristic (ROC) Curve to give sensitivity/specificity tradeoff.
+# + queryTP - True positives, from the perspective of the query data, i.e. the number of sites in the Query Call Set for which there are paths through the Truth Call Set that are consistent with all of the alleles at this site, and for which there is an accurate genotype call for the event.
+# + 'start - Start position of the sequence. If the coordinate system is either 0-based or 1-based, then start position is inclusive.
+# + 'type - INDEL / SNP / Undefined variant.
+# + score - The score of an experimentally derived feature such as a p-value ([SO:0001685](http://www.sequenceontology.org/browser/current_svn/term/SO:0001685)).
+# + standardSequence - Gold standard sequence used for comparing against.
+# + truthFN - False negatives, i.e. the number of sites in the Truth Call Set for which there is no path through the Query Call Set that is consistent with all of the alleles at this site, or sites for which there is an inaccurate genotype call for the event. Sites with correct variant but incorrect genotype are counted here.
+# + recall - TRUTH.TP / (TRUTH.TP + TRUTH.FN).
+# + end - End position of the sequence. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + queryFP - False positives, i.e. the number of sites in the Query Call Set for which there is no path through the Truth Call Set that is consistent with this site. Sites with correct variant but incorrect genotype are counted here.
+@DataTypeDefinition {
+    name: "MolecularSequenceQuality",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MolecularSequence.quality.extension"
+        },
+        "fScore": {
+            name: "fScore",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Harmonic mean of Recall and Precision, computed as: 2 * precision * recall / (precision + recall).",
+            path: "MolecularSequence.quality.fScore"
+        },
+        "method": {
+            name: "method",
+            dataType: CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Which method is used to get sequence quality.",
+            path: "MolecularSequence.quality.method"
+        },
+        "truthTP": {
+            name: "truthTP",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "True positives, from the perspective of the truth data, i.e. the number of sites in the Truth Call Set for which there are paths through the Query Call Set that are consistent with all of the alleles at this site, and for which there is an accurate genotype call for the event.",
+            path: "MolecularSequence.quality.truthTP"
+        },
+        "gtFP": {
+            name: "gtFP",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The number of false positives where the non-REF alleles in the Truth and Query Call Sets match (i.e. cases where the truth is 1/1 and the query is 0/1 or similar).",
+            path: "MolecularSequence.quality.gtFP"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "MolecularSequence.quality.modifierExtension"
+        },
+        "precision": {
+            name: "precision",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "QUERY.TP / (QUERY.TP + QUERY.FP).",
+            path: "MolecularSequence.quality.precision"
+        },
+        "roc": {
+            name: "roc",
+            dataType: MolecularSequenceQualityRoc,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Receiver Operator Characteristic (ROC) Curve to give sensitivity/specificity tradeoff.",
+            path: "MolecularSequence.quality.roc"
+        },
+        "queryTP": {
+            name: "queryTP",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "True positives, from the perspective of the query data, i.e. the number of sites in the Query Call Set for which there are paths through the Truth Call Set that are consistent with all of the alleles at this site, and for which there is an accurate genotype call for the event.",
+            path: "MolecularSequence.quality.queryTP"
+        },
+        "start": {
+            name: "start",
+            dataType: integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Start position of the sequence. If the coordinate system is either 0-based or 1-based, then start position is inclusive.",
+            path: "MolecularSequence.quality.start"
+        },
+        "type": {
+            name: "type",
+            dataType: MolecularSequenceQualityType,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "INDEL / SNP / Undefined variant.",
+            path: "MolecularSequence.quality.type"
+        },
+        "score": {
+            name: "score",
+            dataType: Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The score of an experimentally derived feature such as a p-value ([SO:0001685](http://www.sequenceontology.org/browser/current_svn/term/SO:0001685)).",
+            path: "MolecularSequence.quality.score"
+        },
+        "standardSequence": {
+            name: "standardSequence",
+            dataType: CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Gold standard sequence used for comparing against.",
+            path: "MolecularSequence.quality.standardSequence"
+        },
+        "truthFN": {
+            name: "truthFN",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "False negatives, i.e. the number of sites in the Truth Call Set for which there is no path through the Query Call Set that is consistent with all of the alleles at this site, or sites for which there is an inaccurate genotype call for the event. Sites with correct variant but incorrect genotype are counted here.",
+            path: "MolecularSequence.quality.truthFN"
+        },
+        "recall": {
+            name: "recall",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "TRUTH.TP / (TRUTH.TP + TRUTH.FN).",
+            path: "MolecularSequence.quality.recall"
+        },
+        "end": {
+            name: "end",
+            dataType: integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "End position of the sequence. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.",
+            path: "MolecularSequence.quality.end"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MolecularSequence.quality.id"
+        },
+        "queryFP": {
+            name: "queryFP",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "False positives, i.e. the number of sites in the Query Call Set for which there is no path through the Truth Call Set that is consistent with this site. Sites with correct variant but incorrect genotype are counted here.",
+            path: "MolecularSequence.quality.queryFP"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type MolecularSequenceQuality record {|
+    Extension[] extension?;
+    decimal fScore?;
+    CodeableConcept method?;
+    decimal truthTP?;
+    decimal gtFP?;
+    Extension[] modifierExtension?;
+    decimal precision?;
+    MolecularSequenceQualityRoc roc?;
+    decimal queryTP?;
+    integer 'start?;
+    MolecularSequenceQualityType 'type;
+    Quantity score?;
+    CodeableConcept standardSequence?;
+    decimal truthFN?;
+    decimal recall?;
+    integer end?;
+    string id?;
+    decimal queryFP?;
+|};
+
+# FHIR MolecularSequenceStructureVariantInner datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + 'start - Structural variant inner start. If the coordinate system is either 0-based or 1-based, then start position is inclusive.
+# + end - Structural variant inner end. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@DataTypeDefinition {
+    name: "MolecularSequenceStructureVariantInner",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MolecularSequence.structureVariant.inner.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "MolecularSequence.structureVariant.inner.modifierExtension"
+        },
+        "start": {
+            name: "start",
+            dataType: integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Structural variant inner start. If the coordinate system is either 0-based or 1-based, then start position is inclusive.",
+            path: "MolecularSequence.structureVariant.inner.start"
+        },
+        "end": {
+            name: "end",
+            dataType: integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Structural variant inner end. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.",
+            path: "MolecularSequence.structureVariant.inner.end"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MolecularSequence.structureVariant.inner.id"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type MolecularSequenceStructureVariantInner record {|
+    Extension[] extension?;
+    Extension[] modifierExtension?;
+    integer 'start?;
+    integer end?;
+    string id?;
+|};
+
+# FHIR MolecularSequenceStructureVariantOuter datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + 'start - Structural variant outer start. If the coordinate system is either 0-based or 1-based, then start position is inclusive.
+# + end - Structural variant outer end. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@DataTypeDefinition {
+    name: "MolecularSequenceStructureVariantOuter",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MolecularSequence.structureVariant.outer.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "MolecularSequence.structureVariant.outer.modifierExtension"
+        },
+        "start": {
+            name: "start",
+            dataType: integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Structural variant outer start. If the coordinate system is either 0-based or 1-based, then start position is inclusive.",
+            path: "MolecularSequence.structureVariant.outer.start"
+        },
+        "end": {
+            name: "end",
+            dataType: integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Structural variant outer end. If the coordinate system is 0-based then end is exclusive and does not include the last position. If the coordinate system is 1-base, then end is inclusive and includes the last position.",
+            path: "MolecularSequence.structureVariant.outer.end"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MolecularSequence.structureVariant.outer.id"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type MolecularSequenceStructureVariantOuter record {|
+    Extension[] extension?;
+    Extension[] modifierExtension?;
+    integer 'start?;
+    integer end?;
+    string id?;
+|};
+
+# MolecularSequenceQualityType enum
+public enum MolecularSequenceQualityType {
+   CODE_TYPE_SNP = "snp",
+   CODE_TYPE_INDEL = "indel",
+   CODE_TYPE_UNKNOWN = "unknown"
 }
 

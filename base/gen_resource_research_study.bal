@@ -369,6 +369,7 @@ public type ResearchStudy record {|
     CodeableConcept[] location?;
     CodeableConcept[] category?;
     ResearchStudyStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

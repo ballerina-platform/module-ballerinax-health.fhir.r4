@@ -319,6 +319,7 @@ public type MedicationStatement record {|
     uri implicitRules?;
     CodeableConcept category?;
     MedicationStatementStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

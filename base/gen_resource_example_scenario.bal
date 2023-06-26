@@ -295,6 +295,7 @@ public type ExampleScenario record {|
     string publisher?;
     UsageContext[] useContext?;
     ExampleScenarioStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

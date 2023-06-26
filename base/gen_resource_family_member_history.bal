@@ -388,6 +388,7 @@ public type FamilyMemberHistory record {|
     date deceasedDate?;
     Age deceasedAge?;
     FamilyMemberHistoryStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

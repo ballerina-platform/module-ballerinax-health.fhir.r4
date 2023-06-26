@@ -256,6 +256,7 @@ public type CareTeam record {|
     Narrative text?;
     CodeableConcept[] category?;
     CareTeamStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

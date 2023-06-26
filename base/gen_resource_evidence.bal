@@ -406,6 +406,7 @@ public type Evidence record {|
     CodeableConcept[] topic?;
     UsageContext[] useContext?;
     EvidenceStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

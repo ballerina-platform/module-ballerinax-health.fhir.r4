@@ -137,6 +137,7 @@ public type OperationOutcome record {|
     code language?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -400,6 +400,7 @@ public type DeviceRequest record {|
     Identifier groupIdentifier?;
     CodeableConcept codeCodeableConcept;
     DeviceRequestStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

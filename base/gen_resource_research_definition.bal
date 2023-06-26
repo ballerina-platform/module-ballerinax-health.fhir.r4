@@ -478,6 +478,7 @@ public type ResearchDefinition record {|
     string[] comment?;
     UsageContext[] useContext?;
     ResearchDefinitionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

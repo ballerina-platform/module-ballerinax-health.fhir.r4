@@ -238,6 +238,7 @@ public type Slot record {|
     string id?;
     Narrative text?;
     SlotStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

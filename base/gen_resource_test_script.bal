@@ -129,7 +129,7 @@ public const RESOURCE_NAME_TESTSCRIPT = "TestScript";
         },
         "destination" : {
             name: "destination",
-            dataType: TestScriptOrigin,
+            dataType: TestScriptDestination,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -298,7 +298,7 @@ public const RESOURCE_NAME_TESTSCRIPT = "TestScript";
         },
         "setup" : {
             name: "setup",
-            dataType: TestScriptTeardown,
+            dataType: TestScriptSetup,
             min: 0,
             max: 1,
             isArray: false,
@@ -343,7 +343,7 @@ public type TestScript record {|
     CodeableConcept[] jurisdiction?;
     Extension[] modifierExtension?;
     TestScriptOrigin[] origin?;
-    TestScriptOrigin[] destination?;
+    TestScriptDestination[] destination?;
     markdown description?;
     boolean experimental?;
     code language?;
@@ -363,9 +363,10 @@ public type TestScript record {|
     TestScriptVariable[] variable?;
     uri implicitRules?;
     string publisher?;
-    TestScriptTeardown setup?;
+    TestScriptSetup setup?;
     UsageContext[] useContext?;
     TestScriptStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {
@@ -504,7 +505,7 @@ public type TestScriptSetupActionOperationRequestHeader record {|
         },
         "action": {
             name: "action",
-            dataType: TestScriptTeardownAction,
+            dataType: TestScriptTestAction,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -542,7 +543,7 @@ public type TestScriptTest record {|
     @constraint:Array {
        minLength: 1
     }
-    TestScriptTeardownAction[] action;
+    TestScriptTestAction[] action;
     string description?;
     string id?;
 |};
@@ -651,6 +652,138 @@ public enum TestScriptStatus {
    CODE_STATUS_RETIRED = "retired",
    CODE_STATUS_UNKNOWN = "unknown"
 }
+
+# FHIR TestScriptDestination datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + profile - The type of destination profile the test system supports.
+# + index - Abstract name given to a destination server in this test script. The name is provided as a number starting at 1.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@DataTypeDefinition {
+    name: "TestScriptDestination",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "TestScript.destination.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "TestScript.destination.modifierExtension"
+        },
+        "profile": {
+            name: "profile",
+            dataType: Coding,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The type of destination profile the test system supports.",
+            path: "TestScript.destination.profile"
+        },
+        "index": {
+            name: "index",
+            dataType: integer,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Abstract name given to a destination server in this test script. The name is provided as a number starting at 1.",
+            path: "TestScript.destination.index"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "TestScript.destination.id"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type TestScriptDestination record {|
+    Extension[] extension?;
+    Extension[] modifierExtension?;
+    Coding profile;
+    integer index;
+    string id?;
+|};
+
+# FHIR TestScriptSetup datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + action - Action would contain either an operation or an assertion.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@DataTypeDefinition {
+    name: "TestScriptSetup",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "TestScript.setup.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "TestScript.setup.modifierExtension"
+        },
+        "action": {
+            name: "action",
+            dataType: TestScriptSetupAction,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Action would contain either an operation or an assertion.",
+            path: "TestScript.setup.action"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "TestScript.setup.id"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type TestScriptSetup record {|
+    Extension[] extension?;
+    Extension[] modifierExtension?;
+    @constraint:Array {
+       minLength: 1
+    }
+    TestScriptSetupAction[] action;
+    string id?;
+|};
 
 # TestScriptSetupActionAssertRequestMethod enum
 public enum TestScriptSetupActionAssertRequestMethod {
@@ -1357,6 +1490,17 @@ public type TestScriptMetadata record {|
     string id?;
 |};
 
+# TestScriptSetupActionOperationMethod enum
+public enum TestScriptSetupActionOperationMethod {
+   CODE_METHOD_PATCH = "patch",
+   CODE_METHOD_HEAD = "head",
+   CODE_METHOD_POST = "post",
+   CODE_METHOD_GET = "get",
+   CODE_METHOD_OPTIONS = "options",
+   CODE_METHOD_DELETE = "delete",
+   CODE_METHOD_PUT = "put"
+}
+
 # FHIR TestScriptSetupAction datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -1674,7 +1818,7 @@ public type TestScriptOrigin record {|
         },
         "method": {
             name: "method",
-            dataType: TestScriptSetupActionAssertRequestMethod,
+            dataType: TestScriptSetupActionOperationMethod,
             min: 0,
             max: 1,
             isArray: false,
@@ -1843,7 +1987,7 @@ public type TestScriptOrigin record {|
 public type TestScriptSetupActionOperation record {|
     id sourceId?;
     Extension[] extension?;
-    TestScriptSetupActionAssertRequestMethod method?;
+    TestScriptSetupActionOperationMethod method?;
     id targetId?;
     code 'resource?;
     boolean encodeRequestUrl;
@@ -1861,5 +2005,53 @@ public type TestScriptSetupActionOperation record {|
     string id?;
     code contentType?;
     id responseId?;
+|};
+
+# FHIR TestScriptTestAction datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@DataTypeDefinition {
+    name: "TestScriptTestAction",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "TestScript.test.action.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "TestScript.test.action.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "TestScript.test.action.id"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type TestScriptTestAction record {|
+    Extension[] extension?;
+    Extension[] modifierExtension?;
+    string id?;
 |};
 

@@ -388,6 +388,7 @@ public type CodeSystem record {|
     string publisher?;
     UsageContext[] useContext?;
     CodeSystemStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

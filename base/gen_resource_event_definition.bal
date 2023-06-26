@@ -422,6 +422,7 @@ public type EventDefinition record {|
     CodeableConcept[] topic?;
     UsageContext[] useContext?;
     EventDefinitionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

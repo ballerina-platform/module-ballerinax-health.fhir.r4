@@ -356,6 +356,7 @@ public type CarePlan record {|
     uri implicitRules?;
     CodeableConcept[] category?;
     CarePlanStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

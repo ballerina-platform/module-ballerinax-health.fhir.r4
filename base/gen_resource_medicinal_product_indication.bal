@@ -213,6 +213,7 @@ public type MedicinalProductIndication record {|
     uri implicitRules?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

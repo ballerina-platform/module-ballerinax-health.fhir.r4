@@ -277,6 +277,7 @@ public type ImmunizationEvaluation record {|
     string id?;
     Narrative text?;
     ImmunizationEvaluationStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

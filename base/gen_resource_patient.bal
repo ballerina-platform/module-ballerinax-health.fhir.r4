@@ -305,6 +305,7 @@ public type Patient record {|
     HumanName[] name?;
     uri implicitRules?;
     CodeableConcept maritalStatus?;
+    never...;
 |};
 
 @DataTypeDefinition {
@@ -377,7 +378,7 @@ public type BasePatientMeta record {|
         },
         "gender": {
             name: "gender",
-            dataType: PatientGender,
+            dataType: PatientContactGender,
             min: 0,
             max: 1,
             isArray: false,
@@ -448,7 +449,7 @@ public type PatientContact record {|
     Extension[] extension?;
     Period period?;
     Address address?;
-    PatientGender gender?;
+    PatientContactGender gender?;
     Extension[] modifierExtension?;
     Reference organization?;
     HumanName name?;
@@ -534,6 +535,14 @@ public type PatientLink record {|
     string id?;
     PatientLinkType 'type;
 |};
+
+# PatientContactGender enum
+public enum PatientContactGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
 
 # PatientGender enum
 public enum PatientGender {

@@ -242,6 +242,7 @@ public type Provenance record {|
     ProvenanceEntity[] entity?;
     dateTime occurredDateTime?;
     uri[] policy?;
+    never...;
 |};
 
 @DataTypeDefinition {

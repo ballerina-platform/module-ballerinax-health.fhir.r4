@@ -291,6 +291,7 @@ public type CoverageEligibilityResponse record {|
     Narrative text?;
     CoverageEligibilityResponseOutcome outcome;
     CoverageEligibilityResponseStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

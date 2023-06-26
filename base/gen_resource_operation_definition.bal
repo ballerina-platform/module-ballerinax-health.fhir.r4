@@ -387,6 +387,7 @@ public type OperationDefinition record {|
     UsageContext[] useContext?;
     canonical base?;
     OperationDefinitionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

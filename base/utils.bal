@@ -16,6 +16,8 @@
 
 import ballerina/http;
 import ballerina/lang.value;
+import ballerina/log;
+import ballerina/uuid;
 
 # Get the FHIR context from the HTTP request context.
 #
@@ -47,25 +49,6 @@ public isolated function getRequestResourceEntity(http:RequestContext ctx) retur
     return createFHIRError("FHIR Request payload not found", ERROR, PROCESSING_NOT_FOUND);
 }
 
-# Set response resource entity to the FHIR context.
-#
-# + entity - FHIR resource entity
-# + ctx - HTTP request context
-# + return - Error if any
-public isolated function setResponseResourceEntity(FHIRResourceEntity|FHIRContainerResourceEntity entity, 
-                                                                            http:RequestContext ctx) returns FHIRError? {
-    FHIRContext fhirCtx = check getFHIRContext(ctx);
-    
-    if entity is FHIRResourceEntity {
-        FHIRResponse response = new(entity);
-        fhirCtx.setFHIRResponse(response);
-    } else {
-        FHIRContainerResponse response = new(<FHIRContainerResourceEntity>entity);
-        fhirCtx.setFHIRResponse(response);
-    }
-    
-}
-
 isolated function getResourceDefinition(typedesc resourceType) returns ResourceDefinitionRecord|FHIRTypeError {
     ResourceDefinitionRecord? def = resourceType.@ResourceDefinition;
     if def != () {
@@ -73,19 +56,19 @@ isolated function getResourceDefinition(typedesc resourceType) returns ResourceD
     } else {
         string message = "Provided type does not represent a FHIR resource";
         string diagnostic = string `Unable to find resource definition of given resource of type : ${resourceType.toBalString()}`;
-        return <FHIRTypeError> createInternalFHIRError(message, FATAL, PROCESSING, diagnostic = diagnostic);
+        return <FHIRTypeError>createInternalFHIRError(message, FATAL, PROCESSING, diagnostic = diagnostic);
     }
 }
 
 # Utility function to create request search parameter record.
-# 
+#
 # + name - name of the search parameter
 # + paramType - Search parameter type
 # + originalValue - Original incoming search parameter value
 # + typedValue - Typed (parsed/decoded) search parameter record
 # + return - Created RequestSearchParameter
-isolated function createSearchParameterWrapper(string & readonly name, FHIRSearchParameterType & readonly paramType, 
-                                        string & readonly originalValue, FHIRTypedSearchParameter & readonly typedValue) 
+isolated function createSearchParameterWrapper(string & readonly name, FHIRSearchParameterType & readonly paramType,
+        string & readonly originalValue, FHIRTypedSearchParameter & readonly typedValue)
                                                                                         returns RequestSearchParameter {
     RequestSearchParameter searchParam = {
         'type: paramType,
@@ -94,4 +77,42 @@ isolated function createSearchParameterWrapper(string & readonly name, FHIRSearc
         typedValue: typedValue
     };
     return searchParam;
+}
+
+public isolated function handleErrorResponse(error errorResponse) returns OperationOutcome {
+    string errorUUID;
+    if errorResponse is FHIRError {
+        FHIRErrorDetail & readonly detail = errorResponse.detail();
+        if (!detail.internalError) {
+            return errorToOperationOutcome(errorResponse);
+        } else {
+            //TODO log the error if it is an internal error
+            errorUUID = errorResponse.detail().uuid;
+            log:printError(string `${errorUUID} : ${errorResponse.message()}`, errorResponse, errorResponse.stackTrace());
+        }
+    } else {
+        // TODO log the error since it is not an FHIR related error
+        errorUUID = uuid:createType1AsString();
+        log:printError(string `${errorUUID} : ${errorResponse.message()}`, errorResponse, errorResponse.stackTrace());
+    }
+    OperationOutcome opOutcome = {
+        issue: [
+            {
+                severity: ERROR,
+                code: SECURITY_UNKNOWN,
+                diagnostics: errorUUID
+            }
+        ]
+    };
+    return opOutcome;
+}
+
+public isolated function getErrorCode(error errorResponse) returns int {
+    if errorResponse is FHIRError {
+        FHIRErrorDetail & readonly detail = errorResponse.detail();
+        if (!detail.internalError) {
+            return detail.httpStatusCode;
+        }
+    }
+    return 500;
 }

@@ -266,6 +266,7 @@ public type InsurancePlan record {|
     InsurancePlanPlan[] plan?;
     Reference[] coverageArea?;
     InsurancePlanStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

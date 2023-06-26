@@ -354,6 +354,7 @@ public type Appointment record {|
     CodeableConcept cancelationReason?;
     string patientInstruction?;
     AppointmentStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

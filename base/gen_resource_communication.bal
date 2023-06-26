@@ -360,6 +360,7 @@ public type Communication record {|
     CodeableConcept topic?;
     CodeableConcept[] category?;
     CommunicationStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

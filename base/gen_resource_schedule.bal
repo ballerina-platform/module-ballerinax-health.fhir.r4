@@ -210,6 +210,7 @@ public type Schedule record {|
     string comment?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

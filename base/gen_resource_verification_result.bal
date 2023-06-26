@@ -268,6 +268,7 @@ public type VerificationResult record {|
     Narrative text?;
     CodeableConcept[] validationProcess?;
     VerificationResultStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

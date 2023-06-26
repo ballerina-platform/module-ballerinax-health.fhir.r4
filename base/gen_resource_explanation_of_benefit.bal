@@ -556,6 +556,7 @@ public type ExplanationOfBenefit record {|
     Attachment form?;
     Reference prescription?;
     Reference facility?;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -245,6 +245,7 @@ public type RelatedPerson record {|
     Narrative text?;
     RelatedPersonCommunication[] communication?;
     CodeableConcept[] relationship?;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -265,6 +265,7 @@ public type PractitionerRole record {|
     string id?;
     Narrative text?;
     string availabilityExceptions?;
+    never...;
 |};
 
 @DataTypeDefinition {

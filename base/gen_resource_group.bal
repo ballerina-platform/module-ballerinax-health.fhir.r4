@@ -224,6 +224,7 @@ public type Group record {|
     uri implicitRules?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

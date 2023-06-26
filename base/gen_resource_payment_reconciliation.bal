@@ -276,6 +276,7 @@ public type PaymentReconciliation record {|
     date paymentDate;
     PaymentReconciliationOutcome outcome?;
     PaymentReconciliationStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

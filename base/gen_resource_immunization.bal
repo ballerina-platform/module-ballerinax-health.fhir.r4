@@ -423,6 +423,7 @@ public type Immunization record {|
     string occurrenceString;
     CodeableConcept fundingSource?;
     ImmunizationStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

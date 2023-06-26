@@ -206,6 +206,7 @@ public type Flag record {|
     Narrative text?;
     CodeableConcept[] category?;
     FlagStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

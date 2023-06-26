@@ -401,6 +401,7 @@ public type EvidenceVariable record {|
     CodeableConcept[] topic?;
     UsageContext[] useContext?;
     EvidenceVariableStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

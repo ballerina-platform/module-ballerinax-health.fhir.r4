@@ -246,6 +246,7 @@ public type MessageHeader record {|
     canonical definition?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

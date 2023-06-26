@@ -235,6 +235,7 @@ public type Account record {|
     string id?;
     Narrative text?;
     AccountStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

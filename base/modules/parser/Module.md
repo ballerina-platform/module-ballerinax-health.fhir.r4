@@ -1,18 +1,21 @@
-FHIR Parser module
+# FHIR Parser module
 
 ## Overview
 
-This module provides utility functions required for parsing FHIR resource payloads to corresponding FHIR 
+This module provides utility functions required for parsing FHIR resource payloads to corresponding FHIR
 resource models.
 
 ### Usage : Parse
 
 **01. Parse to FHIR base resource model**
 
-In this approach user just need to provide only the FHIR resource payload. Based on the resource type, parser will parse 
+In this approach user just need to provide only the FHIR resource payload. Based on the resource type, parser will parse
 it to it's base profile model.
 
 ```ballerina
+import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.parser;
+
 json payload = {
     "resourceType": "Patient",
     "id": "1",
@@ -52,6 +55,9 @@ do {
 In this approach the parser will attempt to parse the given FHIR resource payload to given resource type
 
 ```ballerina
+import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.parser;
+
 json payload = {
     "resourceType": "Patient",
     "id": "1",

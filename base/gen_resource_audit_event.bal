@@ -242,6 +242,7 @@ public type AuditEvent record {|
     Narrative text?;
     AuditEventEntity[] entity?;
     code outcome?;
+    never...;
 |};
 
 @DataTypeDefinition {

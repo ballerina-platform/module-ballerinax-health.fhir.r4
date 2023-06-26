@@ -309,6 +309,7 @@ public type StructureMap record {|
     string publisher?;
     UsageContext[] useContext?;
     StructureMapStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

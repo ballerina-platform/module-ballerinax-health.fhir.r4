@@ -173,6 +173,7 @@ public type SubstanceReferenceInformation record {|
     string comment?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

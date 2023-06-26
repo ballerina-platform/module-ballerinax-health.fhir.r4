@@ -255,6 +255,7 @@ public type SupplyDelivery record {|
     Reference[] basedOn?;
     SupplyDeliverySuppliedItem suppliedItem?;
     SupplyDeliveryStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

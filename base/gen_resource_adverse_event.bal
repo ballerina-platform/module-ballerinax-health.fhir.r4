@@ -329,6 +329,7 @@ public type AdverseEvent record {|
     uri implicitRules?;
     Reference location?;
     CodeableConcept[] category?;
+    never...;
 |};
 
 @DataTypeDefinition {

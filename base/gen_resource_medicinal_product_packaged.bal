@@ -217,6 +217,7 @@ public type MedicinalProductPackaged record {|
     string id?;
     Narrative text?;
     MedicinalProductPackagedBatchIdentifier[] batchIdentifier?;
+    never...;
 |};
 
 @DataTypeDefinition {

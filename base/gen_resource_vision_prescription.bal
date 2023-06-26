@@ -208,6 +208,7 @@ public type VisionPrescription record {|
     string id?;
     Narrative text?;
     VisionPrescriptionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

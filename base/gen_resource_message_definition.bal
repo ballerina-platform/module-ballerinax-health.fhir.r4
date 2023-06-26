@@ -379,6 +379,7 @@ public type MessageDefinition record {|
     UsageContext[] useContext?;
     canonical base?;
     MessageDefinitionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

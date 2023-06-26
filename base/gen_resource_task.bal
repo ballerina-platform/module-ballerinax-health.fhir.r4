@@ -315,7 +315,7 @@ public const RESOURCE_NAME_TASK = "Task";
         },
         "input" : {
             name: "input",
-            dataType: TaskOutput,
+            dataType: TaskInput,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -430,7 +430,7 @@ public type Task record {|
     TaskPriority priority?;
     TaskIntent intent;
     CodeableConcept[] performerType?;
-    TaskOutput[] input?;
+    TaskInput[] input?;
     Resource[] contained?;
     TaskRestriction restriction?;
     uri implicitRules?;
@@ -438,6 +438,7 @@ public type Task record {|
     dateTime lastModified?;
     Identifier groupIdentifier?;
     TaskStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {
@@ -472,6 +473,615 @@ public enum TaskPriority {
    CODE_PRIORITY_URGENT = "urgent",
    CODE_PRIORITY_ASAP = "asap"
 }
+
+# FHIR TaskInput datatype record.
+#
+# + valueTime - The value of the input parameter as a basic type.
+# + valueTriggerDefinition - The value of the input parameter as a basic type.
+# + valueMoney - The value of the input parameter as a basic type.
+# + valueSignature - The value of the input parameter as a basic type.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + 'type - A code or description indicating how the input is intended to be used as part of the task execution.
+# + valueUuid - The value of the input parameter as a basic type.
+# + valueRatio - The value of the input parameter as a basic type.
+# + valueParameterDefinition - The value of the input parameter as a basic type.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + valueInteger - The value of the input parameter as a basic type.
+# + valueUnsignedInt - The value of the input parameter as a basic type.
+# + valueQuantity - The value of the input parameter as a basic type.
+# + valueCanonical - The value of the input parameter as a basic type.
+# + valueCount - The value of the input parameter as a basic type.
+# + valueId - The value of the input parameter as a basic type.
+# + valueCode - The value of the input parameter as a basic type.
+# + valueAddress - The value of the input parameter as a basic type.
+# + valueContactPoint - The value of the input parameter as a basic type.
+# + valuePeriod - The value of the input parameter as a basic type.
+# + valueSampledData - The value of the input parameter as a basic type.
+# + valueTiming - The value of the input parameter as a basic type.
+# + valueInstant - The value of the input parameter as a basic type.
+# + valueAge - The value of the input parameter as a basic type.
+# + valueDosage - The value of the input parameter as a basic type.
+# + valueBase64Binary - The value of the input parameter as a basic type.
+# + valueBoolean - The value of the input parameter as a basic type.
+# + valueCoding - The value of the input parameter as a basic type.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + valueIdentifier - The value of the input parameter as a basic type.
+# + valueExpression - The value of the input parameter as a basic type.
+# + valueReference - The value of the input parameter as a basic type.
+# + valueRange - The value of the input parameter as a basic type.
+# + valueUri - The value of the input parameter as a basic type.
+# + valueDistance - The value of the input parameter as a basic type.
+# + valueUrl - The value of the input parameter as a basic type.
+# + valueContactDetail - The value of the input parameter as a basic type.
+# + valueMeta - The value of the input parameter as a basic type.
+# + valueCodeableConcept - The value of the input parameter as a basic type.
+# + valueMarkdown - The value of the input parameter as a basic type.
+# + valueAttachment - The value of the input parameter as a basic type.
+# + valueUsageContext - The value of the input parameter as a basic type.
+# + valueDateTime - The value of the input parameter as a basic type.
+# + valueHumanName - The value of the input parameter as a basic type.
+# + valueRelatedArtifact - The value of the input parameter as a basic type.
+# + valueDecimal - The value of the input parameter as a basic type.
+# + valueDate - The value of the input parameter as a basic type.
+# + valueOid - The value of the input parameter as a basic type.
+# + valueContributor - The value of the input parameter as a basic type.
+# + valueString - The value of the input parameter as a basic type.
+# + valuePositiveInt - The value of the input parameter as a basic type.
+# + valueDuration - The value of the input parameter as a basic type.
+# + valueDataRequirement - The value of the input parameter as a basic type.
+# + valueAnnotation - The value of the input parameter as a basic type.
+@DataTypeDefinition {
+    name: "TaskInput",
+    baseType: (),
+    elements: {
+        "valueTime": {
+            name: "valueTime",
+            dataType: time,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueTriggerDefinition": {
+            name: "valueTriggerDefinition",
+            dataType: TriggerDefinition,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueMoney": {
+            name: "valueMoney",
+            dataType: Money,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueSignature": {
+            name: "valueSignature",
+            dataType: Signature,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Task.input.modifierExtension"
+        },
+        "type": {
+            name: "type",
+            dataType: CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A code or description indicating how the input is intended to be used as part of the task execution.",
+            path: "Task.input.type"
+        },
+        "valueUuid": {
+            name: "valueUuid",
+            dataType: uuid,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueRatio": {
+            name: "valueRatio",
+            dataType: Ratio,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueParameterDefinition": {
+            name: "valueParameterDefinition",
+            dataType: ParameterDefinition,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Task.input.id"
+        },
+        "valueInteger": {
+            name: "valueInteger",
+            dataType: integer,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueUnsignedInt": {
+            name: "valueUnsignedInt",
+            dataType: unsignedInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: Quantity,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueCanonical": {
+            name: "valueCanonical",
+            dataType: canonical,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueCount": {
+            name: "valueCount",
+            dataType: Count,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueId": {
+            name: "valueId",
+            dataType: id,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueCode": {
+            name: "valueCode",
+            dataType: code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueAddress": {
+            name: "valueAddress",
+            dataType: Address,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueContactPoint": {
+            name: "valueContactPoint",
+            dataType: ContactPoint,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valuePeriod": {
+            name: "valuePeriod",
+            dataType: Period,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueSampledData": {
+            name: "valueSampledData",
+            dataType: SampledData,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueTiming": {
+            name: "valueTiming",
+            dataType: Timing,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueInstant": {
+            name: "valueInstant",
+            dataType: instant,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueAge": {
+            name: "valueAge",
+            dataType: Age,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueDosage": {
+            name: "valueDosage",
+            dataType: Dosage,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueBase64Binary": {
+            name: "valueBase64Binary",
+            dataType: base64Binary,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueBoolean": {
+            name: "valueBoolean",
+            dataType: boolean,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueCoding": {
+            name: "valueCoding",
+            dataType: Coding,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Task.input.extension"
+        },
+        "valueIdentifier": {
+            name: "valueIdentifier",
+            dataType: Identifier,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueExpression": {
+            name: "valueExpression",
+            dataType: Expression,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueReference": {
+            name: "valueReference",
+            dataType: Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueRange": {
+            name: "valueRange",
+            dataType: Range,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueUri": {
+            name: "valueUri",
+            dataType: uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueDistance": {
+            name: "valueDistance",
+            dataType: Distance,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueUrl": {
+            name: "valueUrl",
+            dataType: urlType,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueContactDetail": {
+            name: "valueContactDetail",
+            dataType: ContactDetail,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueMeta": {
+            name: "valueMeta",
+            dataType: Meta,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueCodeableConcept": {
+            name: "valueCodeableConcept",
+            dataType: CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueMarkdown": {
+            name: "valueMarkdown",
+            dataType: markdown,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueAttachment": {
+            name: "valueAttachment",
+            dataType: Attachment,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueUsageContext": {
+            name: "valueUsageContext",
+            dataType: UsageContext,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueDateTime": {
+            name: "valueDateTime",
+            dataType: dateTime,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueHumanName": {
+            name: "valueHumanName",
+            dataType: HumanName,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueRelatedArtifact": {
+            name: "valueRelatedArtifact",
+            dataType: RelatedArtifact,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueDecimal": {
+            name: "valueDecimal",
+            dataType: decimal,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueDate": {
+            name: "valueDate",
+            dataType: date,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueOid": {
+            name: "valueOid",
+            dataType: oid,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueContributor": {
+            name: "valueContributor",
+            dataType: Contributor,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueString": {
+            name: "valueString",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valuePositiveInt": {
+            name: "valuePositiveInt",
+            dataType: positiveInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueDuration": {
+            name: "valueDuration",
+            dataType: Duration,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueDataRequirement": {
+            name: "valueDataRequirement",
+            dataType: DataRequirement,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        },
+        "valueAnnotation": {
+            name: "valueAnnotation",
+            dataType: Annotation,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the input parameter as a basic type.",
+            path: "Task.input.value[x]"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type TaskInput record {|
+    time valueTime;
+    TriggerDefinition valueTriggerDefinition;
+    Money valueMoney;
+    Signature valueSignature;
+    Extension[] modifierExtension?;
+    CodeableConcept 'type;
+    uuid valueUuid;
+    Ratio valueRatio;
+    ParameterDefinition valueParameterDefinition;
+    string id?;
+    integer valueInteger;
+    unsignedInt valueUnsignedInt;
+    Quantity valueQuantity;
+    canonical valueCanonical;
+    Count valueCount;
+    id valueId;
+    code valueCode;
+    Address valueAddress;
+    ContactPoint valueContactPoint;
+    Period valuePeriod;
+    SampledData valueSampledData;
+    Timing valueTiming;
+    instant valueInstant;
+    Age valueAge;
+    Dosage valueDosage;
+    base64Binary valueBase64Binary;
+    boolean valueBoolean;
+    Coding valueCoding;
+    Extension[] extension?;
+    Identifier valueIdentifier;
+    Expression valueExpression;
+    Reference valueReference;
+    Range valueRange;
+    uri valueUri;
+    Distance valueDistance;
+    urlType valueUrl;
+    ContactDetail valueContactDetail;
+    Meta valueMeta;
+    CodeableConcept valueCodeableConcept;
+    markdown valueMarkdown;
+    Attachment valueAttachment;
+    UsageContext valueUsageContext;
+    dateTime valueDateTime;
+    HumanName valueHumanName;
+    RelatedArtifact valueRelatedArtifact;
+    decimal valueDecimal;
+    date valueDate;
+    oid valueOid;
+    Contributor valueContributor;
+    string valueString;
+    positiveInt valuePositiveInt;
+    Duration valueDuration;
+    DataRequirement valueDataRequirement;
+    Annotation valueAnnotation;
+|};
 
 # FHIR TaskRestriction datatype record.
 #

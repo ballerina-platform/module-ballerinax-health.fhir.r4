@@ -163,6 +163,7 @@ public type SubstanceProtein record {|
     Narrative text?;
     integer numberOfSubunits?;
     CodeableConcept sequenceType?;
+    never...;
 |};
 
 @DataTypeDefinition {

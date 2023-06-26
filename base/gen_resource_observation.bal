@@ -500,6 +500,7 @@ public type Observation record {|
     Reference device?;
     instant effectiveInstant?;
     ObservationStatusOne status;
+    never...;
 |};
 
 @DataTypeDefinition {

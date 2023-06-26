@@ -453,6 +453,7 @@ public type Procedure record {|
     Reference location?;
     CodeableConcept category?;
     ProcedureStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

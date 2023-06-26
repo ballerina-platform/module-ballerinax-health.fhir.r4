@@ -258,6 +258,7 @@ public type List record {|
     string id?;
     Narrative text?;
     ListStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

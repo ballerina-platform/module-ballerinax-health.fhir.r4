@@ -249,6 +249,7 @@ public type DocumentManifest record {|
     string id?;
     Narrative text?;
     DocumentManifestStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

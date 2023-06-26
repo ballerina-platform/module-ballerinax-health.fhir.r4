@@ -355,6 +355,7 @@ public type DeviceDefinition record {|
     uri implicitRules?;
     DeviceDefinitionSpecialization[] specialization?;
     string modelNumber?;
+    never...;
 |};
 
 @DataTypeDefinition {

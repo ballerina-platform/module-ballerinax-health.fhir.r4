@@ -317,6 +317,7 @@ public type DiagnosticReport record {|
     CodeableConcept[] category?;
     Reference[] imagingStudy?;
     DiagnosticReportStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

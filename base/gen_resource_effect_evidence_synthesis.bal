@@ -458,6 +458,7 @@ public type EffectEvidenceSynthesis record {|
     CodeableConcept[] topic?;
     UsageContext[] useContext?;
     EffectEvidenceSynthesisStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -257,6 +257,7 @@ public type ObservationDefinition record {|
     Narrative text?;
     CodeableConcept[] category?;
     Reference abnormalCodedValueSet?;
+    never...;
 |};
 
 @DataTypeDefinition {

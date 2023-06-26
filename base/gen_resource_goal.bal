@@ -301,6 +301,7 @@ public type Goal record {|
     CodeableConcept achievementStatus?;
     CodeableConcept[] category?;
     date startDate?;
+    never...;
 |};
 
 @DataTypeDefinition {

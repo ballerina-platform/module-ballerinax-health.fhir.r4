@@ -1,3 +1,4 @@
+
 # FHIR R4 Base module
 
 ## Sample Usage
@@ -6,7 +7,7 @@ This section focuses on samples depicting how to use this package to implement F
 
 ### Prerequisites
 
-1. Install Ballerina 2201.5.0 (Swan Lake Update 5)
+1. Install Ballerina 2201.5.0 or later
 
 ### 1. Parse JSON FHIR resource to FHIR resource model
 Sample below is using the Patient resource in `health.fhir.r4` package.

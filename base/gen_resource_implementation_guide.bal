@@ -331,6 +331,7 @@ public type ImplementationGuide record {|
     string publisher?;
     UsageContext[] useContext?;
     ImplementationGuideStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -274,6 +274,7 @@ public type Invoice record {|
     Reference account?;
     markdown paymentTerms?;
     InvoiceStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

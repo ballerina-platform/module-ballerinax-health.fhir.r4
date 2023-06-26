@@ -194,6 +194,7 @@ public type Subscription record {|
     string id?;
     Narrative text?;
     SubscriptionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -276,6 +276,7 @@ public type GraphDefinition record {|
     Narrative text?;
     UsageContext[] useContext?;
     GraphDefinitionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

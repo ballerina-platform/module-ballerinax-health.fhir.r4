@@ -339,6 +339,7 @@ public type MedicationAdministration record {|
     CodeableConcept category?;
     Reference[] device?;
     MedicationAdministrationStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

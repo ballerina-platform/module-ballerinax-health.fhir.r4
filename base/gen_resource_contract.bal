@@ -107,7 +107,7 @@ public const RESOURCE_NAME_CONTRACT = "Contract";
         },
         "rule" : {
             name: "rule",
-            dataType: ContractFriendly,
+            dataType: ContractRule,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -190,7 +190,7 @@ public const RESOURCE_NAME_CONTRACT = "Contract";
         },
         "legal" : {
             name: "legal",
-            dataType: ContractFriendly,
+            dataType: ContractLegal,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -418,7 +418,7 @@ public const RESOURCE_NAME_CONTRACT = "Contract";
         },
         "status" : {
             name: "status",
-            dataType: ContractContentDefinitionPublicationStatus,
+            dataType: ContractStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -443,7 +443,7 @@ public type Contract record {|
     ContractFriendly[] friendly?;
     Reference[] subject?;
     Extension[] modifierExtension?;
-    ContractFriendly[] rule?;
+    ContractRule[] rule?;
     code language?;
     string title?;
     CodeableConcept 'type?;
@@ -453,7 +453,7 @@ public type Contract record {|
     Reference topicReference?;
     ContractContentDefinition contentDefinition?;
     CodeableConcept scope?;
-    ContractFriendly[] legal?;
+    ContractLegal[] legal?;
     string[] alias?;
     ContractTerm[] term?;
     string id?;
@@ -480,7 +480,8 @@ public type Contract record {|
     CodeableConcept[] subType?;
     CodeableConcept legalState?;
     Reference legallyBindingReference?;
-    ContractContentDefinitionPublicationStatus status?;
+    ContractStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {
@@ -506,6 +507,149 @@ public type BaseContractMeta record {|
     canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Contract"];
     Coding[] security?;
     Coding[] tag?;
+|};
+
+# FHIR ContractLegal datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + contentReference - Contract legal text in human renderable form.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + contentAttachment - Contract legal text in human renderable form.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@DataTypeDefinition {
+    name: "ContractLegal",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Contract.legal.extension"
+        },
+        "contentReference": {
+            name: "contentReference",
+            dataType: Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Contract legal text in human renderable form.",
+            path: "Contract.legal.content[x]"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Contract.legal.modifierExtension"
+        },
+        "contentAttachment": {
+            name: "contentAttachment",
+            dataType: Attachment,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Contract legal text in human renderable form.",
+            path: "Contract.legal.content[x]"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Contract.legal.id"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type ContractLegal record {|
+    Extension[] extension?;
+    Reference contentReference;
+    Extension[] modifierExtension?;
+    Attachment contentAttachment;
+    string id?;
+|};
+
+# FHIR ContractTermActionSubject datatype record.
+#
+# + reference - The entity the action is performed or not performed on or for.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + role - Role type of agent assigned roles in this Contract.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@DataTypeDefinition {
+    name: "ContractTermActionSubject",
+    baseType: (),
+    elements: {
+        "reference": {
+            name: "reference",
+            dataType: Reference,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The entity the action is performed or not performed on or for.",
+            path: "Contract.term.action.subject.reference"
+        },
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Contract.term.action.subject.extension"
+        },
+        "role": {
+            name: "role",
+            dataType: CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Role type of agent assigned roles in this Contract.",
+            path: "Contract.term.action.subject.role"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Contract.term.action.subject.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Contract.term.action.subject.id"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type ContractTermActionSubject record {|
+    @constraint:Array {
+       minLength: 1
+    }
+    Reference[] reference;
+    Extension[] extension?;
+    CodeableConcept role?;
+    Extension[] modifierExtension?;
+    string id?;
 |};
 
 # FHIR ContractTermAsset datatype record.
@@ -1032,6 +1176,25 @@ public type ContractSigner record {|
     Coding 'type;
     Reference party;
 |};
+
+# ContractStatus enum
+public enum ContractStatus {
+   CODE_STATUS_DISPUTED = "disputed",
+   CODE_STATUS_REJECTED = "rejected",
+   CODE_STATUS_EXECUTED = "executed",
+   CODE_STATUS_NEGOTIABLE = "negotiable",
+   CODE_STATUS_REVOKED = "revoked",
+   CODE_STATUS_EXECUTABLE = "executable",
+   CODE_STATUS_AMENDED = "amended",
+   CODE_STATUS_RENEWED = "renewed",
+   CODE_STATUS_APPENDED = "appended",
+   CODE_STATUS_OFFERED = "offered",
+   CODE_STATUS_CANCELLED = "cancelled",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+   CODE_STATUS_TERMINATED = "terminated",
+   CODE_STATUS_POLICY = "policy",
+   CODE_STATUS_RESOLVED = "resolved"
+}
 
 # FHIR ContractTermOfferAnswer datatype record.
 #
@@ -1902,7 +2065,7 @@ public type ContractTermSecurityLabel record {|
         },
         "subject": {
             name: "subject",
-            dataType: ContractTermOfferParty,
+            dataType: ContractTermActionSubject,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -2117,7 +2280,7 @@ public type ContractTermAction record {|
     Annotation[] note?;
     string[] reason?;
     Extension[] extension?;
-    ContractTermOfferParty[] subject?;
+    ContractTermActionSubject[] subject?;
     Extension[] modifierExtension?;
     Reference[] reasonReference?;
     string[] performerLinkId?;
@@ -2140,6 +2303,76 @@ public type ContractTermAction record {|
     dateTime occurrenceDateTime?;
     string[] reasonLinkId?;
     CodeableConcept status;
+|};
+
+# FHIR ContractRule datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + contentReference - Computable Contract conveyed using a policy rule language (e.g. XACML, DKAL, SecPal).
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + contentAttachment - Computable Contract conveyed using a policy rule language (e.g. XACML, DKAL, SecPal).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@DataTypeDefinition {
+    name: "ContractRule",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Contract.rule.extension"
+        },
+        "contentReference": {
+            name: "contentReference",
+            dataType: Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Computable Contract conveyed using a policy rule language (e.g. XACML, DKAL, SecPal).",
+            path: "Contract.rule.content[x]"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Contract.rule.modifierExtension"
+        },
+        "contentAttachment": {
+            name: "contentAttachment",
+            dataType: Attachment,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Computable Contract conveyed using a policy rule language (e.g. XACML, DKAL, SecPal).",
+            path: "Contract.rule.content[x]"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Contract.rule.id"
+        }
+    },
+    serializers: {
+        'xml: complexDataTypeXMLSerializer,
+        'json: complexDataTypeJsonSerializer
+    }
+}
+public type ContractRule record {|
+    Extension[] extension?;
+    Reference contentReference;
+    Extension[] modifierExtension?;
+    Attachment contentAttachment;
+    string id?;
 |};
 
 # ContractContentDefinitionPublicationStatus enum

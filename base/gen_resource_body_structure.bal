@@ -206,6 +206,7 @@ public type BodyStructure record {|
     CodeableConcept location?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

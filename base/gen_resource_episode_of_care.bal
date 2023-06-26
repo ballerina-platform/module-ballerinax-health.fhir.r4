@@ -205,7 +205,7 @@ public const RESOURCE_NAME_EPISODEOFCARE = "EpisodeOfCare";
         },
         "status" : {
             name: "status",
-            dataType: EpisodeOfCareStatusHistoryStatus,
+            dataType: EpisodeOfCareStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -244,7 +244,8 @@ public type EpisodeOfCare record {|
     string id?;
     Narrative text?;
     Reference[] account?;
-    EpisodeOfCareStatusHistoryStatus status;
+    EpisodeOfCareStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {
@@ -433,4 +434,15 @@ public type EpisodeOfCareDiagnosis record {|
     positiveInt rank?;
     string id?;
 |};
+
+# EpisodeOfCareStatus enum
+public enum EpisodeOfCareStatus {
+   CODE_STATUS_ONHOLD = "onhold",
+   CODE_STATUS_WAITLIST = "waitlist",
+   CODE_STATUS_ACTIVE = "active",
+   CODE_STATUS_CANCELLED = "cancelled",
+   CODE_STATUS_FINISHED = "finished",
+   CODE_STATUS_PLANNED = "planned",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
+}
 

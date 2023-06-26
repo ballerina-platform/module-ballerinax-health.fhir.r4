@@ -16,7 +16,6 @@
 
 import ballerina/http;
 import ballerina/log;
-import ballerina/uuid;
 
 # Response error interceptor to post-process FHIR responses
 public isolated service class FHIRResponseInterceptor {
@@ -37,7 +36,7 @@ public isolated service class FHIRResponseInterceptor {
         }
         self.searchParamConfigMap = searchParamConfigs.cloneReadOnly();
     }
-        
+
     remote isolated function interceptResponse(http:RequestContext ctx, http:Response res) returns http:NextService|FHIRError? {
         log:printDebug("Execute: FHIR Response Interceptor");
         FHIRContext fhirContext = check getFHIRContext(ctx);
@@ -45,26 +44,9 @@ public isolated service class FHIRResponseInterceptor {
 
         check self.postProcessSearchParameters(fhirContext);
 
-        FHIRResponse|FHIRContainerResponse? fhirResponse = fhirContext.getFHIRResponse();
-        FHIRPayloadFormat acceptFormat = fhirContext.getClientAcceptFormat();
-        if fhirResponse != () {
-            if acceptFormat is JSON {
-                json jsonResult;
-                if fhirResponse is FHIRResponse {
-                    jsonResult = check fhirResponse.getResourceEntity().toJson();
-                } else {
-                    jsonResult = check (<FHIRContainerResponse>fhirResponse).getResourceEntity().toJson();
-                }
-                res.setJsonPayload(jsonResult, FHIR_MIME_TYPE_JSON);
-            } else {
-                xml xmlResult;
-                if fhirResponse is FHIRResponse {
-                    xmlResult = check fhirResponse.getResourceEntity().toXml();
-                } else {
-                    xmlResult = check (<FHIRContainerResponse>fhirResponse).getResourceEntity().toXml();
-                }
-                res.setXmlPayload(xmlResult, FHIR_MIME_TYPE_XML);
-            }
+        if (fhirContext.isInErrorState()) {
+            // set the proper response code
+            res.statusCode = fhirContext.getErrorCode();
         }
         return getNextService(ctx);
     }
@@ -95,44 +77,4 @@ public isolated service class FHIRResponseInterceptor {
             }
         }
     }
-   
-}
-
-# Response error interceptor to handle errors in resource and response flow
-public isolated service class FHIRResponseErrorInterceptor {
-   *http:ResponseErrorInterceptor;
- 
-   remote isolated function interceptResponseError(error err) returns http:StatusCodeResponse {
-        log:printDebug("Execute: FHIR Response Error Interceptor");
-        
-        // TODO Implement error handling here [https://github.com/wso2-enterprise/open-healthcare/issues/891]
-        string errorUUID;
-        if err is FHIRError {
-            FHIRErrorDetail & readonly detail = err.detail();
-            if (!detail.internalError) {
-                return createHttpErrorResponse(err);
-            } else {
-                //TODO log the error if it is an internal error
-                errorUUID = err.detail().uuid;
-                log:printError(string `${errorUUID} : ${err.message()}`, err, err.stackTrace());
-            }
-        } else {
-            // TODO log the error since it is not an FHIR related error
-            errorUUID = uuid:createType1AsString();
-            log:printError(string `${errorUUID} : ${err.message()}`, err, err.stackTrace());
-        }
-        OperationOutcome opOutcome = {
-            issue: [
-                {
-                    severity: ERROR,
-                    code: PROCESSING,
-                    diagnostics: errorUUID
-                }
-            ]
-        };
-        http:InternalServerError internalError = {
-            body: opOutcome
-        };
-        return internalError;
-   }
 }

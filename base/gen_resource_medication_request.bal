@@ -473,6 +473,7 @@ public type MedicationRequest record {|
     CodeableConcept[] category?;
     Identifier groupIdentifier?;
     MedicationRequestStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

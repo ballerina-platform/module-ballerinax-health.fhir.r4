@@ -193,6 +193,7 @@ public type MedicinalProductManufactured record {|
     CodeableConcept manufacturedDoseForm;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

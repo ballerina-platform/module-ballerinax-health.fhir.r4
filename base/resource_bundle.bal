@@ -94,7 +94,8 @@ public const RESOURCE_NAME_BUNDLE = "Bundle";
     serializers: {
         'xml: fhirBundleXmlSerializer, 
         'json: fhirBundleJsonSerializer
-    }
+    },
+    validator: validateFhirResource
 }
 public type Bundle record {|
     *Resource;
@@ -191,7 +192,8 @@ public type Bundle record {|
     serializers: {
         'xml: fhirBundleXmlSerializer, 
         'json: fhirBundleJsonSerializer
-    }
+    },
+    validator: validateFhirResource
 }
 public type BundleWireModel record {|
     *Resource;

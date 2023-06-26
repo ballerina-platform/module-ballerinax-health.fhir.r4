@@ -183,6 +183,7 @@ public type SubstancePolymer record {|
     string id?;
     Narrative text?;
     CodeableConcept 'class?;
+    never...;
 |};
 
 @DataTypeDefinition {

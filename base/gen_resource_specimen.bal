@@ -256,6 +256,7 @@ public type Specimen record {|
     string id?;
     Narrative text?;
     SpecimenStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

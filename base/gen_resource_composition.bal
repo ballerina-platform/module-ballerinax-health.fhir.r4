@@ -281,6 +281,7 @@ public type Composition record {|
     CompositionEvent[] event?;
     CompositionRelatesTo[] relatesTo?;
     CompositionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

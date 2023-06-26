@@ -265,6 +265,7 @@ public type CompartmentDefinition record {|
     Narrative text?;
     UsageContext[] useContext?;
     CompartmentDefinitionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

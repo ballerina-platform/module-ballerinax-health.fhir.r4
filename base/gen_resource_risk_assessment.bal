@@ -304,6 +304,7 @@ public type RiskAssessment record {|
     uri implicitRules?;
     dateTime occurrenceDateTime?;
     RiskAssessmentStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

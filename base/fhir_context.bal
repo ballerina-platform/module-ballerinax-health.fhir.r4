@@ -21,6 +21,8 @@ public isolated class FHIRContext {
     private final readonly & FHIRSecurity fhirSecurity;
     private final readonly & HTTPRequest httpRequest;
     private FHIRResponse|FHIRContainerResponse? fhirResponse = ();
+    private boolean inErrorState = false;
+    private int errorCode = 500;
 
     isolated function init(FHIRRequest request, readonly & HTTPRequest httpRequest, readonly & FHIRSecurity security) {
         self.fhirRequest = request;
@@ -43,6 +45,38 @@ public isolated class FHIRContext {
     public isolated function getDirection() returns MessageDirection {
         lock {
             return self.direction;
+        }
+    }
+
+    # Set error state : indicate whether the request is in error state or not.
+    # + return - whether the request is in error state or not.
+    public isolated function isInErrorState() returns boolean {
+        lock {
+            return self.inErrorState;
+        }
+    }
+
+    # Set error state : indicate whether the request is in error state or not.
+    # + inErrorState - whether the request is in error state or not.
+    public isolated function setInErrorState(boolean inErrorState) {
+        lock {
+            self.inErrorState = inErrorState;
+        }
+    }
+
+    # Get error code : error code of the request, if in error.
+    # + errorCode - error code of the request, if in error.
+    public isolated function setErrorCode(int errorCode) {
+        lock {
+            self.errorCode = errorCode;
+        }
+    }
+
+    # Get error code : error code of the request, if in error.
+    # + return - error code of the request, if in error.
+    public isolated function getErrorCode() returns int {
+        lock {
+            return self.errorCode;
         }
     }
 
@@ -117,14 +151,14 @@ public isolated class FHIRContext {
     }
 
     # Get all request parameters.
-    # 
+    #
     # + return - Request search parameter map (Key of the map is name of the search parameter).
     public isolated function getRequestSearchParameters() returns readonly & map<readonly & RequestSearchParameter[]> {
         return self.fhirRequest.getSearchParameters();
     }
 
     # Get search parameter with given name.
-    # 
+    #
     # + name - Name of the search parameter
     # + return - Request search parameter array if available. Otherwise nil
     public isolated function getRequestSearchParameter(string name) returns readonly & RequestSearchParameter[]? {
@@ -136,7 +170,7 @@ public isolated class FHIRContext {
     }
 
     # Function to get Number typed search parameter with given name from the FHIR API request.
-    # 
+    #
     # + name - Name of the search parameter
     # + return - Search parameter if exists, nil if not found and FHIRTypeError if search parameter is not Number type
     public isolated function getNumberSearchParameter(string name) returns NumberSearchParameter[]|FHIRTypeError? {
@@ -149,18 +183,18 @@ public isolated class FHIRContext {
                     paramArray.push(typedValue);
                 } else {
                     string msg = "Search parameter type mismatch";
-                    string diagMsg = string `FHIR Search parameter with name : ${name} is not a Number type search parameter. 
+                    string diagMsg = string `FHIR Search parameter with name : ${name} is not a Number type search parameter.
                         Search parameter type : ${(typeof param).toBalString()}`;
                     return <FHIRTypeError>createInternalFHIRError(msg, ERROR, PROCESSING, diagnostic = diagMsg, errorType = TYPE_ERROR);
-                }           
+                }
             }
             return paramArray;
         }
         return ();
     }
 
-    # Function to get Reference typed search parameter with given name from the FHIR API request.   
-    # 
+    # Function to get Reference typed search parameter with given name from the FHIR API request.
+    #
     # + name - Name of the search parameter
     # + return - Search parameter if exists, nil if not found and FHIRTypeError if search parameter is not Reference type
     public isolated function getReferenceSearchParameter(string name) returns ReferenceSearchParameter[]|FHIRTypeError? {
@@ -176,7 +210,7 @@ public isolated class FHIRContext {
                     string diagMsg = string `FHIR Search parameter with name : ${name} is not a Reference type search parameter.
                         Search parameter type : ${(typeof param).toBalString()}`;
                     return <FHIRTypeError>createInternalFHIRError(msg, ERROR, PROCESSING, diagnostic = diagMsg, errorType = TYPE_ERROR);
-                }           
+                }
             }
             return paramArray;
         }
@@ -184,7 +218,7 @@ public isolated class FHIRContext {
     }
 
     # Function to get String typed search parameter with given name from the FHIR API request.
-    # 
+    #
     # + name - Name of the search parameter
     # + return - Search parameter if exists, nil if not found and FHIRTypeError if search parameter is not String type
     public isolated function getStringSearchParameter(string name) returns StringSearchParameter[]|FHIRTypeError? {
@@ -200,15 +234,15 @@ public isolated class FHIRContext {
                     string diagMsg = string `FHIR Search parameter with name : ${name} is not a String type search parameter.
                         Search parameter type : ${(typeof param).toBalString()}`;
                     return <FHIRTypeError>createInternalFHIRError(msg, ERROR, PROCESSING, diagnostic = diagMsg, errorType = TYPE_ERROR);
-                }           
+                }
             }
             return paramArray;
         }
         return ();
     }
 
-    # Function to get Token typed search parameter with given name from the FHIR API request.  
-    # 
+    # Function to get Token typed search parameter with given name from the FHIR API request.
+    #
     # + name - Name of the search parameter
     # + return - Search parameter if exists, nil if not found and FHIRTypeError if search parameter is not Token type
     public isolated function getTokenSearchParameter(string name) returns TokenSearchParameter[]|FHIRTypeError? {
@@ -224,15 +258,15 @@ public isolated class FHIRContext {
                     string diagMsg = string `FHIR Search parameter with name : ${name} is not a Token type search parameter.
                         Search parameter type : ${(typeof param).toBalString()}`;
                     return <FHIRTypeError>createInternalFHIRError(msg, ERROR, PROCESSING, diagnostic = diagMsg, errorType = TYPE_ERROR);
-                }           
+                }
             }
             return paramArray;
         }
         return ();
     }
 
-    # Function to get URI typed search parameter with given name from the FHIR API request.   
-    # 
+    # Function to get URI typed search parameter with given name from the FHIR API request.
+    #
     # + name - Name of the search parameter
     # + return - Search parameter if exists, nil if not found and FHIRTypeError if search parameter is not URI type
     public isolated function getURISearchParameter(string name) returns URISearchParameter[]|FHIRTypeError? {
@@ -248,15 +282,15 @@ public isolated class FHIRContext {
                     string diagMsg = string `FHIR Search parameter with name : ${name} is not a URI type search parameter.
                         Search parameter type : ${(typeof param).toBalString()}`;
                     return <FHIRTypeError>createInternalFHIRError(msg, ERROR, PROCESSING, diagnostic = diagMsg, errorType = TYPE_ERROR);
-                }           
+                }
             }
             return paramArray;
         }
         return ();
     }
 
-    # Function to get Date typed search parameter with given name from the FHIR API request.   
-    # 
+    # Function to get Date typed search parameter with given name from the FHIR API request.
+    #
     # + name - Name of the search parameter
     # + return - Search parameter if exists, nil if not found and FHIRTypeError if search parameter is not Date type
     public isolated function getDateSearchParameter(string name) returns DateSearchParameter[]|FHIRTypeError? {
@@ -272,15 +306,15 @@ public isolated class FHIRContext {
                     string diagMsg = string `FHIR Search parameter with name : ${name} is not a Date type search parameter.
                         Search parameter type : ${(typeof param).toBalString()}`;
                     return <FHIRTypeError>createInternalFHIRError(msg, ERROR, PROCESSING, diagnostic = diagMsg, errorType = TYPE_ERROR);
-                }           
+                }
             }
             return paramArray;
         }
         return ();
     }
 
-    # Function to get Quantity typed search parameter with given name from the FHIR API request.   
-    # 
+    # Function to get Quantity typed search parameter with given name from the FHIR API request.
+    #
     # + name - Name of the search parameter
     # + return - Search parameter if exists, nil if not found and FHIRTypeError if search parameter is not Quantity type
     public isolated function getQuantitySearchParameter(string name) returns QuantitySearchParameter[]|FHIRTypeError? {
@@ -296,15 +330,15 @@ public isolated class FHIRContext {
                     string diagMsg = string `FHIR Search parameter with name : ${name} is not a Quantity type search parameter.
                         Search parameter type : ${(typeof param).toBalString()}`;
                     return <FHIRTypeError>createInternalFHIRError(msg, ERROR, PROCESSING, diagnostic = diagMsg, errorType = TYPE_ERROR);
-                }           
+                }
             }
             return paramArray;
         }
         return ();
     }
 
-    # Function to get Composite typed search parameter with given name from the FHIR API request.   
-    # 
+    # Function to get Composite typed search parameter with given name from the FHIR API request.
+    #
     # + name - Name of the search parameter
     # + return - Search parameter if exists, nil if not found and FHIRTypeError if search parameter is not Composite type
     public isolated function getCompositeSearchParameter(string name) returns CompositeSearchParameter[]|FHIRTypeError? {
@@ -320,17 +354,17 @@ public isolated class FHIRContext {
                     string diagMsg = string `FHIR Search parameter with name : ${name} is not a Composite type search parameter.
                         Search parameter type : ${(typeof param).toBalString()}`;
                     return <FHIRTypeError>createInternalFHIRError(msg, ERROR, PROCESSING, diagnostic = diagMsg, errorType = TYPE_ERROR);
-                }           
+                }
             }
             return paramArray;
         }
         return ();
     }
 
-    # Function to get Special typed search parameter with given name from the FHIR API request.   
-    # 
+    # Function to get Special typed search parameter with given name from the FHIR API request.
+    #
     # + name - Name of the search parameter
-    # + return - Search parameter if exists, nill if not found and FHIRTypeError if search parameter is not Special type 
+    # + return - Search parameter if exists, nill if not found and FHIRTypeError if search parameter is not Special type
     public isolated function getSpecialSearchParameter(string name) returns SpecialSearchParameter[]|FHIRTypeError? {
         map<RequestSearchParameter[] & readonly> & readonly searchParameters = self.fhirRequest.getSearchParameters();
         if searchParameters.hasKey(name) {
@@ -344,7 +378,7 @@ public isolated class FHIRContext {
                     string diagMsg = string `FHIR Search parameter with name : ${name} is not a Special type search parameter.
                         Search parameter type : ${(typeof param).toBalString()}`;
                     return <FHIRTypeError>createInternalFHIRError(msg, ERROR, PROCESSING, diagnostic = diagMsg, errorType = TYPE_ERROR);
-                }           
+                }
             }
             return paramArray;
         }

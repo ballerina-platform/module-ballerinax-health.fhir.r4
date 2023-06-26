@@ -515,6 +515,7 @@ public type ServiceRequest record {|
     CodeableConcept[] locationCode?;
     string patientInstruction?;
     ServiceRequestStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

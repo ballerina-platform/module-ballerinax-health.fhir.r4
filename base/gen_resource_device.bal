@@ -386,6 +386,7 @@ public type Device record {|
     string modelNumber?;
     string partNumber?;
     DeviceStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

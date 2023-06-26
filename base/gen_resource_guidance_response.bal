@@ -294,6 +294,7 @@ public type GuidanceResponse record {|
     dateTime occurrenceDateTime?;
     Identifier requestIdentifier?;
     GuidanceResponseStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

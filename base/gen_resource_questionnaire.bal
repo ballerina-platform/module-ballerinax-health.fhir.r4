@@ -347,6 +347,7 @@ public type Questionnaire record {|
     string publisher?;
     UsageContext[] useContext?;
     QuestionnaireStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

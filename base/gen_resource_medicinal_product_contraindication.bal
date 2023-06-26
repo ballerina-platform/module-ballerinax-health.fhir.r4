@@ -193,6 +193,7 @@ public type MedicinalProductContraindication record {|
     uri implicitRules?;
     string id?;
     Narrative text?;
+    never...;
 |};
 
 @DataTypeDefinition {

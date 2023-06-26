@@ -173,6 +173,7 @@ public type SubstanceNucleicAcid record {|
     Narrative text?;
     string areaOfHybridisation?;
     CodeableConcept sequenceType?;
+    never...;
 |};
 
 @DataTypeDefinition {

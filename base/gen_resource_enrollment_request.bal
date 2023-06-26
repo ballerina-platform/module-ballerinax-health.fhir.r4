@@ -194,6 +194,7 @@ public type EnrollmentRequest record {|
     string id?;
     Narrative text?;
     EnrollmentRequestStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

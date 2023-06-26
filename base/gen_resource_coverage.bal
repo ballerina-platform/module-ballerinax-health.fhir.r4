@@ -300,6 +300,7 @@ public type Coverage record {|
     uri implicitRules?;
     Reference policyHolder?;
     CoverageStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

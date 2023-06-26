@@ -419,6 +419,7 @@ public type ChargeItem record {|
     Reference[] account?;
     CodeableConcept productCodeableConcept?;
     ChargeItemStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

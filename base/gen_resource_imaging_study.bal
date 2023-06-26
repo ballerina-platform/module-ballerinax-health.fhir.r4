@@ -327,6 +327,7 @@ public type ImagingStudy record {|
     uri implicitRules?;
     Reference location?;
     ImagingStudyStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

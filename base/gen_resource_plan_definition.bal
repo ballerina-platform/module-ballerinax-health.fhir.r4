@@ -449,6 +449,7 @@ public type PlanDefinition record {|
     CodeableConcept[] topic?;
     UsageContext[] useContext?;
     PlanDefinitionStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

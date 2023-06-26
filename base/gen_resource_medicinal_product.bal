@@ -327,6 +327,7 @@ public type MedicinalProduct record {|
     MedicinalProductSpecialDesignation[] specialDesignation?;
     Reference[] clinicalTrial?;
     CodeableConcept combinedPharmaceuticalDoseForm?;
+    never...;
 |};
 
 @DataTypeDefinition {

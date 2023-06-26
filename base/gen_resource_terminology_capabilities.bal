@@ -368,6 +368,7 @@ public type TerminologyCapabilities record {|
     string publisher?;
     UsageContext[] useContext?;
     TerminologyCapabilitiesStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

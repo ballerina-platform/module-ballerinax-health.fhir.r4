@@ -206,6 +206,7 @@ public type Medication record {|
     string id?;
     Narrative text?;
     MedicationStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

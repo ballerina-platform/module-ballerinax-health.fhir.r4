@@ -283,6 +283,7 @@ public type MedicinalProductAuthorization record {|
     Narrative text?;
     dateTime restoreDate?;
     CodeableConcept status?;
+    never...;
 |};
 
 @DataTypeDefinition {

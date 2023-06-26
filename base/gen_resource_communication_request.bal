@@ -358,6 +358,7 @@ public type CommunicationRequest record {|
     CodeableConcept[] category?;
     Identifier groupIdentifier?;
     CommunicationRequestStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

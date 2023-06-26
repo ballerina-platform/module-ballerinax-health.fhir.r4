@@ -298,6 +298,7 @@ public type Location record {|
     LocationPosition position?;
     string availabilityExceptions?;
     LocationStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

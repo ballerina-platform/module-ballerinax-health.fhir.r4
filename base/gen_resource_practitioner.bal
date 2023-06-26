@@ -225,6 +225,7 @@ public type Practitioner record {|
     string id?;
     Narrative text?;
     CodeableConcept[] communication?;
+    never...;
 |};
 
 @DataTypeDefinition {

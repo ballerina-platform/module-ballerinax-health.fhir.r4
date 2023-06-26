@@ -403,6 +403,7 @@ public type Claim record {|
     CodeableConcept subType?;
     Reference facility?;
     ClaimStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

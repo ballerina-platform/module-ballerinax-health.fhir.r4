@@ -196,6 +196,7 @@ public type Substance record {|
     Narrative text?;
     CodeableConcept[] category?;
     SubstanceStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

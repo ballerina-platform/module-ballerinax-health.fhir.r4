@@ -275,6 +275,7 @@ public type DeviceUseStatement record {|
     Reference[] basedOn?;
     DeviceUseStatementStatus status;
     dateTime timingDateTime?;
+    never...;
 |};
 
 @DataTypeDefinition {

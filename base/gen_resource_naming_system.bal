@@ -261,6 +261,7 @@ public type NamingSystem record {|
     }
     NamingSystemUniqueId[] uniqueId;
     NamingSystemStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

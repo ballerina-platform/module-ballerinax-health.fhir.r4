@@ -228,6 +228,7 @@ public type DeviceMetric record {|
     Narrative text?;
     DeviceMetricCategory category;
     DeviceMetricCalibration[] calibration?;
+    never...;
 |};
 
 @DataTypeDefinition {

@@ -395,6 +395,7 @@ public type SearchParameter record {|
     }
     code[] base;
     SearchParameterStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

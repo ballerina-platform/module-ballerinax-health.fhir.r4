@@ -234,6 +234,7 @@ public type QuestionnaireResponse record {|
     Narrative text?;
     Reference[] basedOn?;
     QuestionnaireResponseStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {

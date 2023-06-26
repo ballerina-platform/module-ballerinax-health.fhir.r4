@@ -205,6 +205,7 @@ public type EnrollmentResponse record {|
     Narrative text?;
     EnrollmentResponseOutcome outcome?;
     EnrollmentResponseStatus status?;
+    never...;
 |};
 
 @DataTypeDefinition {

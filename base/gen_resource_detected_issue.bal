@@ -256,6 +256,7 @@ public type DetectedIssue record {|
     string id?;
     Narrative text?;
     DetectedIssueStatus status;
+    never...;
 |};
 
 @DataTypeDefinition {
