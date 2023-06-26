@@ -116,3 +116,22 @@ public isolated function getErrorCode(error errorResponse) returns int {
     }
     return 500;
 }
+
+# Extract error messages from 4xx errors
+# + requestError - ClientRequestError
+# + return - Error message
+public isolated function getErrorMessage(http:ClientRequestError requestError) returns string {
+    string errorMsg;
+    error|record {
+        string message;
+    } body = requestError.detail().body.ensureType();
+    if (body is error) {
+        // unable to extract the error message from the response body
+        // hence use the error message set to the ClientRequestError
+        errorMsg = requestError.message();
+    } else {
+        // set the detailed error message from the response body
+        errorMsg = body.message;
+    }
+    return errorMsg;
+}
