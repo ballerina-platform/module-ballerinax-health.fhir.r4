@@ -1,3 +1,5 @@
+Package containing the FHIR R4 resources types
+
 # FHIR R4 Base package
 
 ## Package Overview

@@ -28,7 +28,7 @@ isolated function validateAndParse(json|xml payload, ResourceAPIConfig apiConfig
 }
 
 # Function to parse FHIR Payload into FHIR Resource model.
-# Note : When using inside FHIR templates, use healthcare.fhir.r4utils.parser module instead of this.
+# Note : When using inside FHIR templates, use ballerinax/health.fhir.r4.parser module instead of this.
 #
 # + payload - FHIR payload  
 # + targetFHIRModelType - (Optional) target model type to parse. Derived from payload if not given  
