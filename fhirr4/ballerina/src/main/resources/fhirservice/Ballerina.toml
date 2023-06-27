@@ -13,8 +13,7 @@ observabilityIncluded = true
 [[dependency]]
 org="ballerinax"
 name="health.fhir.r4"
-version="1.0.4"
-repository="local"
+version="${r4.version}"
 
 [[platform.java11.dependency]]
 groupId = "io.ballerinax"
