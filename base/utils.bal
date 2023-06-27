@@ -144,15 +144,13 @@ public isolated function clientErrorToFhirError(http:ClientError clientError) re
     if (clientError is http:ClientRequestError) {
         // handle 4xx errors
         string errorMsg = getErrorMessage(clientError);
-        FHIRError fhirError = createFHIRError(errorMsg, CODE_SEVERITY_ERROR, TRANSIENT_EXCEPTION,
+        return createFHIRError(errorMsg, CODE_SEVERITY_ERROR, TRANSIENT_EXCEPTION,
             httpStatusCode = clientError.detail().statusCode);
-        return fhirError;
     }
     else {
         // handle other errors
-        FHIRError fhirError = createFHIRError(clientError.message(), CODE_SEVERITY_ERROR,
+        return createFHIRError(clientError.message(), CODE_SEVERITY_ERROR,
             TRANSIENT_EXCEPTION, httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
-        return fhirError;
     }
 }
 
