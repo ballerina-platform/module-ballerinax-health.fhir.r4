@@ -384,7 +384,7 @@ public class TerminologyProcessor {
                 return valueSets;
             } else {
                 return createFHIRError(
-                    string `Unknown ValueSet: ${id}`,
+                    string `Unknown ValueSet: '${id}'`,
                     ERROR,
                     PROCESSING_NOT_FOUND,
                     httpStatusCode = http:STATUS_NOT_FOUND
@@ -592,7 +592,15 @@ public class TerminologyProcessor {
         if !(ensured is error) {
             codeSystem = ensured;
         } else if !(system is ()) {
-            codeSystem = self.codeSystems.get(system);
+            if self.codeSystems.hasKey(system){
+                codeSystem = self.codeSystems.get(system);
+            }else{
+                return createFHIRError(string `Cannot find a CodeSystem for the provided system URL: ${system}`,
+                    ERROR,
+                    INVALID,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
         } else {
             string msg = "Can not find a CodeSystem";
             return createFHIRError(msg,
@@ -603,15 +611,14 @@ public class TerminologyProcessor {
             httpStatusCode = http:STATUS_BAD_REQUEST);
         }
 
-        if system != () && codeValue is code {
+        if codeValue is code {
             CodeConceptDetails? result = self.findConceptInCodeSystem(codeSystem, codeValue);
 
             if result is CodeConceptDetails {
                 return result.concept;
             } else {
                 return createFHIRError(
-                    string `Can not find any valid concepts for the code: ${codeValue.toBalString()} 
-                    in CodeSystem: ${codeSystem.id.toBalString()}`,
+                    string `Can not find any valid concepts for the code: ${codeValue.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
                     ERROR,
                     PROCESSING_NOT_FOUND,
                     errorType = PROCESSING_ERROR,
@@ -624,8 +631,7 @@ public class TerminologyProcessor {
                 return result.concept;
             } else {
                 return createFHIRError(
-                    string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} 
-                    in CodeSystem: ${codeSystem.id.toBalString()}`,
+                    string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
                     ERROR,
                     PROCESSING_NOT_FOUND,
                     errorType = PROCESSING_ERROR,
@@ -644,14 +650,17 @@ public class TerminologyProcessor {
 
                 if codeConceptDetailsList.length() < 0 {
                     return createFHIRError(
-                    string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} 
-                    in CodeSystem: ${codeSystem.id.toBalString()}`,
+                    string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
                     ERROR,
                     PROCESSING_NOT_FOUND,
                     errorType = PROCESSING_ERROR,
                     httpStatusCode = http:STATUS_NOT_FOUND);
                 }
-                return codeConceptDetailsList;
+                if codeConceptDetailsList.length() == 1{
+                    return codeConceptDetailsList[0];
+                }else{
+                    return codeConceptDetailsList;
+                }
 
             } else {
                 return createFHIRError(
