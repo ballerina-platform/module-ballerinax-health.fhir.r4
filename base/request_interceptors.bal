@@ -26,10 +26,10 @@ public isolated service class FHIRReadRequestInterceptor {
 
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
-        self.preprocessor = new(self.apiConfig);
+        self.preprocessor = new (self.apiConfig);
     }
-    
-    resource isolated function get fhir/r4/[string resourceType]/[string id] (http:Request request, http:RequestContext ctx) 
+
+    resource isolated function get fhir/r4/[string resourceType]/[string id](http:Request request, http:RequestContext ctx)
                                                                                     returns http:NextService|error? {
         log:printDebug("Execute: fhirReadRequestInterceptor", resourceType = resourceType, id = id);
         return self.preprocessor.processRead(resourceType, id, request, ctx);
@@ -44,10 +44,10 @@ public isolated service class FHIRVReadRequestInterceptor {
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
     }
-    
-    resource isolated function get fhir/r4/[string resourceType]/[string id]/_history/[string vid] 
+
+    resource isolated function get fhir/r4/[string resourceType]/[string id]/_history/[string vid]
                                     (http:Request request, http:RequestContext ctx) returns http:NextService|FHIRError? {
-        log:printDebug("Execute: fhirVReadRequestInterceptor", resourceType = resourceType , id = id, vid = vid);
+        log:printDebug("Execute: fhirVReadRequestInterceptor", resourceType = resourceType, id = id, vid = vid);
         // TODO : implement pre-process
         return getNextService(ctx);
     }
@@ -61,10 +61,10 @@ public isolated service class FHIRUpdateRequestInterceptor {
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
     }
-    
-    resource isolated function put fhir/r4/[string resourceType]/[string id] 
+
+    resource isolated function put fhir/r4/[string resourceType]/[string id]
                                     (http:Request request, http:RequestContext ctx) returns http:NextService|FHIRError? {
-        log:printDebug("Execute: fhirUpdateRequestInterceptor", resourceType = resourceType , id = id);
+        log:printDebug("Execute: fhirUpdateRequestInterceptor", resourceType = resourceType, id = id);
         // TODO : implement pre-process
         return getNextService(ctx);
     }
@@ -78,10 +78,10 @@ public isolated service class FHIRPatchRequestInterceptor {
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
     }
-    
-    resource isolated function patch fhir/r4/[string resourceType]/[string id] 
+
+    resource isolated function patch fhir/r4/[string resourceType]/[string id]
                                         (http:Request request, http:RequestContext ctx) returns http:NextService|FHIRError? {
-        log:printDebug("Execute: fhirPatchRequestInterceptor", resourceType = resourceType , id = id);
+        log:printDebug("Execute: fhirPatchRequestInterceptor", resourceType = resourceType, id = id);
         // TODO : implement pre-process
         return getNextService(ctx);
     }
@@ -95,10 +95,10 @@ public isolated service class FHIRDeleteRequestInterceptor {
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
     }
-    
-    resource isolated function delete fhir/r4/[string resourceType]/[string id] 
+
+    resource isolated function delete fhir/r4/[string resourceType]/[string id]
                                         (http:Request request, http:RequestContext ctx) returns http:NextService|FHIRError? {
-        log:printDebug("Execute: fhirDeleteRequestInterceptor", resourceType = resourceType , id = id);
+        log:printDebug("Execute: fhirDeleteRequestInterceptor", resourceType = resourceType, id = id);
         // TODO : implement pre-process
         return getNextService(ctx);
     }
@@ -112,10 +112,10 @@ public isolated service class FHIRInstanceHistorySearchRequestInterceptor {
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
     }
-    
-    resource isolated function get fhir/r4/[string resourceType]/[string id]/_history 
+
+    resource isolated function get fhir/r4/[string resourceType]/[string id]/_history
                                         (http:Request request, http:RequestContext ctx) returns http:NextService|FHIRError? {
-        log:printDebug("Execute: fhirInstanceHistorySearchRequestInterceptor", resourceType = resourceType , id = id);
+        log:printDebug("Execute: fhirInstanceHistorySearchRequestInterceptor", resourceType = resourceType, id = id);
         // TODO : implement pre-process
         return getNextService(ctx);
     }
@@ -129,15 +129,15 @@ public isolated service class FHIRCreateRequestInterceptor {
 
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
-        self.preprocessor = new(self.apiConfig);
+        self.preprocessor = new (self.apiConfig);
     }
-    
-    resource isolated function post fhir/r4/[string resourceType] 
-                                        (@http:Payload json|xml payload, http:Request httpRequest, 
-                                            http:RequestContext ctx) returns http:NextService|FHIRError? {
+
+    resource isolated function post fhir/r4/[string resourceType]
+                                        (@http:Payload json|xml payload, http:Request httpRequest,
+            http:RequestContext ctx) returns http:NextService|FHIRError? {
         log:printDebug("Execute: fhirCreateRequestInterceptor", resourceType = resourceType);
         return self.preprocessor.processCreate(resourceType, payload, httpRequest, ctx);
-	}
+    }
 }
 
 # Request interceptor to pre-process FHIR search interaction
@@ -148,12 +148,12 @@ public isolated service class FHIRSearchRequestInterceptor {
 
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
-        self.preprocessor = new(self.apiConfig);
+        self.preprocessor = new (self.apiConfig);
     }
-    
-    resource isolated function get fhir/r4/[string resourceType] 
+
+    resource isolated function get fhir/r4/[string resourceType]
                             (http:Request httpRequest, http:RequestContext httpCtx) returns http:NextService|FHIRError? {
-        log:printDebug("Execute: fhirSearchRequestInterceptor", 
+        log:printDebug("Execute: fhirSearchRequestInterceptor",
                                     resourceType = resourceType, searchParameters = httpRequest.getQueryParams());
         return check self.preprocessor.processSearch(resourceType, httpRequest, httpCtx);
     }
@@ -168,23 +168,22 @@ public isolated service class FHIRHistorySearchRequestInterceptor {
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
     }
-    
-    resource isolated function get fhir/r4/[string resourceType]/_history 
+
+    resource isolated function get fhir/r4/[string resourceType]/_history
                                     (http:Request httpRequest, http:RequestContext ctx) returns http:NextService|error? {
-        log:printDebug("Execute: fhirHistorySearchRequestInterceptor", 
+        log:printDebug("Execute: fhirHistorySearchRequestInterceptor",
                                     resourceType = resourceType, searchParameters = httpRequest.getQueryParams());
         // TODO : implement pre-process
         return getNextService(ctx);
     }
 }
 
-
 # Request error handling interceptor
 public isolated service class FHIRRequestErrorInterceptor {
     *http:RequestErrorInterceptor;
 
-    resource isolated function 'default [string... path](http:RequestContext ctx, http:Caller caller, 
-                                                        http:Request req, error err) returns http:StatusCodeResponse {
+    resource isolated function 'default [string... path](http:RequestContext ctx, http:Caller caller,
+            http:Request req, error err) returns http:StatusCodeResponse {
         log:printDebug("Executing FHIR Request Error Interceptor");
         string errorUUID;
         if err is FHIRError {
@@ -206,17 +205,25 @@ public isolated service class FHIRRequestErrorInterceptor {
                 {
                     severity: ERROR,
                     code: PROCESSING,
-                    diagnostics: errorUUID
+                    diagnostics: errorUUID,
+                    details: {
+                        coding: [
+                            {
+                                system: "http://hl7.org/fhir/issue-type",
+                                code: string `${http:STATUS_BAD_REQUEST}`
+                            }
+                        ],
+                        text: err.message()
+                    }
                 }
             ]
         };
-        http:InternalServerError internalError = {
+        http:BadRequest badRequest = {
             body: opOutcome
         };
-        return internalError;
-   }
+        return badRequest;
+    }
 }
-
 
 # GET interceptor to log GET request entries for troubleshooting
 public isolated service class FHIRGetRequestInterceptor {
@@ -227,8 +234,8 @@ public isolated service class FHIRGetRequestInterceptor {
     public function init(ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
     }
-    
-    resource isolated function 'default [string resourceType]/[string... path] 
+
+    resource isolated function 'default [string resourceType]/[string... path]
                                         (http:Request request, http:RequestContext ctx) returns http:NextService|FHIRError? {
         // TODO implement
         return getNextService(ctx);
