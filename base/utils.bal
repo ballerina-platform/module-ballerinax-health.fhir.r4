@@ -116,3 +116,59 @@ public isolated function getErrorCode(error errorResponse) returns int {
     }
     return 500;
 }
+
+# Extract error messages from 4xx errors.
+# + requestError - ClientRequestError.
+# + return - Error message.
+public isolated function getErrorMessage(http:ClientRequestError requestError) returns string {
+    string errorMsg;
+    error|record {
+        string message;
+    } body = requestError.detail().body.ensureType();
+    if (body is error) {
+        // unable to extract the error message from the response body
+        // hence use the error message set to the ClientRequestError
+        errorMsg = requestError.message();
+    } else {
+        // set the detailed error message from the response body
+        errorMsg = body.message;
+    }
+    return errorMsg;
+}
+
+# Convert a http client error to a FHIR error.
+#
+# + clientError - http:ClientError.
+# + return - Return a FHIR error.
+public isolated function clientErrorToFhirError(http:ClientError clientError) returns FHIRError {
+    if (clientError is http:ClientRequestError) {
+        // handle 4xx errors
+        string errorMsg = getErrorMessage(clientError);
+        return createFHIRError(errorMsg, CODE_SEVERITY_ERROR, TRANSIENT_EXCEPTION,
+            httpStatusCode = clientError.detail().statusCode);
+    }
+    else {
+        // handle other errors
+        return createFHIRError(clientError.message(), CODE_SEVERITY_ERROR,
+            TRANSIENT_EXCEPTION, httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
+    }
+}
+
+# Create a FHIR Bundle.
+#
+# + t - a BundleType.
+# + resources - array of FHIR resources.
+# + return - Return a FHIR Bundle.
+public isolated function createFhirBundle(BundleType t, DomainResource[] resources) returns Bundle {
+    Bundle bundle = {
+        'type: t
+    };
+    BundleEntry[] entry = [];
+    foreach var res in resources {
+        entry.push({
+            'resource: res
+        });
+    }
+    bundle.entry = entry;
+    return bundle;
+}

@@ -134,7 +134,7 @@ public type FHIRErrorDetail record {
 public isolated function createFHIRError(string message, Severity errServerity, IssueType code,
         string? diagnostic = (), string[]? expression = (), error? cause = (),
         FHIRErrorTypes? errorType = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR)
-                                                                                                    returns FHIRError {
+        returns FHIRError {
     return createTypedError(message, errServerity, code, diagnostic, expression, cause, errorType,
                                 internal = false, httpStatusCode = httpStatusCode);
 }
