@@ -24,7 +24,6 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
             new r4:FHIRReadRequestInterceptor(apiConfig),
             new r4:FHIRCreateRequestInterceptor(apiConfig),
             new r4:FHIRSearchRequestInterceptor(apiConfig),
-            new r4:FHIRResponseErrorInterceptor(),
             new r4:FHIRRequestErrorInterceptor(),
             new r4:FHIRResponseInterceptor(apiConfig)
         ]
@@ -52,6 +51,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                     } else {
                         executeResourceResult = executeSearch(fhirContext, fhirService, resourceMethod);
                     }
+                    if (executeResourceResult is error) {
+                        fhirContext.setInErrorState(true);
+                        fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                        return r4:handleErrorResponse(executeResourceResult);
+                    }
                     return executeResourceResult;
                 }
             } else if accessor == "POST" {
@@ -66,6 +70,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                 anydata parse = check r4:parse(payload);
                 if resourceMethod is handle {
                     any|error executeResourceResult = executeCreate(parse, fhirContext, fhirService, resourceMethod);
+                    if (executeResourceResult is error) {
+                        fhirContext.setInErrorState(true);
+                        fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                        return r4:handleErrorResponse(executeResourceResult);
+                    }
                     return executeResourceResult;
                 }
             }
