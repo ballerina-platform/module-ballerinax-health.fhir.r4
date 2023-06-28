@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.5.0"
+distribution-version = "2201.6.0"
 
 [[package]]
 org = "ballerina"
@@ -32,6 +32,15 @@ version = "0.0.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.object"}
+]
+
+[[package]]
+org = "ballerina"
+name = "lang.error"
+version = "0.0.0"
+scope = "testOnly"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"}
 ]
 
 [[package]]
@@ -96,7 +105,8 @@ name = "test"
 version = "0.0.0"
 scope = "testOnly"
 dependencies = [
-	{org = "ballerina", name = "jballerina.java"}
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "lang.error"}
 ]
 modules = [
 	{org = "ballerina", packageName = "test", moduleName = "test"}
@@ -104,8 +114,8 @@ modules = [
 
 [[package]]
 org = "ballerinax"
-name = "health.fhir.r4utils"
-version = "1.0.2-snapshot"
+name = "health.fhir.r4utils.fhirpath"
+version = "1.0.3"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "lang.int"},
@@ -113,6 +123,6 @@ dependencies = [
 	{org = "ballerina", name = "test"}
 ]
 modules = [
-	{org = "ballerinax", packageName = "health.fhir.r4utils", moduleName = "health.fhir.r4utils"}
+	{org = "ballerinax", packageName = "health.fhir.r4utils.fhirpath", moduleName = "health.fhir.r4utils.fhirpath"}
 ]
 
