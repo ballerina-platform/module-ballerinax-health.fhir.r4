@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/lang.'int as langint;
+import ballerina/lang.regexp;
 import ballerina/log;
 import ballerina/regex;
 
@@ -104,6 +105,75 @@ public isolated function evaluateFhirPath(json fhirResource, string fhirPathExpr
         return createFhirPathError(INVALID_CHARACTER_MSG, fhirPathExpression);
     }
     return result;
+}
+
+# Select the resource elements from the given FHIR resource.
+#
+# + fhirPaths - FhirPath expressions for the required elements
+# + fhirResource - Requested fhir resource
+# + return - Returns FHIR resource with the selected elements
+public isolated function selectResourceElements(string[] fhirPaths, map<json> fhirResource) returns map<anydata>|error {
+    string resourceType = check fhirResource["resourceType"].ensureType();
+
+    map<anydata> elementMap = {
+        "resourceType": {},
+        "meta": {}
+    };
+
+    foreach string fhirPath in fhirPaths {
+        string[] fhirPathTokens = regexp:split(re `\s*\.\s*`, fhirPath.trim());
+        string fhirPathResourceType = fhirPathTokens[0];
+        if resourceType == fhirPathResourceType {
+            map<anydata> parentElement = elementMap;
+            foreach int i in 1 ..< fhirPathTokens.length() {
+                string childElementName = fhirPathTokens[i];
+
+                if !parentElement.hasKey(childElementName) {
+                    parentElement[childElementName] = {};
+                }
+                parentElement = <map<anydata>>parentElement[childElementName];
+            }
+        }
+    }
+
+    map<json> tempFhirResource = fhirResource.clone();
+    traverseAndRemoveElements(elementMap, tempFhirResource);
+    map<json> meta = <map<json>>tempFhirResource["meta"];
+    meta["tag"] = [{
+        "code": "SUBSETTED",
+        "display": "Resource subsetted due to _elements search parameter filter"
+    }];
+    return  tempFhirResource;
+}
+
+# Recursively traverse the expected map and remove the elements from the actual map.
+# 
+# + expectedMap - expected map
+# + actualMap - actual map
+isolated function traverseAndRemoveElements(map<anydata> expectedMap, map<json> actualMap) {
+    foreach [string, json] [elementName, elementValue] in actualMap.entries() {
+        if !expectedMap.hasKey(elementName) {
+            _ = actualMap.remove(elementName);
+        } else {
+            if elementValue is json[] {
+                json[] elementValueEntries = <json[]>elementValue;
+                foreach json elementValueEntryItem in elementValueEntries {
+                    map<json> tempActualMap = <map<json>>elementValueEntryItem;
+                    map<anydata> tempExpectedMap = <map<anydata>>expectedMap[elementName];
+                    if tempActualMap.length() > 0 {
+                        traverseAndRemoveElements(tempExpectedMap, tempActualMap);
+                    }
+                }
+            } else {
+                if elementValue is string|int|float|boolean|byte {
+                    continue;
+                }
+                map<json> tempActualMap = <map<json>>elementValue;
+                map<anydata> tempExpectedMap = <map<anydata>>expectedMap[elementName];
+                traverseAndRemoveElements(tempExpectedMap, tempActualMap);
+            }
+        }
+    }
 }
 
 # Get the sub result of the particular token from the json array.
