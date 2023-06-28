@@ -1,0 +1,9 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.r4utils.fhirpath"
+version = "1.0.3"
+distribution = "2201.6.0"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "Utils", "FHIRPath"]
+export = ["health.fhir.r4utils.fhirpath"]
+repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
