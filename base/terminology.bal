@@ -14,17 +14,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/log;
+
 # Holds Terminology information.
 #
 # + codeSystems - CodeSystems belong to the terminology
 # + valueSets - ValueSets belong to the terminology
 public type TerminologyRecord record {|
-    readonly CodeSystem[] codeSystems;
-    readonly ValueSet[] valueSets;
+    map<CodeSystem> codeSystems;
+    map<ValueSet> valueSets;
 |};
 
 # Record type ro represent terminology
-public type Terminology readonly & TerminologyRecord;
+public type Terminology TerminologyRecord;
 
 # Terminology loader definition
 public type TerminologyLoader distinct object {
@@ -34,7 +36,7 @@ public type TerminologyLoader distinct object {
 # An in-memory implementation of a terminology loader
 public class InMemoryTerminologyLoader {
     *TerminologyLoader;
-    
+
     final json[] codeSystems;
     final json[] valueSets;
 
@@ -46,31 +48,40 @@ public class InMemoryTerminologyLoader {
     # load terminology
     # + return - Terminology populated
     public function load() returns Terminology|FHIRError {
-        ValueSet[] valueSetArray = [];
-        foreach json jValueSet in self.valueSets {
-            do {
-                ValueSet valueSet = check jValueSet.cloneWithType();
-                valueSetArray.push(valueSet);
-            } on fail error e {
-                return createFHIRError("Error occurred while type casting json value set to ValueSet type", ERROR,
-                                                                    PROCESSING, diagnostic = e.message(), cause = e);
+
+        map<CodeSystem> codeSystemMap = {};
+        foreach json jCodeSystem in self.codeSystems {
+            CodeSystem|error c = jCodeSystem.cloneWithType(CodeSystem);
+            if c is error {
+                FHIRError fHIRError = createFHIRError("Error occurred while type casting json code system to CodeSystem type", ERROR,
+                                                                        PROCESSING, diagnostic = c.message(), cause = c);
+                log:printError(fHIRError.toBalString());
+            } else {
+                string url = <string>c.url;
+                string version = <string>c.version;
+                string key = string `${url}|${version}`;
+                codeSystemMap[key] = c;
             }
         }
 
-        CodeSystem[] codeSystemArray = [];
-        foreach json jCodeSystem in self.codeSystems {
-            do {
-                CodeSystem codeSystem = check jCodeSystem.cloneWithType();
-                codeSystemArray.push(codeSystem);
-            } on fail error e {
-              return createFHIRError("Error occurred while type casting json code system to CodeSystem type", ERROR,
-                                                                    PROCESSING, diagnostic = e.message(), cause = e);
+        map<ValueSet> valueSetMap = {};
+        foreach json jValueSet in self.valueSets {
+            ValueSet|error v = jValueSet.cloneWithType(ValueSet);
+            if v is error {
+                FHIRError fHIRError = createFHIRError("Error occurred while type casting json value set to ValueSet type", ERROR,
+                                                                        PROCESSING, diagnostic = v.message(), cause = v);
+                log:printError(fHIRError.toBalString());
+            } else {
+                string url = <string>v.url;
+                string version = <string>v.version;
+                string key = string `${url}|${version}`;
+                valueSetMap[key] = v;
             }
         }
 
         Terminology terminology = {
-          codeSystems: codeSystemArray.cloneReadOnly(),
-          valueSets: valueSetArray.cloneReadOnly()
+            codeSystems: codeSystemMap,
+            valueSets: valueSetMap
         };
         return terminology;
     }

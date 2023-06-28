@@ -14,76 +14,1004 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/http;
+import ballerina/lang.'int as langint;
+import ballerina/log;
+import ballerina/regex;
+import ballerina/time;
+
+//It is a custom record to hold system URLs and a related concept.  
 type CodeConceptDetails record {
+    //System URL of the concept.
     uri url;
     CodeSystemConcept|ValueSetComposeIncludeConcept concept;
 };
 
-# Function definition for code system finder implementations
-public type CodeSystemFinder isolated function (uri system, code code) returns CodeSystem | ValueSet | FHIRError;
+//It is a custom record to hold system URLs and a array of related concepts.
+type ValueSetExpansionDetails record {
+    //System URL of the concepts.
+    uri url;
+    CodeSystemConcept[]|ValueSetComposeIncludeConcept[] concepts;
+};
 
-# A processor to process terminology data and create relevent data elements
+# The function definition for code system finder implementations.
+public type CodeSystemFinder isolated function (uri system, code code) returns CodeSystem|ValueSet|FHIRError;
+
+# A processor to process terminology data and create relevant data elements.
 public class TerminologyProcessor {
-    
+
+    # Global records to store Terminologies across different profiles and packages.
     private map<CodeSystem> codeSystems = {};
     private map<ValueSet> valueSets = {};
 
     public function init() {
     }
 
-    public function addTerminology(Terminology terminology) {
-        self.addCodeSystems(terminology.codeSystems);
-        self.addValueSets(terminology.valueSets);
+    # It will initialize the Terminology map.
+    # It will delete the existing records if it is re-initialized.
+    # It will be used during the package initialization 
+    #
+    # + terminology - Terminology record
+    public function initTerminology(Terminology terminology) {
+        self.codeSystems = terminology.codeSystems;
+        self.valueSets = terminology.valueSets;
     }
 
-    public function addCodeSystems(CodeSystem[] codeSystems) {
+    # Add list of new CodeSystems to the existing data
+    #
+    # + codeSystems - List CodeSystems
+    # + return - Return List of FHIRErrors if any
+    public function addCodeSystems(CodeSystem[] codeSystems) returns FHIRError[]? {
+        FHIRError[] errors = [];
         foreach CodeSystem codeSystem in codeSystems {
-            self.codeSystems[<string>codeSystem.url] = codeSystem;
+            FHIRError? result = self.addCodeSystem(codeSystem);
+
+            if result is FHIRError {
+                errors.push(result);
+            }
         }
+
+        return errors;
     }
 
-    public function addValueSets(ValueSet[] valueSets) {
+    # Add list of new CodeSystems as a json or json array to the existing data
+    #
+    # + codeSystemJson - CodeSystem data in the JSON format
+    # + return - Return List of FHIRErrors if any
+    public function addCodeSystemsAsJson(json[]|json codeSystemJson) returns FHIRError[]? {
+        FHIRError[] errors = [];
+        CodeSystem[] codeSystems = [];
+        json[] codeSystemJsonArray = <json[]>codeSystemJson;
+
+        foreach var c in codeSystemJsonArray {
+            CodeSystem|error result = c.cloneWithType(CodeSystem);
+            if result is error {
+                FHIRError er = createFHIRError(
+                    string `Invalid data. Can not parse the provided json data: ${c.toBalString()}`,
+                    ERROR,
+                    INVALID,
+                    diagnostic = "Please check the provided json structure and re-try with this data again",
+                    cause = result,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+
+                errors.push(er);
+            } else {
+                codeSystems.push(result);
+            }
+        }
+
+        if codeSystems.length() > 0 {
+            errors.push(...<FHIRError[]>self.addCodeSystems(codeSystems));
+        }
+
+        if errors.length() > 0 {
+            return errors;
+        }
+        return;
+    }
+
+    # Add list of new ValueSets to the existing data
+    #
+    # + valueSets - List ValueSets in the Ballerina record format
+    # + return - Return List of FHIRErrors if any
+    public function addValueSets(ValueSet[] valueSets) returns FHIRError[]? {
+        FHIRError[] errors = [];
         foreach ValueSet valueSet in valueSets {
-            self.valueSets[<string>valueSet.url] = valueSet;
+            FHIRError? result = self.addValueSet(valueSet);
+
+            if result is FHIRError {
+                errors.push(result);
+            }
+        }
+
+        return errors;
+    }
+
+    # Add list of new ValueSet as a json or json array to the existing data
+    #
+    # + valueSetJson - Json ValueSet data in the JSON format
+    # + return - Return List of FHIRErrors if any
+    public function addValueSetsAsJson(json[]|json valueSetJson) returns FHIRError[]? {
+        FHIRError[] errors = [];
+        ValueSet[] valueSets = [];
+        json[] valueSetJsonArray = <json[]>valueSetJson;
+
+        foreach var v in valueSetJsonArray {
+            ValueSet|error result = v.cloneWithType(ValueSet);
+            if result is error {
+                FHIRError er = createFHIRError(
+                    string `Invalid data. Can not parse the provided json data: ${v.toBalString()}`,
+                    ERROR,
+                    INVALID,
+                    diagnostic = "Please check the provided json structure and re-try with this data again",
+                    cause = result,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+
+                errors.push(er);
+            } else {
+                valueSets.push(result);
+            }
+        }
+
+        if valueSets.length() > 0 {
+            errors.push(...<FHIRError[]>self.addValueSets(valueSets));
+        }
+
+        if errors.length() > 0 {
+            return errors;
+        }
+        return;
+    }
+
+    # Add a new CodeSystem to the existing data
+    #
+    # + codeSystem - ValueSet to be added, data in the Ballerina record format
+    # + return - Return FHIRError
+    public function addCodeSystem(CodeSystem codeSystem) returns FHIRError? {
+
+        if codeSystem.url == () {
+            return createFHIRError(
+            string `Can not find the URL of the CodeSystem with name: ${codeSystem.name.toBalString()}`,
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = string `Add a proper URL for the resource: 
+                                    http://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.url`,
+            errorType = VALIDATION_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        if codeSystem.'version == () {
+            return createFHIRError(
+            string `Can not find the version of the CodeSystem with name: ${codeSystem.name.toBalString()}`,
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = string `Add appropriate version for the resource: 
+                                    https://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.version`,
+            errorType = VALIDATION_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        string url = <string>codeSystem.url;
+        string version = <string>codeSystem.version;
+        string key = string `${url}|${version}`;
+
+        if self.codeSystems.hasKey(key) {
+            return createFHIRError(
+            "Duplicate entry",
+            ERROR,
+            PROCESSING_DUPLICATE,
+            diagnostic = string `Already there is a CodeSystem exists in the registry with the URL: ${url}`,
+            errorType = PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        FHIRValidationError? validateResult = validate(codeSystem, CodeSystem);
+
+        if validateResult is FHIRValidationError {
+            return createFHIRError(
+            "Validation failed",
+            ERROR,
+            INVALID,
+            diagnostic = string `Check whether the data conforms to the specification: 
+                                    http://hl7.org/fhir/R4/codesystem-definitions.html`,
+            errorType = VALIDATION_ERROR,
+            cause = validateResult,
+            httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        self.codeSystems[key] = codeSystem;
+    }
+
+    # Add a new ValueSet to the existing data
+    #
+    # + valueSet - ValueSet to be added, data in the Ballerina record format
+    # + return - Return FHIRError
+    public function addValueSet(ValueSet valueSet) returns FHIRError? {
+
+        if valueSet.url == () {
+            return createFHIRError(
+            string `Can not find the URL of the ValueSet with name: ${valueSet.name.toBalString()}`,
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = "Add a proper URL for the resource: http://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.url",
+            errorType = VALIDATION_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        if valueSet.'version == () {
+            return createFHIRError(
+            string `Can not find the version of the ValueSet with name: ${valueSet.name.toBalString()}`,
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = string `Add appropriate version for the resource: 
+                                     http://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.version`,
+            errorType = VALIDATION_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        string url = <string>valueSet.url;
+        string rVersion = <string>valueSet.version;
+        string rKey = string `${url}|${rVersion}`;
+
+        if self.valueSets.hasKey(rKey) {
+            return createFHIRError(
+            "Duplicate entry",
+            ERROR,
+            PROCESSING_DUPLICATE,
+            diagnostic = string `Already there is a ValueSet exists in the registry with the URL: ${url}`,
+            errorType = VALIDATION_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        FHIRValidationError? validateResult = validate(valueSet, ValueSet);
+
+        if validateResult is FHIRValidationError {
+            return createFHIRError(
+            "Validation failed",
+            ERROR,
+            INVALID,
+            diagnostic = string `Check whether the data conforms to the specification: 
+                                    http://hl7.org/fhir/R4/valueset-definitions.html`,
+            errorType = VALIDATION_ERROR,
+            cause = validateResult,
+            httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        self.valueSets[rKey] = valueSet.cloneReadOnly();
+    }
+
+    # Find a Code System based on the provided Id and version.
+    #
+    # + id - Id of the CodeSystem to be retrieved
+    # + version - + Version of the CodeSystem to be retrieved
+    # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
+    public isolated function getCodeSystemById(string id, string? version = ()) returns CodeSystem|CodeSystem[]|FHIRError {
+
+        if version is string {
+            boolean isIdExistInRegistry = false;
+            foreach var item in self.codeSystems.keys() {
+                if regex:matches(item, string `.*\/${id}\|${version}$`) && self.codeSystems[item] is CodeSystem {
+                    return <CodeSystem>self.codeSystems[item];
+                } else if regex:matches(item, string `.*\/${id}\|.*`) {
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return createFHIRError(
+                    string `Unknown version: '${version}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    diagnostic = string `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${version}' of it`,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+            }
+        } else {
+            CodeSystem[] codeSystems = [];
+            foreach var item in self.codeSystems.keys() {
+                if regex:matches(item, string `.*\/${id}\|.*`) && self.codeSystems[item] is CodeSystem {
+                    codeSystems.push(<CodeSystem>self.codeSystems[item]);
+                }
+            }
+
+            if codeSystems.length() == 1 {
+                return codeSystems[0];
+            } else if codeSystems.length() > 0 {
+                return codeSystems;
+            } else {
+                return createFHIRError(
+                    string `Unknown CodeSystem: '${id}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+            }
+        }
+
+        return createFHIRError(
+                    string `Unknown CodeSystem: '${id}' with version: ${version.toString()}`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+    }
+
+    # Find a ValueSet for a provided Id and version.
+    #
+    # + id - Id of the Value Set to be retrieved
+    # + version - + Version of the ValueSet to be retrieved
+    # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
+    public isolated function getValueSetById(string id, string? version = ()) returns ValueSet|ValueSet[]|FHIRError {
+
+        if version is string {
+            boolean isIdExistInRegistry = false;
+            foreach var item in self.valueSets.keys() {
+                if regex:matches(item, string `.*\/${id}\|${version}$`) && self.valueSets[item] is ValueSet {
+                    return <ValueSet>self.valueSets[item];
+                } else if regex:matches(item, string `.*\/${id}\|.*`) {
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return createFHIRError(
+                    string `Unknown version: '${version}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    diagnostic = string `There is ValueSet in the registry with Id: '${id}' but can not find version: '${version}' of it`,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+            }
+        } else {
+            ValueSet[] valueSets = [];
+            foreach var item in self.valueSets.keys() {
+                if regex:matches(item, string `.*\/${id}\|.*`) && self.valueSets[item] is ValueSet {
+                    valueSets.push(<ValueSet>self.valueSets[item]);
+                }
+            }
+
+            if valueSets.length() == 1 {
+                return valueSets[0];
+            } else if valueSets.length() > 0 {
+                return valueSets;
+            } else {
+                return createFHIRError(
+                    string `Unknown ValueSet: '${id}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+            }
+        }
+
+        return createFHIRError(
+            string `Unknown ValueSet : '${id}' with version: '${version.toString()}'`,
+            ERROR,
+            PROCESSING_NOT_FOUND,
+            httpStatusCode = http:STATUS_NOT_FOUND
+            );
+    }
+
+    # Search for Code systems based on the provided search parameters.
+    # Allowed search parameters are name, title, url, version, status and so on.
+    #
+    # + searchParameters - List of search parameters, should be passed as map of string arrays
+    # + return - Return array of CodeSystem data if success, return FHIR error if the request contains unsupported search parameters 
+    # and for any other processing errors
+    public isolated function searchCodeSystems(map<string[]> searchParameters) returns CodeSystem[]|FHIRError {
+
+        int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
+        if searchParameters.hasKey("_count") {
+            int|error y = langint:fromString(searchParameters.get("_count")[0]);
+            if y is int {
+                count = y;
+            }
+            _ = searchParameters.remove("_count");
+        }
+
+        int offset = 0;
+        if searchParameters.hasKey("_offset") {
+            int|error y = langint:fromString(searchParameters.get("_offset")[0]);
+            if y is int {
+                offset = y;
+            }
+            _ = searchParameters.remove("_offset");
+        }
+
+        if count > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            return createFHIRError(
+                string `Requested size of the response: ${count.toBalString()} is too large`,
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = string `Allowed maximum size of output is: 50, 
+                    so reduce the value of size parameter accordingly`,
+                errorType = PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
+                );
+        }
+
+        // Validate whether the requested search parameters in the allowed list
+        foreach var param in searchParameters.keys() {
+            if !CODESYSTEMS_SEARCH_PARAMS.hasKey(param) {
+                return createFHIRError(
+                string `This search parameter is not implemented yet: ${param}`,
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = string `Allowed search parameters: ${CODESYSTEMS_SEARCH_PARAMS.keys().toBalString()}`,
+                errorType = VALIDATION_ERROR);
+            }
+        }
+
+        CodeSystem[] codeSystemArray = self.codeSystems.toArray();
+
+        foreach var searchParam in searchParameters.keys() {
+            string[] searchParamValues = searchParameters[searchParam] ?: [];
+
+            CodeSystem[] filteredList = [];
+            if searchParamValues.length() != 0 {
+                foreach var queriedValue in searchParamValues {
+                    CodeSystem[] result = from CodeSystem entry in codeSystemArray
+                        where entry[CODESYSTEMS_SEARCH_PARAMS.get(searchParam)] == queriedValue
+                        select entry;
+                    filteredList.push(...result);
+                }
+                codeSystemArray = filteredList;
+            }
+        }
+
+        if codeSystemArray.length() > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            return createFHIRError(
+                        "The response size is too large",
+                        ERROR,
+                        PROCESSING_TOO_COSTLY,
+                        diagnostic = "The response size is too large, so search with more specific parameter values",
+                        errorType = PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+                        );
+        } else if codeSystemArray.length() >= offset + count - 1 {
+            return codeSystemArray.slice(offset, offset + count);
+        } else if codeSystemArray.length() >= offset {
+            return codeSystemArray.slice(offset);
+        }
+        else {
+            return [];
         }
     }
 
-    # Create CodeableConcept for given code in a given system.
-    # 
+    # Search for Value Sets for the provided search parameters.
+    # Allowed search parameters: are name, title, url, version, status and son on.
+    #
+    # + searchParameters - List of search parameters, should be passed as map of string arrays  
+    # + return - Return array of ValueSet data if success, return FHIR error if the request contains unsupported search parameters
+    # and for any other processing errors
+    public isolated function searchValueSets(map<string[]> searchParameters) returns FHIRError|ValueSet[] {
+
+        int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
+        if searchParameters.hasKey("_count") {
+            int|error y = langint:fromString(searchParameters.get("_count")[0]);
+            if y is int {
+                count = y;
+            }
+            _ = searchParameters.remove("_count");
+        }
+
+        int offset = 0;
+        if searchParameters.hasKey("_offset") {
+            int|error y = langint:fromString(searchParameters.get("_offset")[0]);
+            if y is int {
+                offset = y;
+            }
+            _ = searchParameters.remove("_offset");
+        }
+
+        if count > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            return createFHIRError(
+                string `Requested size of the response: ${count.toBalString()} is too large`,
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = string `Allowed maximum size of output is: 50, 
+                    so reduce the value of size parameter accordingly`,
+                errorType = PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
+                );
+        }
+
+        // Validate the requested search parameters in the allowed list
+        foreach var param in searchParameters.keys() {
+            if !VALUESETS_SEARCH_PARAMS.hasKey(param) {
+                return createFHIRError(
+                string `This search parameter is not implemented yet: ${param}`,
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toBalString()}`,
+                errorType = VALIDATION_ERROR);
+            }
+        }
+
+        ValueSet[] valueSetArray = self.valueSets.toArray();
+
+        foreach var searchParam in searchParameters.keys() {
+            string[] searchParamValues = searchParameters[searchParam] ?: [];
+
+            ValueSet[] filteredList = [];
+            if searchParamValues.length() != 0 {
+                foreach var queriedValue in searchParamValues {
+                    ValueSet[] result = from ValueSet entry in valueSetArray
+                        where entry[VALUESETS_SEARCH_PARAMS.get(searchParam)] == queriedValue
+                        select entry;
+                    filteredList.push(...result);
+                }
+                valueSetArray = filteredList;
+
+            }
+        }
+
+        if valueSetArray.length() > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            return createFHIRError(
+                        "The response size is too large",
+                        ERROR,
+                        PROCESSING_TOO_COSTLY,
+                        diagnostic = string `The response size is too large, so search with more specific parameter values`,
+                        errorType = PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+                        );
+        } else if valueSetArray.length() >= offset + count - 1 {
+            return valueSetArray.slice(offset, offset + count);
+        } else if valueSetArray.length() >= offset {
+            return valueSetArray.slice(offset);
+        } else {
+            return [];
+        }
+    }
+
+    # Extract the respective concepts from a given CodeSystem based on the give code or Coding or CodeableConcept data.
+    # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#lookup.
+    #
+    # + codeValue - Code or Coding or CodeableConcept data type value to process with the CodeSystem
+    # + cs - CodeSystem record to be processed. If system parameter is not supplied, this value shoud be mandatory, 
+    # else this is an optional field            
+    # + system - System URL of the CodeSystem to be processed, if system CodeSystem(cs) is not supplied, 
+    # this value shoud be mandatory 
+    # + return - Return list of Concepts if processing is successful, return FHIRError if fails
+    public isolated function codeSystemLookUp(code|Coding|CodeableConcept codeValue, CodeSystem? cs = (), uri? system = ())
+                                                                    returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
+
+        // Create and initialize a CodeSystem record with the mandatory fields
+        CodeSystem codeSystem = {content: "example", status: "unknown"};
+        CodeSystemConcept[] codeConceptDetailsList = [];
+
+        CodeSystem|error ensured = cs.ensureType();
+        if !(ensured is error) {
+            codeSystem = ensured;
+        } else if !(system is ()) {
+            if self.codeSystems.hasKey(system){
+                codeSystem = self.codeSystems.get(system);
+            }else{
+                return createFHIRError(string `Cannot find a CodeSystem for the provided system URL: ${system}`,
+                    ERROR,
+                    INVALID,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+        } else {
+            string msg = "Can not find a CodeSystem";
+            return createFHIRError(msg,
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = "CodeSystem record or system URL should be provided as input",
+            errorType = PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+        if codeValue is code {
+            CodeConceptDetails? result = self.findConceptInCodeSystem(codeSystem, codeValue);
+
+            if result is CodeConceptDetails {
+                return result.concept;
+            } else {
+                return createFHIRError(
+                    string `Can not find any valid concepts for the code: ${codeValue.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND);
+            }
+        } else if codeValue is Coding {
+            CodeConceptDetails? result = self.findConceptInCodeSystemFromCoding(codeSystem, codeValue);
+
+            if result is CodeConceptDetails {
+                return result.concept;
+            } else {
+                return createFHIRError(
+                    string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND);
+            }
+        } else if codeValue is CodeableConcept {
+            Coding[]? codings = codeValue.coding;
+
+            if codings != () {
+                foreach var c in codings {
+                    CodeConceptDetails? result = self.findConceptInCodeSystemFromCoding(codeSystem.cloneReadOnly(), c);
+                    if result is CodeConceptDetails {
+                        codeConceptDetailsList.push(result.concept);
+                    }
+                }
+
+                if codeConceptDetailsList.length() < 0 {
+                    return createFHIRError(
+                    string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND);
+                }
+                if codeConceptDetailsList.length() == 1{
+                    return codeConceptDetailsList[0];
+                }else{
+                    return codeConceptDetailsList;
+                }
+
+            } else {
+                return createFHIRError(
+                    "Can not find any valid Codings in the provide CodeableConcept data",
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+        }
+        return createFHIRError(
+            "Either code or Coding or CodeableConcept should be provided as input",
+            ERROR,
+            PROCESSING_NOT_FOUND,
+            httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+
+    }
+
+    # Extract the respective concepts from a given ValueSet based on the give code or Coding or CodeableConcept data
+    # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#validation.
+    #
+    # + codeValue - Code or Coding or CodeableConcept data type value to process with the ValueSet 
+    # + vs - vs - ValueSet record to be processed. If system parameter is not supplied, this value shoud be mandatory, 
+    # else this is an optional field  
+    # + system - System URL of the ValueSet to be processed, if system ValueSet(vs) is not supplied then  
+    # this value shoud be mandatory
+    # + return - Return list of Concepts if processing is successful, return FHIRError if fails
+    public isolated function valueSetLookUp(code|Coding|CodeableConcept codeValue, ValueSet? vs = (), uri? system = ())
+                                                                returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
+
+        // Create and initialize a ValueSet record with the mandatory fields
+        ValueSet valueSet = {status: "unknown"};
+        CodeSystemConcept[] codeConceptDetailsList = [];
+
+        ValueSet|error ensured = vs.ensureType();
+        if !(ensured is error) {
+            valueSet = ensured;
+        } else if !(system is ()) {
+            valueSet = self.valueSets.get(system);
+        } else {
+            return createFHIRError(
+            "Can not find a ValueSet",
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = "Either ValueSet record or system URL should be provided as input",
+            errorType = PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+        if system != () && codeValue is code {
+            CodeConceptDetails? result = self.findConceptInValueSet(valueSet, codeValue);
+            if result is CodeConceptDetails {
+                return result.concept;
+            } else {
+                return createFHIRError(
+                    string `Can not find any valid concepts for the code: ${codeValue.toBalString()} 
+                    in ValueSet: ${valueSet.id.toBalString()}`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND);
+            }
+        } else if codeValue is Coding {
+
+            CodeConceptDetails? result = self.findConceptInValueSetFromCoding(valueSet, codeValue);
+
+            if result is CodeConceptDetails {
+                return result.concept;
+            } else {
+                return createFHIRError(
+                    string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} 
+                    in ValueSet: ${valueSet.id.toBalString()}`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND);
+            }
+        } else if codeValue is CodeableConcept {
+            Coding[]? codings = codeValue.coding;
+
+            if codings != () {
+                foreach var c in codings {
+                    CodeConceptDetails? result = self.findConceptInValueSetFromCoding(valueSet.cloneReadOnly(), c);
+
+                    if result is CodeConceptDetails {
+                        codeConceptDetailsList.push(result.concept);
+                    }
+                }
+
+                if codeConceptDetailsList.length() < 0 {
+                    return createFHIRError(
+                    string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} 
+                    in CodeSystem: ${valueSet.id.toBalString()}`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND);
+                }
+                return codeConceptDetailsList;
+            } else {
+                return createFHIRError(
+                    "Can not find any valid Codings in the provide CodeableConcept data",
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+        } else {
+            return createInternalFHIRError(
+            "Either code or Coding or CodeableConcept should be provided as input",
+            ERROR,
+            PROCESSING_NOT_FOUND
+            );
+        }
+    }
+
+    # Extract all the concepts from a given valueSet based on the given filter parameters
+    # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#expand.
+    #
+    # + searchParameters - List of search parameters to filter concepts, should be passed as map of string arrays  
+    # + vs - ValueSet record to be processed. If system parameter is not supplied, this value shoud be mandatory, 
+    # else this is an optional field  
+    # + system - System URL of the ValueSet to be processed, if system ValueSet(vs) is not supplied then  
+    # this value shoud be mandatory
+    # + return - List of concepts is successful,  return FHIRError if fails
+    public isolated function valueSetExpansion(map<string[]> searchParameters, ValueSet? vs = (), uri? system = ())
+                                                                returns ValueSet|FHIRError {
+        int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
+        if searchParameters.hasKey("_count") {
+            int|error y = langint:fromString(searchParameters.get("_count")[0]);
+            if y is int {
+                count = y;
+            }
+            _ = searchParameters.remove("_count");
+        }
+
+        int offset = 0;
+        if searchParameters.hasKey("_offset") {
+            int|error y = langint:fromString(searchParameters.get("_offset")[0]);
+            if y is int {
+                offset = y;
+            }
+            _ = searchParameters.remove("_offset");
+        }
+
+        if count > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            return createFHIRError(
+                string `Requested size of the response: ${count.toBalString()} is too large`,
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = "Allowed maximum size of output is: 50, so reduce the value of size parameter accordingly",
+                errorType = PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
+                );
+        }
+
+        // Create and initialize a ValueSet record with the mandatory fields
+        ValueSet valueSet = {status: "unknown"};
+
+        ValueSet|error ensured = vs.ensureType();
+        if !(ensured is error) {
+            valueSet = ensured;
+        } else if system is string {
+            map<string[]> clone = searchParameters.clone();
+            _ = clone.remove("filter");
+            if !clone.hasKey("system") {
+                clone["system"] = [system];
+            }
+            ValueSet[] v = check self.searchValueSets(clone);
+            valueSet = v[0];
+        } else {
+            return createFHIRError(
+            "Can not find a ValueSet",
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = "Either ValueSet record or system URL should be provided as input",
+            errorType = PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+        // Validate the requested search parameters in the allowed list
+        foreach var param in searchParameters.keys() {
+            if !VALUESETS_EXPANSION_PARAMS.hasKey(param) {
+                return createFHIRError(
+                string `This search parameter is not implemented yet: ${param}`,
+                ERROR,
+                PROCESSING_NOT_SUPPORTED,
+                diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toBalString()}`,
+                errorType = VALIDATION_ERROR);
+            }
+        }
+
+        ValueSetExpansionDetails? details = self.getAllConceptInValueSet(valueSet);
+
+        if details is ValueSetExpansionDetails {
+            CodeSystemConcept[]|ValueSetComposeIncludeConcept[] concepts = details.concepts;
+
+            if concepts is ValueSetComposeIncludeConcept[] {
+                if searchParameters.hasKey("filter") {
+                    string filter = searchParameters.get("filter")[0];
+                    ValueSetComposeIncludeConcept[] result = from ValueSetComposeIncludeConcept entry in concepts
+                        where entry["display"] is string && regex:matches((<string>entry["display"]).toUpperAscii(),
+                        string `.*${filter.toUpperAscii()}.*`)
+                        select entry;
+                    concepts = result;
+                }
+
+                int totalCount = concepts.length();
+
+                if concepts.length() > offset + count {
+                    concepts = concepts.slice(offset, offset + count);
+                } else if concepts.length() >= offset {
+                    concepts = concepts.slice(offset);
+                } else {
+                    CodeSystemConcept[] temp = [];
+                    concepts = temp;
+                }
+
+                ValueSetExpansion expansion = self.createExpandedValueSet(valueSet, concepts);
+                expansion.offset = offset;
+                expansion.total = totalCount;
+                valueSet.expansion = expansion;
+
+            } else {
+                if searchParameters.hasKey("filter") {
+                    string filter = searchParameters.get("filter")[0];
+                    CodeSystemConcept[] result = from CodeSystemConcept entry in concepts
+                        where entry["display"] is string
+                            && regex:matches((<string>entry["display"]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
+                        || entry["definition"] is string
+                            && regex:matches((<string>entry["definition"]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
+                        select entry;
+                    concepts = result;
+                }
+
+                int totalCount = concepts.length();
+
+                if concepts.length() > offset + count {
+                    concepts = concepts.slice(offset, offset + count);
+                } else if concepts.length() >= offset {
+                    concepts = concepts.slice(offset);
+                } else {
+                    CodeSystemConcept[] temp = [];
+                    concepts = temp;
+                }
+
+                ValueSetExpansion expansion = self.createExpandedValueSet(valueSet, concepts);
+                expansion.offset = offset;
+                expansion.total = totalCount;
+                valueSet.expansion = expansion;
+            }
+        }
+        return valueSet;
+    }
+
+    # This method with compare concepts
+    # This method was implemented based on: http://hl7.org/fhir/R4/terminology-service.html#subsumes
+    #
+    # + cs - CodeSystem value  
+    # + system - System uri of the codeSystem  
+    # + conceptA - Concept 1  
+    # + conceptB - Concept 2
+    # + return - Return Values either equivalent or not-subsumed if processing is successful, FHIRError processing fails
+    public isolated function subsumes(code|Coding conceptA, code|Coding conceptB, CodeSystem? cs = (), uri? system = ())
+                                                                                                returns string|FHIRError {
+
+        // Create and initialize a CodeSystem record with the mandatory fields
+        CodeSystem codeSystem = {content: "example", status: "unknown"};
+        if cs is () && system != () {
+            codeSystem = self.codeSystems.get(<string>system);
+        } else if cs != () {
+            codeSystem = cs;
+        } else {
+            return createFHIRError(
+            "Can not find a CodeSystem",
+            ERROR,
+            INVALID_REQUIRED,
+            diagnostic = "CodeSystem record or system URL should be provided as input",
+            errorType = PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+        CodeSystemConcept? conceptDetailsA = self.retrieveCodeSystemConcept(codeSystem, conceptA);
+        CodeSystemConcept? conceptDetailsB = self.retrieveCodeSystemConcept(codeSystem, conceptB);
+
+        if conceptDetailsA != () && conceptDetailsB != () {
+            if conceptDetailsA.code == conceptDetailsB.code && conceptDetailsA.display == conceptDetailsB.display {
+                return "equivalent";
+            } else {
+                return "not-subsumed";
+            }
+        } else if conceptDetailsA is () {
+            return createFHIRError(
+                    string `Code/ Coding: ${conceptA.toBalString()} is not included in the provided CodeSystem`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+        } else {
+            return createFHIRError(
+                    string `Code/ Coding: ${conceptB.toBalString()} is not included in the provided CodeSystem`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+    }
+
+    # Create CodeableConcept data type for given code in a given system.
+    #
     # + system - system uri of the code system or value set
     # + code - code interested
     # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code 
-    #                       system in a external source system)
+    # system in a external source system)
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCodeableConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    public isolated function createCodeableConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                     returns CodeableConcept|FHIRError {
         CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder);
         if conceptResult != () {
             return self.conceptToCodeableConcept(conceptResult.concept, conceptResult.url);
         }
-        string msg = string `Code : ${code} not found in system : ${system}`;
-        return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+        return createInternalFHIRError(
+            string `Code : ${code} not found in system : ${system}`,
+            ERROR,
+            PROCESSING_NOT_FOUND
+            );
     }
 
-    # Create Coding for given code in a given system.
-    # 
-    # + system - system uri of the code system or value set
+    # Create Coding data type for given code in a given system.
+    #
+    # + system - System uri of the CodeSystem or valueSet
     # + code - code interested
     # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code 
-    #                       system in a external source system)
+    # system in a external source system)
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCoding(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    public isolated function createCoding(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                                 returns Coding|FHIRError {
         CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder);
         if conceptResult != () {
             return self.conceptToCoding(conceptResult.concept, conceptResult.url);
         }
-        string msg = string `Code : ${code} not found in system : ${system}`;
-        return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+
+        return createInternalFHIRError(
+            string `Code : ${code} not found in system : ${system}`,
+            ERROR,
+            PROCESSING_NOT_FOUND);
     }
 
-
-    private isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    // Function to find concept in CodeSystems or ValueSets by passing code data type parameter.
+    private isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                 returns (CodeConceptDetails|FHIRError)? {
         if codeSystemFinder != () {
             (CodeSystem|ValueSet) & readonly result = check codeSystemFinder(system, code).cloneReadOnly();
@@ -97,16 +1025,15 @@ public class TerminologyProcessor {
         } else if self.codeSystems.hasKey(system) {
             return self.findConceptInCodeSystem(self.codeSystems.get(system), code);
         } else {
-            string msg = string `Unknown ValueSet or CodeSystem : ${system}`;
-            return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
+            return createInternalFHIRError(
+                string `Unknown ValueSet or CodeSystem : ${system}`,
+                ERROR,
+                PROCESSING_NOT_FOUND
+                );
         }
     }
 
-    # Function to find code system concept within a CodeSystem.
-    # 
-    # + codeSystem - Target CodeSystem
-    # + code - code searching for
-    # + return - Code system concept found in the CodeSystem 
+    // Function to find concept in a CodeSystem by passing code data type parameter. 
     private isolated function findConceptInCodeSystem(CodeSystem codeSystem, code code) returns CodeConceptDetails? {
         CodeSystemConcept[]? concepts = codeSystem.concept;
         uri? url = codeSystem.url;
@@ -116,7 +1043,7 @@ public class TerminologyProcessor {
                     CodeConceptDetails codeConcept = {
                         url: url,
                         concept: concept
-                    }; 
+                    };
                     return codeConcept;
                 }
             }
@@ -124,11 +1051,34 @@ public class TerminologyProcessor {
         return;
     }
 
-    # Function to find code system concept within a ValueSet.
-    # 
-    # + valueSet - Target ValueSet
-    # + code - code searching for
-    # + return - ValueSet/CodeSystem concept found 
+    // Function to find concept in a CodeSystem by passing Coding data type parameter.
+    private isolated function findConceptInCodeSystemFromCoding(CodeSystem codeSystem, Coding coding) returns CodeConceptDetails? {
+        code? code = coding.code;
+
+        if code != () {
+            return self.findConceptInCodeSystem(codeSystem, code);
+        } else {
+            string msg = "No valid code found in the Coding";
+            log:printDebug(createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND).toBalString());
+        }
+        return;
+    }
+
+    // Function to get all concepts in a CodeSystem.
+    private isolated function getAllConceptInCodeSystem(CodeSystem codeSystem) returns ValueSetExpansionDetails? {
+        CodeSystemConcept[]? concepts = codeSystem.concept;
+        uri? url = codeSystem.url;
+        if concepts != () && url != () {
+            ValueSetExpansionDetails codeConcept = {
+                url: url,
+                concepts: concepts
+            };
+            return codeConcept;
+        }
+        return;
+    }
+
+    // Function to find concept in a ValueSet by passing code data type parameter. 
     private isolated function findConceptInValueSet(ValueSet valueSet, code code) returns (CodeConceptDetails)? {
         ValueSetCompose? composeBBE = valueSet.compose;
         if composeBBE != () {
@@ -170,7 +1120,63 @@ public class TerminologyProcessor {
                                 }
                             }
                         }
-                        
+                    }
+                }
+            }
+        }
+        return;
+    }
+
+    // Function to find concepts in a ValueSet by passing Coding data type parameter.
+    private isolated function findConceptInValueSetFromCoding(ValueSet valueSet, Coding coding) returns CodeConceptDetails? {
+        code? code = coding.code;
+
+        if code != () {
+            return self.findConceptInValueSet(valueSet, code);
+        } else {
+            string msg = "No valid code found in the Coding";
+            log:printDebug(createFHIRError(msg, ERROR, PROCESSING_NOT_FOUND).toBalString());
+        }
+        return;
+    }
+
+    // Function to get all concept in a ValueSet. 
+    private isolated function getAllConceptInValueSet(ValueSet valueSet) returns (ValueSetExpansionDetails)? {
+        ValueSetCompose? composeBBE = valueSet.compose;
+        if composeBBE != () {
+            foreach ValueSetComposeInclude includeBBE in composeBBE.include {
+                uri? systemValue = includeBBE.system;
+
+                if systemValue != () {
+                    ValueSetComposeIncludeConcept[]? includeConcepts = includeBBE.concept;
+                    if includeConcepts != () {
+                        ValueSetExpansionDetails concepts = {
+                            url: systemValue,
+                            concepts: includeConcepts
+                        };
+                        return concepts;
+                    } else {
+                        // Find CodeSystem
+                        if self.codeSystems.hasKey(systemValue) {
+                            ValueSetExpansionDetails? result = self.getAllConceptInCodeSystem(self.codeSystems.get(systemValue));
+                            if result != () {
+                                return result;
+                            }
+                        }
+                    }
+                } else {
+                    // check the contents included in this value set
+                    canonical[]? valueSetResult = includeBBE.valueSet;
+                    if valueSetResult != () {
+                        //+ Rule: A value set include/exclude SHALL have a value set or a system
+                        foreach canonical valueSetEntry in valueSetResult {
+                            if self.valueSets.hasKey(valueSetEntry) {
+                                ValueSetExpansionDetails? concept = self.getAllConceptInValueSet(self.valueSets.get(valueSetEntry));
+                                if concept != () {
+                                    return concept;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -202,9 +1208,9 @@ public class TerminologyProcessor {
             }
         }
         return cConcept;
-    } 
+    }
 
-    private isolated function conceptToCoding (CodeSystemConcept|ValueSetComposeIncludeConcept concept, uri system) returns Coding {
+    private isolated function conceptToCoding(CodeSystemConcept|ValueSetComposeIncludeConcept concept, uri system) returns Coding {
 
         Coding codingValue = {
             code: concept.code,
@@ -215,5 +1221,61 @@ public class TerminologyProcessor {
             codingValue.display = displayValue;
         }
         return codingValue;
-    } 
+    }
+
+    private isolated function retrieveCodeSystemConcept(CodeSystem codeSystem, code|Coding concept) returns CodeSystemConcept? {
+        if concept is code {
+            CodeConceptDetails? conceptDetails = self.findConceptInCodeSystem(
+                codeSystem, concept);
+            if conceptDetails is CodeConceptDetails {
+                CodeSystemConcept|ValueSetComposeIncludeConcept temp = conceptDetails.concept;
+                if temp is CodeSystemConcept {
+                    return temp;
+                }
+            }
+
+        } else {
+            CodeConceptDetails? conceptDetails = self.findConceptInCodeSystemFromCoding(
+                codeSystem, concept);
+
+            if conceptDetails is CodeConceptDetails {
+                CodeSystemConcept|ValueSetComposeIncludeConcept temp = conceptDetails.concept;
+                if temp is CodeSystemConcept {
+                    return temp;
+                }
+            }
+        }
+        return;
+    }
+
+    private isolated function createExpandedValueSet(ValueSet vs, CodeSystemConcept[]|ValueSetComposeIncludeConcept[] concepts)
+                                                                                                    returns ValueSetExpansion {
+        ValueSetExpansionContains[] contains = [];
+        if concepts is ValueSetComposeIncludeConcept[] {
+            foreach ValueSetComposeIncludeConcept concept in concepts {
+                ValueSetExpansionContains c = {};
+                c.code = concept.code;
+                c.display = concept.display;
+                c.id = concept.id;
+
+                contains.push(c);
+            }
+
+        } else {
+            foreach CodeSystemConcept concept in concepts {
+                ValueSetExpansionContains c = {};
+                c.code = concept.code;
+                c.display = concept.display;
+                c.id = concept.id;
+
+                contains.push(c);
+            }
+        }
+
+        ValueSetExpansion expansion = {timestamp: ""};
+        expansion.contains = contains;
+        expansion.timestamp = time:utcToString(time:utcNow());
+
+        return expansion;
+    }
 }

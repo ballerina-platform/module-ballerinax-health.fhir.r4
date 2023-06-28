@@ -89,9 +89,6 @@ public isolated class FHIRRegistry {
                 }
             }
         }
-
-        // Update terminology processor
-        terminologyProcessor.addTerminology(ig.getTerminology());
     }
 
 
