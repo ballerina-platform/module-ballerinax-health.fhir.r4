@@ -17,6 +17,98 @@
 import ballerina/test;
 
 @test:Config {
+    groups: ["coding", "create_coding", "successful_scenario"]
+}
+function createCoding1() {
+    code code = "inactive";
+    Coding|FHIRError actualCoding = terminologyProcessor.createCoding("http://hl7.org/fhir/account-status", code);
+    Coding expectedCoding = {system: "http://hl7.org/fhir/account-status", code: "inactive", display: "Inactive"};
+    test:assertEquals(actualCoding, expectedCoding);
+}
+
+@test:Config {
+    groups: ["coding", "create_coding", "failure_scenario"]
+}
+function createCoding2() {
+    code code = "inactive2";
+    string system = "http://hl7.org/fhir/account-status";
+    Coding|FHIRError actualCoding = terminologyProcessor.createCoding(system, code);
+    test:assertEquals((<FHIRError>actualCoding).message(), string `Code : ${code} not found in system : ${system}`);
+}
+
+@test:Config {
+    groups: ["coding", "create_coding", "failure_scenario"]
+}
+function createCoding3() {
+    code code = "inactive";
+    string incorrectSystem = "http://hl7.org/fhir/account-status1";
+    Coding|FHIRError actualCoding = terminologyProcessor.createCoding(incorrectSystem, code);
+    test:assertEquals((<FHIRError>actualCoding).message(), string `Unknown ValueSet or CodeSystem : ${incorrectSystem}`);
+}
+
+@test:Config {
+    groups: ["coding", "create_coding", "failure_scenario"]
+}
+function createCoding4() {
+    code code = "inactive";
+    string system = "http://hl7.org/fhir/account-status";
+    string incorrectVersion = "5.3.0";
+    Coding|FHIRError actualCoding = terminologyProcessor.createCoding(system, code, version = incorrectVersion);
+    test:assertEquals((<FHIRError>actualCoding).message(), string `Unknown ValueSet or CodeSystem : ${system}`);
+}
+
+@test:Config {
+    groups: ["codeableconcept", "create_codeableconcept", "successful_scenario"]
+}
+function createCodeableconcept1() {
+    code code = "inactive";
+    string system = "http://hl7.org/fhir/account-status";
+
+    CodeableConcept|FHIRError actualCC = terminologyProcessor.createCodeableConcept(system, code);
+    CodeableConcept expectedCC = {
+        coding: [
+            {system: "http://hl7.org/fhir/account-status", code: "inactive", display: "Inactive"}
+        ],
+        text: "This account is inactive and should not be used to track financial information."
+    };
+    test:assertEquals(actualCC, expectedCC);
+}
+
+@test:Config {
+    groups: ["codeableconcept", "create_codeableconcept", "failure_scenario"]
+}
+function createCodeableconcept2() {
+    code incorrectCode = "inactive2";
+    string system = "http://hl7.org/fhir/account-status";
+
+    CodeableConcept|FHIRError actualCC = terminologyProcessor.createCodeableConcept(system, incorrectCode);
+    test:assertEquals((<FHIRError>actualCC).message(), string `Code : ${incorrectCode} not found in system : ${system}`);
+}
+
+@test:Config {
+    groups: ["codeableconcept", "create_codeableconcept", "failure_scenario"]
+}
+function createCodeableconcept3() {
+    code code = "inactive";
+    string incorrectSystem = "http://hl7.org/fhir/account-status2";
+
+    CodeableConcept|FHIRError actualCC = terminologyProcessor.createCodeableConcept(incorrectSystem, code);
+    test:assertEquals((<FHIRError>actualCC).message(), string `Unknown ValueSet or CodeSystem : ${incorrectSystem}`);
+}
+
+@test:Config {
+    groups: ["codeableconcept", "create_codeableconcept", "failure_scenario"]
+}
+function createCodeableconcept4() {
+    code code = "inactive";
+    string system = "http://hl7.org/fhir/account-status";
+    string incorrectVersion = "5.3.0";
+
+    CodeableConcept|FHIRError actualCC = terminologyProcessor.createCodeableConcept(system, code, version = incorrectVersion);
+    test:assertEquals((<FHIRError>actualCC).message(), string `Unknown ValueSet or CodeSystem : ${system}`);
+}
+
+@test:Config {
     groups: ["codesystem", "get_by_id_codesystem", "successful_scenario"]
 }
 function getByIdCodeSystemTest1() {
@@ -25,7 +117,7 @@ function getByIdCodeSystemTest1() {
 
     CodeSystem expectedCS = returnCodeSystemData("action-condition-kind");
 
-    CodeSystem|FHIRError|CodeSystem[] actualCS = terminologyProcessor.getCodeSystemById(id, version);
+    CodeSystem|FHIRError actualCS = terminologyProcessor.getCodeSystemById(id, version);
     test:assertEquals(actualCS, expectedCS);
 }
 
@@ -36,7 +128,7 @@ function getByIdCodeSystemTest2() {
     string id = "action-condition-kind";
 
     CodeSystem expectedCS = returnCodeSystemData("action-condition-kind");
-    CodeSystem|FHIRError|CodeSystem[] actualCS = terminologyProcessor.getCodeSystemById(id);
+    CodeSystem|FHIRError actualCS = terminologyProcessor.getCodeSystemById(id);
     test:assertEquals(actualCS, expectedCS);
 }
 
@@ -47,7 +139,7 @@ function getByIdCodeSystemTest3() {
     string id = "action-condition-kind";
     string incorrectVersion = "5.3.0";
 
-    CodeSystem|FHIRError|CodeSystem[] actualCS = terminologyProcessor.getCodeSystemById(id, incorrectVersion);
+    CodeSystem|FHIRError actualCS = terminologyProcessor.getCodeSystemById(id, incorrectVersion);
     FHIRError err = <FHIRError>actualCS;
     test:assertEquals(err.message(), string `Unknown version: '${incorrectVersion}'`, "Mismatching error message");
     test:assertEquals(err.detail().issues[0].diagnostic, string `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${incorrectVersion}' of it`, "Mismatching error diagonistic");
@@ -58,8 +150,9 @@ function getByIdCodeSystemTest3() {
 }
 function getByIdCodeSystemTest4() {
     string incorrectId = "account-status2";
+    string version = "5.3.0";
 
-    CodeSystem|FHIRError|CodeSystem[] codeSystem4 = terminologyProcessor.getCodeSystemById(incorrectId);
+    CodeSystem|FHIRError codeSystem4 = terminologyProcessor.getCodeSystemById(incorrectId, version);
     test:assertEquals((<FHIRError>codeSystem4).message(), string `Unknown CodeSystem: '${incorrectId}'`);
 }
 
@@ -104,8 +197,9 @@ function getByIdValueSetTest3() {
 }
 function getByIdValueSetTest4() {
     string incorrectId = "relationship2";
+    string version = "4.3.0";
 
-    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.getValueSetById(incorrectId);
+    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.getValueSetById(incorrectId, version);
     test:assertEquals((<FHIRError>actaulVS).message(), string `Unknown ValueSet: '${incorrectId}'`);
 }
 
@@ -175,7 +269,7 @@ function searchCodeSystemTest4() {
     groups: ["codesystem", "search_codesystem", "successful_scenario"]
 }
 function searchCodeSystemTest5() {
-     map<string[]> searchParameters = {"status": ["active"], "_offset": ["0"], "_count": ["50"]};
+    map<string[]> searchParameters = {"status": ["active"], "_offset": ["0"], "_count": ["50"]};
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
@@ -189,7 +283,7 @@ function searchCodeSystemTest5() {
     groups: ["codesystem", "search_codesystem", "successful_scenario"]
 }
 function searchCodeSystemTest6() {
-     map<string[]> searchParameters = {"status": ["active"], "_offset": ["50"], "_count": ["50"]};
+    map<string[]> searchParameters = {"status": ["active"], "_offset": ["50"], "_count": ["50"]};
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
@@ -221,7 +315,7 @@ function searchValueSetTest1() {
 }
 function searchValueSetTest2() {
     string id = "relationship";
-    map<string[]> searchParameters = {"_id": [id]};
+    map<string[]> searchParameters = {"url": ["http://hl7.org/fhir/ValueSet/relationship"]};
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     ValueSet expectedVS = returnValueSetData(id);
@@ -295,7 +389,7 @@ function searchValueSetTest6() {
 function codeSystemLookupTest1() {
     code code = "inactive";
     CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
-                                                .codeSystemLookUp(code, system = "http://hl7.org/fhir/account-status|4.3.0");
+                                                .codeSystemLookUp(code, system = "http://hl7.org/fhir/account-status");
     CodeSystem expectedCS = returnCodeSystemData("account-status");
 
     foreach CodeSystemConcept c in <CodeSystemConcept[]>expectedCS.concept {
@@ -309,9 +403,9 @@ function codeSystemLookupTest1() {
     groups: ["codesystem", "codesystem_lookup", "successful_scenario"]
 }
 function codeSystemLookupTest2() returns error? {
-    Coding coding = check terminologyProcessor.createCoding("http://hl7.org/fhir/account-status|4.3.0", "inactive");
+    Coding coding = check terminologyProcessor.createCoding("http://hl7.org/fhir/account-status", "inactive");
     CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
-                                                .codeSystemLookUp(coding, system = "http://hl7.org/fhir/account-status|4.3.0");
+                                                .codeSystemLookUp(coding, system = "http://hl7.org/fhir/account-status");
     CodeSystem expectedCS = returnCodeSystemData("account-status");
 
     foreach CodeSystemConcept c in <CodeSystemConcept[]>expectedCS.concept {
@@ -326,9 +420,9 @@ function codeSystemLookupTest2() returns error? {
 }
 function codeSystemLookupTest3() returns error? {
     code code = "inactive";
-    CodeableConcept codeableConcept = check terminologyProcessor.createCodeableConcept("http://hl7.org/fhir/account-status|4.3.0", code);
+    CodeableConcept codeableConcept = check terminologyProcessor.createCodeableConcept("http://hl7.org/fhir/account-status", code);
     CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
-                                                .codeSystemLookUp(codeableConcept, system = "http://hl7.org/fhir/account-status|4.3.0");
+                                                .codeSystemLookUp(codeableConcept, system = "http://hl7.org/fhir/account-status");
     CodeSystem expectedCS = returnCodeSystemData("account-status");
 
     foreach CodeSystemConcept c in <CodeSystemConcept[]>expectedCS.concept {
@@ -339,20 +433,20 @@ function codeSystemLookupTest3() returns error? {
 }
 
 @test:Config {
-    groups: ["codesystem", "codesystem_lookup", "successful_scenario"]
+    groups: ["codesystem", "codesystem_lookup", "failure_scenario"]
 }
 function codeSystemLookupTest4() returns error? {
     code code = "inactive";
-    string system = "http://hl7.org/fhir/account-status2";
+    string system = "http://hl7.org/fhir/account-status2|4.3.0";
     CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
                                                 .codeSystemLookUp(code, system = system);
 
-    test:assertEquals((<FHIRError>actualConcept).message(), 
+    test:assertEquals((<FHIRError>actualConcept).message(),
             string `Cannot find a CodeSystem for the provided system URL: ${system}`);
 }
 
 @test:Config {
-    groups: ["codesystem", "codesystem_lookup", "successful_scenario"]
+    groups: ["codesystem", "codesystem_lookup", "failure_scenario"]
 }
 function codeSystemLookupTest5() returns error? {
     code code = "inactive";
@@ -360,17 +454,157 @@ function codeSystemLookupTest5() returns error? {
                                                 .codeSystemLookUp(code);
 
     test:assertEquals((<FHIRError>actualConcept).message(), "Can not find a CodeSystem");
-    test:assertEquals((<FHIRError>actualConcept).detail().issues[0].diagnostic , "CodeSystem record or system URL should be provided as input");
+    test:assertEquals((<FHIRError>actualConcept).detail().issues[0].diagnostic, "Either CodeSystem record or system URL should be provided as input");
 }
 
 @test:Config {
-    groups: ["codesystem", "codesystem_lookup", "successful_scenario"]
+    groups: ["codesystem", "codesystem_lookup", "failure_scenario"]
 }
 function codeSystemLookupTest6() returns error? {
     code code = "inactive2";
     string id = "account-status";
     CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
-                                                .codeSystemLookUp(code, system = "http://hl7.org/fhir/account-status|4.3.0");
+                                                .codeSystemLookUp(code, system = "http://hl7.org/fhir/account-status");
 
     test:assertEquals((<FHIRError>actualConcept).message(), string `Can not find any valid concepts for the code: "${code}" in CodeSystem: "${id}"`);
+}
+
+@test:Config {
+    groups: ["valueset", "valueset_lookup", "successful_scenario"]
+}
+function valueSetLookupTest1() {
+    code code = "1";
+    CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
+                                                .valueSetLookUp(code, system = "http://hl7.org/fhir/ValueSet/relationship");
+    CodeSystem expectedVS = returnCodeSystemData("relationship");
+
+    foreach CodeSystemConcept c in <CodeSystemConcept[]>expectedVS.concept {
+        if c.code == code {
+            test:assertEquals(actualConcept, c);
+        }
+    }
+}
+
+@test:Config {
+    groups: ["valueset", "valueset_lookup", "successful_scenario"]
+}
+function valueSetLookupTest2() returns error? {
+    Coding coding = check terminologyProcessor.createCoding("http://hl7.org/fhir/relationship", "1");
+    CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
+                                                .valueSetLookUp(coding, system = "http://hl7.org/fhir/ValueSet/relationship");
+    CodeSystem expectedVS = returnCodeSystemData("relationship");
+
+    foreach CodeSystemConcept c in <CodeSystemConcept[]>expectedVS.concept {
+        if c.code == coding.code {
+            test:assertEquals(actualConcept, c);
+        }
+    }
+}
+
+@test:Config {
+    groups: ["valueset", "valueset_lookup", "successful_scenario"]
+}
+function valueSetLookupTest3() returns error? {
+    code code = "start";
+    CodeableConcept codeableConcept = check terminologyProcessor.createCodeableConcept("http://hl7.org/fhir/action-condition-kind", code);
+    CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
+                                                .valueSetLookUp(codeableConcept, system = "http://hl7.org/fhir/ValueSet/action-condition-kind");
+    CodeSystem expectedVS = returnCodeSystemData("action-condition-kind");
+
+    foreach CodeSystemConcept c in <CodeSystemConcept[]>expectedVS.concept {
+        if c.code == code {
+            test:assertEquals(actualConcept, c);
+        }
+    }
+}
+
+@test:Config {
+    groups: ["valueset", "valueset_lookup", "failure_scenario"]
+}
+function valueSetLookupTest4() returns error? {
+    code code = "1";
+    string system = "http://hl7.org/fhir/ValueSet/relationship2|4.3.0";
+    CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
+                                                .valueSetLookUp(code, system = system);
+
+    test:assertEquals((<FHIRError>actualConcept).message(),
+            string `Cannot find a ValueSet for the provided system URL: ${system}`);
+}
+
+@test:Config {
+    groups: ["valueset", "valueset_lookup", "failure_scenario"]
+}
+function valueSetLookupTest5() returns error? {
+    code code = "1";
+    CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
+                                                .valueSetLookUp(code);
+
+    test:assertEquals((<FHIRError>actualConcept).message(), "Can not find a ValueSet");
+    test:assertEquals((<FHIRError>actualConcept).detail().issues[0].diagnostic, "Either ValueSet record or system URL should be provided as input");
+}
+
+@test:Config {
+    groups: ["valueset", "valueset_lookup", "failure_scenario"]
+}
+function valueSetLookupTest6() returns error? {
+    code code = "test";
+    string id = "relationship";
+    CodeSystemConcept[]|CodeSystemConcept|FHIRError actualConcept = terminologyProcessor
+                                                .valueSetLookUp(code, system = "http://hl7.org/fhir/ValueSet/relationship");
+
+    test:assertEquals((<FHIRError>actualConcept).message(), string `Can not find any valid concepts for the code: "${code}" in ValueSet: "${id}"`);
+}
+
+@test:Config {
+    groups: ["valueset", "valueset_expansion", "successful_scenario"]
+}
+function valueSetExpansionTest1() {
+    ValueSet|FHIRError valueSet = terminologyProcessor.getValueSetById("relationship");
+    map<string[]> searchParameters1 = {"valueSetVersion": ["4.3.0"], "_count": ["2"]};
+    if valueSet is ValueSet {
+        ValueSet|FHIRError actualVS = terminologyProcessor.
+                                        valueSetExpansion(searchParameters1, system = "http://hl7.org/fhir/ValueSet/relationship");
+        if actualVS is ValueSet {
+            ValueSet expectedVS = returnValueSetData("expanded-relationship");
+            ValueSetExpansion? expansion = actualVS.expansion;
+            expectedVS.expansion.timestamp = (<ValueSetExpansion>expansion).timestamp;
+            test:assertEquals(actualVS, expectedVS);
+        }
+    }
+}
+
+@test:Config {
+    groups: ["valueset", "valueset_expansion", "successful_scenario"]
+}
+function valueSetExpansionTest2() {
+    map<string[]> searchParameters = {"filter": ["account"]};
+    ValueSet|FHIRError actualVS = terminologyProcessor.
+                                        valueSetExpansion(searchParameters, system = "http://hl7.org/fhir/ValueSet/account-status");
+    if actualVS is ValueSet {
+        ValueSet expectedVS = returnValueSetData("expanded-account-status");
+        ValueSetExpansion? expansion = actualVS.expansion;
+        expectedVS.expansion.timestamp = (<ValueSetExpansion>expansion).timestamp;
+        test:assertEquals(actualVS, expectedVS);
+    }
+}
+
+@test:Config {
+    groups: ["codesystem", "codesystem_subsume", "successful_scenario"]
+}
+function codesystemSubsumeTest1() returns error? {
+    code codeA = "inactive";
+    code codeB = "inactive";
+    CodeSystem codeSystem = check terminologyProcessor.getCodeSystemById("account-status");
+    string|FHIRError actaulResult = terminologyProcessor.subsumes(codeA, codeB, codeSystem);
+    test:assertEquals(actaulResult, "equivalent");
+}
+
+@test:Config {
+    groups: ["codesystem", "codesystem_subsume", "successful_scenario"]
+}
+function codesystemSubsumeTest2() returns error? {
+    Coding codingA = check terminologyProcessor.createCoding("http://hl7.org/fhir/account-status", "inactive");
+    Coding codingB = check terminologyProcessor.createCoding("http://hl7.org/fhir/account-status", "inactive");
+    string|FHIRError actaulResult = terminologyProcessor.subsumes(codingA, codingB, system = "http://hl7.org/fhir/account-status");
+    test:assertEquals(actaulResult, "equivalent");
 }

@@ -291,12 +291,13 @@ public class TerminologyProcessor {
     # Find a Code System based on the provided Id and version.
     #
     # + id - Id of the CodeSystem to be retrieved
-    # + version - + Version of the CodeSystem to be retrieved
+    # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
+    # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
-    public isolated function getCodeSystemById(string id, string? version = ()) returns CodeSystem|CodeSystem[]|FHIRError {
+    public isolated function getCodeSystemById(string id, string? version = ()) returns CodeSystem|FHIRError {
 
+        boolean isIdExistInRegistry = false;
         if version is string {
-            boolean isIdExistInRegistry = false;
             foreach var item in self.codeSystems.keys() {
                 if regex:matches(item, string `.*\/${id}\|${version}$`) && self.codeSystems[item] is CodeSystem {
                     return <CodeSystem>self.codeSystems[item];
@@ -315,17 +316,20 @@ public class TerminologyProcessor {
                     );
             }
         } else {
-            CodeSystem[] codeSystems = [];
+            CodeSystem codeSystem = {content: "example", status: "unknown"};
+            string latestVersion = "0.0.0";
             foreach var item in self.codeSystems.keys() {
-                if regex:matches(item, string `.*\/${id}\|.*`) && self.codeSystems[item] is CodeSystem {
-                    codeSystems.push(<CodeSystem>self.codeSystems[item]);
+                if regex:matches(item, string `.*\/${id}\|.*`)
+                && self.codeSystems[item] is CodeSystem
+                && (<CodeSystem>self.codeSystems[item]).'version > latestVersion {
+                    codeSystem = <CodeSystem>self.codeSystems[item];
+                    latestVersion = codeSystem.'version ?: "0.0.0";
+                    isIdExistInRegistry = true;
                 }
             }
 
-            if codeSystems.length() == 1 {
-                return codeSystems[0];
-            } else if codeSystems.length() > 0 {
-                return codeSystems;
+            if isIdExistInRegistry {
+                return codeSystem;
             } else {
                 return createFHIRError(
                     string `Unknown CodeSystem: '${id}'`,
@@ -335,9 +339,8 @@ public class TerminologyProcessor {
                     );
             }
         }
-
         return createFHIRError(
-                    string `Unknown CodeSystem: '${id}' with version: ${version.toString()}`,
+                    string `Unknown CodeSystem: '${id}'`,
                     ERROR,
                     PROCESSING_NOT_FOUND,
                     httpStatusCode = http:STATUS_NOT_FOUND
@@ -347,12 +350,13 @@ public class TerminologyProcessor {
     # Find a ValueSet for a provided Id and version.
     #
     # + id - Id of the Value Set to be retrieved
-    # + version - + Version of the ValueSet to be retrieved
+    # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
+    # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
-    public isolated function getValueSetById(string id, string? version = ()) returns ValueSet|ValueSet[]|FHIRError {
+    public isolated function getValueSetById(string id, string? version = ()) returns ValueSet|FHIRError {
 
+        boolean isIdExistInRegistry = false;
         if version is string {
-            boolean isIdExistInRegistry = false;
             foreach var item in self.valueSets.keys() {
                 if regex:matches(item, string `.*\/${id}\|${version}$`) && self.valueSets[item] is ValueSet {
                     return <ValueSet>self.valueSets[item];
@@ -371,33 +375,36 @@ public class TerminologyProcessor {
                     );
             }
         } else {
-            ValueSet[] valueSets = [];
+            ValueSet valueSet = {status: "unknown"};
+            string latestVersion = "0.0.0";
             foreach var item in self.valueSets.keys() {
-                if regex:matches(item, string `.*\/${id}\|.*`) && self.valueSets[item] is ValueSet {
-                    valueSets.push(<ValueSet>self.valueSets[item]);
+                if regex:matches(item, string `.*\/${id}\|.*`)
+                && self.valueSets[item] is ValueSet
+                && (<ValueSet>self.valueSets[item]).'version > latestVersion {
+                    valueSet = <ValueSet>self.valueSets[item];
+                    latestVersion = valueSet.'version ?: "0.0.0";
+                    isIdExistInRegistry = true;
                 }
             }
 
-            if valueSets.length() == 1 {
-                return valueSets[0];
-            } else if valueSets.length() > 0 {
-                return valueSets;
-            } else {
+            if !isIdExistInRegistry {
                 return createFHIRError(
                     string `Unknown ValueSet: '${id}'`,
                     ERROR,
                     PROCESSING_NOT_FOUND,
                     httpStatusCode = http:STATUS_NOT_FOUND
                     );
+            } else {
+                return valueSet;
             }
         }
 
         return createFHIRError(
-            string `Unknown ValueSet : '${id}' with version: '${version.toString()}'`,
-            ERROR,
-            PROCESSING_NOT_FOUND,
-            httpStatusCode = http:STATUS_NOT_FOUND
-            );
+                    string `Unknown ValueSet: '${id}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
     }
 
     # Search for Code systems based on the provided search parameters.
@@ -575,14 +582,16 @@ public class TerminologyProcessor {
     # Extract the respective concepts from a given CodeSystem based on the give code or Coding or CodeableConcept data.
     # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#lookup.
     #
-    # + codeValue - Code or Coding or CodeableConcept data type value to process with the CodeSystem
-    # + cs - CodeSystem record to be processed. If system parameter is not supplied, this value shoud be mandatory, 
-    # else this is an optional field            
-    # + system - System URL of the CodeSystem to be processed, if system CodeSystem(cs) is not supplied, 
-    # this value shoud be mandatory 
+    # + codeValue - Code or Coding or CodeableConcept data type value to process with the CodeSystem  
+    # + cs - CodeSystem record to be processed. If system parameter is not supplied, this value shoud be mandatory,  
+    # else this is an optional field  
+    # + system - System URL of the CodeSystem to be processed, if system CodeSystem(cs) is not supplied,  
+    # this value shoud be mandatory  
+    # + version - Version of the CodeSystem and it should be provided with system parameter,
+    # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return list of Concepts if processing is successful, return FHIRError if fails
-    public isolated function codeSystemLookUp(code|Coding|CodeableConcept codeValue, CodeSystem? cs = (), uri? system = ())
-                                                                    returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
+    public isolated function codeSystemLookUp(code|Coding|CodeableConcept codeValue, CodeSystem? cs = (), uri? system = (),
+            string? version = ()) returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
 
         // Create and initialize a CodeSystem record with the mandatory fields
         CodeSystem codeSystem = {content: "example", status: "unknown"};
@@ -592,9 +601,10 @@ public class TerminologyProcessor {
         if !(ensured is error) {
             codeSystem = ensured;
         } else if !(system is ()) {
-            if self.codeSystems.hasKey(system){
-                codeSystem = self.codeSystems.get(system);
-            }else{
+            CodeSystem|FHIRError codeSystemById = self.getCodeSystemByUrl(system, version);
+            if codeSystemById is CodeSystem {
+                codeSystem = codeSystemById;
+            } else {
                 return createFHIRError(string `Cannot find a CodeSystem for the provided system URL: ${system}`,
                     ERROR,
                     INVALID,
@@ -606,7 +616,7 @@ public class TerminologyProcessor {
             return createFHIRError(msg,
             ERROR,
             INVALID_REQUIRED,
-            diagnostic = "CodeSystem record or system URL should be provided as input",
+            diagnostic = "Either CodeSystem record or system URL should be provided as input",
             errorType = PROCESSING_ERROR,
             httpStatusCode = http:STATUS_BAD_REQUEST);
         }
@@ -656,9 +666,9 @@ public class TerminologyProcessor {
                     errorType = PROCESSING_ERROR,
                     httpStatusCode = http:STATUS_NOT_FOUND);
                 }
-                if codeConceptDetailsList.length() == 1{
+                if codeConceptDetailsList.length() == 1 {
                     return codeConceptDetailsList[0];
-                }else{
+                } else {
                     return codeConceptDetailsList;
                 }
 
@@ -683,14 +693,16 @@ public class TerminologyProcessor {
     # Extract the respective concepts from a given ValueSet based on the give code or Coding or CodeableConcept data
     # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#validation.
     #
-    # + codeValue - Code or Coding or CodeableConcept data type value to process with the ValueSet 
-    # + vs - vs - ValueSet record to be processed. If system parameter is not supplied, this value shoud be mandatory, 
+    # + codeValue - Code or Coding or CodeableConcept data type value to process with the ValueSet  
+    # + vs - vs - ValueSet record to be processed. If system parameter is not supplied, this value shoud be mandatory,  
     # else this is an optional field  
     # + system - System URL of the ValueSet to be processed, if system ValueSet(vs) is not supplied then  
-    # this value shoud be mandatory
+    # this value shoud be mandatory  
+    # + version - Version of the ValueSet and it should be provided with system parameter,
+    # if this version parameter is not supplied then the latest version of CodeSystem will picked up. 
     # + return - Return list of Concepts if processing is successful, return FHIRError if fails
-    public isolated function valueSetLookUp(code|Coding|CodeableConcept codeValue, ValueSet? vs = (), uri? system = ())
-                                                                returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
+    public isolated function valueSetLookUp(code|Coding|CodeableConcept codeValue, ValueSet? vs = (), uri? system = (), string? version = ())
+                                                                                    returns CodeSystemConcept[]|CodeSystemConcept|FHIRError {
 
         // Create and initialize a ValueSet record with the mandatory fields
         ValueSet valueSet = {status: "unknown"};
@@ -699,8 +711,18 @@ public class TerminologyProcessor {
         ValueSet|error ensured = vs.ensureType();
         if !(ensured is error) {
             valueSet = ensured;
+            valueSet.status = ensured.status;
         } else if !(system is ()) {
-            valueSet = self.valueSets.get(system);
+            if self.getValueSetByUrl(system, version) is ValueSet {
+                valueSet = check self.getValueSetByUrl(system, version);
+            } else {
+                return createFHIRError(string `Cannot find a ValueSet for the provided system URL: ${system}`,
+                    ERROR,
+                    INVALID,
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+
         } else {
             return createFHIRError(
             "Can not find a ValueSet",
@@ -711,14 +733,13 @@ public class TerminologyProcessor {
             httpStatusCode = http:STATUS_BAD_REQUEST);
         }
 
-        if system != () && codeValue is code {
+        if codeValue is code {
             CodeConceptDetails? result = self.findConceptInValueSet(valueSet, codeValue);
             if result is CodeConceptDetails {
                 return result.concept;
             } else {
                 return createFHIRError(
-                    string `Can not find any valid concepts for the code: ${codeValue.toBalString()} 
-                    in ValueSet: ${valueSet.id.toBalString()}`,
+                    string `Can not find any valid concepts for the code: ${codeValue.toBalString()} in ValueSet: ${valueSet.id.toBalString()}`,
                     ERROR,
                     PROCESSING_NOT_FOUND,
                     errorType = PROCESSING_ERROR,
@@ -732,8 +753,7 @@ public class TerminologyProcessor {
                 return result.concept;
             } else {
                 return createFHIRError(
-                    string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} 
-                    in ValueSet: ${valueSet.id.toBalString()}`,
+                    string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} in ValueSet: ${valueSet.id.toBalString()}`,
                     ERROR,
                     PROCESSING_NOT_FOUND,
                     errorType = PROCESSING_ERROR,
@@ -753,14 +773,17 @@ public class TerminologyProcessor {
 
                 if codeConceptDetailsList.length() < 0 {
                     return createFHIRError(
-                    string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} 
-                    in CodeSystem: ${valueSet.id.toBalString()}`,
+                    string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} in CodeSystem: ${valueSet.id.toBalString()}`,
                     ERROR,
                     PROCESSING_NOT_FOUND,
                     errorType = PROCESSING_ERROR,
                     httpStatusCode = http:STATUS_NOT_FOUND);
                 }
-                return codeConceptDetailsList;
+                if codeConceptDetailsList.length() == 1 {
+                    return codeConceptDetailsList[0];
+                } else {
+                    return codeConceptDetailsList;
+                }
             } else {
                 return createFHIRError(
                     "Can not find any valid Codings in the provide CodeableConcept data",
@@ -826,9 +849,12 @@ public class TerminologyProcessor {
             valueSet = ensured;
         } else if system is string {
             map<string[]> clone = searchParameters.clone();
-            _ = clone.remove("filter");
-            if !clone.hasKey("system") {
-                clone["system"] = [system];
+            if clone.hasKey("filter") {
+                _ = clone.remove("filter");
+            }
+
+            if !clone.hasKey("url") {
+                clone["url"] = [system];
             }
             ValueSet[] v = check self.searchValueSets(clone);
             valueSet = v[0];
@@ -920,18 +946,20 @@ public class TerminologyProcessor {
     # This method with compare concepts
     # This method was implemented based on: http://hl7.org/fhir/R4/terminology-service.html#subsumes
     #
+    # + conceptA - Concept 1  
+    # + conceptB - Concept 2  
     # + cs - CodeSystem value  
     # + system - System uri of the codeSystem  
-    # + conceptA - Concept 1  
-    # + conceptB - Concept 2
+    # + version - Version of the CodeSystem and it should be provided with system parameter,
+    # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return Values either equivalent or not-subsumed if processing is successful, FHIRError processing fails
-    public isolated function subsumes(code|Coding conceptA, code|Coding conceptB, CodeSystem? cs = (), uri? system = ())
+    public isolated function subsumes(code|Coding conceptA, code|Coding conceptB, CodeSystem? cs = (), uri? system = (), string? version = ())
                                                                                                 returns string|FHIRError {
 
         // Create and initialize a CodeSystem record with the mandatory fields
         CodeSystem codeSystem = {content: "example", status: "unknown"};
-        if cs is () && system != () {
-            codeSystem = self.codeSystems.get(<string>system);
+        if cs is () && system != () && self.getCodeSystemByUrl(system, version) is CodeSystem {
+            codeSystem = check self.getCodeSystemByUrl(system, version);
         } else if cs != () {
             codeSystem = cs;
         } else {
@@ -972,14 +1000,16 @@ public class TerminologyProcessor {
 
     # Create CodeableConcept data type for given code in a given system.
     #
-    # + system - system uri of the code system or value set
-    # + code - code interested
-    # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code 
-    # system in a external source system)
+    # + system - system uri of the code system or value set  
+    # + code - code interested  
+    # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code  
+    # system in a external source system)  
+    # + version - Version of the CodeSystem and it should be provided with system parameter,
+    # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCodeableConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
-                                                                                    returns CodeableConcept|FHIRError {
-        CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder);
+    public isolated function createCodeableConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = (),
+            string? version = ()) returns CodeableConcept|FHIRError {
+        CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder, version = version);
         if conceptResult != () {
             return self.conceptToCodeableConcept(conceptResult.concept, conceptResult.url);
         }
@@ -992,14 +1022,16 @@ public class TerminologyProcessor {
 
     # Create Coding data type for given code in a given system.
     #
-    # + system - System uri of the CodeSystem or valueSet
-    # + code - code interested
-    # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code 
-    # system in a external source system)
+    # + system - System uri of the CodeSystem or valueSet  
+    # + code - code interested  
+    # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code  
+    # system in a external source system)  
+    # + version - Version of the CodeSystem and it should be provided with system parameter,
+    # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCoding(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
+    public isolated function createCoding(uri system, code code, CodeSystemFinder? codeSystemFinder = (), string? version = ())
                                                                                                 returns Coding|FHIRError {
-        CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder);
+        CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder, version = version);
         if conceptResult != () {
             return self.conceptToCoding(conceptResult.concept, conceptResult.url);
         }
@@ -1011,7 +1043,7 @@ public class TerminologyProcessor {
     }
 
     // Function to find concept in CodeSystems or ValueSets by passing code data type parameter.
-    private isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
+    private isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = (), string? version = ())
                                                                                 returns (CodeConceptDetails|FHIRError)? {
         if codeSystemFinder != () {
             (CodeSystem|ValueSet) & readonly result = check codeSystemFinder(system, code).cloneReadOnly();
@@ -1020,10 +1052,10 @@ public class TerminologyProcessor {
             } else {
                 return self.findConceptInValueSet(result, code);
             }
-        } else if self.valueSets.hasKey(system) {
-            return self.findConceptInValueSet(self.valueSets.get(system), code);
-        } else if self.codeSystems.hasKey(system) {
-            return self.findConceptInCodeSystem(self.codeSystems.get(system), code);
+        } else if self.getValueSetByUrl(system, version) is ValueSet {
+            return self.findConceptInValueSet(check self.getValueSetByUrl(system, version), code);
+        } else if self.getCodeSystemByUrl(system, version) is CodeSystem {
+            return self.findConceptInCodeSystem(check self.getCodeSystemByUrl(system, version), code);
         } else {
             return createInternalFHIRError(
                 string `Unknown ValueSet or CodeSystem : ${system}`,
@@ -1100,11 +1132,14 @@ public class TerminologyProcessor {
                         }
                     } else {
                         // Find CodeSystem
-                        if self.codeSystems.hasKey(systemValue) {
-                            CodeConceptDetails? result = self.findConceptInCodeSystem(self.codeSystems.get(systemValue), code);
+                        CodeSystem|FHIRError codeSystemByUrl = self.getCodeSystemByUrl(systemValue);
+                        if codeSystemByUrl is CodeSystem {
+                            CodeConceptDetails? result = self.findConceptInCodeSystem(codeSystemByUrl, code);
                             if result != () {
                                 return result;
                             }
+                        } else {
+                            log:printDebug(codeSystemByUrl.toBalString());
                         }
                     }
                 } else {
@@ -1157,11 +1192,14 @@ public class TerminologyProcessor {
                         return concepts;
                     } else {
                         // Find CodeSystem
-                        if self.codeSystems.hasKey(systemValue) {
-                            ValueSetExpansionDetails? result = self.getAllConceptInCodeSystem(self.codeSystems.get(systemValue));
+                        CodeSystem|FHIRError codeSystemByUrl = self.getCodeSystemByUrl(systemValue);
+                        if codeSystemByUrl is CodeSystem {
+                            ValueSetExpansionDetails? result = self.getAllConceptInCodeSystem(codeSystemByUrl);
                             if result != () {
                                 return result;
                             }
+                        } else {
+                            log:printDebug(codeSystemByUrl.toBalString());
                         }
                     }
                 } else {
@@ -1277,5 +1315,112 @@ public class TerminologyProcessor {
         expansion.timestamp = time:utcToString(time:utcNow());
 
         return expansion;
+    }
+
+    private isolated function getCodeSystemByUrl(string url, string? version = ()) returns CodeSystem|FHIRError {
+
+        boolean isIdExistInRegistry = false;
+        if version is string {
+            foreach var item in self.codeSystems.keys() {
+                if regex:matches(item, string `${url}\|${version}$`) && self.codeSystems[item] is CodeSystem {
+                    return <CodeSystem>self.codeSystems[item];
+                } else if regex:matches(item, string `${url}\|.*`) {
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return createFHIRError(
+                    string `Unknown version: '${version}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    diagnostic = string `There is CodeSystem in the registry with Id: '${url}' but can not find version: '${version}' of it`,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+            }
+        } else {
+            CodeSystem codeSystem = {content: "example", status: "unknown"};
+            string latestVersion = "0.0.0";
+            foreach var item in self.codeSystems.keys() {
+                if regex:matches(item, string `${url}\|.*`)
+                && self.codeSystems[item] is CodeSystem
+                && (<CodeSystem>self.codeSystems[item]).'version > latestVersion {
+                    codeSystem = <CodeSystem>self.codeSystems[item];
+                    latestVersion = codeSystem.'version ?: "0.0.0";
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return codeSystem;
+            } else {
+                return createFHIRError(
+                    string `Unknown CodeSystem: '${url}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+            }
+        }
+        return createFHIRError(
+                    string `Unknown CodeSystem: '${url}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+    }
+
+    private isolated function getValueSetByUrl(string id, string? version = ()) returns ValueSet|FHIRError {
+
+        boolean isIdExistInRegistry = false;
+        if version is string {
+            foreach var item in self.valueSets.keys() {
+                if regex:matches(item, string `${id}\|${version}$`) && self.valueSets[item] is ValueSet {
+                    return <ValueSet>self.valueSets[item];
+                } else if regex:matches(item, string `${id}\|.*`) {
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return createFHIRError(
+                    string `Unknown version: '${version}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    diagnostic = string `There is ValueSet in the registry with Id: '${id}' but can not find version: '${version}' of it`,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+            }
+        } else {
+            ValueSet valueSet = {status: "unknown"};
+            string latestVersion = "0.0.0";
+            foreach var item in self.valueSets.keys() {
+                if regex:matches(item, string `${id}\|.*`)
+                && self.valueSets[item] is ValueSet
+                && (<ValueSet>self.valueSets[item]).'version > latestVersion {
+                    valueSet = <ValueSet>self.valueSets[item];
+                    latestVersion = valueSet.'version ?: "0.0.0";
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if !isIdExistInRegistry {
+                return createFHIRError(
+                    string `Unknown ValueSet: '${id}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+            } else {
+                return valueSet;
+            }
+        }
+
+        return createFHIRError(
+                    string `Unknown ValueSet: '${id}'`,
+                    ERROR,
+                    PROCESSING_NOT_FOUND,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                    );
     }
 }

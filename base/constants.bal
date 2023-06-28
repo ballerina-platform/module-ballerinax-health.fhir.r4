@@ -67,7 +67,7 @@ public const map<string> VALUESETS_SEARCH_PARAMS = {
 public const map<string> VALUESETS_EXPANSION_PARAMS = {
     "url": "url",
     "valueSetVersion": "version",
-    "filter": ""
+    "filter": "filter"
 };
 
 public const int TERMINOLOGY_SEARCH_DEFAULT_COUNT = 20;
