@@ -24,9 +24,11 @@ import ballerina/uuid;
 # + httpCtx - HTTP request context
 # + return - FHIR context or error
 public isolated function getFHIRContext(http:RequestContext httpCtx) returns FHIRContext|FHIRError {
-    value:Cloneable|object {} fhirCtx = httpCtx.get(FHIR_CONTEXT_PROP_NAME);
-    if fhirCtx is FHIRContext {
-        return fhirCtx;
+    if httpCtx.hasKey(FHIR_CONTEXT_PROP_NAME) {
+        value:Cloneable|object {} fhirCtx = httpCtx.get(FHIR_CONTEXT_PROP_NAME);
+        if fhirCtx is FHIRContext {
+            return fhirCtx;
+        }
     }
     string diag = "Unable to find FHIR context in HTTP request context.";
     return createInternalFHIRError("FHIR Context not found", FATAL, PROCESSING_NOT_FOUND, diagnostic = diag);

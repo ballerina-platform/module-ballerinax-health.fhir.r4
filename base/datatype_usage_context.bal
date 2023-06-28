@@ -103,11 +103,22 @@ public isolated function usageContextDataTypeValidationFunction(anydata data,
                             diagnostic = diagnosticMsg, cause = e);
 
         }
-        CodeableConcept? valueCodeableConceptVal = <CodeableConcept?>mapObj.get("valueCodeableConcept");
-        Quantity? valueQuantityVal = <Quantity?>mapObj.get("valueQuantity");
-        Range? valueRangeVal = <Range?>mapObj.get("valueRange");
-        Reference? valueReferenceVal = <Reference?>mapObj.get("valueReference");
-
+        CodeableConcept? valueCodeableConceptVal = ();
+        if mapObj.hasKey("valueCodeableConcept") {
+            valueCodeableConceptVal = <CodeableConcept?>mapObj.get("valueCodeableConcept");
+        }
+        Quantity? valueQuantityVal = ();
+        if mapObj.hasKey("valueQuantity") {
+            valueQuantityVal = <Quantity?>mapObj.get("valueQuantity");
+        }
+        Range? valueRangeVal = ();
+        if mapObj.hasKey("valueRange") {
+            valueRangeVal = <Range?>mapObj.get("valueRange");
+        }
+        Reference? valueReferenceVal = ();
+        if mapObj.hasKey("valueReference") {
+            valueReferenceVal = <Reference?>mapObj.get("valueReference");
+        }
         boolean valueCodeableConceptValCheck = valueCodeableConceptVal is ();
         boolean valueQuantityValCheck = valueQuantityVal is ();
         boolean valueRangeValCheck = valueRangeVal is ();

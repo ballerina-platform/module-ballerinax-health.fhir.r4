@@ -251,11 +251,18 @@ public isolated function repeatElementDataTypeValidationFunction(anydata data,
                             diagnostic = diagnosticMsg, cause = e);
 
         }
-
-        Duration? boundsDurationVal = <Duration?>mapObj.get("boundsDuration");
-        Range? boundsRangeVal = <Range?>mapObj.get("boundsRange");
-        Period? boundsPeriodVal = <Period?>mapObj.get("boundsPeriod");
-
+        Duration? boundsDurationVal = ();
+        if mapObj.hasKey("boundsDuration") {
+            boundsDurationVal = <Duration?>mapObj.get("boundsDuration");
+        }
+        Range? boundsRangeVal = ();
+        if mapObj.hasKey("boundsRange") {
+            boundsRangeVal = <Range?>mapObj.get("boundsRange");
+        }
+        Period? boundsPeriodVal = ();
+        if mapObj.hasKey("boundsPeriod") {
+            boundsPeriodVal = <Period?>mapObj.get("boundsPeriod");
+        }
         boolean boundsDurationValCheck = boundsDurationVal is ();
         boolean boundsRangeValCheck = boundsRangeVal is ();
         boolean boundsPeriodValCheck = boundsPeriodVal is ();

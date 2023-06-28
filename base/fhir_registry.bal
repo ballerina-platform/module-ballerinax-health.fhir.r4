@@ -42,7 +42,7 @@ public isolated class FHIRRegistry {
         lock {
             self.implementationGuides.push(ig);
         }
-        
+
         lock {
             // add profiles to profile map
             foreach Profile profile in ig.getProfiles() {
@@ -70,7 +70,7 @@ public isolated class FHIRRegistry {
 
         lock {
             // Add search parameters
-            foreach map<FHIRSearchParameterDefinition[]> paramsMap in ig.getSearchParameters() {    
+            foreach map<FHIRSearchParameterDefinition[]> paramsMap in ig.getSearchParameters() {
                 foreach FHIRSearchParameterDefinition[] params in paramsMap {
                     foreach FHIRSearchParameterDefinition param in params {
                         foreach string resourceType in param.base {
@@ -94,13 +94,15 @@ public isolated class FHIRRegistry {
         terminologyProcessor.addTerminology(ig.getTerminology());
     }
 
-
     # Get the resource profiles in the registry
     #
     # + resourceType - The resource type
     # + return - The profiles in the registry
     public isolated function getResourceProfiles(string resourceType) returns readonly & map<Profile & readonly> {
         lock {
+            if !self.resourceTypeProfiles.hasKey(resourceType) {
+                return {};
+            }
             return self.resourceTypeProfiles.get(resourceType).cloneReadOnly();
         }
     }
@@ -157,18 +159,17 @@ public isolated class FHIRRegistry {
         }
         return ();
     }
- 
+
     # Check the resource type is supported by the registry
     #
     # + resourceType - The resource type
     # + return - True if the resource type is supported
-    public isolated function isSupportedResource (string resourceType) returns boolean {
+    public isolated function isSupportedResource(string resourceType) returns boolean {
         lock {
             return self.resourceTypeProfiles.hasKey(resourceType);
         }
     }
 }
-
 
 # Search parameter map (key: parameter name)
 public type SearchParamCollection map<FHIRSearchParameterDefinition>;

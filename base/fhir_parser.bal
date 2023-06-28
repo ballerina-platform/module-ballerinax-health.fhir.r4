@@ -143,15 +143,11 @@ isolated function validateAndExtractProfile(json|xml payload, ResourceAPIConfig 
             }
         }
 
-        if profiles.length() == 1 {
-            return fhirRegistry.getResourceProfiles(resourceType).get(profiles[0]);
-        } else {
-            // If there are multiple profiles, we select the matching default profile if configured
-            // otherwise, default profile will be the base profile.
-            string? defaultProfile = apiConfig.defaultProfile;
-            if defaultProfile != () {
-                return resourceProfiles.get(defaultProfile);
-            }
+        // If there are multiple profiles, we select the matching default profile if configured
+        // otherwise, default profile will be the base profile.
+        string profile = profiles.length() == 1 ? profiles[0] : apiConfig.defaultProfile ?: "";
+        if resourceProfiles.hasKey(profile) {
+            return resourceProfiles.get(profile);
         }
     }
     // get base IG profile (we reach here if profile is not mentioned in the request or if the request contains multiple

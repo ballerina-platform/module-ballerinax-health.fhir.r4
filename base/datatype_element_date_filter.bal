@@ -110,11 +110,18 @@ public isolated function dataFilterDataTypeValidationFunction(anydata data,
                             diagnostic = diagnosticMsg, cause = e);
 
         }
-
-        dateTime? valueDateTimeVal = <dateTime?>mapObj.get("valueDateTime");
-        Period? valuePeriodVal = <Period?>mapObj.get("valuePeriod");
-        Duration? valueDurationVal = <Duration?>mapObj.get("valueDuration");
-
+        dateTime? valueDateTimeVal = ();
+        if mapObj.hasKey("valueDateTime") {
+            valueDateTimeVal = <dateTime?>mapObj.get("valueDateTime");
+        }
+        Period? valuePeriodVal = ();
+        if mapObj.hasKey("valuePeriod") {
+            valuePeriodVal = <Period?>mapObj.get("valuePeriod");
+        }
+        Duration? valueDurationVal = ();
+        if mapObj.hasKey("valueDuration") {
+            valueDurationVal = <Duration?>mapObj.get("valueDuration");
+        }
         boolean valueDateTimeValCheck = valueDateTimeVal is ();
         boolean valuePeriodValCheck = valuePeriodVal is ();
         boolean valueDurationValCheck = valueDurationVal is ();
