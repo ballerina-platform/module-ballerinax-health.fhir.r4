@@ -17,8 +17,8 @@
 import ballerina/io;
 import ballerina/test;
 
-function returnCodeSystemData(string id) returns CodeSystem {
-    string filePath = string `tests/resources/terminology/code-systems/${id}.json`;
+function returnCodeSystemData(string fileName) returns CodeSystem {
+    string filePath = string `tests/resources/terminology/code_systems/${fileName}.json`;
     json|error data = io:fileReadJson(filePath);
 
     if data is json {
@@ -33,8 +33,8 @@ function returnCodeSystemData(string id) returns CodeSystem {
     }
 }
 
-function returnValueSetData(string id) returns ValueSet {
-    string filePath = string `tests/resources/terminology/value_sets/${id}.json`;
+function returnValueSetData(string fileName) returns ValueSet {
+    string filePath = string `tests/resources/terminology/value_sets/${fileName}.json`;
     json|error data = io:fileReadJson(filePath);
 
     if data is json {
@@ -48,3 +48,15 @@ function returnValueSetData(string id) returns ValueSet {
         test:assertFail(string `Can not load data from: ${filePath}`);
     }
 }
+
+function readJsonData(string fileName) returns json {
+    string filePath = string `tests/resources/terminology/${fileName}.json`;
+    json|error data = io:fileReadJson(filePath);
+
+    if data is json {
+        return data;
+    } else {
+        test:assertFail(string `Can not load data from: ${filePath}`);
+    }
+}
+    

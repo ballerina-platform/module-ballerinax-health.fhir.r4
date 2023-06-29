@@ -51,30 +51,26 @@ public class InMemoryTerminologyLoader {
 
         map<CodeSystem> codeSystemMap = {};
         foreach json jCodeSystem in self.codeSystems {
-            CodeSystem|error c = jCodeSystem.cloneWithType(CodeSystem);
+            CodeSystem|error c = jCodeSystem.cloneWithType();
             if c is error {
                 FHIRError fHIRError = createFHIRError("Error occurred while type casting json code system to CodeSystem type", ERROR,
                                                                         PROCESSING, diagnostic = c.message(), cause = c);
                 log:printError(fHIRError.toBalString());
             } else {
-                string url = <string>c.url;
-                string version = <string>c.version;
-                string key = string `${url}|${version}`;
+                string key = string `${<string>c.url}|${<string>c.'version}`;
                 codeSystemMap[key] = c;
             }
         }
 
         map<ValueSet> valueSetMap = {};
         foreach json jValueSet in self.valueSets {
-            ValueSet|error v = jValueSet.cloneWithType(ValueSet);
+            ValueSet|error v = jValueSet.cloneWithType();
             if v is error {
                 FHIRError fHIRError = createFHIRError("Error occurred while type casting json value set to ValueSet type", ERROR,
                                                                         PROCESSING, diagnostic = v.message(), cause = v);
                 log:printError(fHIRError.toBalString());
             } else {
-                string url = <string>v.url;
-                string version = <string>v.version;
-                string key = string `${url}|${version}`;
+                string key = string `${<string>v.url}|${<string>v.'version}`;
                 valueSetMap[key] = v;
             }
         }

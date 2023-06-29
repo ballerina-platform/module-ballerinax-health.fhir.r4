@@ -245,7 +245,7 @@ function searchCodeSystemTest3() {
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
-        test:assertEquals(actualCS.length(), 276);
+        test:assertEquals(actualCS.length(), 277);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -259,7 +259,7 @@ function searchCodeSystemTest4() {
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
-        test:assertEquals(actualCS.length(), 76);
+        test:assertEquals(actualCS.length(), 77);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -273,7 +273,7 @@ function searchCodeSystemTest5() {
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
-        test:assertEquals(actualCS.length(), 34);
+        test:assertEquals(actualCS.length(), 35);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -335,7 +335,7 @@ function searchValueSetTest3() {
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     if actualVS is ValueSet[] {
-        test:assertEquals(actualVS.length(), 283);
+        test:assertEquals(actualVS.length(), 284);
     } else {
         test:assertFail(actualVS.message());
     }
@@ -349,7 +349,7 @@ function searchValueSetTest4() {
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     if actualVS is ValueSet[] {
-        test:assertEquals(actualVS.length(), 83);
+        test:assertEquals(actualVS.length(), 84);
     } else {
         test:assertFail(actualVS.message());
     }
@@ -607,4 +607,34 @@ function codesystemSubsumeTest2() returns error? {
     Coding codingB = check terminologyProcessor.createCoding("http://hl7.org/fhir/account-status", "inactive");
     string|FHIRError actaulResult = terminologyProcessor.subsumes(codingA, codingB, system = "http://hl7.org/fhir/account-status");
     test:assertEquals(actaulResult, "equivalent");
+}
+
+@test:Config {
+    groups: ["codesystem", "add_codesystem", "successful_scenario"]
+}
+function addCodeSystem1() {
+    json data = readJsonData("code_systems/additional-codesystem-data");
+    string duplicateEntryUrl = "http://hl7.org/fhir/action-grouping-behavior";
+
+    FHIRError[]? actual = terminologyProcessor.addCodeSystemsAsJson(<json[]>data);
+
+    if actual is FHIRError[] && actual.length() > 1 {
+        test:assertEquals(actual[0].message(), "Duplicate entry");
+        test:assertEquals(actual[0].detail().issues[0].diagnostic, string `Already there is a CodeSystem exists in the registry with the URL: ${duplicateEntryUrl}`);
+    }
+}
+
+@test:Config {
+    groups: ["valueset", "add_valueset", "successful_scenario"]
+}
+function addValueset1() {
+    json data = readJsonData("value_sets/additional-valueset-data");
+    string duplicateEntryUrl = "http://hl7.org/fhir/ValueSet/diagnostic-report-status";
+
+    FHIRError[]? actual = terminologyProcessor.addValueSetsAsJson(<json[]>data);
+
+    if actual is FHIRError[] {
+        test:assertEquals(actual[0].message(), "Duplicate entry");
+        test:assertEquals(actual[0].detail().issues[0].diagnostic, string `Already there is a ValueSet exists in the registry with the URL: ${duplicateEntryUrl}`);
+    }
 }
