@@ -31,10 +31,8 @@ public const RESOURCE_NAME_AUBASEIMMUNISATION = "Immunization";
 # + education - Educational material presented to the patient (or guardian) at the time of vaccine administration.
 # + doseQuantity - The quantity of vaccine product that was administered.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + approvedBy - Indicates who performed the immunization event.
 # + reasonReference - Condition, Observation or DiagnosticReport that supports why the immunization was administered.
 # + language - The base language in which the resource is written.
-# + administeredBy - Indicates who performed the immunization event.
 # + manufacturer - Physical vaccine product manufacturer.
 # + programEligibility - Indicates a patient's eligibility for a funding program.
 # + statusReason - Indicates the reason the immunization event was not performed.
@@ -117,14 +115,6 @@ public const RESOURCE_NAME_AUBASEIMMUNISATION = "Immunization";
             isArray: true,
             path: "Immunization.modifierExtension"
         },
-        "approvedBy" : {
-            name: "approvedBy",
-            dataType: r4:BackboneElement,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Immunization.performer"
-        },
         "reasonReference" : {
             name: "reasonReference",
             dataType: r4:Reference,
@@ -141,14 +131,6 @@ public const RESOURCE_NAME_AUBASEIMMUNISATION = "Immunization";
             isArray: false,
             path: "Immunization.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
-        },
-        "administeredBy" : {
-            name: "administeredBy",
-            dataType: r4:BackboneElement,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Immunization.performer"
         },
         "manufacturer" : {
             name: "manufacturer",
@@ -412,10 +394,8 @@ public type AUBaseImmunisation record {|
     ImmunizationEducation[] education?;
     r4:Quantity doseQuantity?;
     r4:Extension[] modifierExtension?;
-    r4:BackboneElement approvedBy?;
     r4:Reference[] reasonReference?;
     r4:code language?;
-    r4:BackboneElement administeredBy?;
     r4:Reference manufacturer?;
     r4:CodeableConcept[] programEligibility?;
     r4:CodeableConcept statusReason?;
@@ -444,6 +424,7 @@ public type AUBaseImmunisation record {|
     string occurrenceString;
     r4:CodeableConcept fundingSource?;
     ImmunizationStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

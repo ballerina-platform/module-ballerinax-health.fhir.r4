@@ -143,10 +143,11 @@ public const RESOURCE_NAME_AUBASEMEDICATIONADMINISTRATION = "MedicationAdministr
         "medicationReference" : {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
-            path: "MedicationAdministration.medication[x]"
+            path: "MedicationAdministration.medication[x]",
+            valueSet: "http://hl7.org/fhir/ValueSet/medication-codes"
         },
         "statusReason" : {
             name: "statusReason",
@@ -225,7 +226,7 @@ public const RESOURCE_NAME_AUBASEMEDICATIONADMINISTRATION = "MedicationAdministr
         "medicationCodeableConcept" : {
             name: "medicationCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
             path: "MedicationAdministration.medication[x]",
@@ -321,7 +322,7 @@ public type AUBaseMedicationAdministration record {|
     r4:Extension[] modifierExtension?;
     r4:Reference[] reasonReference?;
     r4:code language?;
-    r4:Reference medicationReference?;
+    r4:Reference medicationReference;
     r4:CodeableConcept[] statusReason?;
     r4:Reference context?;
     string id?;
@@ -331,7 +332,7 @@ public type AUBaseMedicationAdministration record {|
     MedicationAdministrationPerformer[] performer?;
     r4:Period effectivePeriod;
     r4:Reference[] supportingInformation?;
-    r4:CodeableConcept medicationCodeableConcept?;
+    r4:CodeableConcept medicationCodeableConcept;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime;
     r4:Reference[] eventHistory?;
@@ -339,6 +340,7 @@ public type AUBaseMedicationAdministration record {|
     r4:CodeableConcept category?;
     r4:Reference[] device?;
     MedicationAdministrationStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

@@ -63,7 +63,7 @@ public const RESOURCE_NAME_USCOREIMMUNIZATIONPROFILE = "Immunization";
 # + fundingSource - Indicates the source of the vaccine actually administered. This may be different than the patient eligibility (e.g. the patient may be eligible for a publically purchased vaccine but due to inventory issues, vaccine purchased with private funds was actually administered).
 # + status - Indicates the current status of the immunization event.
 @r4:ResourceDefinition {
-    resourceType: "USCoreImmunizationProfile",
+    resourceType: "Immunization",
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization",
     elements: {
@@ -424,10 +424,11 @@ public type USCoreImmunizationProfile record {|
     string occurrenceString;
     r4:CodeableConcept fundingSource?;
     ImmunizationStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
-    name: "BaseUSCoreImmunizationProfileMeta",
+    name: "BaseImmunizationMeta",
     baseType: r4:Meta,
     elements: {},
     serializers: {

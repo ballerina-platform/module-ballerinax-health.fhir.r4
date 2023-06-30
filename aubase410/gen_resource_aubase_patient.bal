@@ -29,34 +29,27 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
 # + gender - Administrative Gender - the gender that the patient is considered to have for administration and record keeping purposes.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + link - Link to a Patient or RelatedPerson resource that concerns the same actual person.
-# + indigenousStatus - National Health Data Dictionary (NHDD) based indigenous status for a patient.
 # + language - The base language in which the resource is written.
-# + mothersMaidenName - Mother's maiden (unmarried) name, commonly collected to help verify patient identity.
-# + birthPlace - The registered place of birth of the patient. A sytem may use the address.text if they don't store the birthPlace address in discrete elements.
-# + genderIdentity - The gender the patient identifies with. The Patient's gender identity is used as guidance (e.g. for staff) about how to interact with the patient.
 # + contact - A contact party (e.g. guardian, partner, friend) for the patient.
-# + deceasedDateTime - Individual deceased date-time with optional accuracy indicator.
+# + deceasedDateTime - Indicates if the individual is deceased or not. Deceased date accuracy indicator is optional.
 # + generalPractitioner - Patient's nominated care provider.
 # + telecom - A contact detail (e.g. a telephone number or an email address) by which the individual may be contacted.
 # + id - The logical id of the resource, as used in the URL for the resource. Once assigned, this value never changes.
 # + text - A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative. Resource definitions may define what content should be represented in the narrative to ensure clinical safety.
 # + communication - A language which may be used to communicate with the patient about his or her health.
 # + identifier - An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.
-# + closingTheGapRegistration - Indication of eligibility for the Closing the Gap co-payment.
 # + address - An Australian address expressed using postal conventions (as opposed to GPS or other location definition formats).
 # + multipleBirthBoolean - Indicates whether the patient is part of a multiple (boolean) or indicates the actual birth order (integer).
 # + active - Whether this patient record is in active use. Many systems use this property to mark as non-current patients, such as those that have not been seen for a period of time based on an organization's business rules. It is often used to filter patient lists to exclude inactive patients Deceased patients may also be marked as inactive for the same reasons, but may be active for some time after death.
 # + photo - Image of the patient.
 # + birthDate - The date of birth for the individual.
-# + dateOfArrival - The date a person first arrived in Australia, from another country, with the intention of living in Australia for one year or more. This date is captured once for a person and is not subsequently updated with subsequent arrivals.
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
-# + deceasedBoolean - Boolean indicator if the individual is deceased or not.
+# + deceasedBoolean - Indicates if the individual is deceased or not. Deceased date accuracy indicator is optional.
 # + managingOrganization - Organization that is the custodian of the patient record.
 # + meta - The metadata about the resource. This is content that is maintained by the infrastructure. Changes to the content might not always be associated with version changes to the resource.
 # + multipleBirthInteger - Indicates whether the patient is part of a multiple (boolean) or indicates the actual birth order (integer).
 # + name - A name associated with the individual.
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
-# + interpreterRequired - This Patient requires an interpreter to communicate healthcare information to the practitioner.
 # + maritalStatus - This field contains a patient's most recent marital (civil) status.
 @r4:ResourceDefinition {
     resourceType: "Patient",
@@ -96,14 +89,6 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
             isArray: true,
             path: "Patient.link"
         },
-        "indigenousStatus" : {
-            name: "indigenousStatus",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Patient.extension"
-        },
         "language" : {
             name: "language",
             dataType: r4:code,
@@ -112,30 +97,6 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
             isArray: false,
             path: "Patient.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
-        },
-        "mothersMaidenName" : {
-            name: "mothersMaidenName",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Patient.extension"
-        },
-        "birthPlace" : {
-            name: "birthPlace",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Patient.extension"
-        },
-        "genderIdentity" : {
-            name: "genderIdentity",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Patient.extension"
         },
         "contact" : {
             name: "contact",
@@ -201,14 +162,6 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
             isArray: true,
             path: "Patient.identifier"
         },
-        "closingTheGapRegistration" : {
-            name: "closingTheGapRegistration",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Patient.extension"
-        },
         "address" : {
             name: "address",
             dataType: r4:Address,
@@ -248,14 +201,6 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
             max: 1,
             isArray: false,
             path: "Patient.birthDate"
-        },
-        "dateOfArrival" : {
-            name: "dateOfArrival",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Patient.extension"
         },
         "contained" : {
             name: "contained",
@@ -313,14 +258,6 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
             isArray: false,
             path: "Patient.implicitRules"
         },
-        "interpreterRequired" : {
-            name: "interpreterRequired",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Patient.extension"
-        },
         "maritalStatus" : {
             name: "maritalStatus",
             dataType: r4:CodeableConcept,
@@ -348,11 +285,7 @@ public type AUBasePatient record {|
     PatientGender gender?;
     r4:Extension[] modifierExtension?;
     PatientLink[] link?;
-    r4:Extension indigenousStatus?;
     r4:code language?;
-    r4:Extension mothersMaidenName?;
-    r4:Extension birthPlace?;
-    r4:Extension genderIdentity?;
     PatientContact[] contact?;
     r4:dateTime deceasedDateTime?;
     r4:Reference[] generalPractitioner?;
@@ -361,21 +294,19 @@ public type AUBasePatient record {|
     r4:Narrative text?;
     PatientCommunication[] communication?;
     r4:Identifier[] identifier?;
-    r4:Extension closingTheGapRegistration?;
     r4:Address[] address?;
     boolean multipleBirthBoolean?;
     boolean active?;
     r4:Attachment[] photo?;
     r4:date birthDate?;
-    r4:Extension dateOfArrival?;
     r4:Resource[] contained?;
     boolean deceasedBoolean?;
     r4:Reference managingOrganization?;
     r4:integer multipleBirthInteger?;
     r4:HumanName[] name?;
     r4:uri implicitRules?;
-    r4:Extension interpreterRequired?;
     r4:CodeableConcept maritalStatus?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
@@ -448,7 +379,7 @@ public type BaseAUBasePatientMeta record {|
         },
         "gender": {
             name: "gender",
-            dataType: PatientGender,
+            dataType: PatientContactGender,
             min: 0,
             max: 1,
             isArray: false,
@@ -519,7 +450,7 @@ public type PatientContact record {|
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Address address?;
-    PatientGender gender?;
+    PatientContactGender gender?;
     r4:Extension[] modifierExtension?;
     r4:Reference organization?;
     r4:HumanName name?;
@@ -605,6 +536,14 @@ public type PatientLink record {|
     string id?;
     PatientLinkType 'type;
 |};
+
+# PatientContactGender enum
+public enum PatientContactGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
 
 # PatientGender enum
 public enum PatientGender {

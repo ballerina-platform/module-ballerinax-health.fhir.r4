@@ -48,7 +48,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERROLEPROFILE = "PractitionerRole";
 # + text - A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative. Resource definitions may define what content should be represented in the narrative to ensure clinical safety.
 # + availabilityExceptions - A description of site availability exceptions, e.g. public holiday availability. Succinctly describing all possible exceptions to normal site availability as details in the available Times and not available Times.
 @r4:ResourceDefinition {
-    resourceType: "USCorePractitionerRoleProfile",
+    resourceType: "PractitionerRole",
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole",
     elements: {
@@ -266,10 +266,11 @@ public type USCorePractitionerRoleProfile record {|
     string id?;
     r4:Narrative text?;
     string availabilityExceptions?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
-    name: "BaseUSCorePractitionerRoleProfileMeta",
+    name: "BasePractitionerRoleMeta",
     baseType: r4:Meta,
     elements: {},
     serializers: {

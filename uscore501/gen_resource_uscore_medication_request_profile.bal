@@ -68,7 +68,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONREQUESTPROFILE = "MedicationRequest";
 # + groupIdentifier - A shared identifier common to all requests that were authorized more or less simultaneously by a single author, representing the identifier of the requisition or prescription.
 # + status - A code specifying the current state of the order. Generally, this will be active or completed state.
 @r4:ResourceDefinition {
-    resourceType: "USCoreMedicationRequestProfile",
+    resourceType: "MedicationRequest",
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest",
     elements: {
@@ -474,10 +474,11 @@ public type USCoreMedicationRequestProfile record {|
     r4:CodeableConcept[] category?;
     r4:Identifier groupIdentifier?;
     MedicationRequestStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
-    name: "BaseUSCoreMedicationRequestProfileMeta",
+    name: "BaseMedicationRequestMeta",
     baseType: r4:Meta,
     elements: {},
     serializers: {

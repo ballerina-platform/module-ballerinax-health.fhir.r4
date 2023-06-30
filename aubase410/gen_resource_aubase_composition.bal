@@ -48,7 +48,6 @@ public const RESOURCE_NAME_AUBASECOMPOSITION = "Composition";
 # + category - A categorization for the type of the composition - helps for indexing and searching. This may be implied by or derived from the code specified in the Composition Type.
 # + event - The clinical service, such as a colonoscopy or an appendectomy, being documented.
 # + relatesTo - Relationships that this composition has with other compositions or documents that already exist.
-# + informationRecipient - A recipient who should receive a copy of the composition. A recipient is an entity to whom a copy of the composition is directed at the time of authoring of the composition.
 # + status - The workflow/clinical status of this composition. The status is a marker for the clinical standing of the document.
 @r4:ResourceDefinition {
     resourceType: "Composition",
@@ -235,14 +234,6 @@ public const RESOURCE_NAME_AUBASECOMPOSITION = "Composition";
             isArray: true,
             path: "Composition.relatesTo"
         },
-        "informationRecipient" : {
-            name: "informationRecipient",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            path: "Composition.extension"
-        },
         "status" : {
             name: "status",
             dataType: CompositionStatus,
@@ -290,8 +281,8 @@ public type AUBaseComposition record {|
     r4:CodeableConcept[] category?;
     CompositionEvent[] event?;
     CompositionRelatesTo[] relatesTo?;
-    r4:Extension[] informationRecipient?;
     CompositionStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

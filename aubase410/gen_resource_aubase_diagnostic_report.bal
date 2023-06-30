@@ -318,6 +318,7 @@ public type AUBaseDiagnosticReport record {|
     r4:CodeableConcept[] category?;
     r4:Reference[] imagingStudy?;
     DiagnosticReportStatusOne status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

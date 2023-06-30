@@ -225,6 +225,7 @@ public type AUBaseOrganisation record {|
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

@@ -371,6 +371,7 @@ public type AUBaseHealthcareService record {|
     r4:markdown extraDetails?;
     string availabilityExceptions?;
     r4:Reference[] coverageArea?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

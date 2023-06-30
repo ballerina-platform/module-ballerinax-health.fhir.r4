@@ -257,6 +257,7 @@ public type AUBaseSpecimen record {|
     string id?;
     r4:Narrative text?;
     SpecimenStatus status?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

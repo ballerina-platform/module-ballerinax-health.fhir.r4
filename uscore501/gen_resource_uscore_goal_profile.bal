@@ -51,7 +51,7 @@ public const RESOURCE_NAME_USCOREGOALPROFILE = "Goal";
 # + category - Indicates a category the goal falls within.
 # + startDate - The date or event after which the goal should begin being pursued.
 @r4:ResourceDefinition {
-    resourceType: "USCoreGoalProfile",
+    resourceType: "Goal",
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-goal",
     elements: {
@@ -302,10 +302,11 @@ public type USCoreGoalProfile record {|
     r4:CodeableConcept achievementStatus?;
     r4:CodeableConcept[] category?;
     r4:date startDate?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
-    name: "BaseUSCoreGoalProfileMeta",
+    name: "BaseGoalMeta",
     baseType: r4:Meta,
     elements: {},
     serializers: {

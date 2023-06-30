@@ -226,6 +226,7 @@ public type AUBasePractitioner record {|
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept[] communication?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

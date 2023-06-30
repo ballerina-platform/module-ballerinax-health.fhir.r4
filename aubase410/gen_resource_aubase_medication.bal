@@ -207,6 +207,7 @@ public type AUBaseMedication record {|
     string id?;
     r4:Narrative text?;
     MedicationStatus status?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

@@ -34,7 +34,6 @@ public const RESOURCE_NAME_AUBASEMEDICATIONSTATEMENT = "MedicationStatement";
 # + reasonReference - Condition or observation that supports why the medication is being/was taken.
 # + language - The base language in which the resource is written.
 # + medicationReference - Identifies the medication being administered. This is either a link to a resource representing the details of the medication or a simple attribute carrying a code that identifies the medication from a known list of medications.
-# + longTerm - Indicator of long term use of a medication.
 # + statusReason - Captures the reason for the current state of the MedicationStatement.
 # + informationSource - The person or organization that provided the information about the taking of this medication. Note: Use derivedFrom when a MedicationStatement is derived from other resources, e.g. Claim or MedicationRequest.
 # + context - The encounter or episode of care that establishes the context for this MedicationStatement.
@@ -126,18 +125,11 @@ public const RESOURCE_NAME_AUBASEMEDICATIONSTATEMENT = "MedicationStatement";
         "medicationReference" : {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
-            path: "MedicationStatement.medication[x]"
-        },
-        "longTerm" : {
-            name: "longTerm",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "MedicationStatement.extension"
+            path: "MedicationStatement.medication[x]",
+            valueSet: "http://hl7.org/fhir/ValueSet/medication-codes"
         },
         "statusReason" : {
             name: "statusReason",
@@ -232,7 +224,7 @@ public const RESOURCE_NAME_AUBASEMEDICATIONSTATEMENT = "MedicationStatement";
         "medicationCodeableConcept" : {
             name: "medicationCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
             path: "MedicationStatement.medication[x]",
@@ -310,8 +302,7 @@ public type AUBaseMedicationStatement record {|
     r4:Extension[] modifierExtension?;
     r4:Reference[] reasonReference?;
     r4:code language?;
-    r4:Reference medicationReference?;
-    r4:Extension longTerm?;
+    r4:Reference medicationReference;
     r4:CodeableConcept[] statusReason?;
     r4:Reference informationSource?;
     r4:Reference context?;
@@ -323,12 +314,13 @@ public type AUBaseMedicationStatement record {|
     r4:Reference[] basedOn?;
     r4:Identifier[] identifier?;
     r4:Period effectivePeriod?;
-    r4:CodeableConcept medicationCodeableConcept?;
+    r4:CodeableConcept medicationCodeableConcept;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime?;
     r4:uri implicitRules?;
     r4:CodeableConcept category?;
     MedicationStatementStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

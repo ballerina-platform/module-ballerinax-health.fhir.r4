@@ -380,6 +380,7 @@ public type AUBaseCondition record {|
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Age abatementAge?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

@@ -266,6 +266,7 @@ public type AUBasePractitionerRole record {|
     string id?;
     r4:Narrative text?;
     string availabilityExceptions?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

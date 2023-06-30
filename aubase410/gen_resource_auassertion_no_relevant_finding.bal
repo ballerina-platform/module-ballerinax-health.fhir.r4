@@ -402,6 +402,7 @@ public type AUAssertionNoRelevantFinding record {|
     r4:Reference device?;
     r4:instant effectiveInstant?;
     ObservationStatusFour status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

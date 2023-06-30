@@ -51,7 +51,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
 # + availabilityExceptions - A description of when the locations opening ours are different to normal, e.g. public holiday availability. Succinctly describing all possible exceptions to normal site availability as detailed in the opening hours Times.
 # + status - The status property covers the general availability of the resource, not the current value which may be covered by the operationStatus, or by a schedule/slots if they are configured for the location.
 @r4:ResourceDefinition {
-    resourceType: "USCoreLocation",
+    resourceType: "Location",
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location",
     elements: {
@@ -299,10 +299,11 @@ public type USCoreLocation record {|
     LocationPosition position?;
     string availabilityExceptions?;
     LocationStatus status?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
-    name: "BaseUSCoreLocationMeta",
+    name: "BaseLocationMeta",
     baseType: r4:Meta,
     elements: {},
     serializers: {

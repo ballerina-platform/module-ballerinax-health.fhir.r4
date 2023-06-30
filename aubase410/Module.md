@@ -6,16 +6,17 @@ This section focuses on samples depicting how to use this package to implement F
 
 ### Prerequisites
 
-1. Install Ballerina 2201.5.0 (Swan Lake Update 5)
+1. Install Ballerina 2201.6.0 or later
 
 ### 1. Parse JSON FHIR resource to FHIR resource model
 Sample below is using the AUBasePatient resource in `health.fhir.r4.aubase410` package.
 
 ```ballerina
+import ballerina/log;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.aubase410;
 
-function parseSamplePatient() returns aubase410:AUBasePatient {
+public function main() {
     json patientPayload = {
         "resourceType": "Patient",
         "id": "1",
@@ -45,8 +46,7 @@ function parseSamplePatient() returns aubase410:AUBasePatient {
     do {
         anydata parsedResult = check r4:parse(patientPayload, aubase410:AUBasePatient);
         aubase410:AUBasePatient patientModel = check parsedResult.ensureType();
-        log:printInfo("string `Patient name : ${patientModel.name.toString()}`);
-        return patientModel;
+        log:printInfo(string `Patient name : ${patientModel.name.toString()}`);
     } on fail error parseError {
     	log:printError(string `Error occurred while parsing : ${parseError.message()}`, parseError);
     }
@@ -56,14 +56,16 @@ function parseSamplePatient() returns aubase410:AUBasePatient {
 ### 2. Creating FHIR Resource models and serializing to JSON wire formats
 
 ```ballerina
+import ballerina/log;
+import ballerina/time;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.aubase410;
 
-function createSamplePatient() returns json {
+public function main() {
     aubase410:AUBasePatient patient = {
         meta: {
             lastUpdated: time:utcToString(time:utcNow()),
-            profile: [r4:PROFILE_BASE_PATIENT]
+            profile: [aubase410:PROFILE_BASE_AUBASEPATIENT]
         },
         active: true,
         name: [{
@@ -85,8 +87,7 @@ function createSamplePatient() returns json {
     // Serialize FHIR resource record to Json payload
     json|r4:FHIRSerializerError jsonResult = fhirEntity.toJson();
     if jsonResult is json {
-        log:printInfo(string `Patient resource JSON payload : ${jsonResult.toString()}`);
-        return jsonResult;
+        log:printInfo(string `Patient resource JSON payload : ${jsonResult.toJsonString()}`);
     } else {
         log:printError(string `Error occurred while serializing to JSON payload : ${jsonResult.message()}`, jsonResult);
     }

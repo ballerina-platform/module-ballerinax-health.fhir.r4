@@ -63,7 +63,7 @@ public const RESOURCE_NAME_USCOREPROCEDUREPROFILE = "Procedure";
 # + category - A code that classifies the procedure for searching, sorting and display purposes (e.g. 'Surgical Procedure').
 # + status - A code specifying the state of the procedure. Generally, this will be the in-progress or completed state.
 @r4:ResourceDefinition {
-    resourceType: "USCoreProcedureProfile",
+    resourceType: "Procedure",
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-procedure",
     elements: {
@@ -424,10 +424,11 @@ public type USCoreProcedureProfile record {|
     r4:Reference location?;
     r4:CodeableConcept category?;
     ProcedureStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
-    name: "BaseUSCoreProcedureProfileMeta",
+    name: "BaseProcedureMeta",
     baseType: r4:Meta,
     elements: {},
     serializers: {
