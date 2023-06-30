@@ -329,7 +329,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.aubase410"
-version = "1.0.4"
+version = "1.0.5"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "log"},
