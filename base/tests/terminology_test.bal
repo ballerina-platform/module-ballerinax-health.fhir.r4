@@ -563,7 +563,8 @@ function valueSetExpansionTest1() {
     map<string[]> searchParameters1 = {"valueSetVersion": ["4.3.0"], "_count": ["2"]};
     if valueSet is ValueSet {
         ValueSet|FHIRError actualVS = terminologyProcessor.
-                                        valueSetExpansion(searchParameters1, system = "http://hl7.org/fhir/ValueSet/relationship");
+                                        valueSetExpansion(searchParameters1,
+                                        system = "http://hl7.org/fhir/ValueSet/relationship");
         if actualVS is ValueSet {
             ValueSet expectedVS = returnValueSetData("expanded-relationship");
             ValueSetExpansion? expansion = actualVS.expansion;
@@ -579,7 +580,8 @@ function valueSetExpansionTest1() {
 function valueSetExpansionTest2() {
     map<string[]> searchParameters = {"filter": ["account"]};
     ValueSet|FHIRError actualVS = terminologyProcessor.
-                                        valueSetExpansion(searchParameters, system = "http://hl7.org/fhir/ValueSet/account-status");
+                                        valueSetExpansion(searchParameters,
+                                        system = "http://hl7.org/fhir/ValueSet/account-status");
     if actualVS is ValueSet {
         ValueSet expectedVS = returnValueSetData("expanded-account-status");
         ValueSetExpansion? expansion = actualVS.expansion;

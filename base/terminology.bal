@@ -37,12 +37,14 @@ public type TerminologyLoader distinct object {
 public class InMemoryTerminologyLoader {
     *TerminologyLoader;
 
-    final json[] codeSystems;
-    final json[] valueSets;
+    private final json[] codeSystems;
+    private final json[] valueSets;
 
     public function init(json[] codeSystems, json[] valueSets) {
+
         self.codeSystems = codeSystems;
         self.valueSets = valueSets;
+
     }
 
     # load terminology
