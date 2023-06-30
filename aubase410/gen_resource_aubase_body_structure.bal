@@ -207,6 +207,7 @@ public type AUBaseBodyStructure record {|
     r4:CodeableConcept location?;
     string id?;
     r4:Narrative text?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

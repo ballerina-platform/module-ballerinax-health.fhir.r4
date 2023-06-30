@@ -36,13 +36,11 @@ public const RESOURCE_NAME_AUBASEMEDICATIONDISPENSE = "MedicationDispense";
 # + statusReasonReference - Indicates the reason why a dispense was not performed.
 # + statusReasonCodeableConcept - Indicates the reason why a dispense was not performed.
 # + 'type - Indicates the type of dispensing event that is performed. For example, Trial Fill, Completion of Trial, Partial Fill, Emergency Fill, Samples, etc.
-# + dispenseNumber - Dispense number or sequence number that has been reached for a therapeutic good prescribed with repeats.
 # + medicationReference - Identifies the medication being administered. This is either a link to a resource representing the details of the medication or a simple attribute carrying a code that identifies the medication from a known list of medications.
 # + context - The encounter or episode of care that establishes the context for this event.
 # + id - The logical id of the resource, as used in the URL for the resource. Once assigned, this value never changes.
 # + text - A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative. Resource definitions may define what content should be represented in the narrative to ensure clinical safety.
 # + authorizingPrescription - Indicates the medication order that is being dispensed against.
-# + subsidisedConcurrentSupply - The grounds which authorise a PBS or RPBS subsidy for the concurrent supply of a medication item specified in a prescription and all of its repeats.
 # + identifier - Identifiers associated with this Medication Dispense that are defined by business processes and/or used to refer to it when a direct URL reference to the resource itself is not appropriate. They are business identifiers assigned to this resource by the performer or other systems and remain constant as the resource is updated and propagates from server to server.
 # + performer - Indicates who or what performed the event.
 # + quantity - The amount of medication that has been dispensed. Includes unit of measure.
@@ -158,21 +156,14 @@ public const RESOURCE_NAME_AUBASEMEDICATIONDISPENSE = "MedicationDispense";
             path: "MedicationDispense.type",
             valueSet: "http://terminology.hl7.org/ValueSet/v3-ActPharmacySupplyType"
         },
-        "dispenseNumber" : {
-            name: "dispenseNumber",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "MedicationDispense.extension"
-        },
         "medicationReference" : {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
-            path: "MedicationDispense.medication[x]"
+            path: "MedicationDispense.medication[x]",
+            valueSet: "http://hl7.org/fhir/ValueSet/medication-codes"
         },
         "context" : {
             name: "context",
@@ -205,14 +196,6 @@ public const RESOURCE_NAME_AUBASEMEDICATIONDISPENSE = "MedicationDispense";
             max: int:MAX_VALUE,
             isArray: true,
             path: "MedicationDispense.authorizingPrescription"
-        },
-        "subsidisedConcurrentSupply" : {
-            name: "subsidisedConcurrentSupply",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "MedicationDispense.extension"
         },
         "identifier" : {
             name: "identifier",
@@ -289,7 +272,7 @@ public const RESOURCE_NAME_AUBASEMEDICATIONDISPENSE = "MedicationDispense";
         "medicationCodeableConcept" : {
             name: "medicationCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
             path: "MedicationDispense.medication[x]",
@@ -386,13 +369,11 @@ public type AUBaseMedicationDispense record {|
     r4:Reference statusReasonReference?;
     r4:CodeableConcept statusReasonCodeableConcept?;
     r4:CodeableConcept 'type?;
-    r4:Extension dispenseNumber?;
-    r4:Reference medicationReference?;
+    r4:Reference medicationReference;
     r4:Reference context?;
     string id?;
     r4:Narrative text?;
     r4:Reference[] authorizingPrescription?;
-    r4:Extension subsidisedConcurrentSupply?;
     r4:Identifier[] identifier?;
     MedicationDispensePerformer[] performer?;
     r4:Quantity quantity?;
@@ -402,7 +383,7 @@ public type AUBaseMedicationDispense record {|
     r4:Quantity daysSupply?;
     r4:Reference[] supportingInformation?;
     r4:dateTime whenHandedOver?;
-    r4:CodeableConcept medicationCodeableConcept?;
+    r4:CodeableConcept medicationCodeableConcept;
     r4:Resource[] contained?;
     r4:Dosage[] dosageInstruction?;
     r4:Reference[] eventHistory?;
@@ -410,6 +391,7 @@ public type AUBaseMedicationDispense record {|
     r4:Reference location?;
     r4:CodeableConcept category?;
     MedicationDispenseStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

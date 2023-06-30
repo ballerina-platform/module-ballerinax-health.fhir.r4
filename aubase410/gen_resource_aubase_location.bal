@@ -299,6 +299,7 @@ public type AUBaseLocation record {|
     LocationPosition position?;
     string availabilityExceptions?;
     LocationStatus status?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

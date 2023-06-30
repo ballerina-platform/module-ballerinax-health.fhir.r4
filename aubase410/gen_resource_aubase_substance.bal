@@ -197,6 +197,7 @@ public type AUBaseSubstance record {|
     r4:Narrative text?;
     r4:CodeableConcept[] category?;
     SubstanceStatus status?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

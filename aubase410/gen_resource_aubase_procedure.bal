@@ -53,7 +53,6 @@ public const RESOURCE_NAME_AUBASEPROCEDURE = "Procedure";
 # + complicationDetail - Any complications that occurred during the procedure, or in the immediate post-performance period.
 # + performer - Limited to 'real' people rather than equipment.
 # + usedReference - Identifies medications, devices and any other substance used as part of the procedure.
-# + targetBodyStructure - The target body site used for this procedure. Multiple locations are allowed.
 # + focalDevice - A device that is implanted, removed or otherwise manipulated (calibration, battery replacement, fitting a prosthesis, attaching a wound-vac, etc.) as a focal portion of the Procedure.
 # + encounter - The Encounter during which this Procedure was created or performed or to which the creation of this record is tightly associated.
 # + instantiatesCanonical - The URL pointing to a FHIR-defined protocol, guideline, order set or other definition that is adhered to in whole or in part by this Procedure.
@@ -303,14 +302,6 @@ public const RESOURCE_NAME_AUBASEPROCEDURE = "Procedure";
             isArray: true,
             path: "Procedure.usedReference"
         },
-        "targetBodyStructure" : {
-            name: "targetBodyStructure",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            path: "Procedure.extension"
-        },
         "focalDevice" : {
             name: "focalDevice",
             dataType: ProcedureFocalDevice,
@@ -452,7 +443,6 @@ public type AUBaseProcedure record {|
     r4:Reference[] complicationDetail?;
     ProcedurePerformer[] performer?;
     r4:Reference[] usedReference?;
-    r4:Extension[] targetBodyStructure?;
     ProcedureFocalDevice[] focalDevice?;
     r4:Reference encounter?;
     r4:canonical[] instantiatesCanonical?;
@@ -464,6 +454,7 @@ public type AUBaseProcedure record {|
     r4:Reference location?;
     r4:CodeableConcept category?;
     ProcedureStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

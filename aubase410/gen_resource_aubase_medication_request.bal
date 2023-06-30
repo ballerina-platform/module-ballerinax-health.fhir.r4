@@ -33,7 +33,6 @@ public const RESOURCE_NAME_AUBASEMEDICATIONREQUEST = "MedicationRequest";
 # + priorPrescription - A link to a resource representing an earlier order related order or prescription.
 # + subject - A link to a resource representing the person or set of individuals to whom the medication will be given.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + bodyHeight - Include additional information (for example, patient height and weight) that supports the ordering of the medication.
 # + reasonReference - Condition or observation that supports why the medication was ordered.
 # + language - The base language in which the resource is written.
 # + instantiatesUri - The URL pointing to an externally maintained protocol, guideline, orderset or other definition that is adhered to in whole or in part by this MedicationRequest.
@@ -45,7 +44,6 @@ public const RESOURCE_NAME_AUBASEMEDICATIONREQUEST = "MedicationRequest";
 # + reasonCode - The reason or the indication for ordering or not ordering the medication.
 # + text - A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative. Resource definitions may define what content should be represented in the narrative to ensure clinical safety.
 # + doNotPerform - If true indicates that the provider is asking for the medication request not to occur.
-# + subsidisedConcurrentSupply - The grounds which authorise a PBS or RPBS subsidy for the concurrent supply of a medication item specified in a prescription and all of its repeats.
 # + basedOn - A plan or request that is fulfilled in whole or in part by this medication request.
 # + requester - The individual, organization, or device that initiated the request and has responsibility for its activation.
 # + identifier - Identifiers associated with this medication request that are defined by business processes and/or used to refer to it when a direct URL reference to the resource itself is not appropriate. They are business identifiers assigned to this resource by the performer or other systems and remain constant as the resource is updated and propagates from server to server.
@@ -68,7 +66,6 @@ public const RESOURCE_NAME_AUBASEMEDICATIONREQUEST = "MedicationRequest";
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - Indicates the type of medication request (for example, where the medication is expected to be consumed or administered (i.e. inpatient or outpatient)).
 # + groupIdentifier - A shared identifier common to all requests that were authorized more or less simultaneously by a single author, representing the identifier of the requisition or prescription.
-# + bodyWeight - Include additional information (for example, patient height and weight) that supports the ordering of the medication.
 # + status - A code specifying the current state of the order. Generally, this will be active or completed state.
 @r4:ResourceDefinition {
     resourceType: "MedicationRequest",
@@ -140,14 +137,6 @@ public const RESOURCE_NAME_AUBASEMEDICATIONREQUEST = "MedicationRequest";
             isArray: true,
             path: "MedicationRequest.modifierExtension"
         },
-        "bodyHeight" : {
-            name: "bodyHeight",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "MedicationRequest.supportingInformation"
-        },
         "reasonReference" : {
             name: "reasonReference",
             dataType: r4:Reference,
@@ -176,10 +165,11 @@ public const RESOURCE_NAME_AUBASEMEDICATIONREQUEST = "MedicationRequest";
         "medicationReference" : {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
-            path: "MedicationRequest.medication[x]"
+            path: "MedicationRequest.medication[x]",
+            valueSet: "http://hl7.org/fhir/ValueSet/medication-codes"
         },
         "reportedReference" : {
             name: "reportedReference",
@@ -238,14 +228,6 @@ public const RESOURCE_NAME_AUBASEMEDICATIONREQUEST = "MedicationRequest";
             max: 1,
             isArray: false,
             path: "MedicationRequest.doNotPerform"
-        },
-        "subsidisedConcurrentSupply" : {
-            name: "subsidisedConcurrentSupply",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "MedicationRequest.extension"
         },
         "basedOn" : {
             name: "basedOn",
@@ -338,7 +320,7 @@ public const RESOURCE_NAME_AUBASEMEDICATIONREQUEST = "MedicationRequest";
         "medicationCodeableConcept" : {
             name: "medicationCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
             path: "MedicationRequest.medication[x]",
@@ -428,14 +410,6 @@ public const RESOURCE_NAME_AUBASEMEDICATIONREQUEST = "MedicationRequest";
             isArray: false,
             path: "MedicationRequest.groupIdentifier"
         },
-        "bodyWeight" : {
-            name: "bodyWeight",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "MedicationRequest.supportingInformation"
-        },
         "status" : {
             name: "status",
             dataType: MedicationRequestStatus,
@@ -467,11 +441,10 @@ public type AUBaseMedicationRequest record {|
     r4:Reference priorPrescription?;
     r4:Reference subject;
     r4:Extension[] modifierExtension?;
-    r4:Reference bodyHeight?;
     r4:Reference[] reasonReference?;
     r4:code language?;
     r4:uri[] instantiatesUri?;
-    r4:Reference medicationReference?;
+    r4:Reference medicationReference;
     r4:Reference reportedReference?;
     r4:CodeableConcept statusReason?;
     MedicationRequestDispenseRequest dispenseRequest?;
@@ -479,7 +452,6 @@ public type AUBaseMedicationRequest record {|
     r4:CodeableConcept[] reasonCode?;
     r4:Narrative text?;
     boolean doNotPerform?;
-    r4:Extension subsidisedConcurrentSupply?;
     r4:Reference[] basedOn?;
     r4:Reference requester?;
     r4:Identifier[] identifier?;
@@ -491,7 +463,7 @@ public type AUBaseMedicationRequest record {|
     r4:Reference[] supportingInformation?;
     r4:Reference encounter?;
     r4:canonical[] instantiatesCanonical?;
-    r4:CodeableConcept medicationCodeableConcept?;
+    r4:CodeableConcept medicationCodeableConcept;
     MedicationRequestPriority priority?;
     MedicationRequestIntent intent;
     r4:CodeableConcept performerType?;
@@ -501,8 +473,8 @@ public type AUBaseMedicationRequest record {|
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Identifier groupIdentifier?;
-    r4:Reference bodyWeight?;
     MedicationRequestStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

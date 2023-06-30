@@ -331,6 +331,7 @@ public type AUBaseAllergyIntolerance record {|
     r4:Reference asserter?;
     r4:uri implicitRules?;
     AllergyIntoleranceCategory[] category?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

@@ -246,6 +246,7 @@ public type AUBaseRelatedPerson record {|
     r4:Narrative text?;
     RelatedPersonCommunication[] communication?;
     r4:CodeableConcept[] relationship?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

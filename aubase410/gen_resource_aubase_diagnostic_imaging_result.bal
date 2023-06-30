@@ -42,7 +42,6 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGRESULT = "Observation";
 # + valueRatio - The information determined as a result of making the observation, if the information has a simple value.
 # + specimen - The specimen that was used when this observation was made.
 # + derivedFrom - The target resource that represents a measurement from which this observation value is derived. For example, a calculated anion gap or a fetal measurement based on an ultrasound image.
-# + anatomicRegionOfInterest - A code that classifies the general type of observation being made.
 # + valueDateTime - The information determined as a result of making the observation, if the information has a simple value.
 # + id - The logical id of the resource, as used in the URL for the resource. Once assigned, this value never changes.
 # + text - A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative. Resource definitions may define what content should be represented in the narrative to ensure clinical safety.
@@ -56,7 +55,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGRESULT = "Observation";
 # + method - Indicates the mechanism used to perform the observation.
 # + hasMember - This observation is a group observation (e.g. a battery, a panel of tests, a set of vital sign measurements) that includes the target as a member of the group.
 # + encounter - The healthcare event (e.g. a patient and healthcare provider interaction) during which this observation is made.
-# + bodySite - Record details about the anatomical location of a specimen or body part. This resource may be used when a coded concept does not provide the necessary detail needed for the use case.
+# + bodySite - Indicates the site on the subject's body where the observation was made (i.e. the target site).
 # + component - Some observations have multiple component observations. These component observations are expressed as separate code value pairs that share the same attributes. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations.
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
 # + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range. Multiple reference ranges are interpreted as an 'OR'. In other words, to represent two distinct target populations, two `referenceRange` elements would be used.
@@ -67,7 +66,6 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGRESULT = "Observation";
 # + valueSampledData - The information determined as a result of making the observation, if the information has a simple value.
 # + valuePeriod - The information determined as a result of making the observation, if the information has a simple value.
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
-# + diagImg - A code that classifies the general type of observation being made.
 # + category - A code that classifies the general type of observation being made.
 # + device - The device used to generate the observation data.
 # + status - The status of the result value.
@@ -207,15 +205,6 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGRESULT = "Observation";
             isArray: true,
             path: "Observation.derivedFrom"
         },
-        "anatomicRegionOfInterest" : {
-            name: "anatomicRegionOfInterest",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            path: "Observation.category",
-            valueSet: "https://healthterminologies.gov.au/fhir/ValueSet/imaging-anatomic-region-of-interest-1"
-        },
         "valueDateTime" : {
             name: "valueDateTime",
             dataType: r4:dateTime,
@@ -323,11 +312,12 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGRESULT = "Observation";
         },
         "bodySite" : {
             name: "bodySite",
-            dataType: r4:Extension,
+            dataType: r4:CodeableConcept,
             min: 0,
             max: 1,
             isArray: false,
-            path: "Observation.extension"
+            path: "Observation.bodySite",
+            valueSet: "https://healthterminologies.gov.au/fhir/ValueSet/body-site-1"
         },
         "component" : {
             name: "component",
@@ -410,15 +400,6 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGRESULT = "Observation";
             isArray: false,
             path: "Observation.implicitRules"
         },
-        "diagImg" : {
-            name: "diagImg",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            path: "Observation.category",
-            valueSet: "http://hl7.org/fhir/ValueSet/observation-category"
-        },
         "category" : {
             name: "category",
             dataType: r4:CodeableConcept,
@@ -475,7 +456,6 @@ public type AUBaseDiagnosticImagingResult record {|
     r4:Ratio valueRatio?;
     r4:Reference specimen?;
     r4:Reference[] derivedFrom?;
-    r4:CodeableConcept[] anatomicRegionOfInterest?;
     r4:dateTime valueDateTime?;
     string id?;
     r4:Narrative text?;
@@ -489,7 +469,7 @@ public type AUBaseDiagnosticImagingResult record {|
     r4:CodeableConcept method?;
     r4:Reference[] hasMember?;
     r4:Reference encounter?;
-    r4:Extension bodySite?;
+    r4:CodeableConcept bodySite?;
     ObservationComponentThree[] component?;
     r4:Resource[] contained?;
     ObservationReferenceRangeThree[] referenceRange?;
@@ -499,13 +479,13 @@ public type AUBaseDiagnosticImagingResult record {|
     r4:SampledData valueSampledData?;
     r4:Period valuePeriod?;
     r4:uri implicitRules?;
-    r4:CodeableConcept diagImg;
     @constraint:Array {
        minLength: 1
     }
     r4:CodeableConcept[] category;
     r4:Reference device?;
     ObservationStatusThree status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

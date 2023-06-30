@@ -37,7 +37,6 @@ public const RESOURCE_NAME_AUMEDICINELIST = "List";
 # + encounter - The encounter that is the context in which this list was created.
 # + 'source - The entity responsible for deciding what the contents of the list were. Where the list was created by a human, this is the same as the author of the list.
 # + title - A label for the list assigned by the author.
-# + sourceRelatedPerson - The related person responsible for deciding what the contents of the list were. This is the same as the author of the list.
 # + mode - How this list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.
 # + entry - Entries in this list.
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
@@ -151,14 +150,6 @@ public const RESOURCE_NAME_AUMEDICINELIST = "List";
             isArray: false,
             path: "List.title"
         },
-        "sourceRelatedPerson" : {
-            name: "sourceRelatedPerson",
-            dataType: r4:Extension,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "List.extension"
-        },
         "mode" : {
             name: "mode",
             dataType: ListMode,
@@ -260,7 +251,6 @@ public type AUMedicineList record {|
     r4:Reference encounter?;
     r4:Reference 'source?;
     string title?;
-    r4:Extension sourceRelatedPerson?;
     ListMode mode;
     ListEntry[] entry?;
     r4:Resource[] contained?;
@@ -269,6 +259,7 @@ public type AUMedicineList record {|
     string id?;
     r4:Narrative text?;
     ListStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

@@ -60,7 +60,7 @@ public const RESOURCE_NAME_USCOREIMPLANTABLEDEVICEPROFILE = "Device";
 # + partNumber - The part number of the device.
 # + status - Status of the Device availability.
 @r4:ResourceDefinition {
-    resourceType: "USCoreImplantableDeviceProfile",
+    resourceType: "Device",
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-implantable-device",
     elements: {
@@ -387,10 +387,11 @@ public type USCoreImplantableDeviceProfile record {|
     string modelNumber?;
     string partNumber?;
     DeviceStatus status?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
-    name: "BaseUSCoreImplantableDeviceProfileMeta",
+    name: "BaseDeviceMeta",
     baseType: r4:Meta,
     elements: {},
     serializers: {

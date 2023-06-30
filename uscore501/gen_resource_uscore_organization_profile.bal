@@ -29,7 +29,6 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
 # + partOf - The organization of which this organization forms a part.
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - An address for the organization.
-# + NPI - Identifier for the organization that is used to identify the organization across multiple disparate systems.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + active - Whether the organization's record is still in active use.
 # + language - The base language in which the resource is written.
@@ -44,9 +43,8 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
 # + telecom - A contact detail for the organization.
 # + id - The logical id of the resource, as used in the URL for the resource. Once assigned, this value never changes.
 # + text - A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative. Resource definitions may define what content should be represented in the narrative to ensure clinical safety.
-# + CLIA - Identifier for the organization that is used to identify the organization across multiple disparate systems.
 @r4:ResourceDefinition {
-    resourceType: "USCoreOrganizationProfile",
+    resourceType: "Organization",
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization",
     elements: {
@@ -81,14 +79,6 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
             max: int:MAX_VALUE,
             isArray: true,
             path: "Organization.address"
-        },
-        "NPI" : {
-            name: "NPI",
-            dataType: r4:Identifier,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Organization.identifier"
         },
         "modifierExtension" : {
             name: "modifierExtension",
@@ -203,14 +193,6 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
             max: 1,
             isArray: false,
             path: "Organization.text"
-        },
-        "CLIA" : {
-            name: "CLIA",
-            dataType: r4:Identifier,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Organization.identifier"
         }
     },
     serializers: {
@@ -230,7 +212,6 @@ public type USCoreOrganizationProfile record {|
     r4:Reference partOf?;
     r4:Extension[] extension?;
     r4:Address[] address?;
-    r4:Identifier NPI?;
     r4:Extension[] modifierExtension?;
     boolean active;
     r4:code language?;
@@ -244,11 +225,11 @@ public type USCoreOrganizationProfile record {|
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    r4:Identifier CLIA?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
-    name: "BaseUSCoreOrganizationProfileMeta",
+    name: "BaseOrganizationMeta",
     baseType: r4:Meta,
     elements: {},
     serializers: {

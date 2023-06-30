@@ -55,7 +55,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICRESULT = "Observation";
 # + method - Indicates the mechanism used to perform the observation.
 # + hasMember - This observation is a group observation (e.g. a battery, a panel of tests, a set of vital sign measurements) that includes the target as a member of the group.
 # + encounter - The healthcare event (e.g. a patient and healthcare provider interaction) during which this observation is made.
-# + bodySite - Record details about the anatomical location of a specimen or body part. This resource may be used when a coded concept does not provide the necessary detail needed for the use case.
+# + bodySite - Indicates the site on the subject's body where the observation was made (i.e. the target site).
 # + component - Some observations have multiple component observations. These component observations are expressed as separate code value pairs that share the same attributes. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations.
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
 # + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range. Multiple reference ranges are interpreted as an 'OR'. In other words, to represent two distinct target populations, two `referenceRange` elements would be used.
@@ -312,11 +312,12 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICRESULT = "Observation";
         },
         "bodySite" : {
             name: "bodySite",
-            dataType: r4:Extension,
+            dataType: r4:CodeableConcept,
             min: 0,
             max: 1,
             isArray: false,
-            path: "Observation.extension"
+            path: "Observation.bodySite",
+            valueSet: "http://hl7.org/fhir/ValueSet/body-site"
         },
         "component" : {
             name: "component",
@@ -468,7 +469,7 @@ public type AUBaseDiagnosticResult record {|
     r4:CodeableConcept method?;
     r4:Reference[] hasMember?;
     r4:Reference encounter?;
-    r4:Extension bodySite?;
+    r4:CodeableConcept bodySite?;
     ObservationComponent[] component?;
     r4:Resource[] contained?;
     ObservationReferenceRange[] referenceRange?;
@@ -484,6 +485,7 @@ public type AUBaseDiagnosticResult record {|
     r4:CodeableConcept[] category;
     r4:Reference device?;
     ObservationStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

@@ -37,9 +37,7 @@ public const RESOURCE_NAME_AUBASEPATHOLOGYRESULT = "Observation";
 # + valueRange - The information determined as a result of making the observation, if the information has a simple value.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + focus - The actual focus of an observation when it is not the patient of record representing something or someone associated with the patient such as a spouse, parent, fetus, or donor. For example, fetus observations in a mother's record. The focus of an observation could also be an existing condition, an intervention, the subject's diet, another observation of the subject, or a body structure such as tumor or implanted device. An example use case would be using the Observation resource to capture whether the mother is trained to change her child's tracheostomy tube. In this example, the child is the patient of record and the mother is the focus.
-# + specificDiscipline - A code that classifies the general type of observation being made.
 # + language - The base language in which the resource is written.
-# + lab - A code that classifies the general type of observation being made.
 # + valueCodeableConcept - The information determined as a result of making the observation, if the information has a simple value.
 # + valueRatio - The information determined as a result of making the observation, if the information has a simple value.
 # + specimen - The specimen that was used when this observation was made.
@@ -166,15 +164,6 @@ public const RESOURCE_NAME_AUBASEPATHOLOGYRESULT = "Observation";
             isArray: true,
             path: "Observation.focus"
         },
-        "specificDiscipline" : {
-            name: "specificDiscipline",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            path: "Observation.category",
-            valueSet: "https://healthterminologies.gov.au/fhir/ValueSet/pathology-diagnostic-service-category-1"
-        },
         "language" : {
             name: "language",
             dataType: r4:code,
@@ -183,15 +172,6 @@ public const RESOURCE_NAME_AUBASEPATHOLOGYRESULT = "Observation";
             isArray: false,
             path: "Observation.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
-        },
-        "lab" : {
-            name: "lab",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            path: "Observation.category",
-            valueSet: "http://hl7.org/fhir/ValueSet/observation-category"
         },
         "valueCodeableConcept" : {
             name: "valueCodeableConcept",
@@ -471,9 +451,7 @@ public type AUBasePathologyResult record {|
     r4:Range valueRange?;
     r4:Extension[] modifierExtension?;
     r4:Reference[] focus?;
-    r4:CodeableConcept[] specificDiscipline?;
     r4:code language?;
-    r4:CodeableConcept lab;
     r4:CodeableConcept valueCodeableConcept?;
     r4:Ratio valueRatio?;
     r4:Reference specimen?;
@@ -507,6 +485,7 @@ public type AUBasePathologyResult record {|
     r4:CodeableConcept[] category;
     r4:Reference device?;
     ObservationStatusOne status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {

@@ -42,7 +42,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONPROFILE = "Medication";
 # + text - A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative. Resource definitions may define what content should be represented in the narrative to ensure clinical safety.
 # + status - A code to indicate if the medication is in active use.
 @r4:ResourceDefinition {
-    resourceType: "USCoreMedicationProfile",
+    resourceType: "Medication",
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medication",
     elements: {
@@ -207,10 +207,11 @@ public type USCoreMedicationProfile record {|
     string id?;
     r4:Narrative text?;
     MedicationStatus status?;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
-    name: "BaseUSCoreMedicationProfileMeta",
+    name: "BaseMedicationMeta",
     baseType: r4:Meta,
     elements: {},
     serializers: {

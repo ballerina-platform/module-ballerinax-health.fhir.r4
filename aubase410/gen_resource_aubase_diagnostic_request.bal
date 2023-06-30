@@ -53,7 +53,6 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICREQUEST = "ServiceRequest";
 # + authoredOn - When the request transitioned to being actionable.
 # + performer - The desired performer for doing the requested service. For example, the surgeon, dermatopathologist, endoscopist, etc.
 # + replaces - The request takes the place of the referenced completed or terminated request(s).
-# + targetBodyStructure - The target body site used for this procedure. Multiple locations are allowed.
 # + encounter - An encounter that provides additional information about the healthcare context in which this request is made.
 # + occurrenceTiming - The date/time at which the requested service should occur.
 # + quantityRange - An amount of service being requested which can be a quantity ( for example $1,500 home modification), a ratio ( for example, 20 half day visits per month), or a range (2.0 to 1.8 Gy per fraction).
@@ -306,14 +305,6 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICREQUEST = "ServiceRequest";
             isArray: true,
             path: "ServiceRequest.replaces"
         },
-        "targetBodyStructure" : {
-            name: "targetBodyStructure",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            path: "ServiceRequest.extension"
-        },
         "encounter" : {
             name: "encounter",
             dataType: r4:Reference,
@@ -508,7 +499,6 @@ public type AUBaseDiagnosticRequest record {|
     r4:dateTime authoredOn?;
     r4:Reference[] performer?;
     r4:Reference[] replaces?;
-    r4:Extension[] targetBodyStructure?;
     r4:Reference encounter?;
     r4:Timing occurrenceTiming?;
     r4:Range quantityRange?;
@@ -526,6 +516,7 @@ public type AUBaseDiagnosticRequest record {|
     r4:CodeableConcept[] locationCode?;
     string patientInstruction?;
     ServiceRequestStatus status;
+    never...;
 |};
 
 @r4:DataTypeDefinition {
