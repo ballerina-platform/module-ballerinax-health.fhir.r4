@@ -155,10 +155,8 @@ public type RequestSearchParameter record {
 
 # Base type of decoded/processed search parameter value.
 #
-# + name - Name of the search parameter
 # + modifier - FHIR Search parameter modifier
 public type FHIRTypedSearchParameter record {
-    readonly string name;
     readonly FHIRSearchParameterModifier|string? modifier;
 };
 
