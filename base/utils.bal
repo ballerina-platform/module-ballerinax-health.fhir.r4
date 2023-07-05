@@ -18,6 +18,7 @@ import ballerina/http;
 import ballerina/lang.value;
 import ballerina/log;
 import ballerina/uuid;
+import ballerina/url;
 
 # Get the FHIR context from the HTTP request context.
 #
@@ -174,3 +175,15 @@ public isolated function createFhirBundle(BundleType t, DomainResource[] resourc
     bundle.entry = entry;
     return bundle;
 }
+
+public isolated function getUrlEncodedSearchParameters(map<RequestSearchParameter[] & readonly> & readonly params)
+        returns string|FHIRError {
+    string|error encoded = url:encode(params.toJsonString(), "UTF-8");
+    if (encoded is error) {
+        string errorMsg = "Error occurred while encoding the search parameters.";
+        log:printError(errorMsg, 'error = encoded);
+        return createFHIRError(errorMsg, CODE_SEVERITY_FATAL, INVALID, httpStatusCode = http:STATUS_BAD_REQUEST);
+    }
+    return encoded;
+}
+
