@@ -117,7 +117,7 @@ function getByIdCodeSystemTest1() {
 
     CodeSystem expectedCS = returnCodeSystemData("action-condition-kind");
 
-    CodeSystem|FHIRError actualCS = terminologyProcessor.getCodeSystemById(id, version);
+    CodeSystem|FHIRError actualCS = terminologyProcessor.readCodeSystemById(id, version);
     test:assertEquals(actualCS, expectedCS);
 }
 
@@ -128,7 +128,7 @@ function getByIdCodeSystemTest2() {
     string id = "action-condition-kind";
 
     CodeSystem expectedCS = returnCodeSystemData("action-condition-kind");
-    CodeSystem|FHIRError actualCS = terminologyProcessor.getCodeSystemById(id);
+    CodeSystem|FHIRError actualCS = terminologyProcessor.readCodeSystemById(id);
     test:assertEquals(actualCS, expectedCS);
 }
 
@@ -139,7 +139,7 @@ function getByIdCodeSystemTest3() {
     string id = "action-condition-kind";
     string incorrectVersion = "5.3.0";
 
-    CodeSystem|FHIRError actualCS = terminologyProcessor.getCodeSystemById(id, incorrectVersion);
+    CodeSystem|FHIRError actualCS = terminologyProcessor.readCodeSystemById(id, incorrectVersion);
     FHIRError err = <FHIRError>actualCS;
     test:assertEquals(err.message(), string `Unknown version: '${incorrectVersion}'`, "Mismatching error message");
     test:assertEquals(err.detail().issues[0].diagnostic, string `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${incorrectVersion}' of it`, "Mismatching error diagonistic");
@@ -152,7 +152,7 @@ function getByIdCodeSystemTest4() {
     string incorrectId = "account-status2";
     string version = "5.3.0";
 
-    CodeSystem|FHIRError codeSystem4 = terminologyProcessor.getCodeSystemById(incorrectId, version);
+    CodeSystem|FHIRError codeSystem4 = terminologyProcessor.readCodeSystemById(incorrectId, version);
     test:assertEquals((<FHIRError>codeSystem4).message(), string `Unknown CodeSystem: '${incorrectId}'`);
 }
 
@@ -164,7 +164,7 @@ function getByIdValueSetTest1() {
     string version = "4.3.0";
 
     ValueSet expectedVS = returnValueSetData(id);
-    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.getValueSetById(id, version);
+    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.readValueSetById(id, version);
     test:assertEquals(actaulVS, expectedVS);
 }
 
@@ -175,7 +175,7 @@ function getByIdValueSetTest2() {
     string id = "relationship";
 
     ValueSet expectedVS = returnValueSetData(id);
-    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.getValueSetById(id);
+    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.readValueSetById(id);
     test:assertEquals(actaulVS, expectedVS);
 }
 
@@ -186,7 +186,7 @@ function getByIdValueSetTest3() {
     string id = "relationship";
     string incorrectVersion = "5.3.0";
 
-    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.getValueSetById(id, incorrectVersion);
+    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.readValueSetById(id, incorrectVersion);
     FHIRError err = <FHIRError>actaulVS;
     test:assertEquals(err.message(), string `Unknown version: '${incorrectVersion}'`, "Mismatching error message");
     test:assertEquals(err.detail().issues[0].diagnostic, string `There is ValueSet in the registry with Id: '${id}' but can not find version: '${incorrectVersion}' of it`, "Mismatching error diagonistic");
@@ -199,7 +199,7 @@ function getByIdValueSetTest4() {
     string incorrectId = "relationship2";
     string version = "4.3.0";
 
-    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.getValueSetById(incorrectId, version);
+    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.readValueSetById(incorrectId, version);
     test:assertEquals((<FHIRError>actaulVS).message(), string `Unknown ValueSet: '${incorrectId}'`);
 }
 
@@ -208,7 +208,7 @@ function getByIdValueSetTest4() {
 }
 function searchCodeSystemTest1() {
     string id = "action-condition-kind";
-    map<string[]> searchParameters = {"url": ["http://hl7.org/fhir/action-condition-kind"]};
+    map<RequestSearchParameter[]> searchParameters = {"url": [{name: "url", value: "http://hl7.org/fhir/action-condition-kind", typedValue: {name: "url", modifier: MODIFIER_EXACT}, 'type: URI}]};
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     CodeSystem expectedCS = returnCodeSystemData(id);
@@ -225,7 +225,7 @@ function searchCodeSystemTest1() {
 }
 function searchCodeSystemTest2() {
     string id = "action-condition-kind";
-    map<string[]> searchParameters = {"_id": ["action-condition-kind"]};
+    map<RequestSearchParameter[]> searchParameters = {"_id": [{name: "_id", value: id, typedValue: {name: "_id", modifier: MODIFIER_EXACT}, 'type: STRING}]};
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     CodeSystem expectedCS = returnCodeSystemData(id);
@@ -241,7 +241,10 @@ function searchCodeSystemTest2() {
     groups: ["codesystem", "search_codesystem", "successful_scenario"]
 }
 function searchCodeSystemTest3() {
-    map<string[]> searchParameters = {"version": ["4.3.0"], "_count": ["300"]};
+    map<RequestSearchParameter[]> searchParameters = {
+        "version": [{name: "version", value: "4.3.0", typedValue: {name: "version", modifier: MODIFIER_EXACT}, 'type: STRING}],
+        "_count": [{name: "_count", value: "300", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
@@ -255,7 +258,11 @@ function searchCodeSystemTest3() {
     groups: ["codesystem", "search_codesystem", "successful_scenario"]
 }
 function searchCodeSystemTest4() {
-    map<string[]> searchParameters = {"version": ["4.3.0"], "_offset": ["200"], "_count": ["300"]};
+    map<RequestSearchParameter[]> searchParameters = {
+        "version": [{name: "version", value: "4.3.0", typedValue: {name: "version", modifier: MODIFIER_EXACT}, 'type: STRING}],
+        "_count": [{name: "_count", value: "300", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}],
+        "_offset": [{name: "_offset", value: "200", typedValue: {name: "_offset", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
@@ -269,7 +276,11 @@ function searchCodeSystemTest4() {
     groups: ["codesystem", "search_codesystem", "successful_scenario"]
 }
 function searchCodeSystemTest5() {
-    map<string[]> searchParameters = {"status": ["active"], "_offset": ["0"], "_count": ["50"]};
+    map<RequestSearchParameter[]> searchParameters = {
+        "status": [{name: "status", value: "active", typedValue: {name: "status", modifier: MODIFIER_EXACT}, 'type: REFERENCE}],
+        "_count": [{name: "_count", value: "50", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}],
+        "_offset": [{name: "_offset", value: "0", typedValue: {name: "_offset", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
@@ -283,7 +294,11 @@ function searchCodeSystemTest5() {
     groups: ["codesystem", "search_codesystem", "successful_scenario"]
 }
 function searchCodeSystemTest6() {
-    map<string[]> searchParameters = {"status": ["active"], "_offset": ["50"], "_count": ["50"]};
+    map<RequestSearchParameter[]> searchParameters = {
+        "status": [{name: "status", value: "active", typedValue: {name: "status", modifier: MODIFIER_EXACT}, 'type: REFERENCE}],
+        "_count": [{name: "_count", value: "50", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}],
+        "_offset": [{name: "_offset", value: "50", typedValue: {name: "_offset", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
@@ -298,7 +313,7 @@ function searchCodeSystemTest6() {
 }
 function searchValueSetTest1() {
     string id = "relationship";
-    map<string[]> searchParameters = {"url": ["http://hl7.org/fhir/ValueSet/relationship"]};
+    map<RequestSearchParameter[]> searchParameters = {"url": [{name: "url", value: "http://hl7.org/fhir/ValueSet/relationship", typedValue: {name: "url", modifier: MODIFIER_EXACT}, 'type: URI}]};
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     ValueSet expectedVS = returnValueSetData(id);
@@ -315,7 +330,7 @@ function searchValueSetTest1() {
 }
 function searchValueSetTest2() {
     string id = "relationship";
-    map<string[]> searchParameters = {"url": ["http://hl7.org/fhir/ValueSet/relationship"]};
+    map<RequestSearchParameter[]> searchParameters = {"url": [{name: "url", value: "http://hl7.org/fhir/ValueSet/relationship", typedValue: {name: "url", modifier: MODIFIER_EXACT}, 'type: URI}]};
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     ValueSet expectedVS = returnValueSetData(id);
@@ -331,7 +346,10 @@ function searchValueSetTest2() {
     groups: ["valueset", "search_valueset", "successful_scenario"]
 }
 function searchValueSetTest3() {
-    map<string[]> searchParameters = {"version": ["4.3.0"], "_count": ["300"]};
+    map<RequestSearchParameter[]> searchParameters = {
+        "version": [{name: "version", value: "4.3.0", typedValue: {name: "version", modifier: MODIFIER_EXACT}, 'type: STRING}],
+        "_count": [{name: "_count", value: "300", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     if actualVS is ValueSet[] {
@@ -345,7 +363,11 @@ function searchValueSetTest3() {
     groups: ["valueset", "search_valueset", "successful_scenario"]
 }
 function searchValueSetTest4() {
-    map<string[]> searchParameters = {"version": ["4.3.0"], "_offset": ["200"], "_count": ["300"]};
+    map<RequestSearchParameter[]> searchParameters = {
+        "version": [{name: "version", value: "4.3.0", typedValue: {name: "version", modifier: MODIFIER_EXACT}, 'type: STRING}],
+        "_count": [{name: "_count", value: "300", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}],
+        "_offset": [{name: "_offset", value: "200", typedValue: {name: "_offset", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     if actualVS is ValueSet[] {
@@ -359,7 +381,11 @@ function searchValueSetTest4() {
     groups: ["valueset", "search_valueset", "successful_scenario"]
 }
 function searchValueSetTest5() {
-    map<string[]> searchParameters = {"status": ["active"], "_offset": ["0"], "_count": ["50"]};
+    map<RequestSearchParameter[]> searchParameters = {
+        "status": [{name: "status", value: "active", typedValue: {name: "status", modifier: MODIFIER_EXACT}, 'type: REFERENCE}],
+        "_count": [{name: "_count", value: "50", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}],
+        "_offset": [{name: "_offset", value: "0", typedValue: {name: "_offset", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     if actualVS is ValueSet[] {
@@ -373,7 +399,11 @@ function searchValueSetTest5() {
     groups: ["valueset", "search_valueset", "successful_scenario"]
 }
 function searchValueSetTest6() {
-    map<string[]> searchParameters = {"status": ["active"], "_offset": ["50"], "_count": ["50"]};
+    map<RequestSearchParameter[]> searchParameters = {
+        "status": [{name: "status", value: "active", typedValue: {name: "status", modifier: MODIFIER_EXACT}, 'type: REFERENCE}],
+        "_count": [{name: "_count", value: "50", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}],
+        "_offset": [{name: "_offset", value: "50", typedValue: {name: "_offset", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     if actualVS is ValueSet[] {
@@ -559,8 +589,11 @@ function valueSetLookupTest6() returns error? {
     groups: ["valueset", "valueset_expansion", "successful_scenario"]
 }
 function valueSetExpansionTest1() {
-    ValueSet|FHIRError valueSet = terminologyProcessor.getValueSetById("relationship");
-    map<string[]> searchParameters1 = {"valueSetVersion": ["4.3.0"], "_count": ["2"]};
+    ValueSet|FHIRError valueSet = terminologyProcessor.readValueSetById("relationship");
+    map<RequestSearchParameter[]> searchParameters1 = {
+        "valueSetVersion": [{name: "valueSetVersion", value: "active", typedValue: {name: "valueSetVersion", modifier: MODIFIER_EXACT}, 'type: STRING}],
+        "_count": [{name: "_count", value: "50", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
     if valueSet is ValueSet {
         ValueSet|FHIRError actualVS = terminologyProcessor.
                                         valueSetExpansion(searchParameters1,
@@ -578,7 +611,9 @@ function valueSetExpansionTest1() {
     groups: ["valueset", "valueset_expansion", "successful_scenario"]
 }
 function valueSetExpansionTest2() {
-    map<string[]> searchParameters = {"filter": ["account"]};
+    map<RequestSearchParameter[]> searchParameters = {
+        "filter": [{name: "filter", value: "account", typedValue: {name: "filter", modifier: MODIFIER_EXACT}, 'type: STRING}]
+    };
     ValueSet|FHIRError actualVS = terminologyProcessor.
                                         valueSetExpansion(searchParameters,
                                         system = "http://hl7.org/fhir/ValueSet/account-status");
@@ -596,7 +631,7 @@ function valueSetExpansionTest2() {
 function codesystemSubsumeTest1() returns error? {
     code codeA = "inactive";
     code codeB = "inactive";
-    CodeSystem codeSystem = check terminologyProcessor.getCodeSystemById("account-status");
+    CodeSystem codeSystem = check terminologyProcessor.readCodeSystemById("account-status");
     string|FHIRError actaulResult = terminologyProcessor.subsumes(codeA, codeB, codeSystem);
     test:assertEquals(actaulResult, "equivalent");
 }

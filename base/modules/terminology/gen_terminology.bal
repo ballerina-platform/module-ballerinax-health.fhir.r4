@@ -26,8 +26,8 @@ public type TerminologyRetriever isolated function (r4:uri system, r4:code code)
 # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
-public isolated function getCodeSystemById(string id, string? 'version = ()) returns r4:CodeSystem|r4:FHIRError {
-    return r4:terminologyProcessor.getCodeSystemById(id, 'version);
+public isolated function readCodeSystemById(string id, string? 'version = ()) returns r4:CodeSystem|r4:FHIRError {
+    return r4:terminologyProcessor.readCodeSystemById(id, 'version);
 }
 
 # Find a ValueSet for a provided Id and version.
@@ -36,8 +36,8 @@ public isolated function getCodeSystemById(string id, string? 'version = ()) ret
 # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
-public isolated function getValueSetById(string id, string? 'version = ()) returns r4:ValueSet|r4:FHIRError {
-    return r4:terminologyProcessor.getValueSetById(id, 'version);
+public isolated function readValueSetById(string id, string? 'version = ()) returns r4:ValueSet|r4:FHIRError {
+    return r4:terminologyProcessor.readValueSetById(id, 'version);
 }
 
 # Find a CodeSystem based on the provided URL and version.
@@ -46,8 +46,8 @@ public isolated function getValueSetById(string id, string? 'version = ()) retur
 # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided URL
-public isolated function getCodeSystemByUrl(r4:uri url, string? 'version = ()) returns r4:CodeSystem|r4:FHIRError {
-    return r4:terminologyProcessor.getCodeSystemByUrl(url, 'version);
+public isolated function readCodeSystemByUrl(r4:uri url, string? 'version = ()) returns r4:CodeSystem|r4:FHIRError {
+    return r4:terminologyProcessor.readCodeSystemByUrl(url, 'version);
 
 }
 
@@ -57,8 +57,8 @@ public isolated function getCodeSystemByUrl(r4:uri url, string? 'version = ()) r
 # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided URL
-public isolated function getValueSetByUrl(r4:uri url, string? 'version = ()) returns r4:ValueSet|r4:FHIRError {
-    return r4:terminologyProcessor.getValueSetByUrl(url, 'version);
+public isolated function readValueSetByUrl(r4:uri url, string? 'version = ()) returns r4:ValueSet|r4:FHIRError {
+    return r4:terminologyProcessor.readValueSetByUrl(url, 'version);
 }
 
 # Search for Code systems based on the provided search parameters.
@@ -67,7 +67,7 @@ public isolated function getValueSetByUrl(r4:uri url, string? 'version = ()) ret
 # + searchParameters - List of search parameters, should be passed as map of string arrays
 # + return - Return array of CodeSystem data if success, return FHIR error if the request contains unsupported search parameters 
 # and for any other processing errors
-public isolated function searchCodeSystems(map<string[]> searchParameters) returns r4:CodeSystem[]|r4:FHIRError {
+public isolated function searchCodeSystems(map<r4:RequestSearchParameter[]> searchParameters) returns r4:CodeSystem[]|r4:FHIRError {
     return r4:terminologyProcessor.searchCodeSystems(searchParameters);
 }
 
@@ -77,7 +77,7 @@ public isolated function searchCodeSystems(map<string[]> searchParameters) retur
 # + searchParameters - List of search parameters, should be passed as map of string arrays  
 # + return - Return array of ValueSet data if success, return FHIR error if the request contains unsupported search parameters
 # and for any other processing errors
-public isolated function searchValueSets(map<string[]> searchParameters) returns r4:FHIRError|r4:ValueSet[] {
+public isolated function searchValueSets(map<r4:RequestSearchParameter[]> searchParameters) returns r4:FHIRError|r4:ValueSet[] {
     return r4:terminologyProcessor.searchValueSets(searchParameters);
 }
 
@@ -122,7 +122,7 @@ public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept cod
 # + system - System URL of the ValueSet to be processed, if system ValueSet(vs) is not supplied then  
 # this value shoud be mandatory
 # + return - List of concepts is successful,  return FHIRError if fails
-public isolated function valueSetExpansion(map<string[]> searchParameters, r4:ValueSet? vs = (), r4:uri? system = ())
+public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]> searchParameters, r4:ValueSet? vs = (), r4:uri? system = ())
                                                                                         returns r4:ValueSet|r4:FHIRError {
     return r4:terminologyProcessor.valueSetExpansion(searchParameters, vs, system);
 }

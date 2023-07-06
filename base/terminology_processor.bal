@@ -296,7 +296,7 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
-    public isolated function getCodeSystemById(string id, string? 'version = ()) returns CodeSystem|FHIRError {
+    public isolated function readCodeSystemById(string id, string? 'version = ()) returns CodeSystem|FHIRError {
         lock {
             boolean isIdExistInRegistry = false;
             if 'version is string {
@@ -357,7 +357,7 @@ public isolated class TerminologyProcessor {
     # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
-    public isolated function getValueSetById(string id, string? 'version = ()) returns ValueSet|FHIRError {
+    public isolated function readValueSetById(string id, string? 'version = ()) returns ValueSet|FHIRError {
         lock {
             boolean isIdExistInRegistry = false;
             if 'version is string {
@@ -419,12 +419,12 @@ public isolated class TerminologyProcessor {
     # + params - List of search parameters, should be passed as map of string arrays
     # + return - Return array of CodeSystem data if success, return FHIR error if the request contains unsupported search parameters 
     # and for any other processing errors
-    public isolated function searchCodeSystems(map<string[]> params) returns CodeSystem[]|FHIRError {
+    public isolated function searchCodeSystems(map<RequestSearchParameter[]> params) returns CodeSystem[]|FHIRError {
         lock {
-            map<string[]> searchParameters = params.clone();
+            map<RequestSearchParameter[]> searchParameters = params.clone();
             int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
             if searchParameters.hasKey("_count") {
-                int|error y = langint:fromString(searchParameters.get("_count")[0]);
+                int|error y = langint:fromString(searchParameters.get("_count")[0].value);
                 if y is int {
                     count = y;
                 }
@@ -433,7 +433,7 @@ public isolated class TerminologyProcessor {
 
             int offset = 0;
             if searchParameters.hasKey("_offset") {
-                int|error y = langint:fromString(searchParameters.get("_offset")[0]);
+                int|error y = langint:fromString(searchParameters.get("_offset")[0].value);
                 if y is int {
                     offset = y;
                 }
@@ -467,13 +467,13 @@ public isolated class TerminologyProcessor {
             CodeSystem[] codeSystemArray = self.codeSystems.toArray();
 
             foreach var searchParam in searchParameters.clone().keys() {
-                string[] searchParamValues = searchParameters.clone()[searchParam] ?: [];
+                RequestSearchParameter[] searchParamValues = searchParameters.clone()[searchParam] ?: [];
 
                 CodeSystem[] filteredList = [];
                 if searchParamValues.length() != 0 {
                     foreach var queriedValue in searchParamValues {
                         CodeSystem[] result = from CodeSystem entry in codeSystemArray
-                            where entry[CODESYSTEMS_SEARCH_PARAMS.get(searchParam)] == queriedValue
+                            where entry[CODESYSTEMS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
                             select entry;
                         filteredList.push(...result);
                     }
@@ -507,12 +507,12 @@ public isolated class TerminologyProcessor {
     # + params - List of search parameters, should be passed as map of string arrays  
     # + return - Return array of ValueSet data if success, return FHIR error if the request contains unsupported search parameters
     # and for any other processing errors
-    public isolated function searchValueSets(map<string[]> params) returns FHIRError|ValueSet[] {
+    public isolated function searchValueSets(map<RequestSearchParameter[]> params) returns FHIRError|ValueSet[] {
         lock {
-            map<string[]> searchParameters = params.clone();
+            map<RequestSearchParameter[]> searchParameters = params.clone();
             int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
             if searchParameters.hasKey("_count") {
-                int|error y = langint:fromString(searchParameters.get("_count")[0]);
+                int|error y = langint:fromString(searchParameters.get("_count")[0].value);
                 if y is int {
                     count = y;
                 }
@@ -521,7 +521,7 @@ public isolated class TerminologyProcessor {
 
             int offset = 0;
             if searchParameters.hasKey("_offset") {
-                int|error y = langint:fromString(searchParameters.get("_offset")[0]);
+                int|error y = langint:fromString(searchParameters.get("_offset")[0].value);
                 if y is int {
                     offset = y;
                 }
@@ -555,13 +555,13 @@ public isolated class TerminologyProcessor {
             ValueSet[] valueSetArray = self.valueSets.toArray();
 
             foreach var searchParam in searchParameters.clone().keys() {
-                string[] searchParamValues = searchParameters.clone()[searchParam] ?: [];
+                RequestSearchParameter[] searchParamValues = searchParameters.clone()[searchParam] ?: [];
 
                 ValueSet[] filteredList = [];
                 if searchParamValues.length() != 0 {
                     foreach var queriedValue in searchParamValues {
                         ValueSet[] result = from ValueSet entry in valueSetArray
-                            where entry[VALUESETS_SEARCH_PARAMS.get(searchParam)] == queriedValue
+                            where entry[VALUESETS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
                             select entry;
                         filteredList.push(...result);
                     }
@@ -611,7 +611,7 @@ public isolated class TerminologyProcessor {
             if !(ensured is error) {
                 codeSystem = ensured;
             } else if !(system is ()) {
-                CodeSystem|FHIRError codeSystemById = self.getCodeSystemByUrl(system, 'version);
+                CodeSystem|FHIRError codeSystemById = self.readCodeSystemByUrl(system, 'version);
                 if codeSystemById is CodeSystem {
                     codeSystem = codeSystemById;
                 } else {
@@ -631,7 +631,7 @@ public isolated class TerminologyProcessor {
             httpStatusCode = http:STATUS_BAD_REQUEST);
             }
 
-            if codeValue is code {
+            if codeValue is code && codeValue.trim() !is ""{
                 CodeConceptDetails? result = self.findConceptInCodeSystem(codeSystem, codeValue);
 
                 if result is CodeConceptDetails {
@@ -723,8 +723,8 @@ public isolated class TerminologyProcessor {
                 valueSet = ensured;
                 valueSet.status = ensured.status;
             } else if !(system is ()) {
-                if self.getValueSetByUrl(system, 'version) is ValueSet {
-                    valueSet = check self.getValueSetByUrl(system, 'version);
+                if self.readValueSetByUrl(system, 'version) is ValueSet {
+                    valueSet = check self.readValueSetByUrl(system, 'version);
                 } else {
                     return createFHIRError(string `Cannot find a ValueSet for the provided system URL: ${system}`,
                     ERROR,
@@ -743,7 +743,7 @@ public isolated class TerminologyProcessor {
             httpStatusCode = http:STATUS_BAD_REQUEST);
             }
 
-            if codeValue is code {
+            if codeValue is code && codeValue.trim() !is ""{
                 CodeConceptDetails? result = self.findConceptInValueSet(valueSet, codeValue);
                 if result is CodeConceptDetails {
                     return result.concept.clone();
@@ -821,12 +821,12 @@ public isolated class TerminologyProcessor {
     # + system - System URL of the ValueSet to be processed, if system ValueSet(vs) is not supplied then  
     # this value shoud be mandatory
     # + return - List of concepts is successful,  return FHIRError if fails
-    public isolated function valueSetExpansion(map<string[]> searchParameters, ValueSet? vs = (), uri? system = ())
+    public isolated function valueSetExpansion(map<RequestSearchParameter[]> searchParameters, ValueSet? vs = (), uri? system = ())
                                                                 returns ValueSet|FHIRError {
         lock {
             int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
             if searchParameters.hasKey("_count") {
-                int|error y = langint:fromString(searchParameters.get("_count")[0]);
+                int|error y = langint:fromString(searchParameters.get("_count")[0].value);
                 if y is int {
                     count = y;
                 }
@@ -835,7 +835,7 @@ public isolated class TerminologyProcessor {
 
             int offset = 0;
             if searchParameters.hasKey("_offset") {
-                int|error y = langint:fromString(searchParameters.get("_offset")[0]);
+                int|error y = langint:fromString(searchParameters.get("_offset")[0].value);
                 if y is int {
                     offset = y;
                 }
@@ -860,17 +860,29 @@ public isolated class TerminologyProcessor {
             if !(ensured is error) {
                 valueSet = ensured;
             } else if system is string {
-                map<string[]> clone = searchParameters.clone();
+                map<RequestSearchParameter[]> clone = searchParameters.clone();
                 if clone.hasKey("filter") {
                     _ = clone.remove("filter");
                 }
 
                 if !clone.hasKey("url") {
-                    clone["url"] = [system];
+                    RequestSearchParameter r = {name: "url", value: system, typedValue: {name: "url", modifier: MODIFIER_EXACT}, 'type: URI};
+                    clone["url"] = [r];
                 }
                 ValueSet[] v = check self.searchValueSets(clone);
-                valueSet = v[0];
-            } else {
+
+                if v.length() > 0 {
+                    valueSet = v[0];
+                } else {
+                    return createFHIRError(
+                        string `Can not find a ValueSet for system: ${system.toString()}`,
+                        ERROR,
+                        INVALID_REQUIRED,
+                        errorType = PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_BAD_REQUEST);
+                }
+            }
+            else {
                 return createFHIRError(
             "Can not find a ValueSet",
             ERROR,
@@ -899,7 +911,7 @@ public isolated class TerminologyProcessor {
 
                 if concepts is ValueSetComposeIncludeConcept[] {
                     if searchParameters.hasKey("filter") {
-                        string filter = searchParameters.get("filter")[0];
+                        string filter = searchParameters.get("filter")[0].value;
                         ValueSetComposeIncludeConcept[] result = from ValueSetComposeIncludeConcept entry in concepts
                             where entry["display"] is string && regex:matches((<string>entry["display"]).toUpperAscii(),
                         string `.*${filter.toUpperAscii()}.*`)
@@ -925,7 +937,7 @@ public isolated class TerminologyProcessor {
 
                 } else {
                     if searchParameters.hasKey("filter") {
-                        string filter = searchParameters.get("filter")[0];
+                        string filter = searchParameters.get("filter")[0].value;
                         CodeSystemConcept[] result = from CodeSystemConcept entry in concepts
                             where entry["display"] is string
                             && regex:matches((<string>entry["display"]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
@@ -971,8 +983,8 @@ public isolated class TerminologyProcessor {
         lock {
             // Create and initialize a CodeSystem record with the mandatory fields
             CodeSystem codeSystem = {content: "example", status: "unknown"};
-            if cs is () && system != () && self.getCodeSystemByUrl(system, 'version) is CodeSystem {
-                codeSystem = check self.getCodeSystemByUrl(system, 'version);
+            if cs is () && system != () && self.readCodeSystemByUrl(system, 'version) is CodeSystem {
+                codeSystem = check self.readCodeSystemByUrl(system, 'version);
             } else if cs != () {
                 codeSystem = cs.clone();
             } else {
@@ -1018,7 +1030,7 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided URL
-    public isolated function getCodeSystemByUrl(uri url, string? 'version = ()) returns CodeSystem|FHIRError {
+    public isolated function readCodeSystemByUrl(uri url, string? 'version = ()) returns CodeSystem|FHIRError {
         lock {
             boolean isIdExistInRegistry = false;
             if 'version is string {
@@ -1079,7 +1091,7 @@ public isolated class TerminologyProcessor {
     # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided URL
-    public isolated function getValueSetByUrl(uri url, string? 'version = ()) returns ValueSet|FHIRError {
+    public isolated function readValueSetByUrl(uri url, string? 'version = ()) returns ValueSet|FHIRError {
         lock {
             boolean isIdExistInRegistry = false;
             if 'version is string {
@@ -1193,10 +1205,10 @@ public isolated class TerminologyProcessor {
                 } else {
                     return self.findConceptInValueSet(result, code);
                 }
-            } else if self.getValueSetByUrl(system, 'version) is ValueSet {
-                return self.findConceptInValueSet(check self.getValueSetByUrl(system, 'version), code);
-            } else if self.getCodeSystemByUrl(system, 'version) is CodeSystem {
-                return self.findConceptInCodeSystem(check self.getCodeSystemByUrl(system, 'version), code);
+            } else if self.readValueSetByUrl(system, 'version) is ValueSet {
+                return self.findConceptInValueSet(check self.readValueSetByUrl(system, 'version), code);
+            } else if self.readCodeSystemByUrl(system, 'version) is CodeSystem {
+                return self.findConceptInCodeSystem(check self.readCodeSystemByUrl(system, 'version), code);
             } else {
                 return createInternalFHIRError(
                 string `Unknown ValueSet or CodeSystem : ${system}`,
@@ -1285,7 +1297,7 @@ public isolated class TerminologyProcessor {
                             }
                         } else {
                             // Find CodeSystem
-                            CodeSystem|FHIRError codeSystemByUrl = self.getCodeSystemByUrl(systemValue);
+                            CodeSystem|FHIRError codeSystemByUrl = self.readCodeSystemByUrl(systemValue);
                             if codeSystemByUrl is CodeSystem {
                                 CodeConceptDetails? result = self.findConceptInCodeSystem(codeSystemByUrl, code);
                                 if result != () {
@@ -1350,7 +1362,7 @@ public isolated class TerminologyProcessor {
                             return concepts.clone();
                         } else {
                             // Find CodeSystem
-                            CodeSystem|FHIRError codeSystemByUrl = self.getCodeSystemByUrl(systemValue);
+                            CodeSystem|FHIRError codeSystemByUrl = self.readCodeSystemByUrl(systemValue);
                             if codeSystemByUrl is CodeSystem {
                                 ValueSetExpansionDetails? result = self.getAllConceptInCodeSystem(codeSystemByUrl);
                                 if result != () {
