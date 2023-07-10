@@ -62,7 +62,7 @@ public isolated class FHIRPreprocessor {
     # + httpCtx - The HTTP request context
     # + return - The next service or an error
     public isolated function processRead (string fhirResourceType, string id, http:Request httpRequest, http:RequestContext httpCtx)
-                                                                                    returns http:NextService|FHIRError? {
+                                                                                    returns FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : read");
         // Validate main HTTP headers
         FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
@@ -83,8 +83,6 @@ public isolated class FHIRPreprocessor {
 
         // Set FHIR context inside HTTP context
         setFHIRContext(fCtx, httpCtx);
-
-        return getNextService(httpCtx);
     }
 
     # Process the FHIR Search interaction.
@@ -94,7 +92,7 @@ public isolated class FHIRPreprocessor {
     # + httpCtx - The HTTP request context
     # + return - The next service or an error
     public isolated function processSearch (string fhirResourceType, http:Request httpRequest, http:RequestContext httpCtx)
-                                                                                    returns http:NextService|FHIRError? {
+                                                                                    returns FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : search");
 
         // Validate main HTTP headers
@@ -123,8 +121,6 @@ public isolated class FHIRPreprocessor {
 
         // Set FHIR context inside HTTP context
         setFHIRContext(fCtx, httpCtx);
-
-        return getNextService(httpCtx);
     }
 
     # Process the FHIR Create interaction.
@@ -135,7 +131,7 @@ public isolated class FHIRPreprocessor {
     # + httpCtx - The HTTP request context
     # + return - The next service or an error
     public isolated function processCreate (string resourceType, json|xml payload, http:Request httpRequest,
-                                                http:RequestContext httpCtx) returns http:NextService|FHIRError? {
+                                                http:RequestContext httpCtx) returns FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : Create");
         // Validate main HTTP headers
         FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
@@ -166,8 +162,6 @@ public isolated class FHIRPreprocessor {
 
         // Set FHIR context inside HTTP context
         setFHIRContext(fhirCtx, httpCtx);
-
-        return getNextService(httpCtx);
     }
 
     isolated function processSearchParameters(string fhirResourceType, http:Request request)
