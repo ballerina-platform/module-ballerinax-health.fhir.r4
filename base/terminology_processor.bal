@@ -67,12 +67,8 @@ public isolated class TerminologyProcessor {
         FHIRError[] errors = [];
         foreach CodeSystem codeSystem in codeSystems {
             FHIRError? result = self.addCodeSystem(codeSystem);
-
-            if result is FHIRError {
-                errors.push(result);
-            }
+            _ = result is FHIRError ? errors.push(result) : "";
         }
-
         return errors;
     }
 
@@ -101,9 +97,7 @@ public isolated class TerminologyProcessor {
             }
         }
 
-        if codeSystems.length() > 0 {
-            errors.push(...<FHIRError[]>self.addCodeSystems(codeSystems));
-        }
+        _ = codeSystems.length() > 0 ? errors.push(...<FHIRError[]>self.addCodeSystems(codeSystems)) : "";
 
         if errors.length() > 0 {
             return errors;
@@ -119,12 +113,8 @@ public isolated class TerminologyProcessor {
         FHIRError[] errors = [];
         foreach ValueSet valueSet in valueSets {
             FHIRError? result = self.addValueSet(valueSet);
-
-            if result is FHIRError {
-                errors.push(result);
-            }
+            _ = result is FHIRError ? errors.push(result) : "";
         }
-
         return errors;
     }
 
@@ -153,9 +143,7 @@ public isolated class TerminologyProcessor {
             }
         }
 
-        if valueSets.length() > 0 {
-            errors.push(...<FHIRError[]>self.addValueSets(valueSets));
-        }
+        _ = valueSets.length() > 0 ? errors.push(...<FHIRError[]>self.addValueSets(valueSets)) : "";
 
         if errors.length() > 0 {
             return errors;
@@ -323,8 +311,9 @@ public isolated class TerminologyProcessor {
                 string latestVersion = "0.0.0";
                 foreach var item in self.codeSystems.keys() {
                     if regex:matches(item, string `.*\/${id}\|.*`)
-                && self.codeSystems[item] is CodeSystem
-                && (<CodeSystem>self.codeSystems[item]).'version > latestVersion {
+                        && self.codeSystems[item] is CodeSystem
+                        && (<CodeSystem>self.codeSystems[item]).'version > latestVersion {
+
                         codeSystem = <CodeSystem>self.codeSystems[item];
                         latestVersion = codeSystem.'version ?: "0.0.0";
                         isIdExistInRegistry = true;
@@ -384,8 +373,9 @@ public isolated class TerminologyProcessor {
                 string latestVersion = "0.0.0";
                 foreach var item in self.valueSets.keys() {
                     if regex:matches(item, string `.*\/${id}\|.*`)
-                && self.valueSets[item] is ValueSet
-                && (<ValueSet>self.valueSets[item]).'version > latestVersion {
+                        && self.valueSets[item] is ValueSet
+                        && (<ValueSet>self.valueSets[item]).'version > latestVersion {
+
                         valueSet = <ValueSet>self.valueSets[item];
                         latestVersion = valueSet.'version ?: "0.0.0";
                         isIdExistInRegistry = true;
@@ -445,8 +435,7 @@ public isolated class TerminologyProcessor {
                 string `Requested size of the response: ${count.toBalString()} is too large`,
                 ERROR,
                 PROCESSING_NOT_SUPPORTED,
-                diagnostic = string `Allowed maximum size of output is: 50, 
-                    so reduce the value of size parameter accordingly`,
+                diagnostic = string `Allowed maximum size of output is: ${TERMINOLOGY_SEARCH_MAXIMUM_COUNT}; therefore, reduce the value of size parameter accordingly`,
                 errorType = PROCESSING_ERROR,
                 httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
                 );
@@ -481,21 +470,22 @@ public isolated class TerminologyProcessor {
                 }
             }
 
-            if codeSystemArray.length() > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            int total = codeSystemArray.length();
+
+            if total > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
                 return createFHIRError(
                         "The response size is too large",
                         ERROR,
                         PROCESSING_TOO_COSTLY,
-                        diagnostic = "The response size is too large, so search with more specific parameter values",
+                        diagnostic = "The response size is too large; therefore search with more specific parameter values",
                         errorType = PROCESSING_ERROR,
                         httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
                         );
-            } else if codeSystemArray.length() >= offset + count - 1 {
+            } else if total >= offset + count {
                 return codeSystemArray.slice(offset, offset + count).clone();
-            } else if codeSystemArray.length() >= offset {
+            } else if total >= offset {
                 return codeSystemArray.slice(offset).clone();
-            }
-            else {
+            } else {
                 return [];
             }
         }
@@ -533,8 +523,7 @@ public isolated class TerminologyProcessor {
                 string `Requested size of the response: ${count.toBalString()} is too large`,
                 ERROR,
                 PROCESSING_NOT_SUPPORTED,
-                diagnostic = string `Allowed maximum size of output is: 50, 
-                    so reduce the value of size parameter accordingly`,
+                diagnostic = string `Allowed maximum size of output is: ${TERMINOLOGY_SEARCH_MAXIMUM_COUNT}; therefore, reduce the value of size parameter accordingly`,
                 errorType = PROCESSING_ERROR,
                 httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
                 );
@@ -566,22 +555,22 @@ public isolated class TerminologyProcessor {
                         filteredList.push(...result);
                     }
                     valueSetArray = filteredList;
-
                 }
             }
 
-            if valueSetArray.length() > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+            int total = valueSetArray.length();
+            if total > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
                 return createFHIRError(
                         "The response size is too large",
                         ERROR,
                         PROCESSING_TOO_COSTLY,
-                        diagnostic = string `The response size is too large, so search with more specific parameter values`,
+                        diagnostic = string `The response size is too large; therefore, search with more specific parameter values`,
                         errorType = PROCESSING_ERROR,
                         httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
                         );
-            } else if valueSetArray.length() >= offset + count - 1 {
+            } else if total >= offset + count {
                 return valueSetArray.slice(offset, offset + count).clone();
-            } else if valueSetArray.length() >= offset {
+            } else if total >= offset {
                 return valueSetArray.slice(offset).clone();
             } else {
                 return [];
@@ -608,9 +597,9 @@ public isolated class TerminologyProcessor {
             CodeSystemConcept[] codeConceptDetailsList = [];
 
             CodeSystem|error ensured = cs.clone().ensureType();
-            if !(ensured is error) {
+            if ensured !is error {
                 codeSystem = ensured;
-            } else if !(system is ()) {
+            } else if system !is () {
                 CodeSystem|FHIRError codeSystemById = self.readCodeSystemByUrl(system, 'version);
                 if codeSystemById is CodeSystem {
                     codeSystem = codeSystemById;
@@ -622,16 +611,16 @@ public isolated class TerminologyProcessor {
                     httpStatusCode = http:STATUS_BAD_REQUEST);
                 }
             } else {
-                string msg = "Can not find a CodeSystem";
-                return createFHIRError(msg,
-            ERROR,
-            INVALID_REQUIRED,
-            diagnostic = "Either CodeSystem record or system URL should be provided as input",
-            errorType = PROCESSING_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST);
+                return createFHIRError(
+                    "Can not find a CodeSystem",
+                    ERROR,
+                    INVALID_REQUIRED,
+                    diagnostic = "Either CodeSystem record or system URL should be provided as input",
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
             }
 
-            if codeValue is code && codeValue.trim() !is ""{
+            if codeValue is code && codeValue.trim() !is "" {
                 CodeConceptDetails? result = self.findConceptInCodeSystem(codeSystem, codeValue);
 
                 if result is CodeConceptDetails {
@@ -719,10 +708,9 @@ public isolated class TerminologyProcessor {
             CodeSystemConcept[] codeConceptDetailsList = [];
 
             ValueSet|error ensured = vs.clone().ensureType();
-            if !(ensured is error) {
+            if ensured !is error {
                 valueSet = ensured;
-                valueSet.status = ensured.status;
-            } else if !(system is ()) {
+            } else if system !is () {
                 if self.readValueSetByUrl(system, 'version) is ValueSet {
                     valueSet = check self.readValueSetByUrl(system, 'version);
                 } else {
@@ -743,7 +731,7 @@ public isolated class TerminologyProcessor {
             httpStatusCode = http:STATUS_BAD_REQUEST);
             }
 
-            if codeValue is code && codeValue.trim() !is ""{
+            if codeValue is code && codeValue.trim() !is "" {
                 CodeConceptDetails? result = self.findConceptInValueSet(valueSet, codeValue);
                 if result is CodeConceptDetails {
                     return result.concept.clone();
@@ -803,10 +791,12 @@ public isolated class TerminologyProcessor {
                     httpStatusCode = http:STATUS_BAD_REQUEST);
                 }
             } else {
-                return createInternalFHIRError(
+                return createFHIRError(
             "Either code or Coding or CodeableConcept should be provided as input",
             ERROR,
-            PROCESSING_NOT_FOUND
+            PROCESSING_NOT_FOUND,
+            errorType = PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST
             );
             }
         }
@@ -847,7 +837,7 @@ public isolated class TerminologyProcessor {
                 string `Requested size of the response: ${count.toBalString()} is too large`,
                 ERROR,
                 PROCESSING_NOT_SUPPORTED,
-                diagnostic = "Allowed maximum size of output is: 50, so reduce the value of size parameter accordingly",
+                diagnostic = "Allowed maximum size of output is: 50; therefore, reduce the value of size parameter accordingly",
                 errorType = PROCESSING_ERROR,
                 httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
                 );
@@ -857,7 +847,7 @@ public isolated class TerminologyProcessor {
             ValueSet valueSet = {status: "unknown"};
 
             ValueSet|error ensured = vs.clone().ensureType();
-            if !(ensured is error) {
+            if ensured !is error {
                 valueSet = ensured;
             } else if system is string {
                 map<RequestSearchParameter[]> clone = searchParameters.clone();
@@ -869,8 +859,8 @@ public isolated class TerminologyProcessor {
                     RequestSearchParameter r = {name: "url", value: system, typedValue: {name: "url", modifier: MODIFIER_EXACT}, 'type: URI};
                     clone["url"] = [r];
                 }
-                ValueSet[] v = check self.searchValueSets(clone);
 
+                ValueSet[] v = check self.searchValueSets(clone);
                 if v.length() > 0 {
                     valueSet = v[0];
                 } else {
@@ -884,23 +874,23 @@ public isolated class TerminologyProcessor {
             }
             else {
                 return createFHIRError(
-            "Can not find a ValueSet",
-            ERROR,
-            INVALID_REQUIRED,
-            diagnostic = "Either ValueSet record or system URL should be provided as input",
-            errorType = PROCESSING_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST);
+                    "Can not find a ValueSet",
+                    ERROR,
+                    INVALID_REQUIRED,
+                    diagnostic = "Either ValueSet record or system URL should be provided as input",
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
             }
 
             // Validate the requested search parameters in the allowed list
             foreach var param in searchParameters.clone().keys() {
                 if !VALUESETS_EXPANSION_PARAMS.hasKey(param) {
                     return createFHIRError(
-                string `This search parameter is not implemented yet: ${param}`,
-                ERROR,
-                PROCESSING_NOT_SUPPORTED,
-                diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toBalString()}`,
-                errorType = VALIDATION_ERROR);
+                        string `This search parameter is not implemented yet: ${param}`,
+                        ERROR,
+                        PROCESSING_NOT_SUPPORTED,
+                        diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toBalString()}`,
+                        errorType = VALIDATION_ERROR);
                 }
             }
 
@@ -921,9 +911,9 @@ public isolated class TerminologyProcessor {
 
                     int totalCount = concepts.length();
 
-                    if concepts.length() > offset + count {
+                    if totalCount > offset + count {
                         concepts = concepts.slice(offset, offset + count);
-                    } else if concepts.length() >= offset {
+                    } else if totalCount >= offset {
                         concepts = concepts.slice(offset);
                     } else {
                         CodeSystemConcept[] temp = [];
@@ -949,9 +939,9 @@ public isolated class TerminologyProcessor {
 
                     int totalCount = concepts.length();
 
-                    if concepts.length() > offset + count {
+                    if totalCount > offset + count {
                         concepts = concepts.slice(offset, offset + count);
-                    } else if concepts.length() >= offset {
+                    } else if totalCount >= offset {
                         concepts = concepts.slice(offset);
                     } else {
                         CodeSystemConcept[] temp = [];
@@ -1117,8 +1107,9 @@ public isolated class TerminologyProcessor {
                 string latestVersion = "0.0.0";
                 foreach var item in self.valueSets.keys() {
                     if regex:matches(item, string `${url}\|.*`)
-                && self.valueSets[item] is ValueSet
-                && (<ValueSet>self.valueSets[item]).'version > latestVersion {
+                        && self.valueSets[item] is ValueSet
+                        && (<ValueSet>self.valueSets[item]).'version > latestVersion {
+
                         valueSet = <ValueSet>self.valueSets[item];
                         latestVersion = valueSet.'version ?: "0.0.0";
                         isIdExistInRegistry = true;
@@ -1237,12 +1228,10 @@ public isolated class TerminologyProcessor {
             }
             return;
         }
-
     }
 
     // Function to find concept in a CodeSystem by passing Coding data type parameter.
-    private isolated function findConceptInCodeSystemFromCoding(CodeSystem codeSystem, Coding coding)
-                                                                                                returns CodeConceptDetails? {
+    private isolated function findConceptInCodeSystemFromCoding(CodeSystem codeSystem, Coding coding) returns CodeConceptDetails? {
         lock {
             code? code = coding.code;
 
@@ -1254,7 +1243,6 @@ public isolated class TerminologyProcessor {
             }
             return;
         }
-
     }
 
     // Function to get all concepts in a CodeSystem.
@@ -1271,7 +1259,6 @@ public isolated class TerminologyProcessor {
             }
             return;
         }
-
     }
 
     // Function to find concept in a ValueSet by passing code data type parameter. 
@@ -1288,11 +1275,10 @@ public isolated class TerminologyProcessor {
                             foreach ValueSetComposeIncludeConcept includeConcept in includeConcepts {
                                 if includeConcept.code == code {
                                     // found the code
-                                    CodeConceptDetails codeConcept = {
+                                    return {
                                         url: systemValue,
                                         concept: includeConcept
-                                    };
-                                    return codeConcept.clone();
+                                    }.clone();
                                 }
                             }
                         } else {
@@ -1326,7 +1312,6 @@ public isolated class TerminologyProcessor {
             }
             return;
         }
-
     }
 
     // Function to find concepts in a ValueSet by passing Coding data type parameter.
@@ -1420,11 +1405,9 @@ public isolated class TerminologyProcessor {
             }
             return cConcept;
         }
-
     }
 
-    private isolated function conceptToCoding(CodeSystemConcept|ValueSetComposeIncludeConcept concept, uri system)
-                                                                                                            returns Coding {
+    private isolated function conceptToCoding(CodeSystemConcept|ValueSetComposeIncludeConcept concept, uri system) returns Coding {
         lock {
             Coding codingValue = {
                 code: concept.code,
@@ -1444,12 +1427,11 @@ public isolated class TerminologyProcessor {
                 CodeConceptDetails? conceptDetails = self.findConceptInCodeSystem(
                 codeSystem.clone(), concept.clone());
                 if conceptDetails is CodeConceptDetails {
-                    CodeSystemConcept|ValueSetComposeIncludeConcept temp = conceptDetails.concept;
-                    if temp is CodeSystemConcept {
-                        return temp.clone();
+                    CodeSystemConcept|ValueSetComposeIncludeConcept codeConcept = conceptDetails.concept;
+                    if codeConcept is CodeSystemConcept {
+                        return codeConcept.clone();
                     }
                 }
-
             } else {
                 CodeConceptDetails? conceptDetails = self.findConceptInCodeSystemFromCoding(
                 codeSystem.clone(), concept.clone());
@@ -1471,31 +1453,18 @@ public isolated class TerminologyProcessor {
             ValueSetExpansionContains[] contains = [];
             if concepts is ValueSetComposeIncludeConcept[] {
                 foreach ValueSetComposeIncludeConcept concept in concepts {
-                    ValueSetExpansionContains c = {};
-                    c.code = concept.code;
-                    c.display = concept.display;
-                    c.id = concept.id;
-
+                    ValueSetExpansionContains c = {code: concept.code, display: concept.display, id: concept.id};
                     contains.push(c);
                 }
-
             } else {
                 foreach CodeSystemConcept concept in concepts {
-                    ValueSetExpansionContains c = {};
-                    c.code = concept.code;
-                    c.display = concept.display;
-                    c.id = concept.id;
-
+                    ValueSetExpansionContains c = {code: concept.code, display: concept.display, id: concept.id};
                     contains.push(c);
                 }
             }
 
-            ValueSetExpansion expansion = {timestamp: ""};
-            expansion.contains = contains;
-            expansion.timestamp = time:utcToString(time:utcNow());
-
+            ValueSetExpansion expansion = {timestamp: time:utcToString(time:utcNow()), contains: contains};
             return expansion;
         }
-
     }
 }

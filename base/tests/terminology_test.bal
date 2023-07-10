@@ -309,6 +309,26 @@ function searchCodeSystemTest6() {
 }
 
 @test:Config {
+    groups: ["codesystem", "search_codesystem", "successful_scenario"]
+}
+function searchCodeSystemTest7() {
+    map<RequestSearchParameter[]> searchParameters = {
+        "status": [
+            {name: "status", value: "draft", typedValue: {name: "status", modifier: MODIFIER_EXACT}, 'type: REFERENCE},
+            {name: "status", value: "active", typedValue: {name: "status", modifier: MODIFIER_EXACT}, 'type: REFERENCE}
+        ],
+        "_count": [{name: "_count", value: "300", typedValue: {name: "_count", modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
+
+    CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    if actualCS is CodeSystem[] {
+        test:assertEquals(actualCS.length(), 278);
+    } else {
+        test:assertFail(actualCS.message());
+    }
+}
+
+@test:Config {
     groups: ["valueset", "search_valueset", "successful_scenario"]
 }
 function searchValueSetTest1() {
