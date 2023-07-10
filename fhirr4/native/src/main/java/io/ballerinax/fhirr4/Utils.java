@@ -18,21 +18,30 @@
 
 package io.ballerinax.fhirr4;
 
-import io.ballerina.runtime.api.types.ResourceMethodType;
-
-import java.util.List;
+import static io.ballerinax.fhirr4.HTTPToFHIRAdaptor.PATH_PARAM_IDENTIFIER;
 
 public class Utils {
 
     /**
      * Checks if the length of the resource path is equal to the size of the request path.
      *
-     * @param resourceMethod Ballerina service's resource method object
-     * @param paths the list of paths of the request
+     * @param resourcePaths Ballerina service's resource method path
+     * @param requestPaths the list of paths of the request
      * @return {@code true} if the length of the resource path array is equal to the size of the provided list of paths,
      *         {@code false} otherwise
      */
-    static boolean isPathsMatching(ResourceMethodType resourceMethod, List<String> paths) {
-        return resourceMethod.getResourcePath().length == paths.size();
+    static boolean isPathsMatching(String[] resourcePaths, String[] requestPaths) {
+
+        if (resourcePaths.length != requestPaths.length) {
+            return false;
+        }
+        for (int i = 0; i < resourcePaths.length; i++) {
+            String value1 = resourcePaths[i];
+            String value2 = requestPaths[i];
+            if (!value1.equals(value2) && !value1.equals(PATH_PARAM_IDENTIFIER)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
