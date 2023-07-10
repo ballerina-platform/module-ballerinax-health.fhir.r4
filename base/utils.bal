@@ -176,7 +176,7 @@ public isolated function createFhirBundle(BundleType t, DomainResource[] resourc
     return bundle;
 }
 
-public isolated function getUrlEncodedSearchParameters(map<RequestSearchParameter[] & readonly> & readonly params)
+public isolated function urlEncodeFhirSearchParameters(map<RequestSearchParameter[] & readonly> & readonly params)
         returns string|FHIRError {
     string|error encoded = url:encode(params.toJsonString(), "UTF-8");
     if (encoded is error) {
@@ -187,3 +187,19 @@ public isolated function getUrlEncodedSearchParameters(map<RequestSearchParamete
     return encoded;
 }
 
+public isolated function decodeFhirSearchParameters(string urlEncodedParams)
+        returns map<RequestSearchParameter[] & readonly>|FHIRError {
+    string|error paramsDecoded = url:decode(urlEncodedParams, "UTF-8");
+    if (paramsDecoded is error) {
+        string errorMsg = "Error occurred while decoding the search parameters.";
+        log:printError(errorMsg, 'error = paramsDecoded);
+        return createFHIRError(errorMsg, CODE_SEVERITY_FATAL, INVALID, httpStatusCode = http:STATUS_BAD_REQUEST);
+    }
+    map<RequestSearchParameter[] & readonly>|error arr = paramsDecoded.fromJsonStringWithType();
+    if (arr is error) {
+        string errorMsg = "Error occurred while decoding the search parameters to an array.";
+        log:printError(errorMsg, 'error = arr);
+        return createFHIRError(errorMsg, CODE_SEVERITY_FATAL, INVALID, httpStatusCode = http:STATUS_BAD_REQUEST);
+    }
+    return arr;
+}
