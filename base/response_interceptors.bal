@@ -78,3 +78,63 @@ public isolated service class FHIRResponseInterceptor {
         }
     }
 }
+
+# Response error interceptor to handle errors thrown by fhir preproccessors
+public isolated service class FHIRResponseErrorInterceptor {
+    *http:ResponseErrorInterceptor;
+
+    isolated remote function interceptResponseError(error err) returns http:NotFound|http:BadRequest|http:UnsupportedMediaType
+                                    |http:NotAcceptable|http:Unauthorized|http:NotImplemented|http:InternalServerError {
+        log:printDebug("Execute: FHIR Response Error Interceptor");
+        if err is FHIRError {
+            match err.detail().httpStatusCode {
+                http:STATUS_NOT_FOUND => {
+                    http:NotFound notFound = {
+                        body: handleErrorResponse(err)
+                    };
+                    return notFound;
+                }
+                http:STATUS_BAD_REQUEST => {
+                    http:BadRequest badRequest = {
+                        body: handleErrorResponse(err)
+                    };
+                    return badRequest;
+                }
+                http:STATUS_UNSUPPORTED_MEDIA_TYPE => {
+                    http:UnsupportedMediaType unsupportedMediaType = {
+                        body: handleErrorResponse(err)
+                    };
+                    return unsupportedMediaType;
+                }
+                http:STATUS_NOT_ACCEPTABLE => {
+                    http:NotAcceptable notAcceptable = {
+                        body: handleErrorResponse(err)
+                    };
+                    return notAcceptable;
+                }
+                http:STATUS_UNAUTHORIZED => {
+                    http:Unauthorized unauthorized = {
+                        body: handleErrorResponse(err)
+                    };
+                    return unauthorized;
+                }
+                http:STATUS_NOT_IMPLEMENTED => {
+                    http:NotImplemented notImplemented = {
+                        body: handleErrorResponse(err)
+                    };
+                    return notImplemented;
+                }
+                _ => {
+                    http:InternalServerError internalServerError = {
+                        body: handleErrorResponse(err)
+                    };
+                    return internalServerError;
+                }
+            }
+        }
+        http:InternalServerError internalServerError = {
+            body: handleErrorResponse(err)
+        };
+        return internalServerError;
+    }
+}
