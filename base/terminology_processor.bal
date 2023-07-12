@@ -856,7 +856,7 @@ public isolated class TerminologyProcessor {
                 }
 
                 if !clone.hasKey("url") {
-                    RequestSearchParameter r = {name: "url", value: system, typedValue: {name: "url", modifier: MODIFIER_EXACT}, 'type: URI};
+                    RequestSearchParameter r = {name: "url", value: system, typedValue: {modifier: MODIFIER_EXACT}, 'type: URI};
                     clone["url"] = [r];
                 }
 
@@ -969,7 +969,7 @@ public isolated class TerminologyProcessor {
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return Values either equivalent or not-subsumed if processing is successful, FHIRError processing fails
     public isolated function subsumes(code|Coding conceptA, code|Coding conceptB, CodeSystem? cs = (), uri? system = (),
-            string? 'version = ()) returns string|FHIRError {
+            string? 'version = ()) returns Parameters|FHIRError {
         lock {
             // Create and initialize a CodeSystem record with the mandatory fields
             CodeSystem codeSystem = {content: "example", status: "unknown"};
@@ -992,9 +992,9 @@ public isolated class TerminologyProcessor {
 
             if conceptDetailsA != () && conceptDetailsB != () {
                 if conceptDetailsA.code == conceptDetailsB.code && conceptDetailsA.display == conceptDetailsB.display {
-                    return "equivalent";
+                    return {'parameter: [{name: "outcome", valueCode: "equivalent"}]};
                 } else {
-                    return "not-subsumed";
+                    return {'parameter: [{name: "outcome", valueCode: "not-subsumed"}]};
                 }
             } else if conceptDetailsA is () {
                 return createFHIRError(

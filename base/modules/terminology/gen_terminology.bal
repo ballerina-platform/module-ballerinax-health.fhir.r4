@@ -138,7 +138,7 @@ public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]> sear
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return Values either equivalent or not-subsumed if processing is successful, FHIRError processing fails
 public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding conceptB, r4:CodeSystem? cs = (),
-        r4:uri? system = (), string? 'version = ()) returns string|r4:FHIRError {
+        r4:uri? system = (), string? 'version = ()) returns r4:Parameters|r4:FHIRError {
     return r4:terminologyProcessor.subsumes(conceptA, conceptB, cs, system, 'version);
 }
 
