@@ -103,6 +103,82 @@ public isolated function evaluateFhirPath(map<json> fhirResource, string fhirPat
 
 }
 
+# Select the resource elements from the given FHIR resource.
+#
+# + fhirPaths - FhirPath expressions for the required elements
+# + fhirResource - Requested fhir resource
+# + return - Returns FHIR resource with the selected elements
+public isolated function selectResourceElements(string[] fhirPaths, map<json> fhirResource) returns map<anydata>|error {
+    map<json> tempFhirResource = fhirResource.clone();
+    string resourceType = check fhirResource["resourceType"].cloneWithType(string);
+
+    map<anydata> elementMap = {
+        "resourceType": {},
+        "meta": {}
+    };
+
+    foreach string fhirPath in fhirPaths {
+        string[] fhirPathTokens = regex:split(fhirPath, "\\.");
+        string fhirPathResourceType = fhirPathTokens[0].trim();
+        if resourceType == fhirPathResourceType {
+            map<anydata> parentElement = {};
+            parentElement = elementMap;
+            foreach string fhirPathToken in fhirPathTokens {
+                map<anydata> childElement = {};
+                string childElementName = fhirPathToken.trim();
+
+                if !parentElement.hasKey(childElementName) {
+                    parentElement[childElementName] = {};
+                }
+                childElement = <map<anydata>>parentElement[childElementName];
+                parentElement = childElement;
+            }
+        }
+    }
+
+    foreach [string, json] entry in tempFhirResource.entries() {
+        
+        if !elementMap.hasKey(entry[0]) {
+            _ = tempFhirResource.remove(entry[0]);
+        } else {
+            if entry[1] is json[] {
+                json[] entries = <json[]>entry[1];
+                foreach json entryItem in entries {
+                    map<json> tempResource = <map<json>>entryItem;
+                    map<anydata> tempElementMap = <map<anydata>>elementMap[entry[0]];
+                    if tempResource.length() > 0 {
+                        foreach [string, json] tempResourceEntry in tempResource.entries() {
+                            if tempElementMap.length() > 0 && !tempElementMap.hasKey(tempResourceEntry[0]) {
+                                _ = tempResource.remove(tempResourceEntry[0]);
+                            }
+                        }
+                    }
+                }
+            } else {
+                json entryValue = entry[1];
+                if entryValue is string|int|float|boolean|byte {
+                    continue;
+                }
+                map<json> tempResource = <map<json>>entryValue;
+                map<anydata> tempElementMap = <map<anydata>>elementMap[entry[0]];
+                if tempResource.length() > 0 {
+                    foreach [string, json] tempResourceEntry in tempResource.entries() {
+                        if tempElementMap.length() > 0 && !tempElementMap.hasKey(tempResourceEntry[0]) {
+                            _ = tempResource.remove(tempResourceEntry[0]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    map<json> meta = <map<json>>tempFhirResource["meta"];
+    meta["tag"] = [{
+        "code": "SUBSETTED",
+        "display": "Resource subsetted due to _elements search parameter filter"
+    }];
+    return  tempFhirResource;
+}
+
 # Get the sub result of the particular token from the json array.
 #
 # + result - sub result of the previous token
