@@ -1,7 +1,7 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4.uscore501"
-version = "1.0.5"
+version = "1.0.6"
 distribution = "2201.6.0"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "USCore"]
