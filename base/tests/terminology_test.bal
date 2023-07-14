@@ -113,7 +113,7 @@ function createCodeableconcept4() {
 }
 function getByIdCodeSystemTest1() {
     string id = "action-condition-kind";
-    string version = "4.3.0";
+    string version = "4.0.1";
 
     CodeSystem expectedCS = returnCodeSystemData("action-condition-kind");
 
@@ -161,10 +161,10 @@ function getByIdCodeSystemTest4() {
 }
 function getByIdValueSetTest1() {
     string id = "relationship";
-    string version = "4.3.0";
+    string version = "4.0.1";
 
     ValueSet expectedVS = returnValueSetData(id);
-    ValueSet|FHIRError|ValueSet[] actaulVS = terminologyProcessor.readValueSetById(id, version);
+    ValueSet|FHIRError actaulVS = terminologyProcessor.readValueSetById(id, version);
     test:assertEquals(actaulVS, expectedVS);
 }
 
@@ -242,13 +242,13 @@ function searchCodeSystemTest2() {
 }
 function searchCodeSystemTest3() {
     map<RequestSearchParameter[]> searchParameters = {
-        "version": [{name: "version", value: "4.3.0", typedValue: {modifier: MODIFIER_EXACT}, 'type: STRING}],
+        "version": [{name: "version", value: "4.0.1", typedValue: {modifier: MODIFIER_EXACT}, 'type: STRING}],
         "_count": [{name: "_count", value: "300", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}]
     };
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
-        test:assertEquals(actualCS.length(), 277);
+        test:assertEquals(actualCS.length(), 256);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -259,14 +259,14 @@ function searchCodeSystemTest3() {
 }
 function searchCodeSystemTest4() {
     map<RequestSearchParameter[]> searchParameters = {
-        "version": [{name: "version", value: "4.3.0", typedValue: {modifier: MODIFIER_EXACT}, 'type: STRING}],
+        "version": [{name: "version", value: "4.0.1", typedValue: {modifier: MODIFIER_EXACT}, 'type: STRING}],
         "_count": [{name: "_count", value: "300", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}],
         "_offset": [{name: "_offset", value: "200", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}]
     };
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
-        test:assertEquals(actualCS.length(), 77);
+        test:assertEquals(actualCS.length(), 56);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -284,7 +284,7 @@ function searchCodeSystemTest5() {
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
-        test:assertEquals(actualCS.length(), 35);
+        test:assertEquals(actualCS.length(), 43);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -322,7 +322,23 @@ function searchCodeSystemTest7() {
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
-        test:assertEquals(actualCS.length(), 278);
+        test:assertEquals(actualCS.length(), 258);
+    } else {
+        test:assertFail(actualCS.message());
+    }
+}
+
+@test:Config {
+    groups: ["codesystem", "search_codesystem", "successful_scenario"]
+}
+function searchCodeSystemTest8() {
+    map<RequestSearchParameter[]> searchParameters = {
+        "_count": [{name: "_count", value: "300", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+    };
+
+    CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    if actualCS is CodeSystem[] {
+        test:assertEquals(actualCS.length(), 258);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -367,13 +383,13 @@ function searchValueSetTest2() {
 }
 function searchValueSetTest3() {
     map<RequestSearchParameter[]> searchParameters = {
-        "version": [{name: "version", value: "4.3.0", typedValue: {modifier: MODIFIER_EXACT}, 'type: STRING}],
+        "version": [{name: "version", value: "4.0.1", typedValue: {modifier: MODIFIER_EXACT}, 'type: STRING}],
         "_count": [{name: "_count", value: "300", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}]
     };
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     if actualVS is ValueSet[] {
-        test:assertEquals(actualVS.length(), 284);
+        test:assertEquals(actualVS.length(), 268);
     } else {
         test:assertFail(actualVS.message());
     }
@@ -384,14 +400,14 @@ function searchValueSetTest3() {
 }
 function searchValueSetTest4() {
     map<RequestSearchParameter[]> searchParameters = {
-        "version": [{name: "version", value: "4.3.0", typedValue: {modifier: MODIFIER_EXACT}, 'type: STRING}],
+        "version": [{name: "version", value: "4.0.1", typedValue: {modifier: MODIFIER_EXACT}, 'type: STRING}],
         "_count": [{name: "_count", value: "300", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}],
         "_offset": [{name: "_offset", value: "200", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}]
     };
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     if actualVS is ValueSet[] {
-        test:assertEquals(actualVS.length(), 84);
+        test:assertEquals(actualVS.length(), 68);
     } else {
         test:assertFail(actualVS.message());
     }
@@ -409,7 +425,7 @@ function searchValueSetTest5() {
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
     if actualVS is ValueSet[] {
-        test:assertEquals(actualVS.length(), 36);
+        test:assertEquals(actualVS.length(), 50);
     } else {
         test:assertFail(actualVS.message());
     }
@@ -422,7 +438,7 @@ function searchValueSetTest6() {
     map<RequestSearchParameter[]> searchParameters = {
         "status": [{name: "status", value: "active", typedValue: {modifier: MODIFIER_EXACT}, 'type: REFERENCE}],
         "_count": [{name: "_count", value: "50", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}],
-        "_offset": [{name: "_offset", value: "50", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}]
+        "_offset": [{name: "_offset", value: "70", typedValue: {modifier: MODIFIER_EXACT}, 'type: NUMBER}]
     };
 
     ValueSet[]|FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);

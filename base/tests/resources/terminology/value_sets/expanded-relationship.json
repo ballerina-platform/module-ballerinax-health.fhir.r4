@@ -18,7 +18,7 @@
         "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><ul><li>Include all codes defined in <a href=\"codesystem-relationship.html\"><code>http://hl7.org/fhir/relationship</code></a></li></ul></div>"
       },
     "identifier":[{"system":"urn:ietf:rfc:3986","value":"urn:oid:2.16.840.1.113883.4.642.3.35"}],
-    "version":"4.3.0","url":"http://hl7.org/fhir/ValueSet/relationship",
+    "version":"4.0.1","url":"http://hl7.org/fhir/ValueSet/relationship",
     "expansion":{
         "contains":[
             {"code":"1","display":"Self"},

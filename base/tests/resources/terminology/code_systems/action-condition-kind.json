@@ -2,12 +2,11 @@
   "resourceType" : "CodeSystem",
   "id" : "action-condition-kind",
   "meta" : {
-    "lastUpdated" : "2022-05-28T13:47:40.239+11:00",
-    "profile" : ["http://hl7.org/fhir/StructureDefinition/shareablecodesystem"]
+    "lastUpdated" : "2019-11-01T09:29:23.356+11:00"
   },
   "text" : {
     "status" : "generated",
-    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n      \n      <p>This code system http://hl7.org/fhir/action-condition-kind defines the following codes:</p>\n      \n      <table class=\"codes\">\n        \n        <tr>\n          \n          <td style=\"white-space:nowrap\">\n            \n            <b>Code</b>\n          \n          </td>\n          \n          <td>\n            \n            <b>Display</b>\n          \n          </td>\n          \n          <td>\n            \n            <b>Definition</b>\n          \n          </td>\n        \n        </tr>\n        \n        <tr>\n          \n          <td style=\"white-space:nowrap\">applicability\n            \n            <a name=\"action-condition-kind-applicability\"> </a>\n          \n          </td>\n          \n          <td>Applicability</td>\n          \n          <td>The condition describes whether or not a given action is applicable.</td>\n        \n        </tr>\n        \n        <tr>\n          \n          <td style=\"white-space:nowrap\">start\n            \n            <a name=\"action-condition-kind-start\"> </a>\n          \n          </td>\n          \n          <td>Start</td>\n          \n          <td>The condition is a starting condition for the action.</td>\n        \n        </tr>\n        \n        <tr>\n          \n          <td style=\"white-space:nowrap\">stop\n            \n            <a name=\"action-condition-kind-stop\"> </a>\n          \n          </td>\n          \n          <td>Stop</td>\n          \n          <td>The condition is a stop, or exit condition for the action.</td>\n        \n        </tr>\n      \n      </table>\n    \n    </div>"
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h2>ActionConditionKind</h2><div><p>Defines the kinds of conditions that can appear on actions.</p>\n</div><p>This code system http://hl7.org/fhir/action-condition-kind defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td><td><b>Definition</b></td></tr><tr><td style=\"white-space:nowrap\">applicability<a name=\"action-condition-kind-applicability\"> </a></td><td>Applicability</td><td>The condition describes whether or not a given action is applicable.</td></tr><tr><td style=\"white-space:nowrap\">start<a name=\"action-condition-kind-start\"> </a></td><td>Start</td><td>The condition is a starting condition for the action.</td></tr><tr><td style=\"white-space:nowrap\">stop<a name=\"action-condition-kind-stop\"> </a></td><td>Stop</td><td>The condition is a stop, or exit condition for the action.</td></tr></table></div>"
   },
   "extension" : [{
     "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-wg",
@@ -19,19 +18,19 @@
   },
   {
     "url" : "http://hl7.org/fhir/StructureDefinition/structuredefinition-fmm",
-    "valueInteger" : 3
+    "valueInteger" : 2
   }],
   "url" : "http://hl7.org/fhir/action-condition-kind",
   "identifier" : [{
     "system" : "urn:ietf:rfc:3986",
-    "value" : "urn:oid:2.16.840.1.113883.4.642.1.816"
+    "value" : "urn:oid:2.16.840.1.113883.4.642.4.816"
   }],
-  "version" : "4.3.0",
+  "version" : "4.0.1",
   "name" : "ActionConditionKind",
   "title" : "ActionConditionKind",
   "status" : "draft",
   "experimental" : false,
-  "date" : "2021-01-05T10:01:24+11:00",
+  "date" : "2019-11-01T09:29:23+11:00",
   "publisher" : "HL7 (FHIR Project)",
   "contact" : [{
     "telecom" : [{
