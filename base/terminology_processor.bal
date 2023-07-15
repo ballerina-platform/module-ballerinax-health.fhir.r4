@@ -59,7 +59,7 @@ public isolated class TerminologyProcessor {
         }
     }
 
-    # Add list of new CodeSystems to the existing data
+    # Add list of new CodeSystems.
     #
     # + codeSystems - List CodeSystems
     # + return - Return List of FHIRErrors if any
@@ -72,7 +72,7 @@ public isolated class TerminologyProcessor {
         return errors;
     }
 
-    # Add list of new CodeSystems as a json or json array to the existing data
+    # Add list of new CodeSystems as a json or json array.
     #
     # + codeSystemJsonArray - CodeSystem data in the JSON format
     # + return - Return List of FHIRErrors if any
@@ -105,7 +105,7 @@ public isolated class TerminologyProcessor {
         return;
     }
 
-    # Add list of new ValueSets to the existing data
+    # Add list of new ValueSets.
     #
     # + valueSets - List ValueSets in the Ballerina record format
     # + return - Return List of FHIRErrors if any
@@ -118,7 +118,7 @@ public isolated class TerminologyProcessor {
         return errors;
     }
 
-    # Add list of new ValueSet as a json or json array to the existing data
+    # Add list of new ValueSet as a json or json array.
     #
     # + valueSetJsonArray - Json ValueSet data in the JSON format
     # + return - Return List of FHIRErrors if any
@@ -151,7 +151,7 @@ public isolated class TerminologyProcessor {
         return;
     }
 
-    # Add a new CodeSystem to the existing data
+    # Add a new CodeSystem.
     #
     # + codeSystem - ValueSet to be added, data in the Ballerina record format
     # + return - Return FHIRError
@@ -215,7 +215,7 @@ public isolated class TerminologyProcessor {
         }
     }
 
-    # Add a new ValueSet to the existing data
+    # Add a new ValueSet.
     #
     # + valueSet - ValueSet to be added, data in the Ballerina record format
     # + return - Return FHIRError
@@ -286,57 +286,48 @@ public isolated class TerminologyProcessor {
     # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
     public isolated function readCodeSystemById(string id, string? 'version = ()) returns CodeSystem|FHIRError {
         lock {
-            boolean isIdExistInRegistry = false;
-            if 'version is string {
-                foreach var item in self.codeSystems.keys() {
-                    if regex:matches(item, string `.*\/${id}\|${'version}$`) && self.codeSystems[item] is CodeSystem {
-                        return (<CodeSystem>self.codeSystems[item]).clone();
-                    } else if regex:matches(item, string `.*\/${id}\|.*`) {
-                        isIdExistInRegistry = true;
-                    }
-                }
+            CodeSystem[] codeSystems = self.codeSystems.toArray();
+            CodeSystem cs = {content: "example", status: "unknown"};
 
-                if isIdExistInRegistry {
+            codeSystems = from CodeSystem entry in codeSystems
+                where entry.id == id
+                select entry;
+
+            if codeSystems.length() > 0 {
+                if 'version is string {
+                    codeSystems = from CodeSystem entry in codeSystems
+                        where entry.'version == 'version
+                        select entry;
+                    cs = codeSystems.length() > 0 ? codeSystems[0] : cs;
+                }
+                if codeSystems.length() < 1 {
                     return createFHIRError(
-                    string `Unknown version: '${'version}'`,
-                    ERROR,
-                    PROCESSING_NOT_FOUND,
-                    diagnostic = string
-                    `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${'version}' of it`,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+                        string `Unknown version: '${'version.toString()}'`,
+                        ERROR,
+                        PROCESSING_NOT_FOUND,
+                        diagnostic = string
+                        `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                        );
+                } else {
+                    string latestVersion = "0.0.0";
+                    foreach var item in codeSystems {
+                        if item.'version > latestVersion {
+                            latestVersion = <string>item.'version;
+                            cs = item;
+                        }
+                    }
                 }
             } else {
-                CodeSystem codeSystem = {content: "example", status: "unknown"};
-                string latestVersion = "0.0.0";
-                foreach var item in self.codeSystems.keys() {
-                    if regex:matches(item, string `.*\/${id}\|.*`)
-                        && self.codeSystems[item] is CodeSystem
-                        && (<CodeSystem>self.codeSystems[item]).'version > latestVersion {
-
-                        codeSystem = <CodeSystem>self.codeSystems[item];
-                        latestVersion = codeSystem.'version ?: "0.0.0";
-                        isIdExistInRegistry = true;
-                    }
-                }
-
-                if isIdExistInRegistry {
-                    return codeSystem.clone();
-                } else {
-                    return createFHIRError(
+                return createFHIRError(
                     string `Unknown CodeSystem: '${id}'`,
-                    ERROR,
-                    PROCESSING_NOT_FOUND,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
-                }
+                                                ERROR,
+                                                PROCESSING_NOT_FOUND,
+                                                httpStatusCode = http:STATUS_NOT_FOUND
+                                                );
             }
-            return createFHIRError(
-                    string `Unknown CodeSystem: '${id}'`,
-                    ERROR,
-                    PROCESSING_NOT_FOUND,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+
+            return cs.clone();
         }
     }
 
@@ -348,58 +339,47 @@ public isolated class TerminologyProcessor {
     # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
     public isolated function readValueSetById(string id, string? 'version = ()) returns ValueSet|FHIRError {
         lock {
-            boolean isIdExistInRegistry = false;
-            if 'version is string {
-                foreach var item in self.valueSets.keys() {
-                    if regex:matches(item, string `.*\/${id}\|${'version}$`) && self.valueSets[item] is ValueSet {
-                        return <ValueSet>self.valueSets[item].clone();
-                    } else if regex:matches(item, string `.*\/${id}\|.*`) {
-                        isIdExistInRegistry = true;
-                    }
-                }
+            ValueSet[] valueSets = self.valueSets.toArray();
+            ValueSet vs = {status: "unknown"};
 
-                if isIdExistInRegistry {
+            valueSets = from ValueSet entry in valueSets
+                where entry.id == id
+                select entry;
+
+            if valueSets.length() > 0 {
+                if 'version is string {
+                    valueSets = from ValueSet entry in valueSets
+                        where entry.'version == 'version
+                        select entry;
+                    vs = valueSets.length() > 0 ? valueSets[0] : vs;
+                }
+                if valueSets.length() < 1 {
                     return createFHIRError(
-                    string `Unknown version: '${'version}'`,
-                    ERROR,
-                    PROCESSING_NOT_FOUND,
-                    diagnostic = string
-                    `There is ValueSet in the registry with Id: '${id}' but can not find version: '${'version}' of it`,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+                        string `Unknown version: '${'version.toString()}'`,
+                        ERROR,
+                        PROCESSING_NOT_FOUND,
+                        diagnostic = string
+                        `There is ValueSet in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                        );
+                } else {
+                    string latestVersion = "0.0.0";
+                    foreach var item in valueSets {
+                        if item.'version > latestVersion {
+                            latestVersion = <string>item.'version;
+                            vs = item;
+                        }
+                    }
                 }
             } else {
-                ValueSet valueSet = {status: "unknown"};
-                string latestVersion = "0.0.0";
-                foreach var item in self.valueSets.keys() {
-                    if regex:matches(item, string `.*\/${id}\|.*`)
-                        && self.valueSets[item] is ValueSet
-                        && (<ValueSet>self.valueSets[item]).'version > latestVersion {
-
-                        valueSet = <ValueSet>self.valueSets[item];
-                        latestVersion = valueSet.'version ?: "0.0.0";
-                        isIdExistInRegistry = true;
-                    }
-                }
-
-                if !isIdExistInRegistry {
-                    return createFHIRError(
+                return createFHIRError(
                     string `Unknown ValueSet: '${id}'`,
-                    ERROR,
-                    PROCESSING_NOT_FOUND,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
-                } else {
-                    return valueSet.clone();
-                }
+                                                ERROR,
+                                                PROCESSING_NOT_FOUND,
+                                                httpStatusCode = http:STATUS_NOT_FOUND
+                                                );
             }
-
-            return createFHIRError(
-                    string `Unknown ValueSet: '${id}'`,
-                    ERROR,
-                    PROCESSING_NOT_FOUND,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+            return vs.clone();
         }
     }
 
@@ -689,7 +669,7 @@ public isolated class TerminologyProcessor {
         }
     }
 
-    # Extract the respective concepts from a given ValueSet based on the give code or Coding or CodeableConcept data
+    # Extract the respective concepts from a given ValueSet based on the give code or Coding or CodeableConcept data.
     # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#validation.
     #
     # + codeValue - Code or Coding or CodeableConcept data type value to process with the ValueSet  
@@ -802,7 +782,7 @@ public isolated class TerminologyProcessor {
         }
     }
 
-    # Extract all the concepts from a given valueSet based on the given filter parameters
+    # Extract all the concepts from a given valueSet based on the given filter parameters.
     # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#expand.
     #
     # + searchParameters - List of search parameters to filter concepts, should be passed as map of string arrays  
@@ -958,8 +938,8 @@ public isolated class TerminologyProcessor {
         }
     }
 
-    # This method with compare concepts
-    # This method was implemented based on: http://hl7.org/fhir/R4/terminology-service.html#subsumes
+    # This method with compare concepts.
+    # This method was implemented based on: http://hl7.org/fhir/R4/terminology-service.html#subsumes.
     #
     # + conceptA - Concept 1  
     # + conceptB - Concept 2  

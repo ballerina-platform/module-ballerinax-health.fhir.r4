@@ -97,7 +97,7 @@ public isolated function codeSystemLookUp(r4:code|r4:Coding|r4:CodeableConcept c
     return r4:terminologyProcessor.codeSystemLookUp(codeValue, cs, system, 'version);
 }
 
-# Extract the respective concepts from a given ValueSet based on the give code or Coding or CodeableConcept data
+# Extract the respective concepts from a given ValueSet based on the give code or Coding or CodeableConcept data.
 # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#validation.
 #
 # + codeValue - Code or Coding or CodeableConcept data type value to process with the ValueSet  
@@ -113,7 +113,7 @@ public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept cod
     return r4:terminologyProcessor.valueSetLookUp(codeValue, vs, system, 'version);
 }
 
-# Extract all the concepts from a given valueSet based on the given filter parameters
+# Extract all the concepts from a given valueSet based on the given filter parameters.
 # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#expand.
 #
 # + searchParameters - List of search parameters to filter concepts, should be passed as map of string arrays  
@@ -127,8 +127,8 @@ public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]> sear
     return r4:terminologyProcessor.valueSetExpansion(searchParameters, vs, system);
 }
 
-# This method with compare concepts
-# This method was implemented based on: http://hl7.org/fhir/R4/terminology-service.html#subsumes
+# This method with compare concepts.
+# This method was implemented based on: http://hl7.org/fhir/R4/terminology-service.html#subsumes.
 #
 # + conceptA - Concept 1  
 # + conceptB - Concept 2  
@@ -168,4 +168,52 @@ public isolated function createCodeableConcept(r4:uri system, r4:code code, stri
 public isolated function createCoding(r4:uri system, r4:code code, string? 'version = (),
         r4:CodeSystemFinder? codeSystemFinder = ()) returns r4:Coding|r4:FHIRError {
     return r4:terminologyProcessor.createCoding(system, code, 'version, codeSystemFinder);
+}
+
+# Add a list of new CodeSystems.
+#
+# + codeSystems - List CodeSystems
+# + return - Return List of FHIRErrors if any
+public isolated function addCodeSystems(r4:CodeSystem[] codeSystems) returns r4:FHIRError[]? {
+    return r4:terminologyProcessor.addCodeSystems(codeSystems);
+}
+
+# Add a list of new CodeSystems as a json or json array.
+#
+# + codeSystemJsonArray - CodeSystem data in the JSON format
+# + return - Return List of FHIRErrors if any
+public isolated function addCodeSystemsAsJson(json[] codeSystemJsonArray) returns r4:FHIRError[]? {
+    return r4:terminologyProcessor.addCodeSystemsAsJson(codeSystemJsonArray);
+}
+
+# Add a list of new ValueSets.
+#
+# + valueSets - List ValueSets in the Ballerina record format
+# + return - Return List of FHIRErrors if any
+public isolated function addValueSets(r4:ValueSet[] valueSets) returns r4:FHIRError[]? {
+    return r4:terminologyProcessor.addValueSets(valueSets);
+}
+
+# Add a list of new ValueSet as a json or json array.
+#
+# + valueSetJsonArray - Json ValueSet data in the JSON format
+# + return - Return List of FHIRErrors if any
+public isolated function addValueSetsAsJson(json[] valueSetJsonArray) returns r4:FHIRError[]? {
+    return r4:terminologyProcessor.addValueSetsAsJson(valueSetJsonArray);
+}
+
+# Add a new CodeSystem.
+#
+# + codeSystem - ValueSet to be added, data in the Ballerina record format
+# + return - Return FHIRError
+public isolated function addCodeSystem(r4:CodeSystem codeSystem) returns r4:FHIRError? {
+    return r4:terminologyProcessor.addCodeSystem(codeSystem);
+}
+
+# Add a new ValueSet.
+#
+# + valueSet - ValueSet to be added, data in the Ballerina record format
+# + return - Return FHIRError
+public isolated function addValueSet(r4:ValueSet valueSet) returns r4:FHIRError? {
+    return r4:terminologyProcessor.addValueSet(valueSet);
 }

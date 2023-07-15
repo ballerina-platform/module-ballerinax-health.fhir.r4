@@ -699,7 +699,7 @@ public type ParametersParameter record {|
     canonical valueCanonical?;
     Count valueCount?;
     id valueId?;
-    Resource 'resource?;
+    DomainResource 'resource?;
     code valueCode?;
     Address valueAddress?;
     ContactPoint valueContactPoint?;
