@@ -19,14 +19,15 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 # Map CCDA Problem Observation to FHIR Condition.
 #
 # + actElement - actElement for CCDA Problem Observation
 # + return - FHIR Condition
-public isolated function mapCcdaConditionToFhir(xml actElement) returns r4:Condition? {
+public isolated function mapCcdaConditionToFhir(xml actElement) returns international401:Condition? {
     if isXMLElementNotNull(actElement) {
-        r4:Condition condition = {subject: {}};
+        international401:Condition condition = {subject: {}};
 
         xml idElement = actElement/<v3:id|id>;
         xml effectiveTimeLowElement = actElement/<v3:effectiveTime|effectiveTime>/<v3:low|low>;

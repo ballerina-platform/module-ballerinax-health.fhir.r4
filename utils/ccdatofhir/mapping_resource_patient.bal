@@ -20,15 +20,16 @@
 
 import ballerina/log;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 # Map CCDA Patient Role to FHIR Patient
 #
 # + xmlContent - xml content of the CCDA Patient Role
 # + isNamespaceAvailable - Is CCDA namespace available
 # + return - FHIR Patient
-public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespaceAvailable = true) returns r4:Patient? {
+public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespaceAvailable = true) returns international401:Patient? {
     if isXMLElementNotNull(xmlContent) {
-        r4:Patient patient = {};
+        international401:Patient patient = {};
 
         xml idElement = xmlContent/<v3:id|id>;
         xml addrElement = xmlContent/<v3:addr|addr>;
@@ -61,7 +62,7 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
             patient.name = [mapCcdaNametoFhirNameResult];
         }
 
-        r4:PatientGender mapCcdaGenderCodetoFhirGenderResult = mapCcdaGenderCodetoFhirGender(genderCodeElement);
+        international401:PatientGender mapCcdaGenderCodetoFhirGenderResult = mapCcdaGenderCodetoFhirGender(genderCodeElement);
         patient.gender = mapCcdaGenderCodetoFhirGenderResult;
 
         r4:dateTime? mapCCDABirthTimetoFHIRBirthDateResult = mapCcdaDateTimeToFhirDateTime(birthTimeElement);
@@ -79,7 +80,7 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
 
         r4:Coding?|error mapCCDALanguageCodetoFHIRCommunicationLanguageResult = mapCcdaCodingtoFhirCode(languageCodeElement);
         if mapCCDALanguageCodetoFHIRCommunicationLanguageResult is r4:Coding {
-            r4:PatientCommunication patientCommunication = {language: {}};
+            international401:PatientCommunication patientCommunication = {language: {}};
             patientCommunication.language.coding = [mapCCDALanguageCodetoFHIRCommunicationLanguageResult];
             string|error? preferenceIdVal = preferenceIndElement.value;
             if preferenceIdVal is string {
@@ -117,24 +118,24 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
     return ();
 }
 
-isolated function mapCcdaGenderCodetoFhirGender(xml codingElement) returns r4:PatientGender {
+isolated function mapCcdaGenderCodetoFhirGender(xml codingElement) returns international401:PatientGender {
     string|error? codeVal = codingElement.code;
     if codeVal is string {
         match codeVal {
             "M" => {
-                return r4:CODE_GENDER_MALE;
+                return international401:CODE_GENDER_MALE;
             }
             "F" => {
-                return r4:CODE_GENDER_FEMALE;
+                return international401:CODE_GENDER_FEMALE;
             }
             "UN" => {
-                return r4:CODE_GENDER_OTHER;
+                return international401:CODE_GENDER_OTHER;
             }
             _ => {
-                return r4:CODE_GENDER_UNKNOWN;
+                return international401:CODE_GENDER_UNKNOWN;
             }
         }
     }
     log:printDebug("code is not available", codeVal);
-    return r4:CODE_GENDER_UNKNOWN;
+    return international401:CODE_GENDER_UNKNOWN;
 }

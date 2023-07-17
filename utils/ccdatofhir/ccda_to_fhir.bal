@@ -19,6 +19,7 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 # Transform an C-CDA message to FHIR.
 #
@@ -36,15 +37,15 @@ isolated function transformToFhir(xml xmlDocument) returns r4:Bundle {
         if childElements.length() > 0 {
             xml xmlContent = childElements.get(0);
             xml patientRoleElement = xmlContent/<v3:patientRole|patientRole>;
-            r4:Patient? mapCCDAToFHIRPatientResult = mapCcdaPatientToFhir(patientRoleElement);
-            if mapCCDAToFHIRPatientResult is r4:Patient {
+            international401:Patient? mapCCDAToFHIRPatientResult = mapCcdaPatientToFhir(patientRoleElement);
+            if mapCCDAToFHIRPatientResult is international401:Patient {
                 entries.push({'resource: mapCCDAToFHIRPatientResult});
             }
         }
 
         xml authorElement = xmlPayload/<v3:author|author>;
-        r4:Practitioner? mapCCDAToFHIRPractitionerResult = mapCcdaPractitionerToFhir(authorElement);
-        if mapCCDAToFHIRPractitionerResult is r4:Practitioner {
+        international401:Practitioner? mapCCDAToFHIRPractitionerResult = mapCcdaPractitionerToFhir(authorElement);
+        if mapCCDAToFHIRPractitionerResult is international401:Practitioner {
             entries.push({'resource: mapCCDAToFHIRPractitionerResult});
         }
 

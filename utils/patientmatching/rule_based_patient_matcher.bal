@@ -18,6 +18,7 @@ import ballerina/http;
 import ballerina/sql;
 import ballerina/time;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 import ballerinax/health.fhir.r4utils as fhirpath;
 import ballerinax/mysql;
 
@@ -50,7 +51,7 @@ public isolated class RuleBasedPatientMatcher {
 
     public isolated function matchPatients(PatientMatchRequestData patientMatchRequestData, ConfigurationRecord? config) returns error|http:Response {
         json[] parametersArray = patientMatchRequestData.'parameter;
-        r4:Patient|error sourcePatient = (check parametersArray[0].'resource).cloneWithType();
+        international401:Patient|error sourcePatient = (check parametersArray[0].'resource).cloneWithType();
         if sourcePatient is error {
             return throwFHIRError("Error occurred while getting the source patient from the request.", cause = sourcePatient);
         }
@@ -70,7 +71,7 @@ public isolated class RuleBasedPatientMatcher {
         if onlyCertainMatches is error {
             return throwFHIRError("Error occurred while casting the onlyCertainMatches flag from string to boolean.", cause = onlyCertainMatches);
         }
-        r4:BundleEntry[]|error? patientArray = self.getMatchingPatients(<r4:Patient>sourcePatient, config ?: {});
+        r4:BundleEntry[]|error? patientArray = self.getMatchingPatients(<international401:Patient>sourcePatient, config ?: {});
         if patientArray is () {
             http:Response response = new;
             response.setJsonPayload("No matching patient found");
@@ -105,7 +106,7 @@ public isolated class RuleBasedPatientMatcher {
         return dbClient;
     }
 
-    isolated function getMatchingPatients(r4:Patient patient, ConfigurationRecord config) returns error|r4:BundleEntry[] {
+    isolated function getMatchingPatients(international401:Patient patient, ConfigurationRecord config) returns error|r4:BundleEntry[] {
         stream<map<anydata>, sql:Error?>|error dbPatientStream = self.getMPIData(patient, check self.getPatientMatcherRuleData(config), config);
         if dbPatientStream is error {
             return throwFHIRError("Error occurred while getting the matching patients from MPI.", cause = dbPatientStream);
@@ -122,7 +123,7 @@ public isolated class RuleBasedPatientMatcher {
         return from var 'resource in patientArray select {'resource, search};
     }
 
-    isolated function getMPIData(r4:Patient patient, RulesRecord rulesTable, ConfigurationRecord config) returns stream<map<anydata>, sql:Error?>|error {
+    isolated function getMPIData(international401:Patient patient, RulesRecord rulesTable, ConfigurationRecord config) returns stream<map<anydata>, sql:Error?>|error {
         sql:Client|error dbClient = self.getMpiDbClient(config);
         if dbClient is error {
             return throwFHIRError("Error occurred while getting the database client to access MPI.", cause = dbClient);
@@ -161,7 +162,7 @@ public isolated class RuleBasedPatientMatcher {
         return {host, port, database, username, password};
     }
 
-    isolated function getSQLQuery(r4:Patient patient, RulesRecord rulesTable, ConfigurationRecord config) returns (error|string) {
+    isolated function getSQLQuery(international401:Patient patient, RulesRecord rulesTable, ConfigurationRecord config) returns (error|string) {
         string[]? MPIColumnNames = config?.masterPatientIndexColumnNames;
         if MPIColumnNames is () {
             return throwFHIRError("Error; MPIColumnNames can not be null in the config.json file.", cause = MPIColumnNames);

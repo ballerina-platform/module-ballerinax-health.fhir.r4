@@ -7,3 +7,13 @@ authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Utils", "CCDAtoFHIR"]
 export = ["health.fhir.r4utils.ccdatofhir"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+
+[[dependency]]
+org = "ballerinax"
+name="health.fhir.r4"
+version="3.0.1"
+
+[[dependency]]
+org = "ballerinax"
+name="health.fhir.r4.international401"
+version="1.0.0"

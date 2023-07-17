@@ -23,14 +23,15 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 # Map CCDA Practitioner to FHIR Practitioner.
 #
 # + authorElement - CCDA Author Element
 # + return - Return FHIR Practitioner resource
-public isolated function mapCcdaPractitionerToFhir(xml authorElement) returns r4:Practitioner? {
+public isolated function mapCcdaPractitionerToFhir(xml authorElement) returns international401:Practitioner? {
     if isXMLElementNotNull(authorElement) {
-        r4:Practitioner practitioner = {};
+        international401:Practitioner practitioner = {};
 
         xml assignedAuthorElement = authorElement/<v3:assignedAuthor|assignedAuthor>;
 
@@ -39,7 +40,7 @@ public isolated function mapCcdaPractitionerToFhir(xml authorElement) returns r4
 
         r4:CodeableConcept? qualificationCode = mapCcdaCodingtoFhirCodeableConcept(assignedAuthorCodeElement);
         if qualificationCode is r4:CodeableConcept {
-            r4:PractitionerQualification qualification = {
+            international401:PractitionerQualification qualification = {
                 code: qualificationCode
             };
             practitioner.qualification = [qualification];

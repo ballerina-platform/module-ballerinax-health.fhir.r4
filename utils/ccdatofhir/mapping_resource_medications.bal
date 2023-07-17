@@ -19,14 +19,15 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 # Map CCDA Medication Activity to FHIR MedicationRequest
 #
 # + substanceAdministrationElement - CCDA Medication Activity Element
 # + return - FHIR MedicationRequest
-public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElement) returns r4:MedicationRequest? {
+public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElement) returns international401:MedicationRequest? {
     if isXMLElementNotNull(substanceAdministrationElement) {
-        r4:MedicationRequest medication = {medicationReference: {}, subject: {}, medicationCodeableConcept: {}, intent: "option", status: "unknown"};
+        international401:MedicationRequest medication = {medicationReference: {}, subject: {}, medicationCodeableConcept: {}, intent: "option", status: "unknown"};
 
         xml idElement = substanceAdministrationElement/<v3:id|id>;
         xml statusCodeElement = substanceAdministrationElement/<v3:statusCode|statusCode>;
@@ -138,7 +139,7 @@ public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElem
     return ();
 }
 
-isolated function mapCcdatoFhirMedicationRequestStatus(xml codingElement) returns r4:MedicationRequestStatus {
+isolated function mapCcdatoFhirMedicationRequestStatus(xml codingElement) returns international401:MedicationRequestStatus {
     string|error? codeVal = codingElement.code;
     if codeVal is string {
         match codeVal {
@@ -146,18 +147,18 @@ isolated function mapCcdatoFhirMedicationRequestStatus(xml codingElement) return
                 return r4:CODE_STATUS_ACTIVE;
             }
             "aborted" => {
-                return r4:CODE_STATUS_STOPPED;
+                return international401:CODE_STATUS_STOPPED;
             }
             "completed" => {
-                return r4:CODE_STATUS_COMPLETED;
+                return international401:CODE_STATUS_COMPLETED;
             }
             "nullified" => {
-                return r4:CODE_STATUS_ENTERED_IN_ERROR;
+                return international401:CODE_STATUS_ENTERED_IN_ERROR;
             }
             "suspended" => {
-                return r4:CODE_STATUS_ON_HOLD;
+                return international401:CODE_STATUS_ON_HOLD;
             }
         }
     }
-    return r4:CODE_STATUS_ENTERED_IN_ERROR;
+    return international401:CODE_STATUS_ENTERED_IN_ERROR;
 }
