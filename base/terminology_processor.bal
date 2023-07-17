@@ -351,7 +351,10 @@ public isolated class TerminologyProcessor {
                     valueSets = from ValueSet entry in valueSets
                         where entry.'version == 'version
                         select entry;
-                    vs = valueSets.length() > 0 ? valueSets[0] : vs;
+
+                    if  valueSets.length() > 0{
+                        vs = valueSets[0];
+                    }
                 }
                 if valueSets.length() < 1 {
                     return createFHIRError(
@@ -688,9 +691,9 @@ public isolated class TerminologyProcessor {
             CodeSystemConcept[] codeConceptDetailsList = [];
 
             ValueSet|error ensured = vs.clone().ensureType();
-            if ensured !is error {
+            if ensured is ValueSet {
                 valueSet = ensured;
-            } else if system !is () {
+            } else if system is uri {
                 if self.readValueSetByUrl(system, 'version) is ValueSet {
                     valueSet = check self.readValueSetByUrl(system, 'version);
                 } else {
@@ -700,15 +703,14 @@ public isolated class TerminologyProcessor {
                     errorType = PROCESSING_ERROR,
                     httpStatusCode = http:STATUS_BAD_REQUEST);
                 }
-
             } else {
                 return createFHIRError(
-            "Can not find a ValueSet",
-            ERROR,
-            INVALID_REQUIRED,
-            diagnostic = "Either ValueSet record or system URL should be provided as input",
-            errorType = PROCESSING_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST);
+                    "Can not find a ValueSet",
+                    ERROR,
+                    INVALID_REQUIRED,
+                    diagnostic = "Either ValueSet record or system URL should be provided as input",
+                    errorType = PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
             }
 
             if codeValue is code && codeValue.trim() !is "" {
