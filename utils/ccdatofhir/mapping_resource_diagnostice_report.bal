@@ -19,14 +19,15 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 # Map CCDA Diagnostic Report to FHIR Diagnostic Report.
 #
 # + organizerElement - organizer element of the CCDA Diagnostic Report
 # + return - FHIR Diagnostic Report
-public isolated function mapCcdaDiagnosticReportToFhir(xml organizerElement) returns r4:DiagnosticReport? {
+public isolated function mapCcdaDiagnosticReportToFhir(xml organizerElement) returns international401:DiagnosticReport? {
     if isXMLElementNotNull(organizerElement) {
-        r4:DiagnosticReport diagnosticReport = {code: {}, status: "partial"};
+        international401:DiagnosticReport diagnosticReport = {code: {}, status: "partial"};
 
         xml idElement = organizerElement/<v3:id|id>;
         xml statusCodeElement = organizerElement/<v3:statusCode|statusCode>;
@@ -76,7 +77,7 @@ public isolated function mapCcdaDiagnosticReportToFhir(xml organizerElement) ret
     return ();
 }
 
-isolated function mapCcdatoFhirDiagnosticReportStatus(xml codingElement) returns r4:DiagnosticReportStatus {
+isolated function mapCcdatoFhirDiagnosticReportStatus(xml codingElement) returns international401:DiagnosticReportStatus {
     string codeVal = codingElement.data();
-    return codeVal == "completed" ? r4:CODE_STATUS_FINAL : r4:CODE_STATUS_PARTIAL;
+    return codeVal == "completed" ? international401:CODE_STATUS_FINAL : international401:CODE_STATUS_PARTIAL;
 }

@@ -20,14 +20,15 @@
 
 import ballerina/log;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 # Map CCDA Procedure Activity to FHIR Procedure
 #
 # + actElement - CCDA Procedure Activity Element
 # + return - FHIR Procedure Resource
-public isolated function mapCcdaProcedureToFhir(xml actElement) returns r4:Procedure? {
+public isolated function mapCcdaProcedureToFhir(xml actElement) returns international401:Procedure? {
     if isXMLElementNotNull(actElement) {
-        r4:Procedure procedure = {subject: {}, status: "unknown"};
+        international401:Procedure procedure = {subject: {}, status: "unknown"};
 
         xml idElement = actElement/<v3:id|id>;
         xml codeElement = actElement/<v3:code|code>;
@@ -64,7 +65,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns r4:Proce
 
         xml assignedEntityElements = performerElement/<v3:assignedEntity|assignedEntity>;
 
-        r4:ProcedurePerformer[] performers = [];
+        international401:ProcedurePerformer[] performers = [];
         foreach xml assignedEntityElement in assignedEntityElements {
             xml representedOrganizationElement = assignedEntityElement/<v3:representedOrganization|representedOrganization>;
             xml organizationIdElement = representedOrganizationElement/<v3:id|id>;
@@ -77,7 +78,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns r4:Proce
                     reference: string `Organization/${id}`
                 };
 
-                r4:ProcedurePerformer performer = {
+                international401:ProcedurePerformer performer = {
                     actor: {},
                     onBehalfOf: representedOrganizationReference
                 };
@@ -118,27 +119,27 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns r4:Proce
     return ();
 }
 
-isolated function mapCcdatoFhirProcedureStatus(xml codingElement) returns r4:ProcedureStatus {
+isolated function mapCcdatoFhirProcedureStatus(xml codingElement) returns international401:ProcedureStatus {
     string|error? codeVal = codingElement.code;
     if codeVal !is string {
         log:printDebug("code is not available in the code element", codeVal);
-        return r4:CODE_STATUS_NOT_DONE;
+        return international401:CODE_STATUS_NOT_DONE;
     }
     match codeVal {
         "aborted" => {
-            return r4:CODE_STATUS_STOPPED;
+            return international401:CODE_STATUS_STOPPED;
         }
         "active" => {
-            return r4:CODE_STATUS_IN_PROGRESS;
+            return international401:CODE_STATUS_IN_PROGRESS;
         }
         "cancelled" => {
-            return r4:CODE_STATUS_NOT_DONE;
+            return international401:CODE_STATUS_NOT_DONE;
         }
         "completed" => {
-            return r4:CODE_STATUS_COMPLETED;
+            return international401:CODE_STATUS_COMPLETED;
         }
         _ => {
-            return r4:CODE_STATUS_NOT_DONE;
+            return international401:CODE_STATUS_NOT_DONE;
         }
     }
 }

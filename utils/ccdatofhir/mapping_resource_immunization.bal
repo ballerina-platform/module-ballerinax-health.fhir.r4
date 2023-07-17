@@ -20,14 +20,15 @@
 
 import ballerina/log;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 # Map CCDA Immunization Activity to FHIR Immunization.
 #
 # + substanceAdministrationElement - CCDA Immunization Activity Element
 # + return - FHIR Immunization Resource
-public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationElement) returns r4:Immunization? {
+public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationElement) returns international401:Immunization? {
     if isXMLElementNotNull(substanceAdministrationElement) {
-        r4:Immunization immunization = {patient: {}, occurrenceDateTime: "", occurrenceString: "", vaccineCode: {}, status: "not-done"};
+        international401:Immunization immunization = {patient: {}, occurrenceDateTime: "", occurrenceString: "", vaccineCode: {}, status: "not-done"};
 
         xml idElement = substanceAdministrationElement/<v3:id|id>;
         xml statusCodeElement = substanceAdministrationElement/<v3:statusCode|statusCode>;
@@ -104,7 +105,7 @@ public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationEl
 
         string|error? assignedEntityId = assignedEntityIdElement.root;
         if assignedEntityId is string {
-            r4:ImmunizationPerformer performer = {
+            international401:ImmunizationPerformer performer = {
                 actor: {
                     identifier: {
                         id: assignedEntityId
@@ -135,7 +136,7 @@ public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationEl
             xml reference = entryRelationshipObservationElement/<v3:text|text>/<v3:reference|reference>;
             string|error? referenceValue = reference.value;
             if referenceValue is string {
-                r4:ImmunizationReaction immunizationReaction = {
+                international401:ImmunizationReaction immunizationReaction = {
                     detail: {
                         reference: referenceValue
                     }
@@ -205,35 +206,35 @@ isolated function mapCcdaRefusalReasonToFhirStatusReason(xml codingElement) retu
     return ();
 }
 
-isolated function mapCcdaStatusCodeToFhirImmunizationStatus(xml codingElement) returns r4:ImmunizationStatus {
+isolated function mapCcdaStatusCodeToFhirImmunizationStatus(xml codingElement) returns international401:ImmunizationStatus {
     string codeVal = codingElement.data();
     match codeVal {
         "aborted" => {
-            return r4:CODE_STATUS_NOT_DONE;
+            return international401:CODE_STATUS_NOT_DONE;
         }
         "cancelled" => {
-            return r4:CODE_STATUS_NOT_DONE;
+            return international401:CODE_STATUS_NOT_DONE;
         }
         "completed" => {
-            return r4:CODE_STATUS_COMPLETED;
+            return international401:CODE_STATUS_COMPLETED;
         }
         "held" => {
-            return r4:CODE_STATUS_NOT_DONE;
+            return international401:CODE_STATUS_NOT_DONE;
         }
         "new" => {
-            return r4:CODE_STATUS_NOT_DONE;
+            return international401:CODE_STATUS_NOT_DONE;
         }
         "nullified" => {
-            return r4:CODE_STATUS_ENTERED_IN_ERROR;
+            return international401:CODE_STATUS_ENTERED_IN_ERROR;
         }
         "obsolete" => {
-            return r4:CODE_STATUS_NOT_DONE;
+            return international401:CODE_STATUS_NOT_DONE;
         }
         "suspended" => {
-            return r4:CODE_STATUS_NOT_DONE;
+            return international401:CODE_STATUS_NOT_DONE;
         }
         _ => {
-            return r4:CODE_STATUS_NOT_DONE;
+            return international401:CODE_STATUS_NOT_DONE;
         }
     }
 }

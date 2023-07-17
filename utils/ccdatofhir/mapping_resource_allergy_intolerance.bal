@@ -20,13 +20,14 @@
 
 import ballerina/log;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 # Map CCDA Allergy to FHIR AllergyIntolerance.
 #
 # + actElement - xml content of the CCDA Allergy Activity
 # + return - FHIR Allergy Intolerance
-public isolated function mapCcdaAllergyToFhir(xml actElement) returns r4:AllergyIntolerance? {
-    r4:AllergyIntolerance allergyIntolerance = {patient: {}};
+public isolated function mapCcdaAllergyToFhir(xml actElement) returns international401:AllergyIntolerance? {
+    international401:AllergyIntolerance allergyIntolerance = {patient: {}};
 
     if isXMLElementNotNull(actElement) {
         xml statusCodeElements = actElement/<v3:statusCode|statusCode>;
@@ -61,13 +62,13 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns r4:Allergy
             allergyIntolerance.onsetDateTime = mapCCDALowEffectiveTimetoFHIRDateTimeResult;
         }
 
-        r4:AllergyIntoleranceCategory? mapCCDAValueToFHIRCategoryResult = mapCcdaValueToFhirAllergyIntoleranceCategory(valueElement);
-        if mapCCDAValueToFHIRCategoryResult is r4:AllergyIntoleranceCategory {
+        international401:AllergyIntoleranceCategory? mapCCDAValueToFHIRCategoryResult = mapCcdaValueToFhirAllergyIntoleranceCategory(valueElement);
+        if mapCCDAValueToFHIRCategoryResult is international401:AllergyIntoleranceCategory {
             allergyIntolerance.category = [mapCCDAValueToFHIRCategoryResult];
         }
 
-        r4:AllergyIntoleranceType? mapCCDAValueToFHIRTypeResult = mapCcdaValueToFhirAllergyIntoleranceType(valueElement);
-        if mapCCDAValueToFHIRTypeResult is r4:AllergyIntoleranceType {
+        international401:AllergyIntoleranceType? mapCCDAValueToFHIRTypeResult = mapCcdaValueToFhirAllergyIntoleranceType(valueElement);
+        if mapCCDAValueToFHIRTypeResult is international401:AllergyIntoleranceType {
             allergyIntolerance.'type = mapCCDAValueToFHIRTypeResult;
         }
 
@@ -101,7 +102,7 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns r4:Allergy
 
         r4:CodeableConcept? manifestation = mapCcdaCodingtoFhirCodeableConcept(observationValueElement);
         if manifestation is r4:CodeableConcept {
-            r4:AllergyIntoleranceReaction reaction = {
+            international401:AllergyIntoleranceReaction reaction = {
                 manifestation: [manifestation]
             };
 
@@ -127,7 +128,7 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns r4:Allergy
     }
 }
 
-isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement) returns r4:AllergyIntoleranceCategory? {
+isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement) returns international401:AllergyIntoleranceCategory? {
     string|error? codeVal = valueElement.code;
     if codeVal !is string {
         log:printDebug("code value not available", codeVal);
@@ -135,22 +136,22 @@ isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement)
     }
     match codeVal {
         "235719002" => {
-            return r4:CODE_CATEGORY_FOOD;
+            return international401:CODE_CATEGORY_FOOD;
         }
         "416098002" => {
-            return r4:CODE_CATEGORY_MEDICATION;
+            return international401:CODE_CATEGORY_MEDICATION;
         }
         "414285001" => {
-            return r4:CODE_CATEGORY_FOOD;
+            return international401:CODE_CATEGORY_FOOD;
         }
         "418471000" => {
-            return r4:CODE_CATEGORY_FOOD;
+            return international401:CODE_CATEGORY_FOOD;
         }
         "419511003" => {
-            return r4:CODE_CATEGORY_MEDICATION;
+            return international401:CODE_CATEGORY_MEDICATION;
         }
         "59037007" => {
-            return r4:CODE_CATEGORY_MEDICATION;
+            return international401:CODE_CATEGORY_MEDICATION;
         }
         _ => {
             log:printDebug("matching code value not available");
@@ -159,7 +160,7 @@ isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement)
     }
 }
 
-isolated function mapCcdaValueToFhirAllergyIntoleranceType(xml valueElement) returns r4:AllergyIntoleranceType? {
+isolated function mapCcdaValueToFhirAllergyIntoleranceType(xml valueElement) returns international401:AllergyIntoleranceType? {
     string|error? codeVal = valueElement.code;
     if codeVal !is string {
         log:printDebug("code value is not available", codeVal);
@@ -167,19 +168,19 @@ isolated function mapCcdaValueToFhirAllergyIntoleranceType(xml valueElement) ret
     }
     match codeVal {
         "235719002" => {
-            return r4:CODE_TYPE_INTOLERANCE;
+            return international401:CODE_TYPE_INTOLERANCE;
         }
         "416098002" => {
-            return r4:CODE_TYPE_ALLERGY;
+            return international401:CODE_TYPE_ALLERGY;
         }
         "414285001" => {
-            return r4:CODE_TYPE_ALLERGY;
+            return international401:CODE_TYPE_ALLERGY;
         }
         "419199007" => {
-            return r4:CODE_TYPE_ALLERGY;
+            return international401:CODE_TYPE_ALLERGY;
         }
         "59037007" => {
-            return r4:CODE_TYPE_INTOLERANCE;
+            return international401:CODE_TYPE_INTOLERANCE;
         }
         _ => {
             log:printDebug("matching code value not available");
