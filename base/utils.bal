@@ -19,6 +19,9 @@ import ballerina/lang.value;
 import ballerina/log;
 import ballerina/uuid;
 import ballerina/url;
+import ballerinax/health.fhir.r4utils as fhirpath;
+
+const RESULT = "result";
 
 # Get the FHIR context from the HTTP request context.
 #
@@ -203,3 +206,46 @@ public isolated function decodeFhirSearchParameters(string urlEncodedParams)
     }
     return arr;
 }
+public isolated function compareResources(ResourceCompareRequestData resourceCompareRequestData) returns error|http:Response {
+    http:Response response = new;
+    int score = 0;
+    foreach string fhirPathRule in resourceCompareRequestData.fhirPaths {
+        fhirpath:FhirPathResult resultMapSourceResource = fhirpath:getFhirPathResult(<map<json>>resourceCompareRequestData.sourceResource.toJson(), fhirPathRule);
+        fhirpath:FhirPathResult resultMapTargetResource = fhirpath:getFhirPathResult(<map<json>>resourceCompareRequestData.targetResource.toJson(), fhirPathRule);
+        if !(resultMapSourceResource?.result is () || resultMapTargetResource?.result is ()) {
+            return error("No result found for the given FHIRPath expression in one of the resources");
+        }
+        if resultMapSourceResource.get(RESULT) is string && resultMapTargetResource.get(RESULT) is string {
+            string strResultSourceResource = <string>resultMapSourceResource.get(RESULT);
+            string strResultTargetResource = <string>resultMapTargetResource.get(RESULT);
+            if strResultSourceResource.equalsIgnoreCaseAscii(strResultTargetResource) {
+                score = score + 1;
+            } else {
+                response.setJsonPayload(false);
+                break;
+            }
+        } else {
+            if resultMapSourceResource.get(RESULT) == resultMapTargetResource.get(RESULT) {
+                score = score + 1;
+            } else {
+                response.setJsonPayload(false);
+                break;
+            }
+        }
+
+    }
+    if score == resourceCompareRequestData.fhirPaths.length() {
+        response.setJsonPayload(true);
+    }
+    return response;
+}
+
+# Record to hold the resource details to be compared.
+public type ResourceCompareRequestData record {|
+    # Resource to be Comapred 
+    map<json> sourceResource;
+    # Resource to be Comapred against  
+    map<json> targetResource;
+    # Rules to be applied for the comparison 
+    string[] fhirPaths;
+|};
