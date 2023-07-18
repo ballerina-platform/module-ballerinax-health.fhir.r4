@@ -787,22 +787,25 @@ public isolated class TerminologyProcessor {
     # Extract all the concepts from a given valueSet based on the given filter parameters.
     # This method was implemented based on : http://hl7.org/fhir/R4/terminology-service.html#expand.
     #
-    # + searchParameters - List of search parameters to filter concepts, should be passed as map of string arrays  
+    # + searchParams - List of search parameters to filter concepts, should be passed as map of string arrays  
     # + vs - ValueSet record to be processed. If system parameter is not supplied, this value shoud be mandatory, 
     # else this is an optional field  
     # + system - System URL of the ValueSet to be processed, if system ValueSet(vs) is not supplied then  
     # this value shoud be mandatory
     # + return - List of concepts is successful,  return FHIRError if fails
-    public isolated function valueSetExpansion(map<RequestSearchParameter[]> searchParameters, ValueSet? vs = (), uri? system = ())
+    public isolated function valueSetExpansion(map<RequestSearchParameter[]> searchParams, ValueSet? vs = (), uri? system = ())
                                                                 returns ValueSet|FHIRError {
         lock {
+            map<RequestSearchParameter[]> searchParameters = searchParams.clone();
             int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
             if searchParameters.hasKey("_count") {
                 int|error y = langint:fromString(searchParameters.get("_count")[0].value);
                 if y is int {
                     count = y;
                 }
-                _ = searchParameters.clone().remove("_count");
+                map<RequestSearchParameter[]> clone = searchParameters.clone();
+                _ = clone.remove("_count");
+                searchParameters = clone;
             }
 
             int offset = 0;
@@ -811,7 +814,9 @@ public isolated class TerminologyProcessor {
                 if y is int {
                     offset = y;
                 }
-                _ = searchParameters.clone().remove("_offset");
+                map<RequestSearchParameter[]> clone = searchParameters.clone();
+                _ = clone.remove("_offset");
+                searchParameters = clone;
             }
 
             if count > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
@@ -819,7 +824,7 @@ public isolated class TerminologyProcessor {
                 string `Requested size of the response: ${count.toBalString()} is too large`,
                 ERROR,
                 PROCESSING_NOT_SUPPORTED,
-                diagnostic = "Allowed maximum size of output is: 50; therefore, reduce the value of size parameter accordingly",
+                diagnostic = string `Allowed maximum size of output is: ${TERMINOLOGY_SEARCH_MAXIMUM_COUNT}; therefore, reduce the value of size parameter accordingly`,
                 errorType = PROCESSING_ERROR,
                 httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
                 );
@@ -871,7 +876,7 @@ public isolated class TerminologyProcessor {
                         string `This search parameter is not implemented yet: ${param}`,
                         ERROR,
                         PROCESSING_NOT_SUPPORTED,
-                        diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toBalString()}`,
+                        diagnostic = string `Allowed search parameters: ${VALUESETS_EXPANSION_PARAMS.keys().toBalString()}`,
                         errorType = VALIDATION_ERROR);
                 }
             }
