@@ -34,6 +34,7 @@ public isolated function mapCcdaConditionToFhir(xml actElement) returns r4:Condi
         xml valueElement = actElement/<v3:value|value>;
         xml authorElement = actElement/<v3:author|author>;
         xml observationValueElement = actElement/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>/<v3:value|value>;
+        xml observationCodeElement = actElement/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>/<v3:code|code>;
 
         int index = 0;
         foreach xml idElem in idElement {
@@ -71,6 +72,20 @@ public isolated function mapCcdaConditionToFhir(xml actElement) returns r4:Condi
         if mapCcdatoFhirProblemStatusResult is r4:code {
             r4:CodeableConcept observationCodeableConcept = {coding: [{code: mapCcdatoFhirProblemStatusResult}]};
             condition.clinicalStatus = observationCodeableConcept;
+        }
+        if observationValueElement is xml:Element && observationValueElement.length() > 0 {
+            if observationCodeElement.length() > 0 {
+                string|error codeVal = observationCodeElement.code;
+                if codeVal == "33999-4" {
+                    condition.clinicalStatus = {
+                        coding: [
+                            {
+                                code: mapCcdatoFhirProblemStatus(observationValueElement)
+                            }
+                        ]
+                    };
+                }
+            }
         }
         return condition;
     } else {
