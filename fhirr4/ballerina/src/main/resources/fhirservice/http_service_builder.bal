@@ -78,30 +78,27 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
             string path = req.extraPathInfo;
             string[] split = getSplitPath(path);
             handle? resourceMethod = getResourceMethod(fhirService, split, "post");
-            json|xml payload = ();
-            string ctype = req.getContentType();
-            if (ctype == r4:FHIR_MIME_TYPE_JSON) {
-                payload = check req.getJsonPayload();
-            } else if (ctype == r4:FHIR_MIME_TYPE_XML) {
-                payload = check req.getXmlPayload();
-            }
-            if resourceMethod is handle {
-                r4:FHIRError? processCreate = self.preprocessor.processCreate(split[split.length() - 1], payload, req, ctx);
-                if processCreate is r4:FHIRError {
-                    return processCreate;
+            json|http:ClientError payload = req.getJsonPayload();
+            if payload is json {
+                if resourceMethod is handle {
+                    r4:FHIRError? processCreate = self.preprocessor.processCreate(split[split.length() - 1], payload, req, ctx);
+                    if processCreate is r4:FHIRError {
+                        return processCreate;
+                    }
+                    r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
+                    anydata|error executeResourceResult = executeCreate(payload, fhirContext, fhirService, resourceMethod);
+                    if (executeResourceResult is error) {
+                        fhirContext.setInErrorState(true);
+                        fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                        return r4:handleErrorResponse(executeResourceResult);
+                    }
+                    return executeResourceResult;
+                } else {
+                    return r4:createFHIRError(string `Path not found: ${path}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
                 }
-                r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
-                anydata|error executeResourceResult = executeCreate(payload, fhirContext, fhirService, resourceMethod);
-                if (executeResourceResult is error) {
-                    fhirContext.setInErrorState(true);
-                    fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
-                    return r4:handleErrorResponse(executeResourceResult);
-                }
-                return executeResourceResult;
             } else {
-                return r4:createFHIRError(string `Path not found: ${path}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
+                return r4:createFHIRError(string `Invalid payload`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
-
         }
     };
     return httpService;

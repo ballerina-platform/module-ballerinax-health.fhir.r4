@@ -371,12 +371,9 @@ isolated function validateClientRequestHeaders(http:Request request) returns FHI
         "application/fhir+json" => {
             headers.contentType = JSON;
         }
-        "application/fhir+xml" => {
-            headers.contentType = XML;
-        }
         _ => {
-            string message = string `Incorrect Content-Type header value of \"${contentType}\" was provided in the request. 
-                A valid FHIR Content-Type (\"application/fhir+json\" or \"application/fhir+xml\") is required.`;
+            string message = string `Unsupported Content-Type header value of \"${contentType}\" was provided in the request. 
+                Only \"application/fhir+json\" is supported.`;
             return createFHIRError(message, ERROR, PROCESSING, message, errorType = VALIDATION_ERROR, httpStatusCode = http:STATUS_UNSUPPORTED_MEDIA_TYPE);
         }
     }
@@ -393,12 +390,9 @@ isolated function validateClientRequestHeaders(http:Request request) returns FHI
             "application/fhir+json" => {
                 headers.acceptType = JSON;
             }
-            "application/fhir+xml" => {
-                headers.acceptType = XML;
-            }
             _ => {
-                string message = string `Incorrect Accept header value of \"${acceptHeader}\" was provided in the request. 
-                    A valid FHIR Accept (\"application/fhir+json\" or \"application/fhir+xml\") type is required.`;
+                string message = string `Unsupported Accept header value of \"${acceptHeader}\" was provided in the request. 
+                    Only \"application/fhir+json\" is supported.`;
                 return createFHIRError(message, ERROR, PROCESSING, message, errorType = VALIDATION_ERROR, httpStatusCode = http:STATUS_NOT_ACCEPTABLE);
             }
         }
