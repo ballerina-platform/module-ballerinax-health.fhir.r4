@@ -44,6 +44,14 @@ public isolated service class FHIRResponseInterceptor {
 
         check self.postProcessSearchParameters(fhirContext);
 
+        // set the content type to fhir+json if the response is a json payload
+        if res.getJsonPayload() is json {
+            error? setType = res.setContentType(FHIR_MIME_TYPE_JSON);
+            if setType is error {
+                // ignore since the content type is set internally and not by a client
+            }
+        }
+
         if (fhirContext.isInErrorState()) {
             // set the proper response code
             res.statusCode = fhirContext.getErrorCode();
@@ -90,50 +98,58 @@ public isolated service class FHIRResponseErrorInterceptor {
             match err.detail().httpStatusCode {
                 http:STATUS_NOT_FOUND => {
                     http:NotFound notFound = {
-                        body: handleErrorResponse(err)
+                        body: handleErrorResponse(err),
+                        mediaType: FHIR_MIME_TYPE_JSON
                     };
                     return notFound;
                 }
                 http:STATUS_BAD_REQUEST => {
                     http:BadRequest badRequest = {
-                        body: handleErrorResponse(err)
+                        body: handleErrorResponse(err),
+                        mediaType: FHIR_MIME_TYPE_JSON
                     };
                     return badRequest;
                 }
                 http:STATUS_UNSUPPORTED_MEDIA_TYPE => {
                     http:UnsupportedMediaType unsupportedMediaType = {
-                        body: handleErrorResponse(err)
+                        body: handleErrorResponse(err),
+                        mediaType: FHIR_MIME_TYPE_JSON
                     };
                     return unsupportedMediaType;
                 }
                 http:STATUS_NOT_ACCEPTABLE => {
                     http:NotAcceptable notAcceptable = {
-                        body: handleErrorResponse(err)
+                        body: handleErrorResponse(err),
+                        mediaType: FHIR_MIME_TYPE_JSON
                     };
                     return notAcceptable;
                 }
                 http:STATUS_UNAUTHORIZED => {
                     http:Unauthorized unauthorized = {
-                        body: handleErrorResponse(err)
+                        body: handleErrorResponse(err),
+                        mediaType: FHIR_MIME_TYPE_JSON
                     };
                     return unauthorized;
                 }
                 http:STATUS_NOT_IMPLEMENTED => {
                     http:NotImplemented notImplemented = {
-                        body: handleErrorResponse(err)
+                        body: handleErrorResponse(err),
+                        mediaType: FHIR_MIME_TYPE_JSON
                     };
                     return notImplemented;
                 }
                 _ => {
                     http:InternalServerError internalServerError = {
-                        body: handleErrorResponse(err)
+                        body: handleErrorResponse(err),
+                        mediaType: FHIR_MIME_TYPE_JSON
                     };
                     return internalServerError;
                 }
             }
         }
         http:InternalServerError internalServerError = {
-            body: handleErrorResponse(err)
+            body: handleErrorResponse(err),
+            mediaType: FHIR_MIME_TYPE_JSON
         };
         return internalServerError;
     }
