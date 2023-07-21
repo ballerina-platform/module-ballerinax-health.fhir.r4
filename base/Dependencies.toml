@@ -257,7 +257,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "os"
-version = "1.6.0"
+version = "1.6.1"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"}
@@ -278,7 +278,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "task"
-version = "2.3.2"
+version = "2.3.3"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "time"}
@@ -368,12 +368,25 @@ dependencies = [
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "url"},
 	{org = "ballerina", name = "uuid"},
-	{org = "ballerinax", name = "health.base"}
+	{org = "ballerinax", name = "health.base"},
+	{org = "ballerinax", name = "health.fhir.r4utils"}
 ]
 modules = [
 	{org = "ballerinax", packageName = "health.fhir.r4", moduleName = "health.fhir.r4"},
 	{org = "ballerinax", packageName = "health.fhir.r4", moduleName = "health.fhir.r4.parser"},
 	{org = "ballerinax", packageName = "health.fhir.r4", moduleName = "health.fhir.r4.terminology"},
 	{org = "ballerinax", packageName = "health.fhir.r4", moduleName = "health.fhir.r4.validator"}
+]
+
+[[package]]
+org = "ballerinax"
+name = "health.fhir.r4utils"
+version = "1.0.2"
+dependencies = [
+	{org = "ballerina", name = "lang.int"},
+	{org = "ballerina", name = "regex"}
+]
+modules = [
+	{org = "ballerinax", packageName = "health.fhir.r4utils", moduleName = "health.fhir.r4utils"}
 ]
 
