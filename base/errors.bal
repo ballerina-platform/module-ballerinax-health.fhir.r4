@@ -135,7 +135,8 @@ public isolated function createFHIRError(string message, Severity errServerity, 
         string? diagnostic = (), string[]? expression = (), error? cause = (),
         FHIRErrorTypes? errorType = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR)
         returns FHIRError {
-    return createTypedError(message, errServerity, code, diagnostic, expression, cause, errorType,
+    string diagnosticMessage = diagnostic != () ? string `${message} due to ${diagnostic}` : message;
+    return createTypedError(diagnosticMessage, errServerity, code, diagnostic, expression, cause, errorType,
                                 internal = false, httpStatusCode = httpStatusCode);
 }
 
