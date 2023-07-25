@@ -205,7 +205,10 @@ public isolated function mapCcdaDateTimeToFhirDateTime(xml dateTimeElement) retu
             return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}`;
         }
         17 => {
-            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(9, 11)}:${dateTimeVal.substring(11, 15)}:${dateTimeVal.substring(15, 17)}`;
+            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(8, 10)}:${dateTimeVal.substring(10, 12)}`;
+        }
+        19 => {
+            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(8, 10)}:${dateTimeVal.substring(10, 12)}:${dateTimeVal.substring(12, 14)}`;
         }
         _ => {
             log:printDebug("Invalid dateTime length");
