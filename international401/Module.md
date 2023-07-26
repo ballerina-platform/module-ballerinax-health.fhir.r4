@@ -13,7 +13,9 @@ This section focuses on samples depicting how to use this package to implement F
 Sample below is using the Patient resource in `health.fhir.r4.international401` package.
 
 ```ballerina
+import ballerina/log;
 import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.parser;
 
 
 function parseSamplePatient() returns international401:Patient {
@@ -44,7 +46,7 @@ function parseSamplePatient() returns international401:Patient {
     };
 
     do {
-        anydata parsedResult = check parse(patientPayload, international401:Patient);
+        anydata parsedResult = check parser:parse(patientPayload, international401:Patient);
         international401:Patient patientModel = check parsedResult.ensureType();
         log:printInfo(string `Patient name : ${patientModel.name.toString()}`);
         return patientModel;
@@ -57,6 +59,9 @@ function parseSamplePatient() returns international401:Patient {
 ### 2. Creating FHIR Resource models and serializing to JSON wire formats
 
 ```ballerina
+import ballerina/log;
+import ballerina/time;
+import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401;
 
 
@@ -82,9 +87,9 @@ function createSamplePatient() returns json {
             use: international401:home
         }]
     };
-    FHIRResourceEntity fhirEntity = new(patient);
+    r4:FHIRResourceEntity fhirEntity = new(patient);
     // Serialize FHIR resource record to Json payload
-    json|FHIRSerializerError jsonResult = fhirEntity.toJson();
+    json|r4:FHIRSerializerError jsonResult = fhirEntity.toJson();
     if jsonResult is json {
         log:printInfo(string `Patient resource JSON payload : ${jsonResult.toString()}`);
         return jsonResult;
