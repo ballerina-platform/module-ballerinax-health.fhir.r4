@@ -171,15 +171,10 @@ isolated function parseFHIRResource(r4:Profile profile, json|xml payload) return
     if payload is json {
         anydata|error cloneWithType = payload.cloneWithType(profile.modelType);
         if cloneWithType is error {
-<<<<<<< HEAD:base/fhir_parser.bal
             string|error detailedMessage = cloneWithType.detail().get("message").ensureType(string);
             string diagnostic = detailedMessage is string ? detailedMessage : cloneWithType.detail().toString();
-            return <FHIRParseError>createFHIRError("Failed to parse request body as JSON resource", ERROR, PROCESSING,
-                                                    diagnostic, cause = cloneWithType, errorType = PARSE_ERROR,
-=======
             return <r4:FHIRParseError>r4:createFHIRError("Failed to parse request body as JSON resource", r4:ERROR, r4:PROCESSING,
-                                                    cloneWithType.detail().toString(), cause = cloneWithType, errorType = r4:PARSE_ERROR,
->>>>>>> Refactor r4 packages to seperate modules and packages:parser/fhir_parser.bal
+                                                    diagnostic, cause = cloneWithType, errorType = r4:PARSE_ERROR,
                                                     httpStatusCode = http:STATUS_BAD_REQUEST);
         } else {
             return cloneWithType;
