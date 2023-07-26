@@ -332,15 +332,31 @@ public type BaseUSCoreGoalProfileMeta record {|
 
 # FHIR GoalTarget datatype record.
 #
+# + detailRange - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + measure - The parameter whose value is being tracked, e.g. body weight, blood pressure, or hemoglobin A1c level.
+# + detailRatio - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
+# + detailInteger - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
+# + detailQuantity - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + detailCodeableConcept - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
 # + due - Indicates either the date or the duration after start by which the goal should be met.
+# + detailString - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
+# + detailBoolean - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
     name: "GoalTarget",
     baseType: (),
     elements: {
+        "detailRange": {
+            name: "detailRange",
+            dataType: r4:Range,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.",
+            path: "Goal.target.detail[x]"
+        },
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -359,6 +375,33 @@ public type BaseUSCoreGoalProfileMeta record {|
             description: "The parameter whose value is being tracked, e.g. body weight, blood pressure, or hemoglobin A1c level.",
             path: "Goal.target.measure"
         },
+        "detailRatio": {
+            name: "detailRatio",
+            dataType: r4:Ratio,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.",
+            path: "Goal.target.detail[x]"
+        },
+        "detailInteger": {
+            name: "detailInteger",
+            dataType: r4:integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.",
+            path: "Goal.target.detail[x]"
+        },
+        "detailQuantity": {
+            name: "detailQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.",
+            path: "Goal.target.detail[x]"
+        },
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -368,6 +411,15 @@ public type BaseUSCoreGoalProfileMeta record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "Goal.target.modifierExtension"
         },
+        "detailCodeableConcept": {
+            name: "detailCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.",
+            path: "Goal.target.detail[x]"
+        },
         "due[x]": {
             name: "due[x]",
             dataType: r4:date,
@@ -376,6 +428,24 @@ public type BaseUSCoreGoalProfileMeta record {|
             isArray: false,
             description: "Indicates either the date or the duration after start by which the goal should be met.",
             path: "Goal.target.due[x]"
+        },
+        "detailString": {
+            name: "detailString",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.",
+            path: "Goal.target.detail[x]"
+        },
+        "detailBoolean": {
+            name: "detailBoolean",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.",
+            path: "Goal.target.detail[x]"
         },
         "id": {
             name: "id",
@@ -393,10 +463,17 @@ public type BaseUSCoreGoalProfileMeta record {|
     }
 }
 public type GoalTarget record {|
+    r4:Range detailRange?;
     r4:Extension[] extension?;
     r4:CodeableConcept measure?;
+    r4:Ratio detailRatio?;
+    r4:integer detailInteger?;
+    r4:Quantity detailQuantity?;
     r4:Extension[] modifierExtension?;
+    r4:CodeableConcept detailCodeableConcept?;
     r4:date due?;
+    string detailString?;
+    boolean detailBoolean?;
     string id?;
 |};
 
