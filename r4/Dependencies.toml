@@ -357,7 +357,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4"
-version = "4.0.1"
+version = "4.0.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
@@ -369,22 +369,9 @@ dependencies = [
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "url"},
 	{org = "ballerina", name = "uuid"},
-	{org = "ballerinax", name = "health.base"},
-	{org = "ballerinax", name = "health.fhir.r4utils"}
+	{org = "ballerinax", name = "health.base"}
 ]
 modules = [
 	{org = "ballerinax", packageName = "health.fhir.r4", moduleName = "health.fhir.r4"}
-]
-
-[[package]]
-org = "ballerinax"
-name = "health.fhir.r4utils"
-version = "1.0.2"
-dependencies = [
-	{org = "ballerina", name = "lang.int"},
-	{org = "ballerina", name = "regex"}
-]
-modules = [
-	{org = "ballerinax", packageName = "health.fhir.r4utils", moduleName = "health.fhir.r4utils"}
 ]
 
