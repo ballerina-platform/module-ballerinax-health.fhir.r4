@@ -21,7 +21,7 @@ import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_USCOREVITALSIGNSPROFILE = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-vital-signs";
-public const RESOURCE_NAME_USCOREVITALSIGNSPROFILE = "vitalsigns";
+public const RESOURCE_NAME_USCOREVITALSIGNSPROFILE = "Observation";
 
 # FHIR USCoreVitalSignsProfile resource record.
 #

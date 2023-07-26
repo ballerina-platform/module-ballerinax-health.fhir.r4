@@ -21,7 +21,7 @@ import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "http://hl7.org/fhir/us/core/StructureDefinition/pediatric-bmi-for-age";
-public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "vitalsigns";
+public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observation";
 
 # FHIR USCorePediatricBMIforAgeObservationProfile resource record.
 #

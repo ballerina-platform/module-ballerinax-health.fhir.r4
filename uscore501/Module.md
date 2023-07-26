@@ -14,7 +14,7 @@ Sample below is using the Patient resource in `health.fhir.r4.uscore501` package
 ```ballerina
 import ballerina/log;
 import ballerinax/health.fhir.r4.uscore501;
-import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.parser;
 
 public function main() {
     json patientPayload = {
@@ -58,7 +58,7 @@ public function main() {
     };
 
     do {
-        anydata parsedResult = check r4:parse(patientPayload, uscore501:USCorePatientProfile);
+        anydata parsedResult = check parser:parse(patientPayload, uscore501:USCorePatientProfile);
         uscore501:USCorePatientProfile patientModel = check parsedResult.ensureType();
         log:printInfo(string `Patient name : ${patientModel.name[0].toString()}`);
     } on fail error parseError {
@@ -112,5 +112,4 @@ public function main() {
         log:printError(string `Error occurred while serializing to JSON payload : ${jsonResult.message()}`, jsonResult);
     }
 }
-
 ```
