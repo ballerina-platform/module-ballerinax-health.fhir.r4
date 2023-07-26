@@ -21,7 +21,7 @@ import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_USCOREPEDIATRICWEIGHTFORHEIGHTOBSERVATIONPROFILE = "http://hl7.org/fhir/us/core/StructureDefinition/pediatric-weight-for-height";
-public const RESOURCE_NAME_USCOREPEDIATRICWEIGHTFORHEIGHTOBSERVATIONPROFILE = "vitalsigns";
+public const RESOURCE_NAME_USCOREPEDIATRICWEIGHTFORHEIGHTOBSERVATIONPROFILE = "Observation";
 
 # FHIR USCorePediatricWeightForHeightObservationProfile resource record.
 #
