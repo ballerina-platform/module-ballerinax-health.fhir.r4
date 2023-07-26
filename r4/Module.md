@@ -29,7 +29,7 @@ function createSamplePatient() returns json {
         name: [{
             family: "Doe",
             given: ["Jhon"],
-            use: r4:official,
+            use: internationa401:official,
             prefix: ["Mr"]
         }],
         address: [{
@@ -37,8 +37,8 @@ function createSamplePatient() returns json {
             city: "New York",
             country: "United States",
             postalCode: "10022",
-            'type: r4:physical,
-            use: r4:home
+            'type: internationa401:physical,
+            use: internationa401:home
         }]
     };
     r4:FHIRResourceEntity fhirEntity = new(patient);
