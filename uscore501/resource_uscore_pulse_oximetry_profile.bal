@@ -21,7 +21,7 @@ import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_USCOREPULSEOXIMETRYPROFILE = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-pulse-oximetry";
-public const RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE = "us-core-vital-signs";
+public const RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE = "Observation";
 
 # FHIR USCorePulseOximetryProfile resource record.
 #
@@ -524,6 +524,14 @@ public type BaseUSCorePulseOximetryProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
+# ObservationComponentValue[x]Comparator enum
+public enum ObservationComponentValueComparator {
+   CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
+   CODE_COMPARATOR_LESS_THAN = "<",
+   CODE_COMPARATOR_GREATER_THAN = ">",
+   CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
+}
+
 # ObservationStatusThree enum
 public enum ObservationStatusThree {
    CODE_STATUS_AMENDED = "amended",
@@ -534,13 +542,183 @@ public enum ObservationStatusThree {
 
 # FHIR ObservationComponentThree datatype record.
 #
+# + valueBoolean - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + valueTime - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + code - Describes what was observed. Sometimes this is called the observation 'code'.
+# + valueRange - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + valueCodeableConcept - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + valueRatio - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + valueString - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + interpretation - A categorical assessment of an observation value. For example, high, low, normal.
+# + valueSampledData - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + valuePeriod - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + valueDateTime - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + valueInteger - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
 # + value - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+# + valueQuantity - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
 @r4:DataTypeDefinition {
     name: "ObservationComponentThree",
     baseType: (),
     elements: {
+        "valueBoolean": {
+            name: "valueBoolean",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "dataAbsentReason": {
+            name: "dataAbsentReason",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides a reason why the expected value in the element Observation.component.value[x] is missing.",
+            path: "Observation.component.dataAbsentReason"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.component.extension"
+        },
+        "valueTime": {
+            name: "valueTime",
+            dataType: r4:time,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Describes what was observed. Sometimes this is called the observation 'code'.",
+            path: "Observation.component.code"
+        },
+        "valueRange": {
+            name: "valueRange",
+            dataType: r4:Range,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Observation.component.modifierExtension"
+        },
+        "valueCodeableConcept": {
+            name: "valueCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "valueRatio": {
+            name: "valueRatio",
+            dataType: r4:Ratio,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "valueString": {
+            name: "valueString",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "interpretation": {
+            name: "interpretation",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A categorical assessment of an observation value. For example, high, low, normal.",
+            path: "Observation.component.interpretation"
+        },
+        "valueSampledData": {
+            name: "valueSampledData",
+            dataType: r4:SampledData,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "valuePeriod": {
+            name: "valuePeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "valueDateTime": {
+            name: "valueDateTime",
+            dataType: r4:dateTime,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.component.id"
+        },
+        "valueInteger": {
+            name: "valueInteger",
+            dataType: r4:integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
         "value[x]": {
             name: "value[x]",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        },
+        "valueQuantity": {
+            name: "valueQuantity",
             dataType: r4:Quantity,
             min: 0,
             max: 1,
@@ -555,7 +733,24 @@ public enum ObservationStatusThree {
     }
 }
 public type ObservationComponentThree record {|
+    boolean valueBoolean?;
+    r4:CodeableConcept dataAbsentReason?;
+    r4:Extension[] extension?;
+    r4:time valueTime?;
+    r4:CodeableConcept code;
+    r4:Range valueRange?;
+    r4:Extension[] modifierExtension?;
+    r4:CodeableConcept valueCodeableConcept?;
+    r4:Ratio valueRatio?;
+    string valueString?;
+    r4:CodeableConcept[] interpretation?;
+    r4:SampledData valueSampledData?;
+    r4:Period valuePeriod?;
+    r4:dateTime valueDateTime?;
+    string id?;
+    r4:integer valueInteger?;
     r4:Quantity value?;
+    r4:Quantity valueQuantity?;
 |};
 
 # FHIR ObservationReferenceRangeThree datatype record.
