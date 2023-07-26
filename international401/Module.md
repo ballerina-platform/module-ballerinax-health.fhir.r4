@@ -14,8 +14,8 @@ Sample below is using the Patient resource in `health.fhir.r4.international401` 
 
 ```ballerina
 import ballerina/log;
-import ballerinax/health.fhir.r4.parser;
 import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.parser;
 
 public function main() {
     json payload = {
@@ -44,7 +44,8 @@ public function main() {
         }
     };
     do {
-        international401:Patient patientModel = <international401:Patient> check parser:parse(payload);
+        anydata parsedResult = check parser:parse(patientPayload, international401:Patient);
+        international401:Patient patientModel = check parsedResult.ensureType();
         log:printInfo(string `Patient name : ${patientModel.name.toString()}`);
     } on fail error parseError {
     	log:printError(string `Error occurred while parsing : ${parseError.message()}`, parseError);
