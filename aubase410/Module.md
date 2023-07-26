@@ -13,8 +13,8 @@ Sample below is using the AUBasePatient resource in `health.fhir.r4.aubase410` p
 
 ```ballerina
 import ballerina/log;
-import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.aubase410;
+import ballerinax/health.fhir.r4.parser;
 
 public function main() {
     json patientPayload = {
@@ -44,7 +44,7 @@ public function main() {
     };
 
     do {
-        anydata parsedResult = check r4:parse(patientPayload, aubase410:AUBasePatient);
+        anydata parsedResult = check parser:parse(patientPayload, aubase410:AUBasePatient);
         aubase410:AUBasePatient patientModel = check parsedResult.ensureType();
         log:printInfo(string `Patient name : ${patientModel.name.toString()}`);
     } on fail error parseError {

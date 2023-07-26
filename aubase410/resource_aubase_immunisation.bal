@@ -454,11 +454,42 @@ public type BaseAUBaseImmunisationMeta record {|
 
 # FHIR ImmunizationPerformer datatype record.
 #
+# + actor - The practitioner or organization who performed the action.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + 'function - Describes the type of performance (e.g. ordering provider, administering provider, etc.).
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
     name: "ImmunizationPerformer",
     baseType: (),
     elements: {
+        "actor": {
+            name: "actor",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The practitioner or organization who performed the action.",
+            path: "Immunization.performer.actor"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Immunization.performer.extension"
+        },
+        "function": {
+            name: "function",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Describes the type of performance (e.g. ordering provider, administering provider, etc.).",
+            path: "Immunization.performer.function"
+        },
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -467,6 +498,15 @@ public type BaseAUBaseImmunisationMeta record {|
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "Immunization.performer.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Immunization.performer.id"
         }
     },
     serializers: {
@@ -475,7 +515,11 @@ public type BaseAUBaseImmunisationMeta record {|
     }
 }
 public type ImmunizationPerformer record {|
+    r4:Reference actor;
+    r4:Extension[] extension?;
+    r4:CodeableConcept 'function?;
     r4:Extension[] modifierExtension?;
+    string id?;
 |};
 
 # ImmunizationStatus enum
