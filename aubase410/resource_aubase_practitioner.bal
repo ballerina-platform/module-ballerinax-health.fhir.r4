@@ -265,8 +265,9 @@ public enum PractitionerGender {
 # FHIR PractitionerQualification datatype record.
 #
 # + identifier - An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.
-# + extension - Details on the Ahpra registration of profession.
+# + extension - An Extension
 # + period - Period during which the qualification is valid.
+# + code - Coded representation of the qualification.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + issuer - Organization that regulates and issues the qualification.
@@ -287,9 +288,9 @@ public enum PractitionerGender {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
-            max: 1,
-            isArray: false,
-            description: "Details on the Ahpra registration of profession.",
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "An Extension",
             path: "Practitioner.qualification.extension"
         },
         "period": {
@@ -300,6 +301,15 @@ public enum PractitionerGender {
             isArray: false,
             description: "Period during which the qualification is valid.",
             path: "Practitioner.qualification.period"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Coded representation of the qualification.",
+            path: "Practitioner.qualification.code"
         },
         "modifierExtension": {
             name: "modifierExtension",
@@ -336,8 +346,9 @@ public enum PractitionerGender {
 }
 public type PractitionerQualification record {|
     r4:Identifier[] identifier?;
-    r4:Extension extension?;
+    r4:Extension[] extension?;
     r4:Period period?;
+    r4:CodeableConcept code;
     r4:Extension[] modifierExtension?;
     string id?;
     r4:Reference issuer?;
