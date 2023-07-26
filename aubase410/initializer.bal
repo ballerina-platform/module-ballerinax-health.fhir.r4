@@ -37,161 +37,161 @@ function init() returns r4:FHIRError? {
         name: "AUBase",
         terminology: terminology,
         profiles: {
-        "http://hl7.org.au/fhir/StructureDefinition/au-composition": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-composition",
-            resourceType: "Composition",
-            modelType: AUBaseComposition
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-medicationrequest": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-medicationrequest",
-            resourceType: "MedicationRequest",
-            modelType: AUBaseMedicationRequest
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-pathologyresult": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-pathologyresult",
-            resourceType: "Observation",
-            modelType: AUBasePathologyResult
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-patient": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-patient",
-            resourceType: "Patient",
-            modelType: AUBasePatient
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticresult": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticresult",
-            resourceType: "Observation",
-            modelType: AUBaseDiagnosticResult
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-practitioner": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-practitioner",
-            resourceType: "Practitioner",
-            modelType: AUBasePractitioner
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-location": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-location",
-            resourceType: "Location",
-            modelType: AUBaseLocation
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-healthcareservice": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-healthcareservice",
-            resourceType: "HealthcareService",
-            modelType: AUBaseHealthcareService
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-imagingresult": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-imagingresult",
-            resourceType: "Observation",
-            modelType: AUBaseDiagnosticImagingResult
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-medication": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-medication",
-            resourceType: "Medication",
-            modelType: AUBaseMedication
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticreport": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticreport",
-            resourceType: "DiagnosticReport",
-            modelType: AUBaseDiagnosticReport
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-medlist": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-medlist",
-            resourceType: "List",
-            modelType: AUMedicineList
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticrequest": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticrequest",
-            resourceType: "ServiceRequest",
-            modelType: AUBaseDiagnosticRequest
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-medicationadministration": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-medicationadministration",
-            resourceType: "MedicationAdministration",
-            modelType: AUBaseMedicationAdministration
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-medicationstatement": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-medicationstatement",
-            resourceType: "MedicationStatement",
-            modelType: AUBaseMedicationStatement
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-specimen": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-specimen",
-            resourceType: "Specimen",
-            modelType: AUBaseSpecimen
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-bodystructure": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-bodystructure",
-            resourceType: "BodyStructure",
-            modelType: AUBaseBodyStructure
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-medicationdispense": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-medicationdispense",
-            resourceType: "MedicationDispense",
-            modelType: AUBaseMedicationDispense
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-condition": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-condition",
-            resourceType: "Condition",
-            modelType: AUBaseCondition
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-imagingreport": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-imagingreport",
-            resourceType: "DiagnosticReport",
-            modelType: AUBaseDiagnosticImagingReport
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-healthprogramparticipation": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-healthprogramparticipation",
-            resourceType: "Observation",
-            modelType: AUHealthProgramParticipationSummary
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-relatedperson": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-relatedperson",
-            resourceType: "RelatedPerson",
-            modelType: AUBaseRelatedPerson
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-pathologyreport": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-pathologyreport",
-            resourceType: "DiagnosticReport",
-            modelType: AUBasePathologyReport
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-substance": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-substance",
-            resourceType: "Substance",
-            modelType: AUBaseSubstance
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-practitionerrole": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-practitionerrole",
-            resourceType: "PractitionerRole",
-            modelType: AUBasePractitionerRole
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-organization": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-organization",
-            resourceType: "Organization",
-            modelType: AUBaseOrganisation
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-allergyintolerance": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-allergyintolerance",
-            resourceType: "AllergyIntolerance",
-            modelType: AUBaseAllergyIntolerance
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-immunization": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-immunization",
-            resourceType: "Immunization",
-            modelType: AUBaseImmunisation
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-norelevantfinding": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-norelevantfinding",
-            resourceType: "Observation",
-            modelType: AUAssertionNoRelevantFinding
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-procedure": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-procedure",
-            resourceType: "Procedure",
-            modelType: AUBaseProcedure
-        },
-        "http://hl7.org.au/fhir/StructureDefinition/au-encounter": {
-            url: "http://hl7.org.au/fhir/StructureDefinition/au-encounter",
-            resourceType: "Encounter",
-            modelType: AUBaseEncounter
-        }
+            "http://hl7.org.au/fhir/StructureDefinition/au-composition": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-composition",
+                resourceType: "Composition",
+                modelType: AUBaseComposition
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-medicationrequest": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-medicationrequest",
+                resourceType: "MedicationRequest",
+                modelType: AUBaseMedicationRequest
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-pathologyresult": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-pathologyresult",
+                resourceType: "Observation",
+                modelType: AUBasePathologyResult
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-patient": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-patient",
+                resourceType: "Patient",
+                modelType: AUBasePatient
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticresult": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticresult",
+                resourceType: "Observation",
+                modelType: AUBaseDiagnosticResult
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-practitioner": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-practitioner",
+                resourceType: "Practitioner",
+                modelType: AUBasePractitioner
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-location": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-location",
+                resourceType: "Location",
+                modelType: AUBaseLocation
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-healthcareservice": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-healthcareservice",
+                resourceType: "HealthcareService",
+                modelType: AUBaseHealthcareService
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-imagingresult": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-imagingresult",
+                resourceType: "Observation",
+                modelType: AUBaseDiagnosticImagingResult
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-medication": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-medication",
+                resourceType: "Medication",
+                modelType: AUBaseMedication
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticreport": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticreport",
+                resourceType: "DiagnosticReport",
+                modelType: AUBaseDiagnosticReport
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-medlist": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-medlist",
+                resourceType: "List",
+                modelType: AUMedicineList
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticrequest": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-diagnosticrequest",
+                resourceType: "ServiceRequest",
+                modelType: AUBaseDiagnosticRequest
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-medicationadministration": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-medicationadministration",
+                resourceType: "MedicationAdministration",
+                modelType: AUBaseMedicationAdministration
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-medicationstatement": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-medicationstatement",
+                resourceType: "MedicationStatement",
+                modelType: AUBaseMedicationStatement
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-specimen": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-specimen",
+                resourceType: "Specimen",
+                modelType: AUBaseSpecimen
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-bodystructure": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-bodystructure",
+                resourceType: "BodyStructure",
+                modelType: AUBaseBodyStructure
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-medicationdispense": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-medicationdispense",
+                resourceType: "MedicationDispense",
+                modelType: AUBaseMedicationDispense
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-condition": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-condition",
+                resourceType: "Condition",
+                modelType: AUBaseCondition
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-imagingreport": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-imagingreport",
+                resourceType: "DiagnosticReport",
+                modelType: AUBaseDiagnosticImagingReport
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-healthprogramparticipation": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-healthprogramparticipation",
+                resourceType: "Observation",
+                modelType: AUHealthProgramParticipationSummary
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-relatedperson": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-relatedperson",
+                resourceType: "RelatedPerson",
+                modelType: AUBaseRelatedPerson
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-pathologyreport": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-pathologyreport",
+                resourceType: "DiagnosticReport",
+                modelType: AUBasePathologyReport
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-substance": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-substance",
+                resourceType: "Substance",
+                modelType: AUBaseSubstance
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-practitionerrole": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-practitionerrole",
+                resourceType: "PractitionerRole",
+                modelType: AUBasePractitionerRole
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-organization": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-organization",
+                resourceType: "Organization",
+                modelType: AUBaseOrganisation
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-allergyintolerance": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-allergyintolerance",
+                resourceType: "AllergyIntolerance",
+                modelType: AUBaseAllergyIntolerance
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-immunization": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-immunization",
+                resourceType: "Immunization",
+                modelType: AUBaseImmunisation
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-norelevantfinding": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-norelevantfinding",
+                resourceType: "Observation",
+                modelType: AUAssertionNoRelevantFinding
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-procedure": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-procedure",
+                resourceType: "Procedure",
+                modelType: AUBaseProcedure
+            },
+            "http://hl7.org.au/fhir/StructureDefinition/au-encounter": {
+                url: "http://hl7.org.au/fhir/StructureDefinition/au-encounter",
+                resourceType: "Encounter",
+                modelType: AUBaseEncounter
+            }
         },
         searchParameters: [AUBASE_IG_SEARCH_PARAMS_1]
     };
@@ -200,3 +200,6 @@ function init() returns r4:FHIRError? {
 
     log:printDebug("FHIR R4 AUBase Module initialized.");
 }
+
+# This empty function is used to initialize the module by other modules/packages.
+public isolated function initialize() {};
