@@ -5,8 +5,7 @@ To use the package add following import to your Ballerina program.
 import ballerinax/health.fhir.r4utils.ccdatofhir
 ```
 
-This sample showcase how you can pass a C-CDA message and get a
-FHIR R4 Bundle in return.
+This sample showcase how you can pass a C-CDA message and get a FHIR R4 Bundle as a JSON payload in return.
 
 ```ballerina
 import ballerina/io;
