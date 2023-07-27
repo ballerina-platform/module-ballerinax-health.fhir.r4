@@ -14,6 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/http;
+const RESULT = "result";
+
 # Client method to access utils package for fhirpath evaluation.
 #
 # + fhirResource - requested fhir resource
@@ -44,3 +47,47 @@ public type FhirPathResult record {
     string|json|int|float|boolean|byte result?;
     string resultenError?;
 };
+
+public isolated function compareResources(ResourceCompareRequestData resourceCompareRequestData) returns error|http:Response {
+    http:Response response = new;
+    int score = 0;
+    foreach string fhirPathRule in resourceCompareRequestData.fhirPaths {
+        FhirPathResult resultMapSourceResource = getFhirPathResult(<map<json>>resourceCompareRequestData.sourceResource.toJson(), fhirPathRule);
+        FhirPathResult resultMapTargetResource = getFhirPathResult(<map<json>>resourceCompareRequestData.targetResource.toJson(), fhirPathRule);
+        if !(resultMapSourceResource?.result is () || resultMapTargetResource?.result is ()) {
+            return error("No result found for the given FHIRPath expression in one of the resources");
+        }
+        if resultMapSourceResource.get(RESULT) is string && resultMapTargetResource.get(RESULT) is string {
+            string strResultSourceResource = <string>resultMapSourceResource.get(RESULT);
+            string strResultTargetResource = <string>resultMapTargetResource.get(RESULT);
+            if strResultSourceResource.equalsIgnoreCaseAscii(strResultTargetResource) {
+                score = score + 1;
+            } else {
+                response.setJsonPayload(false);
+                break;
+            }
+        } else {
+            if resultMapSourceResource.get(RESULT) == resultMapTargetResource.get(RESULT) {
+                score = score + 1;
+            } else {
+                response.setJsonPayload(false);
+                break;
+            }
+        }
+
+    }
+    if score == resourceCompareRequestData.fhirPaths.length() {
+        response.setJsonPayload(true);
+    }
+    return response;
+}
+
+# Record to hold the resource details to be compared.
+public type ResourceCompareRequestData record {|
+    # Resource to be Comapred 
+    map<json> sourceResource;
+    # Resource to be Comapred against  
+    map<json> targetResource;
+    # Rules to be applied for the comparison 
+    string[] fhirPaths;
+|};
