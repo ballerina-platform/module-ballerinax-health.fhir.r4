@@ -26,11 +26,12 @@ public type ResourceAPIConfig readonly & ResourceAPIConfigType;
 # API Config representation.
 #
 # + resourceType - FHIR resource type of the API  
-# + profiles - profiles supported by the API
-# + defaultProfile - default profile that the FHIR API is supporting
-# + searchParameters - Search parameters supported by the FHIR API 
-# + operations - Operations supported by the FHIR API
-# + serverConfig - Serevr configuration
+# + profiles - profiles supported by the API  
+# + defaultProfile - default profile that the FHIR API is supporting  
+# + searchParameters - Search parameters supported by the FHIR API  
+# + operations - Operations supported by the FHIR API  
+# + serverConfig - Serevr configuration  
+# + authzConfig - Authorization service configuration
 public type ResourceAPIConfigType record {|
     readonly string resourceType;
     readonly string[] profiles;
@@ -38,6 +39,7 @@ public type ResourceAPIConfigType record {|
     readonly SearchParamConfig[] searchParameters;
     readonly OperationConfig[] operations;
     readonly ServerConfig? serverConfig;
+    readonly AuthzConfig? authzConfig;
 |};
 
 # Search parameter configuration.
