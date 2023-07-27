@@ -2,7 +2,7 @@
 org = "ballerinax"
 name = "health.fhir.r4utils.ccdatofhir"
 version = "1.0.0"
-distribution = "2201.6.0"
+distribution = "2201.7.0"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Utils", "CCDAtoFHIR"]
 export = ["health.fhir.r4utils.ccdatofhir"]
@@ -11,7 +11,7 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhi
 [[dependency]]
 org = "ballerinax"
 name="health.fhir.r4"
-version="3.0.1"
+version="4.0.0"
 
 [[dependency]]
 org = "ballerinax"

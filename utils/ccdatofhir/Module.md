@@ -11,6 +11,7 @@ FHIR R4 Bundle in return.
 ```ballerina
 import ballerina/io;
 import ballerinax/health.fhir.r4utils.ccdatofhir;
+import ballerinax/health.fhir.r4;
 
 xml msg = xml `<ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:hl7-org:v3" xmlns:voc="urn:hl7-org:v3/voc"        xmlns:sdtc="urn:hl7-org:sdtc">
         <realmCode code="US"/>
@@ -78,7 +79,7 @@ public function main() returns error? {
     // the mappings defined at
     // http://build.fhir.org/ig/HL7/ccda-on-fhir/CF-index.html.
 
-    json ccdatofhirResult = check ccdatofhir:ccdaToFhir(msg);
+    r4:Bundle ccdatofhirResult = check ccdatofhir:ccdaToFhir(msg);
     io:println("Transformed FHIR message: ", ccdatofhirResult.toString());
 }
 ```
