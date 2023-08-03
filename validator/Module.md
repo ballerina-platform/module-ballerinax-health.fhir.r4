@@ -42,11 +42,9 @@ public function main() returns error? {
     r4:FHIRValidationError? validateFHIRResourceJson = validator:validate(body);
 
     if validateFHIRResourceJson is r4:FHIRValidationError {
-
         io:print(validateFHIRResourceJson);
     }
 }
-
 ```
 
 *Note:* `validate` function returns `FHIRValidationError` when validation fails.
@@ -58,6 +56,7 @@ In this approach the validator will attempt to validate the given FHIR resource 
 ```ballerina
 import ballerina/io;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 import ballerinax/health.fhir.r4.validator;
 
 public function main() returns error? {
@@ -87,10 +86,9 @@ public function main() returns error? {
     };
 
 
-    r4:FHIRValidationError? validateFHIRResourceJson = validator:validate(body, r4:Patient);
+    r4:FHIRValidationError? validateFHIRResourceJson = validator:validate(body, international401:Patient);
 
     if validateFHIRResourceJson is r4:FHIRValidationError {
-
         io:print(validateFHIRResourceJson);
     }
 }
