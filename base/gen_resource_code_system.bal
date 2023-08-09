@@ -846,17 +846,17 @@ public enum CodeSystemStatus {
     }
 }
 public type CodeSystemConceptProperty record {|
-    Coding valueCoding;
-    boolean valueBoolean;
+    Coding valueCoding?;
+    boolean valueBoolean?;
     Extension[] extension?;
     code code;
-    string valueString;
+    string valueString?;
     Extension[] modifierExtension?;
-    decimal valueDecimal;
-    code valueCode;
-    dateTime valueDateTime;
+    decimal valueDecimal?;
+    code valueCode?;
+    dateTime valueDateTime?;
     string id?;
-    integer valueInteger;
+    integer valueInteger?;
 |};
 
 # FHIR CodeSystemProperty datatype record.

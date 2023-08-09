@@ -322,7 +322,7 @@ function searchCodeSystemTest7() {
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
-        test:assertEquals(actualCS.length(), 258);
+        test:assertEquals(actualCS.length(), 259);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -338,7 +338,7 @@ function searchCodeSystemTest8() {
 
     CodeSystem[]|FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is CodeSystem[] {
-        test:assertEquals(actualCS.length(), 258);
+        test:assertEquals(actualCS.length(), 259);
     } else {
         test:assertFail(actualCS.message());
     }

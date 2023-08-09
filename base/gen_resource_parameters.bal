@@ -123,61 +123,62 @@ public type BaseParametersMeta record {|
 
 # FHIR ParametersParameter datatype record.
 #
-# + valueTime - If the parameter is a data type.
-# + valueTriggerDefinition - If the parameter is a data type.
-# + valueMoney - If the parameter is a data type.
-# + valueSignature - If the parameter is a data type.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + valueUuid - If the parameter is a data type.
-# + valueRatio - If the parameter is a data type.
-# + valueParameterDefinition - If the parameter is a data type.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + valueInteger - If the parameter is a data type.
-# + valueUnsignedInt - If the parameter is a data type.
-# + valueQuantity - If the parameter is a data type.
-# + valueCanonical - If the parameter is a data type.
-# + valueCount - If the parameter is a data type.
-# + valueId - If the parameter is a data type.
-# + 'resource - If the parameter is a whole resource.
-# + valueCode - If the parameter is a data type.
-# + valueAddress - If the parameter is a data type.
-# + valueContactPoint - If the parameter is a data type.
-# + valuePeriod - If the parameter is a data type.
-# + valueSampledData - If the parameter is a data type.
-# + valueTiming - If the parameter is a data type.
-# + name - The name of the parameter (reference to the operation definition).
-# + valueInstant - If the parameter is a data type.
-# + valueAge - If the parameter is a data type.
-# + valueDosage - If the parameter is a data type.
-# + valueBase64Binary - If the parameter is a data type.
-# + valueBoolean - If the parameter is a data type.
-# + valueCoding - If the parameter is a data type.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + valueIdentifier - If the parameter is a data type.
-# + valueExpression - If the parameter is a data type.
-# + valueReference - If the parameter is a data type.
-# + valueRange - If the parameter is a data type.
-# + valueUri - If the parameter is a data type.
-# + valueDistance - If the parameter is a data type.
-# + valueUrl - If the parameter is a data type.
-# + valueContactDetail - If the parameter is a data type.
-# + valueMeta - If the parameter is a data type.
-# + valueCodeableConcept - If the parameter is a data type.
-# + valueMarkdown - If the parameter is a data type.
-# + valueAttachment - If the parameter is a data type.
-# + valueUsageContext - If the parameter is a data type.
-# + valueDateTime - If the parameter is a data type.
-# + valueHumanName - If the parameter is a data type.
-# + valueRelatedArtifact - If the parameter is a data type.
-# + valueDecimal - If the parameter is a data type.
-# + valueDate - If the parameter is a data type.
-# + valueOid - If the parameter is a data type.
-# + valueContributor - If the parameter is a data type.
-# + valueString - If the parameter is a data type.
-# + valuePositiveInt - If the parameter is a data type.
-# + valueDuration - If the parameter is a data type.
-# + valueDataRequirement - If the parameter is a data type.
-# + valueAnnotation - If the parameter is a data type.
+# + valueTime - If the parameter is a data type.  
+# + valueTriggerDefinition - If the parameter is a data type.  
+# + valueMoney - If the parameter is a data type.  
+# + valueSignature - If the parameter is a data type.  
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).  
+# + valueUuid - If the parameter is a data type.  
+# + valueRatio - If the parameter is a data type.  
+# + valueParameterDefinition - If the parameter is a data type.  
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.  
+# + valueInteger - If the parameter is a data type.  
+# + valueUnsignedInt - If the parameter is a data type.  
+# + valueQuantity - If the parameter is a data type.  
+# + valueCanonical - If the parameter is a data type.  
+# + valueCount - If the parameter is a data type.  
+# + valueId - If the parameter is a data type.  
+# + 'resource - Field Description  
+# + valueCode - If the parameter is a data type.  
+# + valueAddress - If the parameter is a data type.  
+# + valueContactPoint - If the parameter is a data type.  
+# + valuePeriod - If the parameter is a data type.  
+# + valueSampledData - If the parameter is a data type.  
+# + valueTiming - If the parameter is a data type.  
+# + name - The name of the parameter (reference to the operation definition).  
+# + valueInstant - If the parameter is a data type.  
+# + valueAge - If the parameter is a data type.  
+# + valueDosage - If the parameter is a data type.  
+# + valueBase64Binary - If the parameter is a data type.  
+# + valueBoolean - If the parameter is a data type.  
+# + valueCoding - If the parameter is a data type.  
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.  
+# + valueIdentifier - If the parameter is a data type.  
+# + valueExpression - If the parameter is a data type.  
+# + valueReference - If the parameter is a data type.  
+# + valueRange - If the parameter is a data type.  
+# + valueUri - If the parameter is a data type.  
+# + valueDistance - If the parameter is a data type.  
+# + valueUrl - If the parameter is a data type.  
+# + valueContactDetail - If the parameter is a data type.  
+# + valueMeta - If the parameter is a data type.  
+# + valueCodeableConcept - If the parameter is a data type.  
+# + valueMarkdown - If the parameter is a data type.  
+# + valueAttachment - If the parameter is a data type.  
+# + valueUsageContext - If the parameter is a data type.  
+# + valueDateTime - If the parameter is a data type.  
+# + valueHumanName - If the parameter is a data type.  
+# + valueRelatedArtifact - If the parameter is a data type.  
+# + valueDecimal - If the parameter is a data type.  
+# + valueDate - If the parameter is a data type.  
+# + valueOid - If the parameter is a data type.  
+# + valueContributor - If the parameter is a data type.  
+# + valueString - If the parameter is a data type.  
+# + valuePositiveInt - If the parameter is a data type.  
+# + valueDuration - If the parameter is a data type.  
+# + valueDataRequirement - If the parameter is a data type.  
+# + valueAnnotation - If the parameter is a data type.  
+# + part - A named part of a multi-part parameter.
 @DataTypeDefinition {
     name: "ParametersParameter",
     baseType: (),
@@ -676,6 +677,15 @@ public type BaseParametersMeta record {|
             isArray: false,
             description: "If the parameter is a data type.",
             path: "Parameters.parameter.value[x]"
+        },
+        "part": {
+            name: "part",
+            dataType: ParametersParameter,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A named part of a multi-part parameter.",
+            path: "Parameters.parameter.part"
         }
     },
     serializers: {
@@ -739,5 +749,6 @@ public type ParametersParameter record {|
     Duration valueDuration?;
     DataRequirement valueDataRequirement?;
     Annotation valueAnnotation?;
+    ParametersParameter[] part?;
 |};
 
