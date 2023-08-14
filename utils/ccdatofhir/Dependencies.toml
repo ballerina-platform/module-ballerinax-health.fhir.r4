@@ -61,7 +61,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "http"
-version = "2.9.1"
+version = "2.9.2"
 dependencies = [
 	{org = "ballerina", name = "auth"},
 	{org = "ballerina", name = "cache"},
@@ -337,7 +337,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.ccdatofhir"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
 	{org = "ballerina", name = "log"},
 	{org = "ballerinax", name = "health.fhir.r4"},
