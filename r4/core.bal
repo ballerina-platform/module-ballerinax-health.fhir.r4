@@ -17,6 +17,8 @@
 import ballerina/time;
 import ballerina/jwt;
 import ballerinax/health.base.message;
+import ballerina/regex;
+import ballerina/http;
 
 # FHIR wire content type formats
 public type FHIRWireFormat xml|json;
@@ -472,3 +474,135 @@ public type JWT record {
     readonly & jwt:Header header;
     readonly & jwt:Payload payload;
 };
+
+# Record to represent the inference of a FHIR code mapper type. 
+#
+# + typeName - field description
+public type CodeMapperType record {
+    readonly & string typeName?;
+};
+
+# Holds metadata about the code mapper type.
+#
+# + definitions - map of code value definitions
+public type CodeMapperTypeDefinition record {
+    map<CodeValueDefinitionRecord> definitions?;
+};
+
+# Holds metadata about the each FHIR code with the corresponding fhir path.
+#
+# + typeName - Code binding name  
+# + fhirPath - FHIR path
+public type CodeValueDefinitionRecord record {
+    readonly & string typeName?;
+    readonly & string fhirPath;
+};
+
+# Annotation type bind to the code mapper type.
+public annotation CodeMapperTypeDefinition CodeMapperTypeDef on type;
+
+# Global map to hold the code mappings for the specific resources in use.
+isolated map<string> codeMappings = {};
+
+# Resolve the FHIR code for the corresponding source system code representation.
+#
+# + code - source system code
+# + return - FHIR code
+isolated function resolveCode(string code) returns string? {
+    lock {
+        return codeMappings[code] ?: ();
+    }
+}
+
+# Response interceptor class to engage with the source connect template.
+public isolated service class SourceConnectResponseInterceptor {
+    *http:ResponseInterceptor;
+
+    private final CodeMapperType[] mapperTypes;
+    private final string[] pathsToProcess = [];
+
+    public function init(CodeMapperType[] codeMapperTypes) {
+        self.mapperTypes = codeMapperTypes.cloneReadOnly();
+        foreach CodeMapperType mapperType in codeMapperTypes {
+            typedesc<CodeMapperType> codeMapperTypeDesc = typeof mapperType;
+            CodeMapperTypeDefinition? definitions = codeMapperTypeDesc.@CodeMapperTypeDef;
+            if definitions is map<CodeValueDefinitionRecord> {
+                foreach var [key, value] in definitions.entries() {
+                    string fhirPath = value.fhirPath;
+                    anydata values = mapperType.get(key);
+                    if values is string[] && values.length() > 0 {
+                        self.pathsToProcess.push(fhirPath);
+                    }
+                }
+            }
+            foreach [string, anydata] resourceCodeMapping in mapperType.entries() {
+                string resourceCode = resourceCodeMapping[0];
+                string[] codes = <string[]>resourceCodeMapping[1];
+                foreach string code in codes {
+                    lock {
+                        codeMappings[code] = resourceCode;
+                    }
+                }
+            }
+        }
+    }
+
+    isolated remote function interceptResponse(http:RequestContext ctx, http:Response res) returns http:NextService|error? {
+        json jsonPayload = check res.getJsonPayload();
+        json result = jsonPayload.clone();
+        lock {
+            foreach string path in self.pathsToProcess {
+                if jsonPayload is json[] {
+                    json[] jsonPayloadArray = <json[]>jsonPayload.clone();
+                    foreach int i in 0...jsonPayloadArray.length() - 1 {
+                        json|error assignValueToFhirPathResult = resolveAndAssignFhirCode(<map<json>>jsonPayloadArray[i].clone(), path);
+                        if assignValueToFhirPathResult is json {
+                            jsonPayloadArray[i] = assignValueToFhirPathResult;
+                        }
+                    }
+                    result = jsonPayloadArray.clone();
+                } else {
+                    result = check resolveAndAssignFhirCode(<map<json>>jsonPayload.clone(), path);
+                }
+            }
+        }
+        res.setJsonPayload(result);
+        return ctx.next();
+    }
+}
+
+# Assigns resolved FHIR code to the corresponding FHIR path.
+#
+# + data - FHIR resource data  
+# + fhirPath - FHIR path to be resolved by the code
+# + return - modified FHIR resource data
+isolated function resolveAndAssignFhirCode(map<json> data, string fhirPath) returns json|error {
+    map<json> current = data;
+    string[] fhirPathTokens = regex:split(fhirPath, "\\.").slice(1);
+    int tokenLength = fhirPathTokens.length();
+    boolean isPathHit = tokenLength > 0;
+    foreach string part in fhirPathTokens {
+        if current.hasKey(part) {
+            //exact match found for leaf node and it is a string
+            if (current[part] is string) {
+                break; 
+            }
+            current = <map<json>>current[part];
+            continue;
+        }
+        isPathHit = false;
+        break;
+    }
+    if isPathHit {
+        json jsonResult = current[fhirPathTokens[tokenLength - 1]];
+        if jsonResult is json[] {
+            foreach int i in 0 ... jsonResult.length() {
+                jsonResult[i] = resolveCode(jsonResult[i].toString());
+            }
+        } else {
+            current[fhirPathTokens[tokenLength - 1]] = resolveCode(
+                current[fhirPathTokens[tokenLength - 1]].toString());
+        }
+    }
+    return data;
+}
