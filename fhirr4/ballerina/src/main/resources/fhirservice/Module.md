@@ -52,7 +52,8 @@ final r4:ResourceAPIConfig apiConfig = {
         }
     ],
     operations: [],
-    serverConfig: ()
+    serverConfig: (),
+    authzConfig: ()
 };
 ```
 
