@@ -623,3 +623,21 @@ public type PatientCommunication record {|
     boolean preferred?;
 |};
 
+@r4:CodeMapperTypeDef {
+    "male" : {
+        fhirPath: "Patient.gender"
+    },
+    "female" : {
+        fhirPath: "Patient.gender"
+    },
+    "unknown" : {
+        fhirPath: "Patient.gender"
+    }
+}
+public type PatientCodeMappings record {
+    *r4:CodeMapperType;
+    string[] male?;
+    string[] female?;
+    string[] unknown?;
+};
+
