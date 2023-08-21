@@ -44,10 +44,12 @@ public type AuthzResponse record {|
 # FHIR Authorization service configuration record.
 #
 # + authzServiceUrl - Authorization service URL  
-# + privilegedClaimUrl - Claim that has privilege to access all patients
+# + privilegedClaimUrl - Claim that has privilege to access all patients  
+# + clientAuthConfig - Authorization service client auth configuration
 public type AuthzConfig record {|
     string authzServiceUrl;
     string? privilegedClaimUrl;
+    http:ClientAuthConfig? clientAuthConfig;
 |};
 
 # Call authz service and handle response.
@@ -62,11 +64,15 @@ public isolated function handleSmartSecurity(AuthzConfig authzConfig, FHIRSecuri
         patientId: patientId,
         privilegedClaimUrl: authzConfig.privilegedClaimUrl
     };
-    http:Client|http:ClientError authzClient = new (authzConfig.authzServiceUrl);
+    http:Client|http:ClientError authzClient;
+    if authzConfig.clientAuthConfig is () {
+        authzClient = new (authzConfig.authzServiceUrl);
+    } else {
+        authzClient = new (authzConfig.authzServiceUrl, {auth: authzConfig.clientAuthConfig});
+    }
     if authzClient is http:ClientError {
         return clientErrorToFhirError(authzClient);
     } else {
-
         AuthzResponse|http:ClientError authzRes = authzClient->post("/", authzRequest);
         if authzRes is http:ClientError {
             return clientErrorToFhirError(authzRes);
