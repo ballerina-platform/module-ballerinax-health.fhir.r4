@@ -1,13 +1,10 @@
 name: CI
 
 on:
-  workflow_dispatch:
-
-# on:
-#   pull_request:
-#     types:
-#       - opened
-#       - synchronize
+  pull_request:
+    types:
+      - opened
+      - synchronize
 
 env:
   R4_PATTERN: '*/*'
