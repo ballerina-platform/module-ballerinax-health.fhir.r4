@@ -37,7 +37,7 @@ jobs:
               <servers>
                 <server>
                   <id>ballerina-language-repo</id>
-                  <username>GevinHasmitha</username>
+                  <username>${{ github.actor }}</username>
                   <password>${{ secrets.PAT_TOKEN }}</password>
                 </server>
               </servers>
@@ -45,8 +45,6 @@ jobs:
 
       - name: Run maven build
         run: |
-          echo "${{ secrets.PAT_TOKEN }}"
-          echo "${{ github.actor }}"
           cd fhirr4
           mvn clean install
 
