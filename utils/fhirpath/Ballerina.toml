@@ -1,8 +1,8 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4utils.fhirpath"
-version = "1.0.1"
-distribution = "2201.6.0"
+version = "1.1.0"
+distribution = "2201.7.0"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Utils", "FHIRPath"]
 export = ["health.fhir.r4utils.fhirpath"]
