@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.6.0"
+distribution-version = "2201.7.0"
 
 [[package]]
 org = "ballerina"
@@ -93,7 +93,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.fhirpath"
-version = "1.0.1"
+version = "1.1.0"
 dependencies = [
 	{org = "ballerina", name = "lang.int"},
 	{org = "ballerina", name = "regex"},
