@@ -19,7 +19,7 @@ import ballerina/sql;
 import ballerina/time;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401;
-import ballerinax/health.fhir.r4utils as fhirpath;
+import ballerinax/health.fhir.r4utils.fhirpath as fhirpath;
 import ballerinax/mysql;
 
 const SEARCH_SET = "searchset";
