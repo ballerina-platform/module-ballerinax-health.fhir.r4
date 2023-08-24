@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '11'
-          distribution: 'zulu'
+          distribution: 'temurin'
 
       - uses: ballerina-platform/setup-ballerina@v1.1.0
         name: Setup latest Ballerina version
