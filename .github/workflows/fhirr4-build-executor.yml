@@ -24,8 +24,8 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - uses: ballerina-platform/setup-ballerina@v1.1.0
-        name: Setup latest Ballerina version
+      - name: Setup latest Ballerina version
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: 2201.7.0
       
@@ -45,8 +45,7 @@ jobs:
 
       - name: Run maven build
         run: |
-          cd fhirr4
-          mvn clean install
+         mvn clean install -f fhirr4
 
       - name: Push to Staging
         if: inputs.bal_central_environment == 'STAGE'
@@ -55,32 +54,10 @@ jobs:
           args:
                push
         env:
-              WORKING_DIR:  ${{ inputs.working_dir }}
+              WORKING_DIR: /fhirr4/ballerina/target/classes/fhirservice
               JAVA_HOME: /usr/lib/jvm/default-jvm
               BALLERINA_STAGE_CENTRAL: true
               BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_STAGE_ACCESS_TOKEN }}
-
-      - name: Run ballerina build for dev
-        if: inputs.bal_central_environment == 'DEV'
-        uses: ballerina-platform/ballerina-action@2201.7.0
-        with:
-          args:
-            pack
-        env:
-          WORKING_DIR: ${{ inputs.working_dir }}
-          JAVA_HOME: /usr/lib/jvm/default-jvm 
-          BALLERINA_DEV_CENTRAL: true
-          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_DEV_ACCESS_TOKEN }} 
-
-      - name: Run ballerina build for prod
-        if: inputs.bal_central_environment == 'PROD'
-        uses: ballerina-platform/ballerina-action@2201.7.0
-        with:
-          args:
-            pack
-        env:
-          WORKING_DIR: ${{ inputs.working_dir }}
-          JAVA_HOME: /usr/lib/jvm/default-jvm 
 
       - name: Push to Dev
         if: inputs.bal_central_environment == 'DEV'
@@ -89,7 +66,7 @@ jobs:
           args:
             push
         env:
-          WORKING_DIR: ${{ inputs.working_dir }}
+          WORKING_DIR: /fhirr4/ballerina/target/classes/fhirservice
           JAVA_HOME: /usr/lib/jvm/default-jvm
           BALLERINA_DEV_CENTRAL: true
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_DEV_ACCESS_TOKEN }}     
@@ -101,7 +78,7 @@ jobs:
           args:
             push
         env:
-          WORKING_DIR: ${{ inputs.working_dir }}
+          WORKING_DIR: /fhirr4/ballerina/target/classes/fhirservice
           JAVA_HOME: /usr/lib/jvm/default-jvm
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
 
@@ -140,15 +117,10 @@ jobs:
           echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_OUTPUT
           echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Ballerina Build after incrementing version
+      - name: Maven Build after incrementing version
         if: ${{ inputs.bal_central_environment == 'PROD' }}
-        uses: ballerina-platform/ballerina-action@2201.7.0
-        with:
-          args:
-            pack
-        env:
-          WORKING_DIR: ${{ inputs.working_dir }}
-          JAVA_HOME: /usr/lib/jvm/default-jvm
+        run: |
+         mvn clean install -f fhirr4
 
       - name: Commit changes and make a PR
         if: ${{ inputs.bal_central_environment == 'PROD' }}

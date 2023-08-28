@@ -95,9 +95,9 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - uses: ballerina-platform/setup-ballerina@v1.1.0
+      - name: Setup latest Ballerina version
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         if: ${{ matrix.path == 'fhirr4/ballerina/src/main/resources/fhirservice' }}
-        name: Setup latest Ballerina version
         with:
           version: 2201.7.0
 
@@ -116,8 +116,7 @@ jobs:
       - name: Run maven build
         if: ${{ matrix.path == 'fhirr4/ballerina/src/main/resources/fhirservice' }}
         run: |
-          cd fhirr4
-          mvn clean install
+         mvn clean install -f fhirr4
 
   test:
     needs: [ setup ]
