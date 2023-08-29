@@ -1,27 +1,17 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4utils.patientmatching"
-version = "1.0.0"
-distribution = "2201.6.0"
+version = "0.9.0"
+distribution = "2201.7.0"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Utils", "PatientMatching"]
 export = ["health.fhir.r4utils.patientmatching"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
 
 [[dependency]]
-org = "ballerina"
-name = "sql"
-version = "1.9.0"
-
-[[dependency]]
-org = "ballerinax"
-name = "mysql"
-version = "1.9.0"
-
-[[dependency]]
 org = "ballerinax"
 name = "health.fhir.r4"
-version = "3.0.1"
+version = "4.0.0"
 
 [[dependency]]
 org = "ballerinax"
@@ -31,4 +21,4 @@ version = "1.0.0"
 [[dependency]]
 org = "ballerinax"
 name = "health.fhir.r4utils.fhirpath"
-version = "3.0.1"
+version = "1.1.0"
