@@ -1,7 +1,7 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4utils.patientmatching"
-version = "0.9.0"
+version = "1.0.0"
 distribution = "2201.7.0"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Utils", "PatientMatching"]
