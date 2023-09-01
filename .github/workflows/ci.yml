@@ -8,6 +8,7 @@ on:
 
 env:
   R4_PATTERN: '*/*'
+  FHIRR4_PATTERN: 'fhirr4/*/*'
   UTILS_PATTERN: 'utils/*/*'
   GITHUB_WORKFLOWS_DIR: '.github'
 
@@ -41,6 +42,8 @@ jobs:
           for file in "${CHANGED_FILES_ARRAY[@]}"; do
             if [[ $file == $UTILS_PATTERN ]]; then
               EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1-2)
+            elif [[ $file == $FHIRR4_PATTERN ]]; then
+              EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1-6)
             elif [[ $file == $R4_PATTERN ]]; then
               EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1)
             fi
@@ -77,12 +80,43 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Ballerina Build
+        if: ${{ matrix.path != 'fhirr4/ballerina/src/main/resources/fhirservice' }}
         uses: ballerina-platform/ballerina-action@2201.7.0
         with:
           args: pack
         env:
           WORKING_DIR: ./${{ matrix.path }}
           JAVA_HOME: /usr/lib/jvm/default-jvm
+
+      - name: Setup Maven
+        if: ${{ matrix.path == 'fhirr4/ballerina/src/main/resources/fhirservice' }}
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Setup latest Ballerina version
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        if: ${{ matrix.path == 'fhirr4/ballerina/src/main/resources/fhirservice' }}
+        with:
+          version: 2201.7.0
+
+      - name: Create settings.xml
+        if: ${{ matrix.path == 'fhirr4/ballerina/src/main/resources/fhirservice' }}
+        run: echo '<settings>
+              <servers>
+                <server>
+                  <id>ballerina-language-repo</id>
+                  <username>${{ github.actor }}</username>
+                  <password>${{ secrets.PAT_TOKEN }}</password>
+                </server>
+              </servers>
+            </settings>' > ~/.m2/settings.xml
+
+      - name: Run maven build
+        if: ${{ matrix.path == 'fhirr4/ballerina/src/main/resources/fhirservice' }}
+        run: |
+         mvn clean install -f fhirr4
 
   test:
     needs: [ setup ]
@@ -99,6 +133,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Ballerina Test
+        if: ${{ matrix.path != 'fhirr4/ballerina/src/main/resources/fhirservice' }}
         uses: ballerina-platform/ballerina-action@2201.7.0
         with:
           args: test --code-coverage
@@ -107,6 +142,7 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/default-jvm
 
       - name: Read Ballerina Test Results
+        if: ${{ matrix.path != 'fhirr4/ballerina/src/main/resources/fhirservice' }}
         id: test_results
         run: |
           if [ -f "./${{ matrix.path }}/target/report/test_results.json" ]; then
