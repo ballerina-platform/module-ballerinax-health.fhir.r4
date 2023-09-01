@@ -133,8 +133,7 @@ jobs:
           git add ${{ inputs.working_dir }}/pom.xml
           git add ${{ inputs.working_dir }}/ballerina/pom.xml
           git add ${{ inputs.working_dir }}/compiler-plugin/pom.xml
-          git add ${{ inputs.working_dir }}/native/pom.xml
-          git add ${{ inputs.working_dir }}/Dependencies.toml    
+          git add ${{ inputs.working_dir }}/native/pom.xml   
           git commit -m "[Release ${packageName} ${{ steps.increment_patch_version.outputs.CURRENT_VERSION }}] Prepare for next dev cycle"
           git push origin ${{ steps.publish_release.outputs.BRANCH_NAME }}
           
