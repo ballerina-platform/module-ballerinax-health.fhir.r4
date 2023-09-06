@@ -9,7 +9,7 @@ manipulating FHIR resources.
 ```
 import ballerina/io;
 import ballerinax/health.fhir.r4utils.fhirpath;
-map<json> patient = {
+json patient = {
         "resourceType" : "Patient",
         "id": "1",
         "meta": {
