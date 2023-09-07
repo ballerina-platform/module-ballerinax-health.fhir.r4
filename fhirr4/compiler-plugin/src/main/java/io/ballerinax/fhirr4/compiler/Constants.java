@@ -30,4 +30,6 @@ public class Constants {
     public static final String HEALTHCARE_PKG = "health.fhir.r4";
     public static final String FHIR_R4 = "health.fhirr4";
     public static final String BALLERINAX = "ballerinax";
+    public static final String HTTP_RESPONSE = "Response";
+    public static final String HTTP_MODULE = "http";
 }

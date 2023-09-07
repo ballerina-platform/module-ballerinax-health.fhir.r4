@@ -38,7 +38,7 @@ public class Utils {
         for (int i = 0; i < resourcePaths.length; i++) {
             String value1 = resourcePaths[i];
             String value2 = requestPaths[i];
-            if (!value1.equals(value2) && !value1.equals(PATH_PARAM_IDENTIFIER)) {
+            if ((!value1.equals(value2) && !value1.equals(PATH_PARAM_IDENTIFIER)) || (value1.equals(PATH_PARAM_IDENTIFIER) && value2.equals("_history"))) {
                 return false;
             }
         }

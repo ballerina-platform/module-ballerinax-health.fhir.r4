@@ -22,18 +22,28 @@ isolated function getResourceMethod(service object {} serviceObject, string[] pa
     'class: "io.ballerinax.fhirr4.HTTPToFHIRAdaptor"
 } external;
 
-isolated function executeReadByID(string id, r4:FHIRContext fhirCtx, service object {} serviceObject, handle resourceMethod)
-    returns anydata|error = @java:Method {
+isolated function executeWithID(string id, r4:FHIRContext fhirCtx, service object {} serviceObject, handle resourceMethod)
+    returns any|error = @java:Method {
     'class: "io.ballerinax.fhirr4.HTTPToFHIRAdaptor"
 } external;
 
-isolated function executeSearch(r4:FHIRContext fhirCtx, service object {} serviceObject, handle resourceMethod)
-    returns anydata|error = @java:Method {
+isolated function executeWithIDAndVID(string id, string vid, r4:FHIRContext fhirCtx, service object {} serviceObject, handle resourceMethod)
+    returns any|error = @java:Method {
     'class: "io.ballerinax.fhirr4.HTTPToFHIRAdaptor"
 } external;
 
-isolated function executeCreate(anydata payload, r4:FHIRContext fhirCtx, service object {} serviceObject, handle resourceMethod)
-    returns anydata|error = @java:Method {
+isolated function executeWithNoParam(r4:FHIRContext fhirCtx, service object {} serviceObject, handle resourceMethod)
+    returns any|error = @java:Method {
+    'class: "io.ballerinax.fhirr4.HTTPToFHIRAdaptor"
+} external;
+
+isolated function executeWithPayload(anydata payload, r4:FHIRContext fhirCtx, service object {} serviceObject, handle resourceMethod)
+    returns any|error = @java:Method {
+    'class: "io.ballerinax.fhirr4.HTTPToFHIRAdaptor"
+} external;
+
+isolated function executeWithIDAndPayload(string id, anydata payload, r4:FHIRContext fhirCtx, service object {} serviceObject, handle resourceMethod)
+    returns any|error = @java:Method {
     'class: "io.ballerinax.fhirr4.HTTPToFHIRAdaptor"
 } external;
 
