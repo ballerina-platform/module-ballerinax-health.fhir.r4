@@ -15,12 +15,7 @@
 // under the License.
 
 import ballerina/http;
-import ballerina/regex;
 import ballerinax/health.fhir.r4;
-
-const PATIENT_RESOURCE = "Patient";
-const PATIENT_ID_QUERY_PARAM = "_id";
-const PATIENT_QUERY_PARAM = "patient";
 
 // Construct an http service for a fhir service.
 isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) returns http:Service {
@@ -33,88 +28,102 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
             return [new FHIRResponseErrorInterceptor(), new FHIRResponseInterceptor(apiConfig)];
         }
 
-        isolated resource function get [string... paths](http:Request req, http:RequestContext ctx) returns anydata|error {
+        isolated resource function get [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
 
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            r4:AuthzConfig? authzConfig = apiConfig.authzConfig;
-            string path = req.extraPathInfo;
-            string[] requestPathParts = getSplitPath(path);
-            handle? resourceMethod = getResourceMethod(fhirService, requestPathParts, "get");
+            handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_GET);
             if resourceMethod is handle {
                 boolean hasPathParam = isHavingPathParam(resourceMethod);
-                anydata|error executeResourceResult = ();
+                any|error executeResourceResult = ();
+                r4:FHIRContext fhirContext;
                 if hasPathParam {
-                    r4:FHIRError? processRead = self.preprocessor.processRead(requestPathParts[requestPathParts.length() - 2], requestPathParts[requestPathParts.length() - 1], req, ctx);
-                    if processRead is r4:FHIRError {
-                        return processRead;
-                    }
-                    r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
-                    string id = paths[paths.length() - 1];
-                    string resourceType = requestPathParts[requestPathParts.length() - 2];
-                    if authzConfig is r4:AuthzConfig && resourceType == PATIENT_RESOURCE {
-                        // handle smart security
-                        r4:FHIRSecurity? fhirSecurity = fhirContext.getFHIRSecurity();
-                        if fhirSecurity is r4:FHIRSecurity {
-                            r4:FHIRError? handleSmartSecurityResult = r4:handleSmartSecurity(authzConfig, fhirSecurity, id);
-                            if handleSmartSecurityResult is r4:FHIRError {
-                                return handleSmartSecurityResult;
-                            }
+                    // can be any of read, vread, instance history
+                    if paths[paths.length() - 1] == HISTORY {
+                        // instance history
+                        string fhirResource = paths[paths.length() - 3];
+                        string id = paths[paths.length() - 2];
+                        r4:FHIRError? processIHistory = self.preprocessor.processInstanceHistory(fhirResource, id, req, ctx);
+                        if processIHistory is r4:FHIRError {
+                            return processIHistory;
                         }
+                        fhirContext = check r4:getFHIRContext(ctx);
+                        executeResourceResult = executeWithID(id, fhirContext, fhirService, resourceMethod);
+                    } else if paths[paths.length() - 2] == HISTORY {
+                        // vread
+                        string fhirResource = paths[paths.length() - 4];
+                        string id = paths[paths.length() - 3];
+                        string vid = paths[paths.length() - 1];
+                        r4:FHIRError? processIHistory = self.preprocessor.processVread(fhirResource, id, vid, req, ctx);
+                        if processIHistory is r4:FHIRError {
+                            return processIHistory;
+                        }
+                        fhirContext = check r4:getFHIRContext(ctx);
+                        executeResourceResult = executeWithIDAndVID(id, vid, fhirContext, fhirService, resourceMethod);
+                    } else {
+                        // read
+                        string fhirResource = paths[paths.length() - 2];
+                        string id = paths[paths.length() - 1];
+                        r4:FHIRError? processRead = self.preprocessor.processRead(fhirResource, id, req, ctx);
+                        if processRead is r4:FHIRError {
+                            return processRead;
+                        }
+                        fhirContext = check r4:getFHIRContext(ctx);
+                        executeResourceResult = executeWithID(id, fhirContext, fhirService, resourceMethod);
                     }
-                    executeResourceResult = executeReadByID(id, fhirContext, fhirService, resourceMethod);
-                    if (executeResourceResult is error) {
-                        fhirContext.setInErrorState(true);
-                        fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
-                        return r4:handleErrorResponse(executeResourceResult);
-                    }
-
                 } else {
-                    r4:FHIRError? processSearch = self.preprocessor.processSearch(requestPathParts[requestPathParts.length() - 1], req, ctx);
-                    if processSearch is r4:FHIRError {
-                        return processSearch;
-                    }
-                    r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
-                    if authzConfig is r4:AuthzConfig {
-                        // handle smart security
-                        string resourceType = requestPathParts[requestPathParts.length() - 1];
-                        string? patientID = resourceType == PATIENT_RESOURCE ? req.getQueryParamValue(PATIENT_ID_QUERY_PARAM) : req.getQueryParamValue(PATIENT_QUERY_PARAM);
-                        r4:FHIRSecurity? fhirSecurity = fhirContext.getFHIRSecurity();
-                        if fhirSecurity is r4:FHIRSecurity {
-                            r4:FHIRError? handleSmartSecurityResult = r4:handleSmartSecurity(authzConfig, fhirSecurity, patientID);
-                            if handleSmartSecurityResult is r4:FHIRError {
-                                return handleSmartSecurityResult;
-                            }
+                    // can be any of search, type history, system history, metadata
+                    if paths[paths.length() - 1] == HISTORY {
+                        // system history or type history
+                        r4:FHIRError? processHistory = self.preprocessor.processHistory(req, ctx);
+                        if processHistory is r4:FHIRError {
+                            return processHistory;
                         }
+                        fhirContext = check r4:getFHIRContext(ctx);
+                        executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
+                    } else if paths[paths.length() - 1] == METADATA {
+                        // metadata
+                        r4:FHIRError? processCapability = self.preprocessor.processCapability(req, ctx);
+                        if processCapability is r4:FHIRError {
+                            return processCapability;
+                        }
+                        fhirContext = check r4:getFHIRContext(ctx);
+                        executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
+                    } else {
+                        // search
+                        string fhirResource = paths[paths.length() - 1];
+                        r4:FHIRError? processSearch = self.preprocessor.processSearch(fhirResource, req, ctx);
+                        if processSearch is r4:FHIRError {
+                            return processSearch;
+                        }
+                        fhirContext = check r4:getFHIRContext(ctx);
+                        executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
                     }
-                    executeResourceResult = executeSearch(fhirContext, fhirService, resourceMethod);
-                    if (executeResourceResult is error) {
-                        fhirContext.setInErrorState(true);
-                        fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
-                        return r4:handleErrorResponse(executeResourceResult);
-                    }
-
+                }
+                if (executeResourceResult is error) {
+                    fhirContext.setInErrorState(true);
+                    fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                    return r4:handleErrorResponse(executeResourceResult);
                 }
                 return executeResourceResult;
             } else {
-                return r4:createFHIRError(string `Path not found: ${path}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
+                return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
             }
         }
 
-        isolated resource function post [string... paths](http:Request req, http:RequestContext ctx) returns anydata|error {
+        isolated resource function post [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
 
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            string path = req.extraPathInfo;
-            string[] requestPathParts = getSplitPath(path);
-            handle? resourceMethod = getResourceMethod(fhirService, requestPathParts, "post");
+            handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_POST);
             json|http:ClientError payload = req.getJsonPayload();
             if payload is json {
                 if resourceMethod is handle {
-                    r4:FHIRError? processCreate = self.preprocessor.processCreate(requestPathParts[requestPathParts.length() - 1], payload, req, ctx);
+                    string fhirResource = paths[paths.length() - 1];
+                    r4:FHIRError? processCreate = self.preprocessor.processCreate(fhirResource, payload, req, ctx);
                     if processCreate is r4:FHIRError {
                         return processCreate;
                     }
                     r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
-                    anydata|error executeResourceResult = executeCreate(payload, fhirContext, fhirService, resourceMethod);
+                    any|error executeResourceResult = executeWithPayload(payload, fhirContext, fhirService, resourceMethod);
                     if (executeResourceResult is error) {
                         fhirContext.setInErrorState(true);
                         fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
@@ -122,22 +131,93 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                     }
                     return executeResourceResult;
                 } else {
-                    return r4:createFHIRError(string `Path not found: ${path}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
+                    return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
                 }
             } else {
                 return r4:createFHIRError(string `Invalid payload`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         }
+
+        isolated resource function put [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
+            // update
+            Service fhirService = self.holder.getFhirServiceFromHolder();
+            handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_PUT);
+            json|http:ClientError payload = req.getJsonPayload();
+            if payload is json {
+                if resourceMethod is handle {
+                    string fhirResource = paths[paths.length() - 2];
+                    string id = paths[paths.length() - 1];
+                    r4:FHIRError? processUpdate = self.preprocessor.processUpdate(fhirResource, id, payload, req, ctx);
+                    if processUpdate is r4:FHIRError {
+                        return processUpdate;
+                    }
+                    r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
+                    any|error executeResourceResult = executeWithIDAndPayload(id, payload, fhirContext, fhirService, resourceMethod);
+                    if (executeResourceResult is error) {
+                        fhirContext.setInErrorState(true);
+                        fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                        return r4:handleErrorResponse(executeResourceResult);
+                    }
+                    return executeResourceResult;
+                } else {
+                    return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
+                }
+            } else {
+                return r4:createFHIRError(string `Invalid payload`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+        }
+        isolated resource function patch [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
+            // patch
+            Service fhirService = self.holder.getFhirServiceFromHolder();
+            handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_PATCH);
+            json|http:ClientError payload = req.getJsonPayload();
+            if payload is json {
+                if resourceMethod is handle {
+                    string fhirResource = paths[paths.length() - 2];
+                    string id = paths[paths.length() - 1];
+                    r4:FHIRError? processPatch = self.preprocessor.processPatch(fhirResource, id, payload, req, ctx);
+                    if processPatch is r4:FHIRError {
+                        return processPatch;
+                    }
+                    r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
+                    any|error executeResourceResult = executeWithIDAndPayload(id, payload, fhirContext, fhirService, resourceMethod);
+                    if (executeResourceResult is error) {
+                        fhirContext.setInErrorState(true);
+                        fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                        return r4:handleErrorResponse(executeResourceResult);
+                    }
+                    return executeResourceResult;
+                } else {
+                    return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
+                }
+            } else {
+                return r4:createFHIRError(string `Invalid payload`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+        }
+        isolated resource function delete [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
+            // delete
+            Service fhirService = self.holder.getFhirServiceFromHolder();
+            handle? resourceMethod = getResourceMethod(fhirService, paths, http:DELETE);
+
+            if resourceMethod is handle {
+                string fhirResource = paths[paths.length() - 2];
+                string id = paths[paths.length() - 1];
+                r4:FHIRError? processDelete = self.preprocessor.processDelete(fhirResource, id, req, ctx);
+                if processDelete is r4:FHIRError {
+                    return processDelete;
+                }
+                r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
+                any|error executeResourceResult = executeWithID(id, fhirContext, fhirService, resourceMethod);
+                if (executeResourceResult is error) {
+                    fhirContext.setInErrorState(true);
+                    fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                    return r4:handleErrorResponse(executeResourceResult);
+                }
+                return executeResourceResult;
+            } else {
+                return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
+            }
+        }
     };
     return httpService;
-}
-
-// Split request path into array. Remove query params from the path if any.
-isolated function getSplitPath(string restPath) returns string[] {
-    string path = restPath;
-    if path.indexOf("?") is int {
-        path = path.substring(0, <int>path.indexOf("?"));
-    }
-    string[] requestPathParts = regex:split(path, "/").slice(1);
-    return requestPathParts;
 }
