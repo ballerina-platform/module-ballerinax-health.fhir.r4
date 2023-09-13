@@ -110,7 +110,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
         },
         "media" : {
             name: "media",
-            dataType: DiagnosticReportMedia,
+            dataType: USCoreDiagnosticReportProfileNoteExchangeMedia,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -272,7 +272,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
         },
         "status" : {
             name: "status",
-            dataType: DiagnosticReportStatus,
+            dataType: USCoreDiagnosticReportProfileNoteExchangeStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -299,7 +299,7 @@ public type USCoreDiagnosticReportProfileNoteExchange record {|
     r4:Extension[] modifierExtension?;
     r4:Attachment[] presentedForm?;
     r4:code language?;
-    DiagnosticReportMedia[] media?;
+    USCoreDiagnosticReportProfileNoteExchangeMedia[] media?;
     string conclusion?;
     r4:Reference[] result?;
     r4:Reference[] specimen?;
@@ -321,7 +321,7 @@ public type USCoreDiagnosticReportProfileNoteExchange record {|
     }
     r4:CodeableConcept[] category;
     r4:Reference[] imagingStudy?;
-    DiagnosticReportStatus status;
+    USCoreDiagnosticReportProfileNoteExchangeStatus status;
     never...;
 |};
 
@@ -350,15 +350,15 @@ public type BaseUSCoreDiagnosticReportProfileNoteExchangeMeta record {|
     r4:Coding[] tag?;
 |};
 
-# DiagnosticReportStatus enum
-public enum DiagnosticReportStatus {
+# USCoreDiagnosticReportProfileNoteExchangeStatus enum
+public enum USCoreDiagnosticReportProfileNoteExchangeStatus {
    CODE_STATUS_FINAL = "final",
    CODE_STATUS_REGISTERED = "registered",
    CODE_STATUS_PRELIMINARY = "preliminary",
    CODE_STATUS_PARTIAL = "partial"
 }
 
-# FHIR DiagnosticReportMedia datatype record.
+# FHIR USCoreDiagnosticReportProfileNoteExchangeMedia datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -366,7 +366,7 @@ public enum DiagnosticReportStatus {
 # + comment - A comment about the image. Typically, this is used to provide an explanation for why the image is included, or to draw the viewer's attention to important features.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "DiagnosticReportMedia",
+    name: "USCoreDiagnosticReportProfileNoteExchangeMedia",
     baseType: (),
     elements: {
         "extension": {
@@ -420,7 +420,9 @@ public enum DiagnosticReportStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DiagnosticReportMedia record {|
+public type USCoreDiagnosticReportProfileNoteExchangeMedia record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Reference link;

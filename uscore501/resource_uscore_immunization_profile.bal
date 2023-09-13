@@ -93,7 +93,7 @@ public const RESOURCE_NAME_USCOREIMMUNIZATIONPROFILE = "Immunization";
         },
         "education" : {
             name: "education",
-            dataType: ImmunizationEducation,
+            dataType: USCoreImmunizationProfileEducation,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -226,7 +226,7 @@ public const RESOURCE_NAME_USCOREIMMUNIZATIONPROFILE = "Immunization";
         },
         "performer" : {
             name: "performer",
-            dataType: ImmunizationPerformer,
+            dataType: USCoreImmunizationProfilePerformer,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -234,7 +234,7 @@ public const RESOURCE_NAME_USCOREIMMUNIZATIONPROFILE = "Immunization";
         },
         "reaction" : {
             name: "reaction",
-            dataType: ImmunizationReaction,
+            dataType: USCoreImmunizationProfileReaction,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -309,7 +309,7 @@ public const RESOURCE_NAME_USCOREIMMUNIZATIONPROFILE = "Immunization";
         },
         "protocolApplied" : {
             name: "protocolApplied",
-            dataType: ImmunizationProtocolApplied,
+            dataType: USCoreImmunizationProfileProtocolApplied,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -367,7 +367,7 @@ public const RESOURCE_NAME_USCOREIMMUNIZATIONPROFILE = "Immunization";
         },
         "status" : {
             name: "status",
-            dataType: ImmunizationStatus,
+            dataType: USCoreImmunizationProfileStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -391,7 +391,7 @@ public type USCoreImmunizationProfile record {|
     r4:Annotation[] note?;
     boolean primarySource;
     r4:Extension[] extension?;
-    ImmunizationEducation[] education?;
+    USCoreImmunizationProfileEducation[] education?;
     r4:Quantity doseQuantity?;
     r4:Extension[] modifierExtension?;
     r4:Reference[] reasonReference?;
@@ -407,8 +407,8 @@ public type USCoreImmunizationProfile record {|
     r4:CodeableConcept vaccineCode;
     r4:date expirationDate?;
     r4:Identifier[] identifier?;
-    ImmunizationPerformer[] performer?;
-    ImmunizationReaction[] reaction?;
+    USCoreImmunizationProfilePerformer[] performer?;
+    USCoreImmunizationProfileReaction[] reaction?;
     r4:CodeableConcept[] subpotentReason?;
     r4:Reference encounter?;
     string lotNumber?;
@@ -416,14 +416,14 @@ public type USCoreImmunizationProfile record {|
     r4:Resource[] contained?;
     r4:CodeableConcept site?;
     r4:CodeableConcept route?;
-    ImmunizationProtocolApplied[] protocolApplied?;
+    USCoreImmunizationProfileProtocolApplied[] protocolApplied?;
     r4:uri implicitRules?;
     r4:CodeableConcept reportOrigin?;
     r4:Reference location?;
     r4:dateTime occurrenceDateTime;
     string occurrenceString;
     r4:CodeableConcept fundingSource?;
-    ImmunizationStatus status;
+    USCoreImmunizationProfileStatus status;
     never...;
 |};
 
@@ -452,176 +452,7 @@ public type BaseUSCoreImmunizationProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
-# FHIR ImmunizationPerformer datatype record.
-#
-# + actor - The practitioner or organization who performed the action.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + 'function - Describes the type of performance (e.g. ordering provider, administering provider, etc.).
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-@r4:DataTypeDefinition {
-    name: "ImmunizationPerformer",
-    baseType: (),
-    elements: {
-        "actor": {
-            name: "actor",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The practitioner or organization who performed the action.",
-            path: "Immunization.performer.actor"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Immunization.performer.extension"
-        },
-        "function": {
-            name: "function",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Describes the type of performance (e.g. ordering provider, administering provider, etc.).",
-            path: "Immunization.performer.function"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Immunization.performer.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Immunization.performer.id"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type ImmunizationPerformer record {|
-    r4:Reference actor;
-    r4:Extension[] extension?;
-    r4:CodeableConcept 'function?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-|};
-
-# ImmunizationStatus enum
-public enum ImmunizationStatus {
-   CODE_STATUS_COMPLETED = "completed",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
-   CODE_STATUS_NOT_DONE = "not-done"
-}
-
-# FHIR ImmunizationEducation datatype record.
-#
-# + reference - Reference pointer to the educational material given to the patient if the information was on line.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + documentType - Identifier of the material presented to the patient.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + presentationDate - Date the educational material was given to the patient.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + publicationDate - Date the educational material was published.
-@r4:DataTypeDefinition {
-    name: "ImmunizationEducation",
-    baseType: (),
-    elements: {
-        "reference": {
-            name: "reference",
-            dataType: r4:uri,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Reference pointer to the educational material given to the patient if the information was on line.",
-            path: "Immunization.education.reference"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Immunization.education.extension"
-        },
-        "documentType": {
-            name: "documentType",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Identifier of the material presented to the patient.",
-            path: "Immunization.education.documentType"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Immunization.education.modifierExtension"
-        },
-        "presentationDate": {
-            name: "presentationDate",
-            dataType: r4:dateTime,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Date the educational material was given to the patient.",
-            path: "Immunization.education.presentationDate"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Immunization.education.id"
-        },
-        "publicationDate": {
-            name: "publicationDate",
-            dataType: r4:dateTime,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Date the educational material was published.",
-            path: "Immunization.education.publicationDate"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type ImmunizationEducation record {|
-    r4:uri reference?;
-    r4:Extension[] extension?;
-    string documentType?;
-    r4:Extension[] modifierExtension?;
-    r4:dateTime presentationDate?;
-    string id?;
-    r4:dateTime publicationDate?;
-|};
-
-# FHIR ImmunizationReaction datatype record.
+# FHIR USCoreImmunizationProfileReaction datatype record.
 #
 # + date - Date of reaction to the immunization.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -630,7 +461,7 @@ public type ImmunizationEducation record {|
 # + detail - Details of the reaction.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "ImmunizationReaction",
+    name: "USCoreImmunizationProfileReaction",
     baseType: (),
     elements: {
         "date": {
@@ -693,7 +524,9 @@ public type ImmunizationEducation record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ImmunizationReaction record {|
+public type USCoreImmunizationProfileReaction record {|
+    *r4:BackboneElement;
+
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -702,7 +535,7 @@ public type ImmunizationReaction record {|
     string id?;
 |};
 
-# FHIR ImmunizationProtocolApplied datatype record.
+# FHIR USCoreImmunizationProfileProtocolApplied datatype record.
 #
 # + doseNumberString - Nominal position in a series.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -715,7 +548,7 @@ public type ImmunizationReaction record {|
 # + seriesDosesString - The recommended number of doses to achieve immunity.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "ImmunizationProtocolApplied",
+    name: "USCoreImmunizationProfileProtocolApplied",
     baseType: (),
     elements: {
         "doseNumberString": {
@@ -814,7 +647,9 @@ public type ImmunizationReaction record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ImmunizationProtocolApplied record {|
+public type USCoreImmunizationProfileProtocolApplied record {|
+    *r4:BackboneElement;
+
     string doseNumberString;
     r4:Extension[] extension?;
     r4:positiveInt seriesDosesPositiveInt?;
@@ -825,5 +660,178 @@ public type ImmunizationProtocolApplied record {|
     r4:CodeableConcept[] targetDisease?;
     string seriesDosesString?;
     string id?;
+|};
+
+# FHIR USCoreImmunizationProfilePerformer datatype record.
+#
+# + actor - The practitioner or organization who performed the action.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + 'function - Describes the type of performance (e.g. ordering provider, administering provider, etc.).
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@r4:DataTypeDefinition {
+    name: "USCoreImmunizationProfilePerformer",
+    baseType: (),
+    elements: {
+        "actor": {
+            name: "actor",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The practitioner or organization who performed the action.",
+            path: "Immunization.performer.actor"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Immunization.performer.extension"
+        },
+        "function": {
+            name: "function",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Describes the type of performance (e.g. ordering provider, administering provider, etc.).",
+            path: "Immunization.performer.function"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Immunization.performer.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Immunization.performer.id"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreImmunizationProfilePerformer record {|
+    *r4:BackboneElement;
+
+    r4:Reference actor;
+    r4:Extension[] extension?;
+    r4:CodeableConcept 'function?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+|};
+
+# USCoreImmunizationProfileStatus enum
+public enum USCoreImmunizationProfileStatus {
+   CODE_STATUS_COMPLETED = "completed",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+   CODE_STATUS_NOT_DONE = "not-done"
+}
+
+# FHIR USCoreImmunizationProfileEducation datatype record.
+#
+# + reference - Reference pointer to the educational material given to the patient if the information was on line.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + documentType - Identifier of the material presented to the patient.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + presentationDate - Date the educational material was given to the patient.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + publicationDate - Date the educational material was published.
+@r4:DataTypeDefinition {
+    name: "USCoreImmunizationProfileEducation",
+    baseType: (),
+    elements: {
+        "reference": {
+            name: "reference",
+            dataType: r4:uri,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Reference pointer to the educational material given to the patient if the information was on line.",
+            path: "Immunization.education.reference"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Immunization.education.extension"
+        },
+        "documentType": {
+            name: "documentType",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Identifier of the material presented to the patient.",
+            path: "Immunization.education.documentType"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Immunization.education.modifierExtension"
+        },
+        "presentationDate": {
+            name: "presentationDate",
+            dataType: r4:dateTime,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Date the educational material was given to the patient.",
+            path: "Immunization.education.presentationDate"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Immunization.education.id"
+        },
+        "publicationDate": {
+            name: "publicationDate",
+            dataType: r4:dateTime,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Date the educational material was published.",
+            path: "Immunization.education.publicationDate"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreImmunizationProfileEducation record {|
+    *r4:BackboneElement;
+
+    r4:uri reference?;
+    r4:Extension[] extension?;
+    string documentType?;
+    r4:Extension[] modifierExtension?;
+    r4:dateTime presentationDate?;
+    string id?;
+    r4:dateTime publicationDate?;
 |};
 

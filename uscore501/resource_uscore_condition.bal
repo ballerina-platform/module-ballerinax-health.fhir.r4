@@ -91,7 +91,7 @@ public const RESOURCE_NAME_USCORECONDITION = "Condition";
         },
         "evidence" : {
             name: "evidence",
-            dataType: ConditionEvidence,
+            dataType: USCoreConditionEvidence,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -296,7 +296,7 @@ public const RESOURCE_NAME_USCORECONDITION = "Condition";
         },
         "stage" : {
             name: "stage",
-            dataType: ConditionStage,
+            dataType: USCoreConditionStage,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -352,7 +352,7 @@ public type USCoreCondition record {|
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:CodeableConcept code;
-    ConditionEvidence[] evidence?;
+    USCoreConditionEvidence[] evidence?;
     r4:Range onsetRange?;
     r4:dateTime abatementDateTime?;
     r4:Reference subject;
@@ -377,7 +377,7 @@ public type USCoreCondition record {|
     r4:CodeableConcept[] bodySite?;
     r4:Resource[] contained?;
     r4:Reference asserter?;
-    ConditionStage[] stage?;
+    USCoreConditionStage[] stage?;
     r4:uri implicitRules?;
     @constraint:Array {
        minLength: 1
@@ -412,77 +412,7 @@ public type BaseUSCoreConditionMeta record {|
     r4:Coding[] tag?;
 |};
 
-# FHIR ConditionEvidence datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - A manifestation or symptom that led to the recording of this condition.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + detail - Links to other relevant information, including pathology reports.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-@r4:DataTypeDefinition {
-    name: "ConditionEvidence",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Condition.evidence.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A manifestation or symptom that led to the recording of this condition.",
-            path: "Condition.evidence.code"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Condition.evidence.modifierExtension"
-        },
-        "detail": {
-            name: "detail",
-            dataType: r4:Reference,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Links to other relevant information, including pathology reports.",
-            path: "Condition.evidence.detail"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Condition.evidence.id"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type ConditionEvidence record {|
-    r4:Extension[] extension?;
-    r4:CodeableConcept[] code?;
-    r4:Extension[] modifierExtension?;
-    r4:Reference[] detail?;
-    string id?;
-|};
-
-# FHIR ConditionStage datatype record.
+# FHIR USCoreConditionStage datatype record.
 #
 # + summary - A simple summary of the stage such as 'Stage 3'. The determination of the stage is disease-specific.
 # + assessment - Reference to a formal record of the evidence on which the staging assessment is based.
@@ -491,7 +421,7 @@ public type ConditionEvidence record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'type - The kind of staging, such as pathological or clinical staging.
 @r4:DataTypeDefinition {
-    name: "ConditionStage",
+    name: "USCoreConditionStage",
     baseType: (),
     elements: {
         "summary": {
@@ -554,12 +484,86 @@ public type ConditionEvidence record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ConditionStage record {|
+public type USCoreConditionStage record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept summary?;
     r4:Reference[] assessment?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
     r4:CodeableConcept 'type?;
+|};
+
+# FHIR USCoreConditionEvidence datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - A manifestation or symptom that led to the recording of this condition.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + detail - Links to other relevant information, including pathology reports.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@r4:DataTypeDefinition {
+    name: "USCoreConditionEvidence",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Condition.evidence.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A manifestation or symptom that led to the recording of this condition.",
+            path: "Condition.evidence.code"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Condition.evidence.modifierExtension"
+        },
+        "detail": {
+            name: "detail",
+            dataType: r4:Reference,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Links to other relevant information, including pathology reports.",
+            path: "Condition.evidence.detail"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Condition.evidence.id"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreConditionEvidence record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:CodeableConcept[] code?;
+    r4:Extension[] modifierExtension?;
+    r4:Reference[] detail?;
+    string id?;
 |};
 

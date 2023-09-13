@@ -26,6 +26,15 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
 #
 # + resourceType - The type of the resource describes
 # + identifier - Identifier for the organization that is used to identify the organization across multiple disparate systems.
+# * identifier Slicings
+# 1) USCoreOrganizationProfileIdentifierNPI: National Provider Identifier (NPI)
+#       - min = 0
+#       - max = 1
+#
+# 2) USCoreOrganizationProfileIdentifierCLIA: Clinical Laboratory Improvement Amendments (CLIA) Number for laboratories
+#       - min = 0
+#       - max = 1
+#
 # + partOf - The organization of which this organization forms a part.
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - An address for the organization.
@@ -140,7 +149,7 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
         },
         "contact" : {
             name: "contact",
-            dataType: OrganizationContact,
+            dataType: USCoreOrganizationProfileContact,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -218,7 +227,7 @@ public type USCoreOrganizationProfile record {|
     r4:CodeableConcept[] 'type?;
     r4:Resource[] contained?;
     r4:Reference[] endpoint?;
-    OrganizationContact[] contact?;
+    USCoreOrganizationProfileContact[] contact?;
     string name;
     string[] alias?;
     r4:uri implicitRules?;
@@ -253,16 +262,7 @@ public type BaseUSCoreOrganizationProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
-# OrganizationIdentifierUse enum
-public enum OrganizationIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
-}
-
-# FHIR OrganizationContact datatype record.
+# FHIR USCoreOrganizationProfileContact datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - Visiting or postal addresses for the contact.
@@ -272,7 +272,7 @@ public enum OrganizationIdentifierUse {
 # + telecom - A contact detail (e.g. a telephone number or an email address) by which the party may be contacted.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "OrganizationContact",
+    name: "USCoreOrganizationProfileContact",
     baseType: (),
     elements: {
         "extension": {
@@ -344,7 +344,9 @@ public enum OrganizationIdentifierUse {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type OrganizationContact record {|
+public type USCoreOrganizationProfileContact record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Address address?;
     r4:CodeableConcept purpose?;
@@ -354,19 +356,84 @@ public type OrganizationContact record {|
     string id?;
 |};
 
-# OrganizationAddressType enum
-public enum OrganizationAddressType {
-   CODE_TYPE_POSTAL = "postal",
-   CODE_TYPE_PHYSICAL = "physical",
-   CODE_TYPE_BOTH = "both"
-}
-
-# OrganizationAddressUse enum
-public enum OrganizationAddressUse {
+# USCoreOrganizationProfileAddressUse enum
+public enum USCoreOrganizationProfileAddressUse {
    CODE_USE_TEMP = "temp",
    CODE_USE_WORK = "work",
    CODE_USE_OLD = "old",
    CODE_USE_HOME = "home",
    CODE_USE_BILLING = "billing"
 }
+
+# USCoreOrganizationProfileAddressType enum
+public enum USCoreOrganizationProfileAddressType {
+   CODE_TYPE_POSTAL = "postal",
+   CODE_TYPE_PHYSICAL = "physical",
+   CODE_TYPE_BOTH = "both"
+}
+
+# FHIR USCoreOrganizationProfileIdentifierCLIA datatype record.
+#
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+@r4:DataTypeDefinition {
+    name: "USCoreOrganizationProfileIdentifierCLIA",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Organization.identifier.system"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreOrganizationProfileIdentifierCLIA record {|
+    *r4:Identifier;
+
+    r4:uri system = "urn:oid:2.16.840.1.113883.4.7";
+|};
+
+# USCoreOrganizationProfileIdentifierUse enum
+public enum USCoreOrganizationProfileIdentifierUse {
+   CODE_USE_SECONDARY = "secondary",
+   CODE_USE_TEMP = "temp",
+   CODE_USE_USUAL = "usual",
+   CODE_USE_OLD = "old",
+   CODE_USE_OFFICIAL = "official"
+}
+
+# FHIR USCoreOrganizationProfileIdentifierNPI datatype record.
+#
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+@r4:DataTypeDefinition {
+    name: "USCoreOrganizationProfileIdentifierNPI",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Organization.identifier.system"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreOrganizationProfileIdentifierNPI record {|
+    *r4:Identifier;
+
+    r4:uri system = "http://hl7.org/fhir/sid/us-npi";
+|};
 

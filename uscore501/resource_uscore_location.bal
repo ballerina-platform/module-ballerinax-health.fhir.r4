@@ -98,7 +98,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
         },
         "hoursOfOperation" : {
             name: "hoursOfOperation",
-            dataType: LocationHoursOfOperation,
+            dataType: USCoreLocationHoursOfOperation,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -124,7 +124,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
         },
         "mode" : {
             name: "mode",
-            dataType: LocationMode,
+            dataType: USCoreLocationMode,
             min: 0,
             max: 1,
             isArray: false,
@@ -238,7 +238,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
         },
         "position" : {
             name: "position",
-            dataType: LocationPosition,
+            dataType: USCoreLocationPosition,
             min: 0,
             max: 1,
             isArray: false,
@@ -254,7 +254,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
         },
         "status" : {
             name: "status",
-            dataType: LocationStatus,
+            dataType: USCoreLocationStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -280,10 +280,10 @@ public type USCoreLocation record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description?;
-    LocationHoursOfOperation[] hoursOfOperation?;
+    USCoreLocationHoursOfOperation[] hoursOfOperation?;
     r4:code language?;
     r4:CodeableConcept[] 'type?;
-    LocationMode mode?;
+    USCoreLocationMode mode?;
     r4:Reference[] endpoint?;
     string[] alias?;
     r4:ContactPoint[] telecom?;
@@ -296,9 +296,9 @@ public type USCoreLocation record {|
     r4:Reference managingOrganization?;
     string name;
     r4:uri implicitRules?;
-    LocationPosition position?;
+    USCoreLocationPosition position?;
     string availabilityExceptions?;
-    LocationStatus status?;
+    USCoreLocationStatus status?;
     never...;
 |};
 
@@ -327,33 +327,13 @@ public type BaseUSCoreLocationMeta record {|
     r4:Coding[] tag?;
 |};
 
-# LocationHoursOfOperationDaysOfWeek enum
-public enum LocationHoursOfOperationDaysOfWeek {
-   CODE_DAYSOFWEEK_THU = "thu",
-   CODE_DAYSOFWEEK_TUE = "tue",
-   CODE_DAYSOFWEEK_WED = "wed",
-   CODE_DAYSOFWEEK_SAT = "sat",
-   CODE_DAYSOFWEEK_FRI = "fri",
-   CODE_DAYSOFWEEK_MON = "mon",
-   CODE_DAYSOFWEEK_SUN = "sun"
-}
-
-# LocationAddressUse enum
-public enum LocationAddressUse {
-   CODE_USE_TEMP = "temp",
-   CODE_USE_WORK = "work",
-   CODE_USE_OLD = "old",
-   CODE_USE_HOME = "home",
-   CODE_USE_BILLING = "billing"
-}
-
-# LocationMode enum
-public enum LocationMode {
+# USCoreLocationMode enum
+public enum USCoreLocationMode {
    CODE_MODE_INSTANCE = "instance",
    CODE_MODE_KIND = "kind"
 }
 
-# FHIR LocationPosition datatype record.
+# FHIR USCoreLocationPosition datatype record.
 #
 # + altitude - Altitude. The value domain and the interpretation are the same as for the text of the altitude element in KML (see notes below).
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -362,7 +342,7 @@ public enum LocationMode {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + longitude - Longitude. The value domain and the interpretation are the same as for the text of the longitude element in KML (see notes below).
 @r4:DataTypeDefinition {
-    name: "LocationPosition",
+    name: "USCoreLocationPosition",
     baseType: (),
     elements: {
         "altitude": {
@@ -425,7 +405,9 @@ public enum LocationMode {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type LocationPosition record {|
+public type USCoreLocationPosition record {|
+    *r4:BackboneElement;
+
     decimal altitude?;
     r4:Extension[] extension?;
     decimal latitude;
@@ -434,14 +416,23 @@ public type LocationPosition record {|
     decimal longitude;
 |};
 
-# LocationStatus enum
-public enum LocationStatus {
-   CODE_STATUS_INACTIVE = "inactive",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_SUSPENDED = "suspended"
+# USCoreLocationAddressType enum
+public enum USCoreLocationAddressType {
+   CODE_TYPE_POSTAL = "postal",
+   CODE_TYPE_PHYSICAL = "physical",
+   CODE_TYPE_BOTH = "both"
 }
 
-# FHIR LocationHoursOfOperation datatype record.
+# USCoreLocationAddressUse enum
+public enum USCoreLocationAddressUse {
+   CODE_USE_TEMP = "temp",
+   CODE_USE_WORK = "work",
+   CODE_USE_OLD = "old",
+   CODE_USE_HOME = "home",
+   CODE_USE_BILLING = "billing"
+}
+
+# FHIR USCoreLocationHoursOfOperation datatype record.
 #
 # + allDay - The Location is open all day.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -451,7 +442,7 @@ public enum LocationStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + daysOfWeek - Indicates which days of the week are available between the start and end Times.
 @r4:DataTypeDefinition {
-    name: "LocationHoursOfOperation",
+    name: "USCoreLocationHoursOfOperation",
     baseType: (),
     elements: {
         "allDay": {
@@ -510,7 +501,7 @@ public enum LocationStatus {
         },
         "daysOfWeek": {
             name: "daysOfWeek",
-            dataType: LocationHoursOfOperationDaysOfWeek,
+            dataType: USCoreLocationHoursOfOperationDaysOfWeek,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -523,20 +514,33 @@ public enum LocationStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type LocationHoursOfOperation record {|
+public type USCoreLocationHoursOfOperation record {|
+    *r4:BackboneElement;
+
     boolean allDay?;
     r4:Extension[] extension?;
     r4:time closingTime?;
     r4:Extension[] modifierExtension?;
     r4:time openingTime?;
     string id?;
-    LocationHoursOfOperationDaysOfWeek[] daysOfWeek?;
+    USCoreLocationHoursOfOperationDaysOfWeek[] daysOfWeek?;
 |};
 
-# LocationAddressType enum
-public enum LocationAddressType {
-   CODE_TYPE_POSTAL = "postal",
-   CODE_TYPE_PHYSICAL = "physical",
-   CODE_TYPE_BOTH = "both"
+# USCoreLocationStatus enum
+public enum USCoreLocationStatus {
+   CODE_STATUS_INACTIVE = "inactive",
+   CODE_STATUS_ACTIVE = "active",
+   CODE_STATUS_SUSPENDED = "suspended"
+}
+
+# USCoreLocationHoursOfOperationDaysOfWeek enum
+public enum USCoreLocationHoursOfOperationDaysOfWeek {
+   CODE_DAYSOFWEEK_THU = "thu",
+   CODE_DAYSOFWEEK_TUE = "tue",
+   CODE_DAYSOFWEEK_WED = "wed",
+   CODE_DAYSOFWEEK_SAT = "sat",
+   CODE_DAYSOFWEEK_FRI = "fri",
+   CODE_DAYSOFWEEK_MON = "mon",
+   CODE_DAYSOFWEEK_SUN = "sun"
 }
 

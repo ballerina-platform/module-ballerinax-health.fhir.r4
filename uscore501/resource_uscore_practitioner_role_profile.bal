@@ -129,7 +129,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERROLEPROFILE = "PractitionerRole";
         },
         "notAvailable" : {
             name: "notAvailable",
-            dataType: PractitionerRoleNotAvailable,
+            dataType: USCorePractitionerRoleProfileNotAvailable,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -137,7 +137,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERROLEPROFILE = "PractitionerRole";
         },
         "availableTime" : {
             name: "availableTime",
-            dataType: PractitionerRoleAvailableTime,
+            dataType: USCorePractitionerRoleProfileAvailableTime,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -254,8 +254,8 @@ public type USCorePractitionerRoleProfile record {|
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:code language?;
-    PractitionerRoleNotAvailable[] notAvailable?;
-    PractitionerRoleAvailableTime[] availableTime?;
+    USCorePractitionerRoleProfileNotAvailable[] notAvailable?;
+    USCorePractitionerRoleProfileAvailableTime[] availableTime?;
     r4:Resource[] contained?;
     r4:Reference[] endpoint?;
     r4:Reference[] healthcareService?;
@@ -294,108 +294,7 @@ public type BaseUSCorePractitionerRoleProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
-# PractitionerRoleTelecomUse enum
-public enum PractitionerRoleTelecomUse {
-   CODE_USE_TEMP = "temp",
-   CODE_USE_WORK = "work",
-   CODE_USE_OLD = "old",
-   CODE_USE_MOBILE = "mobile",
-   CODE_USE_HOME = "home"
-}
-
-# FHIR PractitionerRoleAvailableTime datatype record.
-#
-# + allDay - Is this always available? (hence times are irrelevant) e.g. 24 hour service.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + availableEndTime - The closing time of day. Note: If the AllDay flag is set, then this time is ignored.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + daysOfWeek - Indicates which days of the week are available between the start and end Times.
-# + availableStartTime - The opening time of day. Note: If the AllDay flag is set, then this time is ignored.
-@r4:DataTypeDefinition {
-    name: "PractitionerRoleAvailableTime",
-    baseType: (),
-    elements: {
-        "allDay": {
-            name: "allDay",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Is this always available? (hence times are irrelevant) e.g. 24 hour service.",
-            path: "PractitionerRole.availableTime.allDay"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "PractitionerRole.availableTime.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "PractitionerRole.availableTime.modifierExtension"
-        },
-        "availableEndTime": {
-            name: "availableEndTime",
-            dataType: r4:time,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The closing time of day. Note: If the AllDay flag is set, then this time is ignored.",
-            path: "PractitionerRole.availableTime.availableEndTime"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "PractitionerRole.availableTime.id"
-        },
-        "daysOfWeek": {
-            name: "daysOfWeek",
-            dataType: PractitionerRoleAvailableTimeDaysOfWeek,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Indicates which days of the week are available between the start and end Times.",
-            path: "PractitionerRole.availableTime.daysOfWeek"
-        },
-        "availableStartTime": {
-            name: "availableStartTime",
-            dataType: r4:time,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The opening time of day. Note: If the AllDay flag is set, then this time is ignored.",
-            path: "PractitionerRole.availableTime.availableStartTime"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type PractitionerRoleAvailableTime record {|
-    boolean allDay?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:time availableEndTime?;
-    string id?;
-    PractitionerRoleAvailableTimeDaysOfWeek[] daysOfWeek?;
-    r4:time availableStartTime?;
-|};
-
-# FHIR PractitionerRoleNotAvailable datatype record.
+# FHIR USCorePractitionerRoleProfileNotAvailable datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -403,7 +302,7 @@ public type PractitionerRoleAvailableTime record {|
 # + during - Service is not available (seasonally or for a public holiday) from this date.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "PractitionerRoleNotAvailable",
+    name: "USCorePractitionerRoleProfileNotAvailable",
     baseType: (),
     elements: {
         "extension": {
@@ -457,7 +356,9 @@ public type PractitionerRoleAvailableTime record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type PractitionerRoleNotAvailable record {|
+public type USCorePractitionerRoleProfileNotAvailable record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description;
@@ -465,19 +366,111 @@ public type PractitionerRoleNotAvailable record {|
     string id?;
 |};
 
-# PractitionerRoleAvailableTimeDaysOfWeek enum
-public enum PractitionerRoleAvailableTimeDaysOfWeek {
-   CODE_DAYSOFWEEK_THU = "thu",
-   CODE_DAYSOFWEEK_TUE = "tue",
-   CODE_DAYSOFWEEK_WED = "wed",
-   CODE_DAYSOFWEEK_SAT = "sat",
-   CODE_DAYSOFWEEK_FRI = "fri",
-   CODE_DAYSOFWEEK_MON = "mon",
-   CODE_DAYSOFWEEK_SUN = "sun"
+# FHIR USCorePractitionerRoleProfileAvailableTime datatype record.
+#
+# + allDay - Is this always available? (hence times are irrelevant) e.g. 24 hour service.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + availableEndTime - The closing time of day. Note: If the AllDay flag is set, then this time is ignored.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + daysOfWeek - Indicates which days of the week are available between the start and end Times.
+# + availableStartTime - The opening time of day. Note: If the AllDay flag is set, then this time is ignored.
+@r4:DataTypeDefinition {
+    name: "USCorePractitionerRoleProfileAvailableTime",
+    baseType: (),
+    elements: {
+        "allDay": {
+            name: "allDay",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Is this always available? (hence times are irrelevant) e.g. 24 hour service.",
+            path: "PractitionerRole.availableTime.allDay"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "PractitionerRole.availableTime.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "PractitionerRole.availableTime.modifierExtension"
+        },
+        "availableEndTime": {
+            name: "availableEndTime",
+            dataType: r4:time,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The closing time of day. Note: If the AllDay flag is set, then this time is ignored.",
+            path: "PractitionerRole.availableTime.availableEndTime"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "PractitionerRole.availableTime.id"
+        },
+        "daysOfWeek": {
+            name: "daysOfWeek",
+            dataType: USCorePractitionerRoleProfileAvailableTimeDaysOfWeek,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Indicates which days of the week are available between the start and end Times.",
+            path: "PractitionerRole.availableTime.daysOfWeek"
+        },
+        "availableStartTime": {
+            name: "availableStartTime",
+            dataType: r4:time,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The opening time of day. Note: If the AllDay flag is set, then this time is ignored.",
+            path: "PractitionerRole.availableTime.availableStartTime"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePractitionerRoleProfileAvailableTime record {|
+    *r4:BackboneElement;
+
+    boolean allDay?;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:time availableEndTime?;
+    string id?;
+    USCorePractitionerRoleProfileAvailableTimeDaysOfWeek[] daysOfWeek?;
+    r4:time availableStartTime?;
+|};
+
+# USCorePractitionerRoleProfileTelecomUse enum
+public enum USCorePractitionerRoleProfileTelecomUse {
+   CODE_USE_TEMP = "temp",
+   CODE_USE_WORK = "work",
+   CODE_USE_OLD = "old",
+   CODE_USE_MOBILE = "mobile",
+   CODE_USE_HOME = "home"
 }
 
-# PractitionerRoleTelecomSystem enum
-public enum PractitionerRoleTelecomSystem {
+# USCorePractitionerRoleProfileTelecomSystem enum
+public enum USCorePractitionerRoleProfileTelecomSystem {
    CODE_SYSTEM_OTHER = "other",
    CODE_SYSTEM_PAGER = "pager",
    CODE_SYSTEM_PHONE = "phone",
@@ -485,5 +478,16 @@ public enum PractitionerRoleTelecomSystem {
    CODE_SYSTEM_FAX = "fax",
    CODE_SYSTEM_EMAIL = "email",
    CODE_SYSTEM_URL = "url"
+}
+
+# USCorePractitionerRoleProfileAvailableTimeDaysOfWeek enum
+public enum USCorePractitionerRoleProfileAvailableTimeDaysOfWeek {
+   CODE_DAYSOFWEEK_THU = "thu",
+   CODE_DAYSOFWEEK_TUE = "tue",
+   CODE_DAYSOFWEEK_WED = "wed",
+   CODE_DAYSOFWEEK_SAT = "sat",
+   CODE_DAYSOFWEEK_FRI = "fri",
+   CODE_DAYSOFWEEK_MON = "mon",
+   CODE_DAYSOFWEEK_SUN = "sun"
 }
 
