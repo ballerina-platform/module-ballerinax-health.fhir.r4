@@ -98,7 +98,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
         },
         "hoursOfOperation" : {
             name: "hoursOfOperation",
-            dataType: LocationHoursOfOperation,
+            dataType: USCoreLocationHoursOfOperation,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -124,7 +124,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
         },
         "mode" : {
             name: "mode",
-            dataType: LocationMode,
+            dataType: USCoreLocationMode,
             min: 0,
             max: 1,
             isArray: false,
@@ -181,7 +181,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
         },
         "address" : {
             name: "address",
-            dataType: r4:Address,
+            dataType: USCoreLocationAddress,
             min: 0,
             max: 1,
             isArray: false,
@@ -238,7 +238,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
         },
         "position" : {
             name: "position",
-            dataType: LocationPosition,
+            dataType: USCoreLocationPosition,
             min: 0,
             max: 1,
             isArray: false,
@@ -254,7 +254,7 @@ public const RESOURCE_NAME_USCORELOCATION = "Location";
         },
         "status" : {
             name: "status",
-            dataType: LocationStatus,
+            dataType: USCoreLocationStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -272,88 +272,190 @@ public type USCoreLocation record {|
 
     RESOURCE_NAME_USCORELOCATION resourceType = RESOURCE_NAME_USCORELOCATION;
 
-    BaseUSCoreLocationMeta meta = {
-        profile : [PROFILE_BASE_USCORELOCATION]
-    };
     r4:Coding operationalStatus?;
     r4:Reference partOf?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description?;
-    LocationHoursOfOperation[] hoursOfOperation?;
+    USCoreLocationHoursOfOperation[] hoursOfOperation?;
     r4:code language?;
     r4:CodeableConcept[] 'type?;
-    LocationMode mode?;
+    USCoreLocationMode mode?;
     r4:Reference[] endpoint?;
     string[] alias?;
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
     r4:Identifier[] identifier?;
-    r4:Address address?;
+    USCoreLocationAddress address?;
     r4:CodeableConcept physicalType?;
     r4:Resource[] contained?;
     r4:Reference managingOrganization?;
+    r4:Meta meta?;
     string name;
     r4:uri implicitRules?;
-    LocationPosition position?;
+    USCoreLocationPosition position?;
     string availabilityExceptions?;
-    LocationStatus status?;
-    never...;
+    USCoreLocationStatus status?;
+    r4:Element ...;
 |};
 
+# FHIR USCoreLocationAddress datatype record.
+#
+# + country - Country - a nation as commonly understood or generally accepted.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period when address was/is in use.
+# + city - The name of the city, town, suburb, village or other community or delivery center.
+# + line - This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.
+# + use - The purpose of this address.
+# + district - The name of the administrative area (county).
+# + postalCode - A postal code designating a region defined by the postal service.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + state - Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).
+# + text - Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.
+# + 'type - Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.
 @r4:DataTypeDefinition {
-    name: "BaseLocationMeta",
-    baseType: r4:Meta,
-    elements: {},
+    name: "USCoreLocationAddress",
+    baseType: (),
+    elements: {
+        "country": {
+            name: "country",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Country - a nation as commonly understood or generally accepted.",
+            path: "Location.address.country"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Location.address.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period when address was/is in use.",
+            path: "Location.address.period"
+        },
+        "city": {
+            name: "city",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the city, town, suburb, village or other community or delivery center.",
+            path: "Location.address.city"
+        },
+        "line": {
+            name: "line",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.",
+            path: "Location.address.line"
+        },
+        "use": {
+            name: "use",
+            dataType: USCoreLocationAddressUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this address.",
+            path: "Location.address.use"
+        },
+        "district": {
+            name: "district",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the administrative area (county).",
+            path: "Location.address.district"
+        },
+        "postalCode": {
+            name: "postalCode",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A postal code designating a region defined by the postal service.",
+            path: "Location.address.postalCode"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Location.address.id"
+        },
+        "state": {
+            name: "state",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).",
+            path: "Location.address.state"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.",
+            path: "Location.address.text"
+        },
+        "type": {
+            name: "type",
+            dataType: USCoreLocationAddressType,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
+            path: "Location.address.type"
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type BaseUSCoreLocationMeta record {|
-    *r4:Meta;
+public type USCoreLocationAddress record {|
+    *r4:Address;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
+    string country?;
     r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Period period?;
+    string city?;
+    string[] line?;
+    USCoreLocationAddressUse use?;
+    string district?;
+    string postalCode?;
+    string id?;
+    string state?;
+    string text?;
+    USCoreLocationAddressType 'type?;
 |};
 
-# LocationHoursOfOperationDaysOfWeek enum
-public enum LocationHoursOfOperationDaysOfWeek {
-   CODE_DAYSOFWEEK_THU = "thu",
-   CODE_DAYSOFWEEK_TUE = "tue",
-   CODE_DAYSOFWEEK_WED = "wed",
-   CODE_DAYSOFWEEK_SAT = "sat",
-   CODE_DAYSOFWEEK_FRI = "fri",
-   CODE_DAYSOFWEEK_MON = "mon",
-   CODE_DAYSOFWEEK_SUN = "sun"
-}
-
-# LocationAddressUse enum
-public enum LocationAddressUse {
-   CODE_USE_TEMP = "temp",
-   CODE_USE_WORK = "work",
-   CODE_USE_OLD = "old",
-   CODE_USE_HOME = "home",
-   CODE_USE_BILLING = "billing"
-}
-
-# LocationMode enum
-public enum LocationMode {
+# USCoreLocationMode enum
+public enum USCoreLocationMode {
    CODE_MODE_INSTANCE = "instance",
    CODE_MODE_KIND = "kind"
 }
 
-# FHIR LocationPosition datatype record.
+# FHIR USCoreLocationPosition datatype record.
 #
 # + altitude - Altitude. The value domain and the interpretation are the same as for the text of the altitude element in KML (see notes below).
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -362,7 +464,7 @@ public enum LocationMode {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + longitude - Longitude. The value domain and the interpretation are the same as for the text of the longitude element in KML (see notes below).
 @r4:DataTypeDefinition {
-    name: "LocationPosition",
+    name: "USCoreLocationPosition",
     baseType: (),
     elements: {
         "altitude": {
@@ -425,7 +527,9 @@ public enum LocationMode {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type LocationPosition record {|
+public type USCoreLocationPosition record {|
+    *r4:BackboneElement;
+
     decimal altitude?;
     r4:Extension[] extension?;
     decimal latitude;
@@ -434,14 +538,23 @@ public type LocationPosition record {|
     decimal longitude;
 |};
 
-# LocationStatus enum
-public enum LocationStatus {
-   CODE_STATUS_INACTIVE = "inactive",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_SUSPENDED = "suspended"
+# USCoreLocationAddressType enum
+public enum USCoreLocationAddressType {
+   CODE_TYPE_POSTAL = "postal",
+   CODE_TYPE_PHYSICAL = "physical",
+   CODE_TYPE_BOTH = "both"
 }
 
-# FHIR LocationHoursOfOperation datatype record.
+# USCoreLocationAddressUse enum
+public enum USCoreLocationAddressUse {
+   CODE_USE_TEMP = "temp",
+   CODE_USE_WORK = "work",
+   CODE_USE_OLD = "old",
+   CODE_USE_HOME = "home",
+   CODE_USE_BILLING = "billing"
+}
+
+# FHIR USCoreLocationHoursOfOperation datatype record.
 #
 # + allDay - The Location is open all day.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -451,7 +564,7 @@ public enum LocationStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + daysOfWeek - Indicates which days of the week are available between the start and end Times.
 @r4:DataTypeDefinition {
-    name: "LocationHoursOfOperation",
+    name: "USCoreLocationHoursOfOperation",
     baseType: (),
     elements: {
         "allDay": {
@@ -510,7 +623,7 @@ public enum LocationStatus {
         },
         "daysOfWeek": {
             name: "daysOfWeek",
-            dataType: LocationHoursOfOperationDaysOfWeek,
+            dataType: USCoreLocationHoursOfOperationDaysOfWeek,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -523,20 +636,33 @@ public enum LocationStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type LocationHoursOfOperation record {|
+public type USCoreLocationHoursOfOperation record {|
+    *r4:BackboneElement;
+
     boolean allDay?;
     r4:Extension[] extension?;
     r4:time closingTime?;
     r4:Extension[] modifierExtension?;
     r4:time openingTime?;
     string id?;
-    LocationHoursOfOperationDaysOfWeek[] daysOfWeek?;
+    USCoreLocationHoursOfOperationDaysOfWeek[] daysOfWeek?;
 |};
 
-# LocationAddressType enum
-public enum LocationAddressType {
-   CODE_TYPE_POSTAL = "postal",
-   CODE_TYPE_PHYSICAL = "physical",
-   CODE_TYPE_BOTH = "both"
+# USCoreLocationStatus enum
+public enum USCoreLocationStatus {
+   CODE_STATUS_INACTIVE = "inactive",
+   CODE_STATUS_ACTIVE = "active",
+   CODE_STATUS_SUSPENDED = "suspended"
+}
+
+# USCoreLocationHoursOfOperationDaysOfWeek enum
+public enum USCoreLocationHoursOfOperationDaysOfWeek {
+   CODE_DAYSOFWEEK_THU = "thu",
+   CODE_DAYSOFWEEK_TUE = "tue",
+   CODE_DAYSOFWEEK_WED = "wed",
+   CODE_DAYSOFWEEK_SAT = "sat",
+   CODE_DAYSOFWEEK_FRI = "fri",
+   CODE_DAYSOFWEEK_MON = "mon",
+   CODE_DAYSOFWEEK_SUN = "sun"
 }
 

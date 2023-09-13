@@ -26,6 +26,15 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
 #
 # + resourceType - The type of the resource describes
 # + identifier - Identifier for the organization that is used to identify the organization across multiple disparate systems.
+# * identifier Slicings
+# 1) USCoreOrganizationProfileIdentifierNPI: National Provider Identifier (NPI)
+#       - min = 0
+#       - max = 1
+#
+# 2) USCoreOrganizationProfileIdentifierCLIA: Clinical Laboratory Improvement Amendments (CLIA) Number for laboratories
+#       - min = 0
+#       - max = 1
+#
 # + partOf - The organization of which this organization forms a part.
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - An address for the organization.
@@ -50,7 +59,7 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
     elements: {
         "identifier" : {
             name: "identifier",
-            dataType: r4:Identifier,
+            dataType: USCoreOrganizationProfileIdentifier,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -74,7 +83,7 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
         },
         "address" : {
             name: "address",
-            dataType: r4:Address,
+            dataType: USCoreOrganizationProfileAddress,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -140,7 +149,7 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
         },
         "contact" : {
             name: "contact",
-            dataType: OrganizationContact,
+            dataType: USCoreOrganizationProfileContact,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -172,7 +181,7 @@ public const RESOURCE_NAME_USCOREORGANIZATIONPROFILE = "Organization";
         },
         "telecom" : {
             name: "telecom",
-            dataType: r4:ContactPoint,
+            dataType: USCoreOrganizationProfileTelecom,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -205,64 +214,28 @@ public type USCoreOrganizationProfile record {|
 
     RESOURCE_NAME_USCOREORGANIZATIONPROFILE resourceType = RESOURCE_NAME_USCOREORGANIZATIONPROFILE;
 
-    BaseUSCoreOrganizationProfileMeta meta = {
-        profile : [PROFILE_BASE_USCOREORGANIZATIONPROFILE]
-    };
-    r4:Identifier[] identifier?;
+    USCoreOrganizationProfileIdentifier[] identifier?;
     r4:Reference partOf?;
     r4:Extension[] extension?;
-    r4:Address[] address?;
+    USCoreOrganizationProfileAddress[] address?;
     r4:Extension[] modifierExtension?;
     boolean active;
     r4:code language?;
     r4:CodeableConcept[] 'type?;
     r4:Resource[] contained?;
     r4:Reference[] endpoint?;
-    OrganizationContact[] contact?;
+    r4:Meta meta?;
+    USCoreOrganizationProfileContact[] contact?;
     string name;
     string[] alias?;
     r4:uri implicitRules?;
-    r4:ContactPoint[] telecom?;
+    USCoreOrganizationProfileTelecom[] telecom?;
     string id?;
     r4:Narrative text?;
-    never...;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseOrganizationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseUSCoreOrganizationProfileMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# OrganizationIdentifierUse enum
-public enum OrganizationIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
-}
-
-# FHIR OrganizationContact datatype record.
+# FHIR USCoreOrganizationProfileContact datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - Visiting or postal addresses for the contact.
@@ -272,7 +245,7 @@ public enum OrganizationIdentifierUse {
 # + telecom - A contact detail (e.g. a telephone number or an email address) by which the party may be contacted.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "OrganizationContact",
+    name: "USCoreOrganizationProfileContact",
     baseType: (),
     elements: {
         "extension": {
@@ -344,7 +317,9 @@ public enum OrganizationIdentifierUse {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type OrganizationContact record {|
+public type USCoreOrganizationProfileContact record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Address address?;
     r4:CodeableConcept purpose?;
@@ -354,19 +329,452 @@ public type OrganizationContact record {|
     string id?;
 |};
 
-# OrganizationAddressType enum
-public enum OrganizationAddressType {
-   CODE_TYPE_POSTAL = "postal",
-   CODE_TYPE_PHYSICAL = "physical",
-   CODE_TYPE_BOTH = "both"
+# FHIR USCoreOrganizationProfileTelecom datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period when the contact point was/is in use.
+# + system - Telecommunications form for contact point - what communications system is required to make use of the contact.
+# + use - Identifies the purpose for the contact point.
+# + rank - Specifies a preferred order in which to use a set of contacts. ContactPoints with lower rank values are more preferred than those with higher rank values.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + value - The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).
+@r4:DataTypeDefinition {
+    name: "USCoreOrganizationProfileTelecom",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Organization.telecom.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period when the contact point was/is in use.",
+            path: "Organization.telecom.period"
+        },
+        "system": {
+            name: "system",
+            dataType: USCoreOrganizationProfileTelecomSystem,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Telecommunications form for contact point - what communications system is required to make use of the contact.",
+            path: "Organization.telecom.system"
+        },
+        "use": {
+            name: "use",
+            dataType: USCoreOrganizationProfileTelecomUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Identifies the purpose for the contact point.",
+            path: "Organization.telecom.use"
+        },
+        "rank": {
+            name: "rank",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies a preferred order in which to use a set of contacts. ContactPoints with lower rank values are more preferred than those with higher rank values.",
+            path: "Organization.telecom.rank"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Organization.telecom.id"
+        },
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).",
+            path: "Organization.telecom.value"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
 }
+public type USCoreOrganizationProfileTelecom record {|
+    *r4:ContactPoint;
 
-# OrganizationAddressUse enum
-public enum OrganizationAddressUse {
+    r4:Extension[] extension?;
+    r4:Period period?;
+    USCoreOrganizationProfileTelecomSystem system?;
+    USCoreOrganizationProfileTelecomUse use?;
+    r4:positiveInt rank?;
+    string id?;
+    string value?;
+|};
+
+# FHIR USCoreOrganizationProfileIdentifier datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period during which identifier is/was valid for use.
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+# + use - The purpose of this identifier.
+# + assigner - Organization that issued/manages the identifier.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.
+# + value - The portion of the identifier typically relevant to the user and which is unique within the context of the system.
+@r4:DataTypeDefinition {
+    name: "USCoreOrganizationProfileIdentifier",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Organization.identifier.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Organization.identifier.period"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Organization.identifier.system"
+        },
+        "use": {
+            name: "use",
+            dataType: USCoreOrganizationProfileIdentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Organization.identifier.use"
+        },
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Organization.identifier.assigner"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Organization.identifier.id"
+        },
+        "type": {
+            name: "type",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Organization.identifier.type"
+        },
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Organization.identifier.value"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreOrganizationProfileIdentifier record {|
+    *r4:Identifier;
+
+    r4:Extension[] extension?;
+    r4:Period period?;
+    r4:uri system?;
+    USCoreOrganizationProfileIdentifierUse use?;
+    r4:Reference assigner?;
+    string id?;
+    r4:CodeableConcept 'type?;
+    string value?;
+|};
+
+# USCoreOrganizationProfileAddressUse enum
+public enum USCoreOrganizationProfileAddressUse {
    CODE_USE_TEMP = "temp",
    CODE_USE_WORK = "work",
    CODE_USE_OLD = "old",
    CODE_USE_HOME = "home",
    CODE_USE_BILLING = "billing"
 }
+
+# USCoreOrganizationProfileAddressType enum
+public enum USCoreOrganizationProfileAddressType {
+   CODE_TYPE_POSTAL = "postal",
+   CODE_TYPE_PHYSICAL = "physical",
+   CODE_TYPE_BOTH = "both"
+}
+
+# FHIR USCoreOrganizationProfileIdentifierCLIA datatype record.
+#
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+@r4:DataTypeDefinition {
+    name: "USCoreOrganizationProfileIdentifierCLIA",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Organization.identifier.system"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreOrganizationProfileIdentifierCLIA record {|
+    *r4:Identifier;
+
+    r4:uri system = "urn:oid:2.16.840.1.113883.4.7";
+|};
+
+# USCoreOrganizationProfileTelecomSystem enum
+public enum USCoreOrganizationProfileTelecomSystem {
+   CODE_SYSTEM_OTHER = "other",
+   CODE_SYSTEM_PAGER = "pager",
+   CODE_SYSTEM_PHONE = "phone",
+   CODE_SYSTEM_SMS = "sms",
+   CODE_SYSTEM_FAX = "fax",
+   CODE_SYSTEM_EMAIL = "email",
+   CODE_SYSTEM_URL = "url"
+}
+
+# USCoreOrganizationProfileIdentifierUse enum
+public enum USCoreOrganizationProfileIdentifierUse {
+   CODE_USE_SECONDARY = "secondary",
+   CODE_USE_TEMP = "temp",
+   CODE_USE_USUAL = "usual",
+   CODE_USE_OLD = "old",
+   CODE_USE_OFFICIAL = "official"
+}
+
+# FHIR USCoreOrganizationProfileAddress datatype record.
+#
+# + country - Country - a nation as commonly understood or generally accepted.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period when address was/is in use.
+# + city - The name of the city, town, suburb, village or other community or delivery center.
+# + line - This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.
+# + use - The purpose of this address.
+# + district - The name of the administrative area (county).
+# + postalCode - A postal code designating a region defined by the postal service.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + state - Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).
+# + text - Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.
+# + 'type - Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.
+@r4:DataTypeDefinition {
+    name: "USCoreOrganizationProfileAddress",
+    baseType: (),
+    elements: {
+        "country": {
+            name: "country",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Country - a nation as commonly understood or generally accepted.",
+            path: "Organization.address.country"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Organization.address.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period when address was/is in use.",
+            path: "Organization.address.period"
+        },
+        "city": {
+            name: "city",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the city, town, suburb, village or other community or delivery center.",
+            path: "Organization.address.city"
+        },
+        "line": {
+            name: "line",
+            dataType: string,
+            min: 0,
+            max: 4,
+            isArray: true,
+            description: "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.",
+            path: "Organization.address.line"
+        },
+        "use": {
+            name: "use",
+            dataType: USCoreOrganizationProfileAddressUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this address.",
+            path: "Organization.address.use"
+        },
+        "district": {
+            name: "district",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the administrative area (county).",
+            path: "Organization.address.district"
+        },
+        "postalCode": {
+            name: "postalCode",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A postal code designating a region defined by the postal service.",
+            path: "Organization.address.postalCode"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Organization.address.id"
+        },
+        "state": {
+            name: "state",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).",
+            path: "Organization.address.state"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.",
+            path: "Organization.address.text"
+        },
+        "type": {
+            name: "type",
+            dataType: USCoreOrganizationProfileAddressType,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
+            path: "Organization.address.type"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreOrganizationProfileAddress record {|
+    *r4:Address;
+
+    string country?;
+    r4:Extension[] extension?;
+    r4:Period period?;
+    string city?;
+    string[] line?;
+    USCoreOrganizationProfileAddressUse use?;
+    string district?;
+    string postalCode?;
+    string id?;
+    string state?;
+    string text?;
+    USCoreOrganizationProfileAddressType 'type?;
+|};
+
+# USCoreOrganizationProfileTelecomUse enum
+public enum USCoreOrganizationProfileTelecomUse {
+   CODE_USE_TEMP = "temp",
+   CODE_USE_WORK = "work",
+   CODE_USE_OLD = "old",
+   CODE_USE_MOBILE = "mobile",
+   CODE_USE_HOME = "home"
+}
+
+# FHIR USCoreOrganizationProfileIdentifierNPI datatype record.
+#
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+@r4:DataTypeDefinition {
+    name: "USCoreOrganizationProfileIdentifierNPI",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Organization.identifier.system"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreOrganizationProfileIdentifierNPI record {|
+    *r4:Identifier;
+
+    r4:uri system = "http://hl7.org/fhir/sid/us-npi";
+|};
 

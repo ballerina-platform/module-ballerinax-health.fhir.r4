@@ -27,6 +27,23 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
 #
 # + resourceType - The type of the resource describes
 # + extension - An Extension
+# * extension Slicings
+# 1) Extension: US Core ethnicity Extension
+#       - min = 0
+#       - max = 1
+#
+# 2) Extension: Extension
+#       - min = 0
+#       - max = 1
+#
+# 3) Extension: US Core Race Extension
+#       - min = 0
+#       - max = 1
+#
+# 4) Extension: Extension
+#       - min = 0
+#       - max = 1
+#
 # + gender - Administrative Gender - the gender that the patient is considered to have for administration and record keeping purposes.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + link - Link to another patient resource that concerns the same actual patient.
@@ -67,7 +84,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
         },
         "gender" : {
             name: "gender",
-            dataType: PatientGender,
+            dataType: USCorePatientProfileGender,
             min: 1,
             max: 1,
             isArray: false,
@@ -84,7 +101,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
         },
         "link" : {
             name: "link",
-            dataType: PatientLink,
+            dataType: USCorePatientProfileLink,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -101,7 +118,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
         },
         "contact" : {
             name: "contact",
-            dataType: PatientContact,
+            dataType: USCorePatientProfileContact,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -125,7 +142,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
         },
         "telecom" : {
             name: "telecom",
-            dataType: r4:ContactPoint,
+            dataType: USCorePatientProfileTelecom,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -149,7 +166,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
         },
         "communication" : {
             name: "communication",
-            dataType: PatientCommunication,
+            dataType: USCorePatientProfileCommunication,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -157,7 +174,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
         },
         "identifier" : {
             name: "identifier",
-            dataType: r4:Identifier,
+            dataType: USCorePatientProfileIdentifier,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -165,7 +182,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
         },
         "address" : {
             name: "address",
-            dataType: r4:Address,
+            dataType: USCorePatientProfileAddress,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -245,7 +262,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
         },
         "name" : {
             name: "name",
-            dataType: r4:HumanName,
+            dataType: USCorePatientProfileName,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -279,26 +296,23 @@ public type USCorePatientProfile record {|
 
     RESOURCE_NAME_USCOREPATIENTPROFILE resourceType = RESOURCE_NAME_USCOREPATIENTPROFILE;
 
-    BaseUSCorePatientProfileMeta meta = {
-        profile : [PROFILE_BASE_USCOREPATIENTPROFILE]
-    };
     r4:Extension[] extension?;
-    PatientGender gender;
+    USCorePatientProfileGender gender;
     r4:Extension[] modifierExtension?;
-    PatientLink[] link?;
+    USCorePatientProfileLink[] link?;
     r4:code language?;
-    PatientContact[] contact?;
+    USCorePatientProfileContact[] contact?;
     r4:dateTime deceasedDateTime?;
     r4:Reference[] generalPractitioner?;
-    r4:ContactPoint[] telecom?;
+    USCorePatientProfileTelecom[] telecom?;
     string id?;
     r4:Narrative text?;
-    PatientCommunication[] communication?;
+    USCorePatientProfileCommunication[] communication?;
     @constraint:Array {
        minLength: 1
     }
-    r4:Identifier[] identifier;
-    r4:Address[] address?;
+    USCorePatientProfileIdentifier[] identifier;
+    USCorePatientProfileAddress[] address?;
     boolean multipleBirthBoolean?;
     boolean active?;
     r4:Attachment[] photo?;
@@ -306,49 +320,686 @@ public type USCorePatientProfile record {|
     r4:Resource[] contained?;
     boolean deceasedBoolean?;
     r4:Reference managingOrganization?;
+    r4:Meta meta?;
     r4:integer multipleBirthInteger?;
     @constraint:Array {
        minLength: 1
     }
-    r4:HumanName[] name;
+    USCorePatientProfileName[] name;
     r4:uri implicitRules?;
     r4:CodeableConcept maritalStatus?;
-    never...;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BasePatientMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseUSCorePatientProfileMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# PatientAddressType enum
-public enum PatientAddressType {
+# USCorePatientProfileAddressType enum
+public enum USCorePatientProfileAddressType {
    CODE_TYPE_POSTAL = "postal",
    CODE_TYPE_PHYSICAL = "physical",
    CODE_TYPE_BOTH = "both"
 }
 
-# FHIR PatientContact datatype record.
+# USCorePatientProfileTelecomUse enum
+public enum USCorePatientProfileTelecomUse {
+   CODE_USE_TEMP = "temp",
+   CODE_USE_WORK = "work",
+   CODE_USE_OLD = "old",
+   CODE_USE_MOBILE = "mobile",
+   CODE_USE_HOME = "home"
+}
+
+# FHIR USCorePatientProfileName datatype record.
+#
+# + given - Given name.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Indicates the period of time when this name was valid for the named person.
+# + prefix - Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the start of the name.
+# + use - Identifies the purpose for this name.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - Specifies the entire name as it should be displayed e.g. on an application UI. This may be provided instead of or as well as the specific parts.
+# + family - The part of a name that links to the genealogy. In some cultures (e.g. Eritrea) the family name of a son is the first name of his father.
+# + suffix - Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name.
+@r4:DataTypeDefinition {
+    name: "USCorePatientProfileName",
+    baseType: (),
+    elements: {
+        "given": {
+            name: "given",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Given name.",
+            path: "Patient.name.given"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Patient.name.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates the period of time when this name was valid for the named person.",
+            path: "Patient.name.period"
+        },
+        "prefix": {
+            name: "prefix",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the start of the name.",
+            path: "Patient.name.prefix"
+        },
+        "use": {
+            name: "use",
+            dataType: USCorePatientProfileNameUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Identifies the purpose for this name.",
+            path: "Patient.name.use"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Patient.name.id"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies the entire name as it should be displayed e.g. on an application UI. This may be provided instead of or as well as the specific parts.",
+            path: "Patient.name.text"
+        },
+        "family": {
+            name: "family",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The part of a name that links to the genealogy. In some cultures (e.g. Eritrea) the family name of a son is the first name of his father.",
+            path: "Patient.name.family"
+        },
+        "suffix": {
+            name: "suffix",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name.",
+            path: "Patient.name.suffix"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePatientProfileName record {|
+    *r4:HumanName;
+
+    string[] given?;
+    r4:Extension[] extension?;
+    r4:Period period?;
+    string[] prefix?;
+    USCorePatientProfileNameUse use?;
+    string id?;
+    string text?;
+    string family?;
+    string[] suffix?;
+|};
+
+# USCorePatientProfileLinkType enum
+public enum USCorePatientProfileLinkType {
+   CODE_TYPE_REFER = "refer",
+   CODE_TYPE_REPLACES = "replaces",
+   CODE_TYPE_SEEALSO = "seealso",
+   CODE_TYPE_REPLACED_BY = "replaced-by"
+}
+
+# FHIR USCorePatientProfileIdentifier datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period during which identifier is/was valid for use.
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+# + use - The purpose of this identifier.
+# + assigner - Organization that issued/manages the identifier.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.
+# + value - The portion of the identifier typically relevant to the user and which is unique within the context of the system.
+@r4:DataTypeDefinition {
+    name: "USCorePatientProfileIdentifier",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Patient.identifier.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Patient.identifier.period"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Patient.identifier.system"
+        },
+        "use": {
+            name: "use",
+            dataType: USCorePatientProfileIdentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Patient.identifier.use"
+        },
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Patient.identifier.assigner"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Patient.identifier.id"
+        },
+        "type": {
+            name: "type",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Patient.identifier.type"
+        },
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Patient.identifier.value"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePatientProfileIdentifier record {|
+    *r4:Identifier;
+
+    r4:Extension[] extension?;
+    r4:Period period?;
+    r4:uri system;
+    USCorePatientProfileIdentifierUse use?;
+    r4:Reference assigner?;
+    string id?;
+    r4:CodeableConcept 'type?;
+    string value;
+|};
+
+# USCorePatientProfileGender enum
+public enum USCorePatientProfileGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
+
+# USCorePatientProfileContactGender enum
+public enum USCorePatientProfileContactGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
+
+# FHIR USCorePatientProfileTelecom datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period when the contact point was/is in use.
+# + system - Telecommunications form for contact point - what communications system is required to make use of the contact.
+# + use - Identifies the purpose for the contact point.
+# + rank - Specifies a preferred order in which to use a set of contacts. ContactPoints with lower rank values are more preferred than those with higher rank values.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + value - The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).
+@r4:DataTypeDefinition {
+    name: "USCorePatientProfileTelecom",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Patient.telecom.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period when the contact point was/is in use.",
+            path: "Patient.telecom.period"
+        },
+        "system": {
+            name: "system",
+            dataType: USCorePatientProfileTelecomSystem,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Telecommunications form for contact point - what communications system is required to make use of the contact.",
+            path: "Patient.telecom.system"
+        },
+        "use": {
+            name: "use",
+            dataType: USCorePatientProfileTelecomUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Identifies the purpose for the contact point.",
+            path: "Patient.telecom.use"
+        },
+        "rank": {
+            name: "rank",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies a preferred order in which to use a set of contacts. ContactPoints with lower rank values are more preferred than those with higher rank values.",
+            path: "Patient.telecom.rank"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Patient.telecom.id"
+        },
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).",
+            path: "Patient.telecom.value"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePatientProfileTelecom record {|
+    *r4:ContactPoint;
+
+    r4:Extension[] extension?;
+    r4:Period period?;
+    USCorePatientProfileTelecomSystem system;
+    USCorePatientProfileTelecomUse use?;
+    r4:positiveInt rank?;
+    string id?;
+    string value;
+|};
+
+# FHIR USCorePatientProfileCommunication datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + language - The ISO-639-1 alpha 2 code in lower case for the language, optionally followed by a hyphen and the ISO-3166-1 alpha 2 code for the region in upper case; e.g. 'en' for English, or 'en-US' for American English versus 'en-EN' for England English.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + preferred - Indicates whether or not the patient prefers this language (over other languages he masters up a certain level).
+@r4:DataTypeDefinition {
+    name: "USCorePatientProfileCommunication",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Patient.communication.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Patient.communication.modifierExtension"
+        },
+        "language": {
+            name: "language",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The ISO-639-1 alpha 2 code in lower case for the language, optionally followed by a hyphen and the ISO-3166-1 alpha 2 code for the region in upper case; e.g. 'en' for English, or 'en-US' for American English versus 'en-EN' for England English.",
+            path: "Patient.communication.language"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Patient.communication.id"
+        },
+        "preferred": {
+            name: "preferred",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates whether or not the patient prefers this language (over other languages he masters up a certain level).",
+            path: "Patient.communication.preferred"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePatientProfileCommunication record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:CodeableConcept language;
+    string id?;
+    boolean preferred?;
+|};
+
+# FHIR USCorePatientProfileLink datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + other - The other patient resource that the link refers to.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - The type of link between this patient resource and another patient resource.
+@r4:DataTypeDefinition {
+    name: "USCorePatientProfileLink",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Patient.link.extension"
+        },
+        "other": {
+            name: "other",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The other patient resource that the link refers to.",
+            path: "Patient.link.other"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Patient.link.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Patient.link.id"
+        },
+        "type": {
+            name: "type",
+            dataType: USCorePatientProfileLinkType,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The type of link between this patient resource and another patient resource.",
+            path: "Patient.link.type"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePatientProfileLink record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Reference other;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    USCorePatientProfileLinkType 'type;
+|};
+
+# USCorePatientProfileNameUse enum
+public enum USCorePatientProfileNameUse {
+   CODE_USE_MAIDEN = "maiden",
+   CODE_USE_TEMP = "temp",
+   CODE_USE_USUAL = "usual",
+   CODE_USE_OLD = "old",
+   CODE_USE_NICKNAME = "nickname",
+   CODE_USE_OFFICIAL = "official",
+   CODE_USE_ANONYMOUS = "anonymous"
+}
+
+# FHIR USCorePatientProfileAddress datatype record.
+#
+# + country - Country - a nation as commonly understood or generally accepted.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period when address was/is in use.
+# + city - The name of the city, town, suburb, village or other community or delivery center.
+# + line - This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.
+# + use - The purpose of this address.
+# + district - The name of the administrative area (county).
+# + postalCode - A postal code designating a region defined by the postal service.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + state - Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).
+# + text - Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.
+# + 'type - Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.
+@r4:DataTypeDefinition {
+    name: "USCorePatientProfileAddress",
+    baseType: (),
+    elements: {
+        "country": {
+            name: "country",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Country - a nation as commonly understood or generally accepted.",
+            path: "Patient.address.country"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Patient.address.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period when address was/is in use.",
+            path: "Patient.address.period"
+        },
+        "city": {
+            name: "city",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the city, town, suburb, village or other community or delivery center.",
+            path: "Patient.address.city"
+        },
+        "line": {
+            name: "line",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.",
+            path: "Patient.address.line"
+        },
+        "use": {
+            name: "use",
+            dataType: USCorePatientProfileAddressUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this address.",
+            path: "Patient.address.use"
+        },
+        "district": {
+            name: "district",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the administrative area (county).",
+            path: "Patient.address.district"
+        },
+        "postalCode": {
+            name: "postalCode",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A postal code designating a region defined by the postal service.",
+            path: "Patient.address.postalCode"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Patient.address.id"
+        },
+        "state": {
+            name: "state",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).",
+            path: "Patient.address.state"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.",
+            path: "Patient.address.text"
+        },
+        "type": {
+            name: "type",
+            dataType: USCorePatientProfileAddressType,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
+            path: "Patient.address.type"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePatientProfileAddress record {|
+    *r4:Address;
+
+    string country?;
+    r4:Extension[] extension?;
+    r4:Period period?;
+    string city?;
+    string[] line?;
+    USCorePatientProfileAddressUse use?;
+    string district?;
+    string postalCode?;
+    string id?;
+    string state?;
+    string text?;
+    USCorePatientProfileAddressType 'type?;
+|};
+
+# USCorePatientProfileIdentifierUse enum
+public enum USCorePatientProfileIdentifierUse {
+   CODE_USE_SECONDARY = "secondary",
+   CODE_USE_TEMP = "temp",
+   CODE_USE_USUAL = "usual",
+   CODE_USE_OLD = "old",
+   CODE_USE_OFFICIAL = "official"
+}
+
+# FHIR USCorePatientProfileContact datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + period - The period during which this contact person or organization is valid to be contacted relating to this patient.
@@ -361,7 +1012,7 @@ public enum PatientAddressType {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + relationship - The nature of the relationship between the patient and the contact person.
 @r4:DataTypeDefinition {
-    name: "PatientContact",
+    name: "USCorePatientProfileContact",
     baseType: (),
     elements: {
         "extension": {
@@ -393,7 +1044,7 @@ public enum PatientAddressType {
         },
         "gender": {
             name: "gender",
-            dataType: PatientContactGender,
+            dataType: USCorePatientProfileContactGender,
             min: 0,
             max: 1,
             isArray: false,
@@ -460,11 +1111,13 @@ public enum PatientAddressType {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type PatientContact record {|
+public type USCorePatientProfileContact record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Address address?;
-    PatientContactGender gender?;
+    USCorePatientProfileContactGender gender?;
     r4:Extension[] modifierExtension?;
     r4:Reference organization?;
     r4:HumanName name?;
@@ -473,122 +1126,17 @@ public type PatientContact record {|
     r4:CodeableConcept[] relationship?;
 |};
 
-# PatientNameUse enum
-public enum PatientNameUse {
-   CODE_USE_MAIDEN = "maiden",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_NICKNAME = "nickname",
-   CODE_USE_OFFICIAL = "official",
-   CODE_USE_ANONYMOUS = "anonymous"
-}
-
-# PatientLinkType enum
-public enum PatientLinkType {
-   CODE_TYPE_REFER = "refer",
-   CODE_TYPE_REPLACES = "replaces",
-   CODE_TYPE_SEEALSO = "seealso",
-   CODE_TYPE_REPLACED_BY = "replaced-by"
-}
-
-# PatientTelecomUse enum
-public enum PatientTelecomUse {
+# USCorePatientProfileAddressUse enum
+public enum USCorePatientProfileAddressUse {
    CODE_USE_TEMP = "temp",
    CODE_USE_WORK = "work",
    CODE_USE_OLD = "old",
-   CODE_USE_MOBILE = "mobile",
-   CODE_USE_HOME = "home"
+   CODE_USE_HOME = "home",
+   CODE_USE_BILLING = "billing"
 }
 
-# FHIR PatientLink datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + other - The other patient resource that the link refers to.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'type - The type of link between this patient resource and another patient resource.
-@r4:DataTypeDefinition {
-    name: "PatientLink",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Patient.link.extension"
-        },
-        "other": {
-            name: "other",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The other patient resource that the link refers to.",
-            path: "Patient.link.other"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Patient.link.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Patient.link.id"
-        },
-        "type": {
-            name: "type",
-            dataType: PatientLinkType,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The type of link between this patient resource and another patient resource.",
-            path: "Patient.link.type"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type PatientLink record {|
-    r4:Extension[] extension?;
-    r4:Reference other;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    PatientLinkType 'type;
-|};
-
-# PatientContactGender enum
-public enum PatientContactGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
-}
-
-# PatientGender enum
-public enum PatientGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
-}
-
-# PatientTelecomSystem enum
-public enum PatientTelecomSystem {
+# USCorePatientProfileTelecomSystem enum
+public enum USCorePatientProfileTelecomSystem {
    CODE_SYSTEM_OTHER = "other",
    CODE_SYSTEM_PAGER = "pager",
    CODE_SYSTEM_PHONE = "phone",
@@ -596,93 +1144,5 @@ public enum PatientTelecomSystem {
    CODE_SYSTEM_FAX = "fax",
    CODE_SYSTEM_EMAIL = "email",
    CODE_SYSTEM_URL = "url"
-}
-
-# FHIR PatientCommunication datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + language - The ISO-639-1 alpha 2 code in lower case for the language, optionally followed by a hyphen and the ISO-3166-1 alpha 2 code for the region in upper case; e.g. 'en' for English, or 'en-US' for American English versus 'en-EN' for England English.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + preferred - Indicates whether or not the patient prefers this language (over other languages he masters up a certain level).
-@r4:DataTypeDefinition {
-    name: "PatientCommunication",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Patient.communication.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Patient.communication.modifierExtension"
-        },
-        "language": {
-            name: "language",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The ISO-639-1 alpha 2 code in lower case for the language, optionally followed by a hyphen and the ISO-3166-1 alpha 2 code for the region in upper case; e.g. 'en' for English, or 'en-US' for American English versus 'en-EN' for England English.",
-            path: "Patient.communication.language"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Patient.communication.id"
-        },
-        "preferred": {
-            name: "preferred",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Indicates whether or not the patient prefers this language (over other languages he masters up a certain level).",
-            path: "Patient.communication.preferred"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type PatientCommunication record {|
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:CodeableConcept language;
-    string id?;
-    boolean preferred?;
-|};
-
-# PatientIdentifierUse enum
-public enum PatientIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
-}
-
-# PatientAddressUse enum
-public enum PatientAddressUse {
-   CODE_USE_TEMP = "temp",
-   CODE_USE_WORK = "work",
-   CODE_USE_OLD = "old",
-   CODE_USE_HOME = "home",
-   CODE_USE_BILLING = "billing"
 }
 

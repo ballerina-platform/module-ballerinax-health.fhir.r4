@@ -20,10 +20,10 @@
 import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "http://hl7.org/fhir/us/core/StructureDefinition/pediatric-bmi-for-age";
-public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observation";
+public const string PROFILE_BASE_USCORERESPIRATORYRATEPROFILE = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-respiratory-rate";
+public const RESOURCE_NAME_USCORERESPIRATORYRATEPROFILE = "Observation";
 
-# FHIR USCorePediatricBMIforAgeObservationProfile resource record.
+# FHIR USCoreRespiratoryRateProfile resource record.
 #
 # + resourceType - The type of the resource describes
 # + dataAbsentReason - Provides a reason why the expected value in the element Observation.value[x] is missing.
@@ -58,7 +58,7 @@ public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observa
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - A code that classifies the general type of observation being made.
 # * category Slicings
-# 1) USCorePediatricBMIforAgeObservationProfileCategoryVSCat: Classification of type of observation
+# 1) USCoreRespiratoryRateProfileCategoryVSCat: Classification of type of observation
 #       - min = 1
 #       - max = 1
 #
@@ -67,7 +67,7 @@ public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observa
 @r4:ResourceDefinition {
     resourceType: "Observation",
     baseType: r4:DomainResource,
-    profile: "http://hl7.org/fhir/us/core/StructureDefinition/pediatric-bmi-for-age",
+    profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-respiratory-rate",
     elements: {
         "dataAbsentReason" : {
             name: "dataAbsentReason",
@@ -104,7 +104,7 @@ public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observa
         },
         "code" : {
             name: "code",
-            dataType: USCorePediatricBMIforAgeObservationProfileCode,
+            dataType: USCoreRespiratoryRateProfileCode,
             min: 1,
             max: 1,
             isArray: false,
@@ -194,7 +194,7 @@ public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observa
         },
         "valueQuantity" : {
             name: "valueQuantity",
-            dataType: USCorePediatricBMIforAgeObservationProfileValue,
+            dataType: USCoreRespiratoryRateProfileValue,
             min: 0,
             max: 1,
             isArray: false,
@@ -261,7 +261,7 @@ public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observa
         },
         "component" : {
             name: "component",
-            dataType: USCorePediatricBMIforAgeObservationProfileComponent,
+            dataType: USCoreRespiratoryRateProfileComponent,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -277,7 +277,7 @@ public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observa
         },
         "referenceRange" : {
             name: "referenceRange",
-            dataType: USCorePediatricBMIforAgeObservationProfileReferenceRange,
+            dataType: USCoreRespiratoryRateProfileReferenceRange,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -335,7 +335,7 @@ public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observa
         },
         "status" : {
             name: "status",
-            dataType: USCorePediatricBMIforAgeObservationProfileStatus,
+            dataType: USCoreRespiratoryRateProfileStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -348,16 +348,16 @@ public const RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE = "Observa
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type USCorePediatricBMIforAgeObservationProfile record {|
+public type USCoreRespiratoryRateProfile record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE resourceType = RESOURCE_NAME_USCOREPEDIATRICBMIFORAGEOBSERVATIONPROFILE;
+    RESOURCE_NAME_USCORERESPIRATORYRATEPROFILE resourceType = RESOURCE_NAME_USCORERESPIRATORYRATEPROFILE;
 
     r4:CodeableConcept dataAbsentReason?;
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
     r4:Extension[] extension?;
-    USCorePediatricBMIforAgeObservationProfileCode code;
+    USCoreRespiratoryRateProfileCode code;
     r4:Reference subject;
     r4:Extension[] modifierExtension?;
     r4:Reference[] focus?;
@@ -368,7 +368,7 @@ public type USCorePediatricBMIforAgeObservationProfile record {|
     r4:Narrative text?;
     r4:instant issued?;
     r4:Reference[] basedOn?;
-    USCorePediatricBMIforAgeObservationProfileValue valueQuantity?;
+    USCoreRespiratoryRateProfileValue valueQuantity?;
     r4:Identifier[] identifier?;
     r4:Reference[] performer?;
     r4:Period effectivePeriod;
@@ -376,9 +376,9 @@ public type USCorePediatricBMIforAgeObservationProfile record {|
     r4:Reference[] hasMember?;
     r4:Reference encounter?;
     r4:CodeableConcept bodySite?;
-    USCorePediatricBMIforAgeObservationProfileComponent[] component?;
+    USCoreRespiratoryRateProfileComponent[] component?;
     r4:Resource[] contained?;
-    USCorePediatricBMIforAgeObservationProfileReferenceRange[] referenceRange?;
+    USCoreRespiratoryRateProfileReferenceRange[] referenceRange?;
     r4:dateTime effectiveDateTime;
     r4:CodeableConcept[] interpretation?;
     r4:Meta meta?;
@@ -388,28 +388,153 @@ public type USCorePediatricBMIforAgeObservationProfile record {|
     }
     r4:CodeableConcept[] category;
     r4:Reference device?;
-    USCorePediatricBMIforAgeObservationProfileStatus status;
+    USCoreRespiratoryRateProfileStatus status;
     r4:Element ...;
 |};
 
-# USCorePediatricBMIforAgeObservationProfileStatus enum
-public enum USCorePediatricBMIforAgeObservationProfileStatus {
-   CODE_STATUS_AMENDED = "amended",
-   CODE_STATUS_FINAL = "final",
-   CODE_STATUS_REGISTERED = "registered",
-   CODE_STATUS_PRELIMINARY = "preliminary"
+# FHIR USCoreRespiratoryRateProfileCodeCoding datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+@r4:DataTypeDefinition {
+    name: "USCoreRespiratoryRateProfileCodeCoding",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Observation.code.coding.system"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Observation.code.coding.code"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
 }
+public type USCoreRespiratoryRateProfileCodeCoding record {|
+    *r4:Coding;
 
-# FHIR USCorePediatricBMIforAgeObservationProfileCode datatype record.
+    r4:uri system = "http://loinc.org";
+    r4:code code = "9279-1";
+|};
+
+# FHIR USCoreRespiratoryRateProfileValue datatype record.
+#
+# + comparator - How the value should be understood and represented - whether the actual value is greater or less than the stated value due to measurement issues; e.g. if the comparator is '<' , then the real value is < stated value.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + unit - A human-readable form of the unit.
+# + code - A computer processable form of the unit in some unit representation system.
+# + system - The identification of the system that provides the coded form of the unit.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + value - The value of the measured amount. The value includes an implicit precision in the presentation of the value.
+@r4:DataTypeDefinition {
+    name: "USCoreRespiratoryRateProfileValue",
+    baseType: (),
+    elements: {
+        "comparator": {
+            name: "comparator",
+            dataType: USCoreRespiratoryRateProfileValueComparator,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "How the value should be understood and represented - whether the actual value is greater or less than the stated value due to measurement issues; e.g. if the comparator is '<' , then the real value is < stated value.",
+            path: "Observation.value[x].comparator"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.value[x].extension"
+        },
+        "unit": {
+            name: "unit",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A human-readable form of the unit.",
+            path: "Observation.value[x].unit"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A computer processable form of the unit in some unit representation system.",
+            path: "Observation.value[x].code"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the system that provides the coded form of the unit.",
+            path: "Observation.value[x].system"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.value[x].id"
+        },
+        "value": {
+            name: "value",
+            dataType: decimal,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the measured amount. The value includes an implicit precision in the presentation of the value.",
+            path: "Observation.value[x].value"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreRespiratoryRateProfileValue record {|
+    *r4:Quantity;
+
+    USCoreRespiratoryRateProfileValueComparator comparator?;
+    r4:Extension[] extension?;
+    string unit;
+    r4:code code = "/min";
+    r4:uri system = "http://unitsofmeasure.org";
+    string id?;
+    decimal value;
+|};
+
+# FHIR USCoreRespiratoryRateProfileCode datatype record.
 #
 # + coding - A reference to a code defined by a terminology system.
 @r4:DataTypeDefinition {
-    name: "USCorePediatricBMIforAgeObservationProfileCode",
+    name: "USCoreRespiratoryRateProfileCode",
     baseType: (),
     elements: {
         "coding": {
             name: "coding",
-            dataType: USCorePediatricBMIforAgeObservationProfileCodeCoding,
+            dataType: USCoreRespiratoryRateProfileCodeCoding,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -422,24 +547,32 @@ public enum USCorePediatricBMIforAgeObservationProfileStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCorePediatricBMIforAgeObservationProfileCode record {|
+public type USCoreRespiratoryRateProfileCode record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
        minLength: 1
     }
-    USCorePediatricBMIforAgeObservationProfileCodeCoding[] coding;
+    USCoreRespiratoryRateProfileCodeCoding[] coding;
 |};
 
-# USCorePediatricBMIforAgeObservationProfileValueComparator enum
-public enum USCorePediatricBMIforAgeObservationProfileValueComparator {
+# USCoreRespiratoryRateProfileValueComparator enum
+public enum USCoreRespiratoryRateProfileValueComparator {
    CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
    CODE_COMPARATOR_LESS_THAN = "<",
    CODE_COMPARATOR_GREATER_THAN = ">",
    CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
 }
 
-# FHIR USCorePediatricBMIforAgeObservationProfileReferenceRange datatype record.
+# USCoreRespiratoryRateProfileStatus enum
+public enum USCoreRespiratoryRateProfileStatus {
+   CODE_STATUS_AMENDED = "amended",
+   CODE_STATUS_FINAL = "final",
+   CODE_STATUS_REGISTERED = "registered",
+   CODE_STATUS_PRELIMINARY = "preliminary"
+}
+
+# FHIR USCoreRespiratoryRateProfileReferenceRange datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + high - The value of the high bound of the reference range. The high bound of the reference range endpoint is inclusive of the value (e.g. reference range is >=5 - <=9). If the high bound is omitted, it is assumed to be meaningless (e.g. reference range is >= 2.3).
@@ -451,7 +584,7 @@ public enum USCorePediatricBMIforAgeObservationProfileValueComparator {
 # + 'type - Codes to indicate the what part of the targeted reference population it applies to. For example, the normal or therapeutic range.
 # + age - The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so.
 @r4:DataTypeDefinition {
-    name: "USCorePediatricBMIforAgeObservationProfileReferenceRange",
+    name: "USCoreRespiratoryRateProfileReferenceRange",
     baseType: (),
     elements: {
         "extension": {
@@ -541,7 +674,7 @@ public enum USCorePediatricBMIforAgeObservationProfileValueComparator {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCorePediatricBMIforAgeObservationProfileReferenceRange record {|
+public type USCoreRespiratoryRateProfileReferenceRange record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
@@ -555,204 +688,7 @@ public type USCorePediatricBMIforAgeObservationProfileReferenceRange record {|
     r4:Range age?;
 |};
 
-# FHIR USCorePediatricBMIforAgeObservationProfileValue datatype record.
-#
-# + comparator - How the value should be understood and represented - whether the actual value is greater or less than the stated value due to measurement issues; e.g. if the comparator is '<' , then the real value is < stated value.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + unit - A human-readable form of the unit.
-# + code - A computer processable form of the unit in some unit representation system.
-# + system - The identification of the system that provides the coded form of the unit.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + value - The value of the measured amount. The value includes an implicit precision in the presentation of the value.
-@r4:DataTypeDefinition {
-    name: "USCorePediatricBMIforAgeObservationProfileValue",
-    baseType: (),
-    elements: {
-        "comparator": {
-            name: "comparator",
-            dataType: USCorePediatricBMIforAgeObservationProfileValueComparator,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "How the value should be understood and represented - whether the actual value is greater or less than the stated value due to measurement issues; e.g. if the comparator is '<' , then the real value is < stated value.",
-            path: "Observation.value[x].comparator"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Observation.value[x].extension"
-        },
-        "unit": {
-            name: "unit",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A human-readable form of the unit.",
-            path: "Observation.value[x].unit"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A computer processable form of the unit in some unit representation system.",
-            path: "Observation.value[x].code"
-        },
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the system that provides the coded form of the unit.",
-            path: "Observation.value[x].system"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Observation.value[x].id"
-        },
-        "value": {
-            name: "value",
-            dataType: decimal,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The value of the measured amount. The value includes an implicit precision in the presentation of the value.",
-            path: "Observation.value[x].value"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type USCorePediatricBMIforAgeObservationProfileValue record {|
-    *r4:Quantity;
-
-    USCorePediatricBMIforAgeObservationProfileValueComparator comparator?;
-    r4:Extension[] extension?;
-    string unit;
-    r4:code code = "%";
-    r4:uri system = "http://unitsofmeasure.org";
-    string id?;
-    decimal value;
-|};
-
-# FHIR USCorePediatricBMIforAgeObservationProfileCategoryVSCat datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + text - A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.
-@r4:DataTypeDefinition {
-    name: "USCorePediatricBMIforAgeObservationProfileCategoryVSCat",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: USCorePediatricBMIforAgeObservationProfileCategoryCoding,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "Observation.category.coding"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Observation.category.extension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Observation.category.id"
-        },
-        "text": {
-            name: "text",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.",
-            path: "Observation.category.text"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type USCorePediatricBMIforAgeObservationProfileCategoryVSCat record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-       minLength: 1
-    }
-    USCorePediatricBMIforAgeObservationProfileCategoryCoding[] coding;
-    r4:Extension[] extension?;
-    string id?;
-    string text?;
-|};
-
-# FHIR USCorePediatricBMIforAgeObservationProfileCodeCoding datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "USCorePediatricBMIforAgeObservationProfileCodeCoding",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "Observation.code.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "Observation.code.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type USCorePediatricBMIforAgeObservationProfileCodeCoding record {|
-    *r4:Coding;
-
-    r4:uri system = "http://loinc.org";
-    r4:code code = "59576-9";
-|};
-
-# FHIR USCorePediatricBMIforAgeObservationProfileCategoryCoding datatype record.
+# FHIR USCoreRespiratoryRateProfileCategoryCoding datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
@@ -762,7 +698,7 @@ public type USCorePediatricBMIforAgeObservationProfileCodeCoding record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'version - The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.
 @r4:DataTypeDefinition {
-    name: "USCorePediatricBMIforAgeObservationProfileCategoryCoding",
+    name: "USCoreRespiratoryRateProfileCategoryCoding",
     baseType: (),
     elements: {
         "extension": {
@@ -834,7 +770,7 @@ public type USCorePediatricBMIforAgeObservationProfileCodeCoding record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCorePediatricBMIforAgeObservationProfileCategoryCoding record {|
+public type USCoreRespiratoryRateProfileCategoryCoding record {|
     *r4:Coding;
 
     r4:Extension[] extension?;
@@ -846,7 +782,71 @@ public type USCorePediatricBMIforAgeObservationProfileCategoryCoding record {|
     string 'version?;
 |};
 
-# FHIR USCorePediatricBMIforAgeObservationProfileComponent datatype record.
+# FHIR USCoreRespiratoryRateProfileCategoryVSCat datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.
+@r4:DataTypeDefinition {
+    name: "USCoreRespiratoryRateProfileCategoryVSCat",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCoreRespiratoryRateProfileCategoryCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Observation.category.coding"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.category.extension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.category.id"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.",
+            path: "Observation.category.text"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreRespiratoryRateProfileCategoryVSCat record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCoreRespiratoryRateProfileCategoryCoding[] coding;
+    r4:Extension[] extension?;
+    string id?;
+    string text?;
+|};
+
+# FHIR USCoreRespiratoryRateProfileComponent datatype record.
 #
 # + valueBoolean - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
 # + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
@@ -866,7 +866,7 @@ public type USCorePediatricBMIforAgeObservationProfileCategoryCoding record {|
 # + valueInteger - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
 # + valueQuantity - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
 @r4:DataTypeDefinition {
-    name: "USCorePediatricBMIforAgeObservationProfileComponent",
+    name: "USCoreRespiratoryRateProfileComponent",
     baseType: (),
     elements: {
         "valueBoolean": {
@@ -1028,7 +1028,7 @@ public type USCorePediatricBMIforAgeObservationProfileCategoryCoding record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCorePediatricBMIforAgeObservationProfileComponent record {|
+public type USCoreRespiratoryRateProfileComponent record {|
     *r4:BackboneElement;
 
     boolean valueBoolean?;
