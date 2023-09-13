@@ -80,10 +80,7 @@ public isolated class FHIRPreprocessor {
 
         // Handle SMART security
         if fhirResourceType == PATIENT_RESOURCE {
-            r4:FHIRError? handleSmartSecurityResult = self.handleSmartSecurity(fhirSecurity, id);
-            if handleSmartSecurityResult is r4:FHIRError {
-                return handleSmartSecurityResult;
-            }
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
         }
 
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
@@ -126,10 +123,7 @@ public isolated class FHIRPreprocessor {
 
         // Handle SMART security
         string? id = fhirResourceType == PATIENT_RESOURCE ? httpRequest.getQueryParamValue(PATIENT_ID_QUERY_PARAM) : httpRequest.getQueryParamValue(PATIENT_QUERY_PARAM);
-        r4:FHIRError? handleSmartSecurityResult = self.handleSmartSecurity(fhirSecurity, id);
-        if handleSmartSecurityResult is r4:FHIRError {
-            return handleSmartSecurityResult;
-        }
+        _ = check self.handleSmartSecurity(fhirSecurity, id);
 
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
 
@@ -205,10 +199,7 @@ public isolated class FHIRPreprocessor {
 
         // Handle SMART security
         if fhirResourceType == PATIENT_RESOURCE {
-            r4:FHIRError? handleSmartSecurityResult = self.handleSmartSecurity(fhirSecurity, id);
-            if handleSmartSecurityResult is r4:FHIRError {
-                return handleSmartSecurityResult;
-            }
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
         }
 
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
@@ -245,10 +236,7 @@ public isolated class FHIRPreprocessor {
 
         // Handle SMART security
         if fhirResourceType == PATIENT_RESOURCE {
-            r4:FHIRError? handleSmartSecurityResult = self.handleSmartSecurity(fhirSecurity, id);
-            if handleSmartSecurityResult is r4:FHIRError {
-                return handleSmartSecurityResult;
-            }
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
         }
 
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
@@ -366,10 +354,7 @@ public isolated class FHIRPreprocessor {
 
         // Handle SMART security
         if fhirResourceType == PATIENT_RESOURCE {
-            r4:FHIRError? handleSmartSecurityResult = self.handleSmartSecurity(fhirSecurity, id);
-            if handleSmartSecurityResult is r4:FHIRError {
-                return handleSmartSecurityResult;
-            }
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
         }
         
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
@@ -412,10 +397,7 @@ public isolated class FHIRPreprocessor {
 
         // Handle SMART security
         if fhirResourceType == PATIENT_RESOURCE {
-            r4:FHIRError? handleSmartSecurityResult = self.handleSmartSecurity(fhirSecurity, id);
-            if handleSmartSecurityResult is r4:FHIRError {
-                return handleSmartSecurityResult;
-            }
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
         }
         
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
@@ -451,10 +433,7 @@ public isolated class FHIRPreprocessor {
 
         // Handle SMART security
         if fhirResourceType == PATIENT_RESOURCE {
-            r4:FHIRError? handleSmartSecurityResult = self.handleSmartSecurity(fhirSecurity, id);
-            if handleSmartSecurityResult is r4:FHIRError {
-                return handleSmartSecurityResult;
-            }
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
         }
 
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
@@ -564,10 +543,7 @@ public isolated class FHIRPreprocessor {
     isolated function handleSmartSecurity(r4:FHIRSecurity fhirSecurity, string? id) returns r4:FHIRError? {
         r4:AuthzConfig? authzConfig = self.apiConfig.authzConfig;
         if authzConfig is r4:AuthzConfig {
-            r4:FHIRError? handleSmartSecurityResult = r4:handleSmartSecurity(authzConfig, fhirSecurity, id);
-            if handleSmartSecurityResult is r4:FHIRError {
-                return handleSmartSecurityResult;
-            }
+            _ = check r4:handleSmartSecurity(authzConfig, fhirSecurity, id);
         }
     }
 }
