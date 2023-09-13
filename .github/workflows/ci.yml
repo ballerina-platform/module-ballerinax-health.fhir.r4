@@ -138,6 +138,36 @@ jobs:
           WORKING_DIR: ./${{ matrix.path }}
           JAVA_HOME: /usr/lib/jvm/default-jvm
 
+      - name: Setup Maven
+        if: ${{ matrix.path == 'fhirr4' }}
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Setup latest Ballerina version
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        if: ${{ matrix.path == 'fhirr4' }}
+        with:
+          version: 2201.7.0
+
+      - name: Create settings.xml
+        if: ${{ matrix.path == 'fhirr4' }}
+        run: echo '<settings>
+              <servers>
+                <server>
+                  <id>ballerina-language-repo</id>
+                  <username>${{ github.actor }}</username>
+                  <password>${{ secrets.GITHUB_TOKEN }}</password>
+                </server>
+              </servers>
+            </settings>' > ~/.m2/settings.xml
+
+      - name: Run maven build
+        if: ${{ matrix.path == 'fhirr4' }}
+        run: |
+         mvn clean install -PrunBalTest -f fhirr4
+
       - name: Read Ballerina Test Results
         if: ${{ matrix.path != 'fhirr4' }}
         id: test_results
