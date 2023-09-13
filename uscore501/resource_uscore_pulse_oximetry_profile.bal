@@ -57,6 +57,15 @@ public const RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE = "Observation";
 # + encounter - The healthcare event (e.g. a patient and healthcare provider interaction) during which this observation is made.
 # + bodySite - Indicates the site on the subject's body where the observation was made (i.e. the target site).
 # + component - Used when reporting flow rates or oxygen concentration.
+# * component Slicings
+# 1) USCorePulseOximetryProfileComponentFlowRate: Inhaled oxygen flow rate
+#       - min = 0
+#       - max = 1
+#
+# 2) USCorePulseOximetryProfileComponentConcentration: Inhaled oxygen concentration
+#       - min = 0
+#       - max = 1
+#
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
 # + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range. Multiple reference ranges are interpreted as an 'OR'. In other words, to represent two distinct target populations, two `referenceRange` elements would be used.
 # + valueString - Vital Signs value are typically recorded using the Quantity data type.
@@ -67,6 +76,11 @@ public const RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE = "Observation";
 # + valuePeriod - Vital Signs value are typically recorded using the Quantity data type.
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - A code that classifies the general type of observation being made.
+# * category Slicings
+# 1) USCorePulseOximetryProfileCategoryVSCat: Classification of type of observation
+#       - min = 1
+#       - max = 1
+#
 # + device - The device used to generate the observation data.
 # + status - The status of the result value.
 @r4:ResourceDefinition {
@@ -127,7 +141,7 @@ public const RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE = "Observation";
         },
         "code" : {
             name: "code",
-            dataType: r4:CodeableConcept,
+            dataType: USCorePulseOximetryProfileCode,
             min: 1,
             max: 1,
             isArray: false,
@@ -329,7 +343,7 @@ public const RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE = "Observation";
         },
         "component" : {
             name: "component",
-            dataType: ObservationComponentThree,
+            dataType: USCorePulseOximetryProfileComponent,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -345,7 +359,7 @@ public const RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE = "Observation";
         },
         "referenceRange" : {
             name: "referenceRange",
-            dataType: ObservationReferenceRangeThree,
+            dataType: USCorePulseOximetryProfileReferenceRange,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -430,7 +444,7 @@ public const RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE = "Observation";
         },
         "status" : {
             name: "status",
-            dataType: ObservationStatusThree,
+            dataType: USCorePulseOximetryProfileStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -448,16 +462,13 @@ public type USCorePulseOximetryProfile record {|
 
     RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE resourceType = RESOURCE_NAME_USCOREPULSEOXIMETRYPROFILE;
 
-    BaseUSCorePulseOximetryProfileMeta meta = {
-        profile : [PROFILE_BASE_USCOREPULSEOXIMETRYPROFILE]
-    };
     boolean valueBoolean?;
     r4:CodeableConcept dataAbsentReason?;
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
     r4:Extension[] extension?;
     r4:time valueTime?;
-    r4:CodeableConcept code;
+    USCorePulseOximetryProfileCode code;
     r4:Reference subject;
     r4:Range valueRange?;
     r4:Extension[] modifierExtension?;
@@ -481,12 +492,13 @@ public type USCorePulseOximetryProfile record {|
     r4:Reference[] hasMember?;
     r4:Reference encounter?;
     r4:CodeableConcept bodySite?;
-    ObservationComponentThree[] component?;
+    USCorePulseOximetryProfileComponent[] component?;
     r4:Resource[] contained?;
-    ObservationReferenceRangeThree[] referenceRange?;
+    USCorePulseOximetryProfileReferenceRange[] referenceRange?;
     string valueString?;
     r4:dateTime effectiveDateTime;
     r4:CodeableConcept[] interpretation?;
+    r4:Meta meta?;
     r4:SampledData valueSampledData?;
     r4:Period valuePeriod?;
     r4:uri implicitRules?;
@@ -495,52 +507,83 @@ public type USCorePulseOximetryProfile record {|
     }
     r4:CodeableConcept[] category;
     r4:Reference device?;
-    ObservationStatusThree status;
-    never...;
+    USCorePulseOximetryProfileStatus status;
+    r4:Element ...;
 |};
 
+# FHIR USCorePulseOximetryProfileCategoryVSCat datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.
 @r4:DataTypeDefinition {
-    name: "BaseObservationMeta",
-    baseType: r4:Meta,
-    elements: {},
+    name: "USCorePulseOximetryProfileCategoryVSCat",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCorePulseOximetryProfileCategoryCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Observation.category.coding"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.category.extension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.category.id"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.",
+            path: "Observation.category.text"
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type BaseUSCorePulseOximetryProfileMeta record {|
-    *r4:Meta;
+public type USCorePulseOximetryProfileCategoryVSCat record {|
+    *r4:CodeableConcept;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
+    @constraint:Array {
+       minLength: 1
+    }
+    USCorePulseOximetryProfileCategoryCoding[] coding;
     r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-pulse-oximetry"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    string id?;
+    string text?;
 |};
 
-# ObservationComponentValue[x]Comparator enum
-public enum ObservationComponentValueComparator {
-   CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
-   CODE_COMPARATOR_LESS_THAN = "<",
-   CODE_COMPARATOR_GREATER_THAN = ">",
-   CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
-}
-
-# ObservationStatusThree enum
-public enum ObservationStatusThree {
+# USCorePulseOximetryProfileStatus enum
+public enum USCorePulseOximetryProfileStatus {
    CODE_STATUS_AMENDED = "amended",
    CODE_STATUS_FINAL = "final",
    CODE_STATUS_REGISTERED = "registered",
    CODE_STATUS_PRELIMINARY = "preliminary"
 }
 
-# FHIR ObservationComponentThree datatype record.
+# FHIR USCorePulseOximetryProfileComponent datatype record.
 #
 # + valueBoolean - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
 # + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
@@ -558,10 +601,9 @@ public enum ObservationStatusThree {
 # + valueDateTime - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + valueInteger - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
-# + value - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
 # + valueQuantity - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
 @r4:DataTypeDefinition {
-    name: "ObservationComponentThree",
+    name: "USCorePulseOximetryProfileComponent",
     baseType: (),
     elements: {
         "valueBoolean": {
@@ -708,15 +750,6 @@ public enum ObservationStatusThree {
             description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
             path: "Observation.component.value[x]"
         },
-        "value[x]": {
-            name: "value[x]",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
-            path: "Observation.component.value[x]"
-        },
         "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
@@ -732,7 +765,9 @@ public enum ObservationStatusThree {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ObservationComponentThree record {|
+public type USCorePulseOximetryProfileComponent record {|
+    *r4:BackboneElement;
+
     boolean valueBoolean?;
     r4:CodeableConcept dataAbsentReason?;
     r4:Extension[] extension?;
@@ -749,11 +784,440 @@ public type ObservationComponentThree record {|
     r4:dateTime valueDateTime?;
     string id?;
     r4:integer valueInteger?;
-    r4:Quantity value?;
     r4:Quantity valueQuantity?;
 |};
 
-# FHIR ObservationReferenceRangeThree datatype record.
+# FHIR USCorePulseOximetryProfileComponentFlowRate datatype record.
+#
+# + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - Describes what was observed. Sometimes this is called the observation 'code'.
+# + interpretation - A categorical assessment of an observation value. For example, high, low, normal.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + valueQuantity - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileComponentFlowRate",
+    baseType: (),
+    elements: {
+        "dataAbsentReason": {
+            name: "dataAbsentReason",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides a reason why the expected value in the element Observation.component.value[x] is missing.",
+            path: "Observation.component.dataAbsentReason"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.component.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: USCorePulseOximetryProfileComponentCode,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Describes what was observed. Sometimes this is called the observation 'code'.",
+            path: "Observation.component.code"
+        },
+        "interpretation": {
+            name: "interpretation",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A categorical assessment of an observation value. For example, high, low, normal.",
+            path: "Observation.component.interpretation"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Observation.component.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.component.id"
+        },
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: USCorePulseOximetryProfileComponentValue,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileComponentFlowRate record {|
+    *r4:BackboneElement;
+
+    r4:CodeableConcept dataAbsentReason?;
+    r4:Extension[] extension?;
+    USCorePulseOximetryProfileComponentCode code;
+    r4:CodeableConcept[] interpretation?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    USCorePulseOximetryProfileComponentValue valueQuantity?;
+|};
+
+# FHIR USCorePulseOximetryProfileComponentCodeOne datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileComponentCodeOne",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCorePulseOximetryProfileComponentCodeCodingOne,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Observation.component.code.coding"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileComponentCodeOne record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCorePulseOximetryProfileComponentCodeCodingOne[] coding;
+|};
+
+# FHIR USCorePulseOximetryProfileCodeCodingPulseOx datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileCodeCodingPulseOx",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Observation.code.coding.system"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Observation.code.coding.code"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileCodeCodingPulseOx record {|
+    *r4:Coding;
+
+    r4:uri system = "http://loinc.org";
+    r4:code code = "59408-5";
+|};
+
+# FHIR USCorePulseOximetryProfileCategoryCoding datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + userSelected - Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).
+# + display - A representation of the meaning of the code in the system, following the rules of the system.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'version - The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileCategoryCoding",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.category.coding.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Observation.category.coding.code"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Observation.category.coding.system"
+        },
+        "userSelected": {
+            name: "userSelected",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).",
+            path: "Observation.category.coding.userSelected"
+        },
+        "display": {
+            name: "display",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A representation of the meaning of the code in the system, following the rules of the system.",
+            path: "Observation.category.coding.display"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.category.coding.id"
+        },
+        "version": {
+            name: "version",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.",
+            path: "Observation.category.coding.version"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileCategoryCoding record {|
+    *r4:Coding;
+
+    r4:Extension[] extension?;
+    r4:code code = "vital-signs";
+    r4:uri system = "http://terminology.hl7.org/CodeSystem/observation-category";
+    boolean userSelected?;
+    string display?;
+    string id?;
+    string 'version?;
+|};
+
+# FHIR USCorePulseOximetryProfileComponentValue datatype record.
+#
+# + comparator - How the value should be understood and represented - whether the actual value is greater or less than the stated value due to measurement issues; e.g. if the comparator is '<' , then the real value is < stated value.
+# + unit - A human-readable form of the unit.
+# + code - A computer processable form of the unit in some unit representation system.
+# + system - The identification of the system that provides the coded form of the unit.
+# + value - The value of the measured amount. The value includes an implicit precision in the presentation of the value.
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileComponentValue",
+    baseType: (),
+    elements: {
+        "comparator": {
+            name: "comparator",
+            dataType: USCorePulseOximetryProfileComponentValueComparator,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "How the value should be understood and represented - whether the actual value is greater or less than the stated value due to measurement issues; e.g. if the comparator is '<' , then the real value is < stated value.",
+            path: "Observation.component.value[x].comparator"
+        },
+        "unit": {
+            name: "unit",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A human-readable form of the unit.",
+            path: "Observation.component.value[x].unit"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A computer processable form of the unit in some unit representation system.",
+            path: "Observation.component.value[x].code"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the system that provides the coded form of the unit.",
+            path: "Observation.component.value[x].system"
+        },
+        "value": {
+            name: "value",
+            dataType: decimal,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The value of the measured amount. The value includes an implicit precision in the presentation of the value.",
+            path: "Observation.component.value[x].value"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileComponentValue record {|
+    *r4:Quantity;
+
+    USCorePulseOximetryProfileComponentValueComparator comparator?;
+    string unit;
+    r4:code code = "L/min";
+    r4:uri system = "http://unitsofmeasure.org";
+    decimal value;
+|};
+
+# FHIR USCorePulseOximetryProfileCode datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileCode",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: r4:Coding,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Observation.code.coding"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.code.extension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.code.id"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.",
+            path: "Observation.code.text"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileCode record {|
+    *r4:CodeableConcept;
+
+    r4:Coding[] coding?;
+    r4:Extension[] extension?;
+    string id?;
+    string text?;
+|};
+
+# FHIR USCorePulseOximetryProfileComponentCodeCoding datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileComponentCodeCoding",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Observation.component.code.coding.system"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Observation.component.code.coding.code"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileComponentCodeCoding record {|
+    *r4:Coding;
+
+    r4:uri system = "http://loinc.org";
+    r4:code code = "3151-8";
+|};
+
+# FHIR USCorePulseOximetryProfileReferenceRange datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + high - The value of the high bound of the reference range. The high bound of the reference range endpoint is inclusive of the value (e.g. reference range is >=5 - <=9). If the high bound is omitted, it is assumed to be meaningless (e.g. reference range is >= 2.3).
@@ -765,7 +1229,7 @@ public type ObservationComponentThree record {|
 # + 'type - Codes to indicate the what part of the targeted reference population it applies to. For example, the normal or therapeutic range.
 # + age - The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so.
 @r4:DataTypeDefinition {
-    name: "ObservationReferenceRangeThree",
+    name: "USCorePulseOximetryProfileReferenceRange",
     baseType: (),
     elements: {
         "extension": {
@@ -855,7 +1319,9 @@ public type ObservationComponentThree record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ObservationReferenceRangeThree record {|
+public type USCorePulseOximetryProfileReferenceRange record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Quantity high?;
     r4:Quantity low?;
@@ -866,4 +1332,215 @@ public type ObservationReferenceRangeThree record {|
     r4:CodeableConcept 'type?;
     r4:Range age?;
 |};
+
+# FHIR USCorePulseOximetryProfileCodeCodingO2Sat datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileCodeCodingO2Sat",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Observation.code.coding.system"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Observation.code.coding.code"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileCodeCodingO2Sat record {|
+    *r4:Coding;
+
+    r4:uri system = "http://loinc.org";
+    r4:code code = "2708-6";
+|};
+
+# FHIR USCorePulseOximetryProfileComponentConcentration datatype record.
+#
+# + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - Describes what was observed. Sometimes this is called the observation 'code'.
+# + interpretation - A categorical assessment of an observation value. For example, high, low, normal.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + valueQuantity - Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileComponentConcentration",
+    baseType: (),
+    elements: {
+        "dataAbsentReason": {
+            name: "dataAbsentReason",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides a reason why the expected value in the element Observation.component.value[x] is missing.",
+            path: "Observation.component.dataAbsentReason"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.component.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: USCorePulseOximetryProfileComponentCodeOne,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Describes what was observed. Sometimes this is called the observation 'code'.",
+            path: "Observation.component.code"
+        },
+        "interpretation": {
+            name: "interpretation",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A categorical assessment of an observation value. For example, high, low, normal.",
+            path: "Observation.component.interpretation"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Observation.component.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.component.id"
+        },
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: USCorePulseOximetryProfileComponentValue,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Signs value are typically recorded using the Quantity data type. For supporting observations such as cuff size could use other datatypes such as CodeableConcept.",
+            path: "Observation.component.value[x]"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileComponentConcentration record {|
+    *r4:BackboneElement;
+
+    r4:CodeableConcept dataAbsentReason?;
+    r4:Extension[] extension?;
+    USCorePulseOximetryProfileComponentCodeOne code;
+    r4:CodeableConcept[] interpretation?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    USCorePulseOximetryProfileComponentValue valueQuantity?;
+|};
+
+# FHIR USCorePulseOximetryProfileComponentCode datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileComponentCode",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCorePulseOximetryProfileComponentCodeCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Observation.component.code.coding"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileComponentCode record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCorePulseOximetryProfileComponentCodeCoding[] coding;
+|};
+
+# FHIR USCorePulseOximetryProfileComponentCodeCodingOne datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+@r4:DataTypeDefinition {
+    name: "USCorePulseOximetryProfileComponentCodeCodingOne",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Observation.component.code.coding.system"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Observation.component.code.coding.code"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePulseOximetryProfileComponentCodeCodingOne record {|
+    *r4:Coding;
+
+    r4:uri system = "http://loinc.org";
+    r4:code code = "3150-0";
+|};
+
+# USCorePulseOximetryProfileComponentValueComparator enum
+public enum USCorePulseOximetryProfileComponentValueComparator {
+   CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
+   CODE_COMPARATOR_LESS_THAN = "<",
+   CODE_COMPARATOR_GREATER_THAN = ">",
+   CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
+}
 

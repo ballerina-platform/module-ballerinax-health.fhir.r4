@@ -27,6 +27,11 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
 #
 # + resourceType - The type of the resource describes
 # + identifier - An identifier that applies to this person in this role.
+# * identifier Slicings
+# 1) USCorePractitionerProfileIdentifierNPI: An identifier for the person as this agent
+#       - min = 0
+#       - max = 1
+#
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - Address(es) of the practitioner that are not role specific (typically home address). Work addresses are not typically entered in this property as they are usually role dependent.
 # + gender - Administrative Gender - the gender that the person is considered to have for administration and record keeping purposes.
@@ -51,7 +56,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
     elements: {
         "identifier" : {
             name: "identifier",
-            dataType: r4:Identifier,
+            dataType: USCorePractitionerProfileIdentifier,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -67,7 +72,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
         },
         "address" : {
             name: "address",
-            dataType: r4:Address,
+            dataType: USCorePractitionerProfileAddress,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -75,7 +80,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
         },
         "gender" : {
             name: "gender",
-            dataType: PractitionerGender,
+            dataType: USCorePractitionerProfileGender,
             min: 0,
             max: 1,
             isArray: false,
@@ -125,7 +130,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
         },
         "qualification" : {
             name: "qualification",
-            dataType: PractitionerQualification,
+            dataType: USCorePractitionerProfileQualification,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -149,7 +154,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
         },
         "name" : {
             name: "name",
-            dataType: r4:HumanName,
+            dataType: USCorePractitionerProfileName,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -165,7 +170,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
         },
         "telecom" : {
             name: "telecom",
-            dataType: r4:ContactPoint,
+            dataType: USCorePractitionerProfileTelecom,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -207,62 +212,35 @@ public type USCorePractitionerProfile record {|
 
     RESOURCE_NAME_USCOREPRACTITIONERPROFILE resourceType = RESOURCE_NAME_USCOREPRACTITIONERPROFILE;
 
-    BaseUSCorePractitionerProfileMeta meta = {
-        profile : [PROFILE_BASE_USCOREPRACTITIONERPROFILE]
-    };
     @constraint:Array {
        minLength: 1
     }
-    r4:Identifier[] identifier;
+    USCorePractitionerProfileIdentifier[] identifier;
     r4:Extension[] extension?;
-    r4:Address[] address?;
-    PractitionerGender gender?;
+    USCorePractitionerProfileAddress[] address?;
+    USCorePractitionerProfileGender gender?;
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:Attachment[] photo?;
     r4:code language?;
     r4:date birthDate?;
-    PractitionerQualification[] qualification?;
+    USCorePractitionerProfileQualification[] qualification?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     @constraint:Array {
        minLength: 1
     }
-    r4:HumanName[] name;
+    USCorePractitionerProfileName[] name;
     r4:uri implicitRules?;
-    r4:ContactPoint[] telecom?;
+    USCorePractitionerProfileTelecom[] telecom?;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept[] communication?;
-    never...;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BasePractitionerMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseUSCorePractitionerProfileMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# PractitionerIdentifierUse enum
-public enum PractitionerIdentifierUse {
+# USCorePractitionerProfileIdentifierUse enum
+public enum USCorePractitionerProfileIdentifierUse {
    CODE_USE_SECONDARY = "secondary",
    CODE_USE_TEMP = "temp",
    CODE_USE_USUAL = "usual",
@@ -270,16 +248,157 @@ public enum PractitionerIdentifierUse {
    CODE_USE_OFFICIAL = "official"
 }
 
-# PractitionerGender enum
-public enum PractitionerGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
+# FHIR USCorePractitionerProfileIdentifierNPI datatype record.
+#
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+@r4:DataTypeDefinition {
+    name: "USCorePractitionerProfileIdentifierNPI",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Practitioner.identifier.system"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePractitionerProfileIdentifierNPI record {|
+    *r4:Identifier;
+
+    r4:uri system = "http://hl7.org/fhir/sid/us-npi";
+|};
+
+# USCorePractitionerProfileAddressType enum
+public enum USCorePractitionerProfileAddressType {
+   CODE_TYPE_POSTAL = "postal",
+   CODE_TYPE_PHYSICAL = "physical",
+   CODE_TYPE_BOTH = "both"
 }
 
-# PractitionerNameUse enum
-public enum PractitionerNameUse {
+# USCorePractitionerProfileTelecomUse enum
+public enum USCorePractitionerProfileTelecomUse {
+   CODE_USE_TEMP = "temp",
+   CODE_USE_WORK = "work",
+   CODE_USE_OLD = "old",
+   CODE_USE_MOBILE = "mobile",
+   CODE_USE_HOME = "home"
+}
+
+# FHIR USCorePractitionerProfileIdentifier datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period during which identifier is/was valid for use.
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+# + use - The purpose of this identifier.
+# + assigner - Organization that issued/manages the identifier.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.
+# + value - The portion of the identifier typically relevant to the user and which is unique within the context of the system.
+@r4:DataTypeDefinition {
+    name: "USCorePractitionerProfileIdentifier",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Practitioner.identifier.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Practitioner.identifier.period"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Practitioner.identifier.system"
+        },
+        "use": {
+            name: "use",
+            dataType: USCorePractitionerProfileIdentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Practitioner.identifier.use"
+        },
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Practitioner.identifier.assigner"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Practitioner.identifier.id"
+        },
+        "type": {
+            name: "type",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Practitioner.identifier.type"
+        },
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Practitioner.identifier.value"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePractitionerProfileIdentifier record {|
+    *r4:Identifier;
+
+    r4:Extension[] extension?;
+    r4:Period period?;
+    r4:uri system;
+    USCorePractitionerProfileIdentifierUse use?;
+    r4:Reference assigner?;
+    string id?;
+    r4:CodeableConcept 'type?;
+    string value;
+|};
+
+# USCorePractitionerProfileNameUse enum
+public enum USCorePractitionerProfileNameUse {
    CODE_USE_MAIDEN = "maiden",
    CODE_USE_TEMP = "temp",
    CODE_USE_USUAL = "usual",
@@ -289,7 +408,101 @@ public enum PractitionerNameUse {
    CODE_USE_ANONYMOUS = "anonymous"
 }
 
-# FHIR PractitionerQualification datatype record.
+# FHIR USCorePractitionerProfileTelecom datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period when the contact point was/is in use.
+# + system - Telecommunications form for contact point - what communications system is required to make use of the contact.
+# + use - Identifies the purpose for the contact point.
+# + rank - Specifies a preferred order in which to use a set of contacts. ContactPoints with lower rank values are more preferred than those with higher rank values.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + value - The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).
+@r4:DataTypeDefinition {
+    name: "USCorePractitionerProfileTelecom",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Practitioner.telecom.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period when the contact point was/is in use.",
+            path: "Practitioner.telecom.period"
+        },
+        "system": {
+            name: "system",
+            dataType: USCorePractitionerProfileTelecomSystem,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Telecommunications form for contact point - what communications system is required to make use of the contact.",
+            path: "Practitioner.telecom.system"
+        },
+        "use": {
+            name: "use",
+            dataType: USCorePractitionerProfileTelecomUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Identifies the purpose for the contact point.",
+            path: "Practitioner.telecom.use"
+        },
+        "rank": {
+            name: "rank",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies a preferred order in which to use a set of contacts. ContactPoints with lower rank values are more preferred than those with higher rank values.",
+            path: "Practitioner.telecom.rank"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Practitioner.telecom.id"
+        },
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).",
+            path: "Practitioner.telecom.value"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePractitionerProfileTelecom record {|
+    *r4:ContactPoint;
+
+    r4:Extension[] extension?;
+    r4:Period period?;
+    USCorePractitionerProfileTelecomSystem system?;
+    USCorePractitionerProfileTelecomUse use?;
+    r4:positiveInt rank?;
+    string id?;
+    string value?;
+|};
+
+# FHIR USCorePractitionerProfileQualification datatype record.
 #
 # + identifier - An identifier that applies to this person's qualification in this role.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -299,7 +512,7 @@ public enum PractitionerNameUse {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + issuer - Organization that regulates and issues the qualification.
 @r4:DataTypeDefinition {
-    name: "PractitionerQualification",
+    name: "USCorePractitionerProfileQualification",
     baseType: (),
     elements: {
         "identifier": {
@@ -371,7 +584,9 @@ public enum PractitionerNameUse {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type PractitionerQualification record {|
+public type USCorePractitionerProfileQualification record {|
+    *r4:BackboneElement;
+
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Period period?;
@@ -380,4 +595,297 @@ public type PractitionerQualification record {|
     string id?;
     r4:Reference issuer?;
 |};
+
+# USCorePractitionerProfileGender enum
+public enum USCorePractitionerProfileGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
+
+# USCorePractitionerProfileTelecomSystem enum
+public enum USCorePractitionerProfileTelecomSystem {
+   CODE_SYSTEM_OTHER = "other",
+   CODE_SYSTEM_PAGER = "pager",
+   CODE_SYSTEM_PHONE = "phone",
+   CODE_SYSTEM_SMS = "sms",
+   CODE_SYSTEM_FAX = "fax",
+   CODE_SYSTEM_EMAIL = "email",
+   CODE_SYSTEM_URL = "url"
+}
+
+# FHIR USCorePractitionerProfileAddress datatype record.
+#
+# + country - Country - a nation as commonly understood or generally accepted.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period when address was/is in use.
+# + city - The name of the city, town, suburb, village or other community or delivery center.
+# + line - This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.
+# + use - The purpose of this address.
+# + district - The name of the administrative area (county).
+# + postalCode - A postal code designating a region defined by the postal service.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + state - Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).
+# + text - Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.
+# + 'type - Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.
+@r4:DataTypeDefinition {
+    name: "USCorePractitionerProfileAddress",
+    baseType: (),
+    elements: {
+        "country": {
+            name: "country",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Country - a nation as commonly understood or generally accepted.",
+            path: "Practitioner.address.country"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Practitioner.address.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period when address was/is in use.",
+            path: "Practitioner.address.period"
+        },
+        "city": {
+            name: "city",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the city, town, suburb, village or other community or delivery center.",
+            path: "Practitioner.address.city"
+        },
+        "line": {
+            name: "line",
+            dataType: string,
+            min: 0,
+            max: 4,
+            isArray: true,
+            description: "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.",
+            path: "Practitioner.address.line"
+        },
+        "use": {
+            name: "use",
+            dataType: USCorePractitionerProfileAddressUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this address.",
+            path: "Practitioner.address.use"
+        },
+        "district": {
+            name: "district",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the administrative area (county).",
+            path: "Practitioner.address.district"
+        },
+        "postalCode": {
+            name: "postalCode",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A postal code designating a region defined by the postal service.",
+            path: "Practitioner.address.postalCode"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Practitioner.address.id"
+        },
+        "state": {
+            name: "state",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).",
+            path: "Practitioner.address.state"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.",
+            path: "Practitioner.address.text"
+        },
+        "type": {
+            name: "type",
+            dataType: USCorePractitionerProfileAddressType,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
+            path: "Practitioner.address.type"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePractitionerProfileAddress record {|
+    *r4:Address;
+
+    string country?;
+    r4:Extension[] extension?;
+    r4:Period period?;
+    string city?;
+    string[] line?;
+    USCorePractitionerProfileAddressUse use?;
+    string district?;
+    string postalCode?;
+    string id?;
+    string state?;
+    string text?;
+    USCorePractitionerProfileAddressType 'type?;
+|};
+
+# FHIR USCorePractitionerProfileName datatype record.
+#
+# + given - Given name.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Indicates the period of time when this name was valid for the named person.
+# + prefix - Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the start of the name.
+# + use - Identifies the purpose for this name.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - Specifies the entire name as it should be displayed e.g. on an application UI. This may be provided instead of or as well as the specific parts.
+# + family - The part of a name that links to the genealogy. In some cultures (e.g. Eritrea) the family name of a son is the first name of his father.
+# + suffix - Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name.
+@r4:DataTypeDefinition {
+    name: "USCorePractitionerProfileName",
+    baseType: (),
+    elements: {
+        "given": {
+            name: "given",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Given name.",
+            path: "Practitioner.name.given"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Practitioner.name.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates the period of time when this name was valid for the named person.",
+            path: "Practitioner.name.period"
+        },
+        "prefix": {
+            name: "prefix",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the start of the name.",
+            path: "Practitioner.name.prefix"
+        },
+        "use": {
+            name: "use",
+            dataType: USCorePractitionerProfileNameUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Identifies the purpose for this name.",
+            path: "Practitioner.name.use"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Practitioner.name.id"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies the entire name as it should be displayed e.g. on an application UI. This may be provided instead of or as well as the specific parts.",
+            path: "Practitioner.name.text"
+        },
+        "family": {
+            name: "family",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The part of a name that links to the genealogy. In some cultures (e.g. Eritrea) the family name of a son is the first name of his father.",
+            path: "Practitioner.name.family"
+        },
+        "suffix": {
+            name: "suffix",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Part of the name that is acquired as a title due to academic, legal, employment or nobility status, etc. and that appears at the end of the name.",
+            path: "Practitioner.name.suffix"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCorePractitionerProfileName record {|
+    *r4:HumanName;
+
+    string[] given?;
+    r4:Extension[] extension?;
+    r4:Period period?;
+    string[] prefix?;
+    USCorePractitionerProfileNameUse use?;
+    string id?;
+    string text?;
+    string family;
+    string[] suffix?;
+|};
+
+# USCorePractitionerProfileAddressUse enum
+public enum USCorePractitionerProfileAddressUse {
+   CODE_USE_TEMP = "temp",
+   CODE_USE_WORK = "work",
+   CODE_USE_OLD = "old",
+   CODE_USE_HOME = "home",
+   CODE_USE_BILLING = "billing"
+}
 

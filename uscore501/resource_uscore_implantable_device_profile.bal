@@ -124,7 +124,7 @@ public const RESOURCE_NAME_USCOREIMPLANTABLEDEVICEPROFILE = "Device";
         },
         "deviceName" : {
             name: "deviceName",
-            dataType: DeviceDeviceName,
+            dataType: USCoreImplantableDeviceProfileDeviceName,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -173,7 +173,7 @@ public const RESOURCE_NAME_USCOREIMPLANTABLEDEVICEPROFILE = "Device";
         },
         "property" : {
             name: "property",
-            dataType: DeviceProperty,
+            dataType: USCoreImplantableDeviceProfileProperty,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -253,7 +253,7 @@ public const RESOURCE_NAME_USCOREIMPLANTABLEDEVICEPROFILE = "Device";
         },
         "version" : {
             name: "version",
-            dataType: DeviceVersion,
+            dataType: USCoreImplantableDeviceProfileVersion,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -277,7 +277,7 @@ public const RESOURCE_NAME_USCOREIMPLANTABLEDEVICEPROFILE = "Device";
         },
         "udiCarrier" : {
             name: "udiCarrier",
-            dataType: DeviceUdiCarrier,
+            dataType: USCoreImplantableDeviceProfileUdiCarrier,
             min: 0,
             max: 1,
             isArray: false,
@@ -301,7 +301,7 @@ public const RESOURCE_NAME_USCOREIMPLANTABLEDEVICEPROFILE = "Device";
         },
         "specialization" : {
             name: "specialization",
-            dataType: DeviceSpecialization,
+            dataType: USCoreImplantableDeviceProfileSpecialization,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -333,7 +333,7 @@ public const RESOURCE_NAME_USCOREIMPLANTABLEDEVICEPROFILE = "Device";
         },
         "status" : {
             name: "status",
-            dataType: DeviceStatus,
+            dataType: USCoreImplantableDeviceProfileStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -351,9 +351,6 @@ public type USCoreImplantableDeviceProfile record {|
 
     RESOURCE_NAME_USCOREIMPLANTABLEDEVICEPROFILE resourceType = RESOURCE_NAME_USCOREIMPLANTABLEDEVICEPROFILE;
 
-    BaseUSCoreImplantableDeviceProfileMeta meta = {
-        profile : [PROFILE_BASE_USCOREIMPLANTABLEDEVICEPROFILE]
-    };
     r4:Annotation[] note?;
     r4:Reference parent?;
     r4:Extension[] extension?;
@@ -361,13 +358,13 @@ public type USCoreImplantableDeviceProfile record {|
     r4:code language?;
     string distinctIdentifier?;
     r4:CodeableConcept 'type;
-    DeviceDeviceName[] deviceName?;
+    USCoreImplantableDeviceProfileDeviceName[] deviceName?;
     string manufacturer?;
     r4:CodeableConcept[] statusReason?;
     r4:Reference patient;
     r4:CodeableConcept[] safety?;
     r4:ContactPoint[] contact?;
-    DeviceProperty[] property?;
+    USCoreImplantableDeviceProfileProperty[] property?;
     r4:dateTime manufactureDate?;
     r4:Reference definition?;
     string id?;
@@ -377,196 +374,21 @@ public type USCoreImplantableDeviceProfile record {|
     r4:Identifier[] identifier?;
     string serialNumber?;
     string lotNumber?;
-    DeviceVersion[] 'version?;
+    USCoreImplantableDeviceProfileVersion[] 'version?;
     r4:uri url?;
     r4:Resource[] contained?;
-    DeviceUdiCarrier udiCarrier?;
+    USCoreImplantableDeviceProfileUdiCarrier udiCarrier?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
-    DeviceSpecialization[] specialization?;
+    USCoreImplantableDeviceProfileSpecialization[] specialization?;
     r4:Reference location?;
     string modelNumber?;
     string partNumber?;
-    DeviceStatus status?;
-    never...;
+    USCoreImplantableDeviceProfileStatus status?;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseDeviceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseUSCoreImplantableDeviceProfileMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-implantable-device"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# FHIR DeviceProperty datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + valueCode - Property value as a code, e.g., NTP4 (synced to NTP).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'type - Code that specifies the property DeviceDefinitionPropetyCode (Extensible).
-# + valueQuantity - Property value as a quantity.
-@r4:DataTypeDefinition {
-    name: "DeviceProperty",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Device.property.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Device.property.modifierExtension"
-        },
-        "valueCode": {
-            name: "valueCode",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Property value as a code, e.g., NTP4 (synced to NTP).",
-            path: "Device.property.valueCode"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Device.property.id"
-        },
-        "type": {
-            name: "type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Code that specifies the property DeviceDefinitionPropetyCode (Extensible).",
-            path: "Device.property.type"
-        },
-        "valueQuantity": {
-            name: "valueQuantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Property value as a quantity.",
-            path: "Device.property.valueQuantity"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type DeviceProperty record {|
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:CodeableConcept[] valueCode?;
-    string id?;
-    r4:CodeableConcept 'type;
-    r4:Quantity[] valueQuantity?;
-|};
-
-# FHIR DeviceSpecialization datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + systemType - The standard that is used to operate and communicate.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'version - The version of the standard that is used to operate and communicate.
-@r4:DataTypeDefinition {
-    name: "DeviceSpecialization",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Device.specialization.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Device.specialization.modifierExtension"
-        },
-        "systemType": {
-            name: "systemType",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The standard that is used to operate and communicate.",
-            path: "Device.specialization.systemType"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Device.specialization.id"
-        },
-        "version": {
-            name: "version",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The version of the standard that is used to operate and communicate.",
-            path: "Device.specialization.version"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type DeviceSpecialization record {|
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:CodeableConcept systemType;
-    string id?;
-    string 'version?;
-|};
-
-# FHIR DeviceDeviceName datatype record.
+# FHIR USCoreImplantableDeviceProfileDeviceName datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -574,7 +396,7 @@ public type DeviceSpecialization record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'type - The type of deviceName. UDILabelName | UserFriendlyName | PatientReportedName | ManufactureDeviceName | ModelName.
 @r4:DataTypeDefinition {
-    name: "DeviceDeviceName",
+    name: "USCoreImplantableDeviceProfileDeviceName",
     baseType: (),
     elements: {
         "extension": {
@@ -615,7 +437,7 @@ public type DeviceSpecialization record {|
         },
         "type": {
             name: "type",
-            dataType: DeviceDeviceNameType,
+            dataType: USCoreImplantableDeviceProfileDeviceNameType,
             min: 1,
             max: 1,
             isArray: false,
@@ -628,22 +450,17 @@ public type DeviceSpecialization record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DeviceDeviceName record {|
+public type USCoreImplantableDeviceProfileDeviceName record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name;
     string id?;
-    DeviceDeviceNameType 'type;
+    USCoreImplantableDeviceProfileDeviceNameType 'type;
 |};
 
-# DeviceUdiCarrierEntryType enum
-public enum DeviceUdiCarrierEntryType {
-   CODE_ENTRYTYPE_RFID = "rfid",
-   CODE_ENTRYTYPE_MANUAL = "manual",
-   CODE_ENTRYTYPE_BARCODE = "barcode"
-}
-
-# FHIR DeviceUdiCarrier datatype record.
+# FHIR USCoreImplantableDeviceProfileUdiCarrier datatype record.
 #
 # + entryType - A coded entry to indicate how the data was entered.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -655,12 +472,12 @@ public enum DeviceUdiCarrierEntryType {
 # + carrierAIDC - The full UDI carrier of the Automatic Identification and Data Capture (AIDC) technology representation of the barcode string as printed on the packaging of the device - e.g., a barcode or RFID. Because of limitations on character sets in XML and the need to round-trip JSON data through XML, AIDC Formats *SHALL* be base64 encoded.
 # + issuer - Organization that is charged with issuing UDIs for devices. For example, the US FDA issuers include : 1) GS1: http://hl7.org/fhir/NamingSystem/gs1-di, 2) HIBCC: http://hl7.org/fhir/NamingSystem/hibcc-dI, 3) ICCBBA for blood containers: http://hl7.org/fhir/NamingSystem/iccbba-blood-di, 4) ICCBA for other devices: http://hl7.org/fhir/NamingSystem/iccbba-other-di.
 @r4:DataTypeDefinition {
-    name: "DeviceUdiCarrier",
+    name: "USCoreImplantableDeviceProfileUdiCarrier",
     baseType: (),
     elements: {
         "entryType": {
             name: "entryType",
-            dataType: DeviceUdiCarrierEntryType,
+            dataType: USCoreImplantableDeviceProfileUdiCarrierEntryType,
             min: 0,
             max: 1,
             isArray: false,
@@ -745,8 +562,10 @@ public enum DeviceUdiCarrierEntryType {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DeviceUdiCarrier record {|
-    DeviceUdiCarrierEntryType entryType?;
+public type USCoreImplantableDeviceProfileUdiCarrier record {|
+    *r4:BackboneElement;
+
+    USCoreImplantableDeviceProfileUdiCarrierEntryType entryType?;
     r4:Extension[] extension?;
     string deviceIdentifier;
     string carrierHRF?;
@@ -757,25 +576,15 @@ public type DeviceUdiCarrier record {|
     r4:uri issuer?;
 |};
 
-# DeviceStatus enum
-public enum DeviceStatus {
+# USCoreImplantableDeviceProfileStatus enum
+public enum USCoreImplantableDeviceProfileStatus {
    CODE_STATUS_INACTIVE = "inactive",
    CODE_STATUS_ACTIVE = "active",
    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
    CODE_STATUS_UNKNOWN = "unknown"
 }
 
-# DeviceDeviceNameType enum
-public enum DeviceDeviceNameType {
-   CODE_TYPE_UDI_LABEL_NAME = "udi-label-name",
-   CODE_TYPE_OTHER = "other",
-   CODE_TYPE_MANUFACTURER_NAME = "manufacturer-name",
-   CODE_TYPE_MODEL_NAME = "model-name",
-   CODE_TYPE_USER_FRIENDLY_NAME = "user-friendly-name",
-   CODE_TYPE_PATIENT_REPORTED_NAME = "patient-reported-name"
-}
-
-# FHIR DeviceVersion datatype record.
+# FHIR USCoreImplantableDeviceProfileVersion datatype record.
 #
 # + component - A single component of the device version.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -784,7 +593,7 @@ public enum DeviceDeviceNameType {
 # + 'type - The type of the device version.
 # + value - The version text.
 @r4:DataTypeDefinition {
-    name: "DeviceVersion",
+    name: "USCoreImplantableDeviceProfileVersion",
     baseType: (),
     elements: {
         "component": {
@@ -847,7 +656,9 @@ public enum DeviceDeviceNameType {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DeviceVersion record {|
+public type USCoreImplantableDeviceProfileVersion record {|
+    *r4:BackboneElement;
+
     r4:Identifier component?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -855,4 +666,176 @@ public type DeviceVersion record {|
     r4:CodeableConcept 'type?;
     string value;
 |};
+
+# FHIR USCoreImplantableDeviceProfileSpecialization datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + systemType - The standard that is used to operate and communicate.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'version - The version of the standard that is used to operate and communicate.
+@r4:DataTypeDefinition {
+    name: "USCoreImplantableDeviceProfileSpecialization",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Device.specialization.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Device.specialization.modifierExtension"
+        },
+        "systemType": {
+            name: "systemType",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The standard that is used to operate and communicate.",
+            path: "Device.specialization.systemType"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Device.specialization.id"
+        },
+        "version": {
+            name: "version",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The version of the standard that is used to operate and communicate.",
+            path: "Device.specialization.version"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreImplantableDeviceProfileSpecialization record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:CodeableConcept systemType;
+    string id?;
+    string 'version?;
+|};
+
+# USCoreImplantableDeviceProfileUdiCarrierEntryType enum
+public enum USCoreImplantableDeviceProfileUdiCarrierEntryType {
+   CODE_ENTRYTYPE_RFID = "rfid",
+   CODE_ENTRYTYPE_MANUAL = "manual",
+   CODE_ENTRYTYPE_BARCODE = "barcode"
+}
+
+# FHIR USCoreImplantableDeviceProfileProperty datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + valueCode - Property value as a code, e.g., NTP4 (synced to NTP).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - Code that specifies the property DeviceDefinitionPropetyCode (Extensible).
+# + valueQuantity - Property value as a quantity.
+@r4:DataTypeDefinition {
+    name: "USCoreImplantableDeviceProfileProperty",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Device.property.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Device.property.modifierExtension"
+        },
+        "valueCode": {
+            name: "valueCode",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Property value as a code, e.g., NTP4 (synced to NTP).",
+            path: "Device.property.valueCode"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Device.property.id"
+        },
+        "type": {
+            name: "type",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Code that specifies the property DeviceDefinitionPropetyCode (Extensible).",
+            path: "Device.property.type"
+        },
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Property value as a quantity.",
+            path: "Device.property.valueQuantity"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreImplantableDeviceProfileProperty record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:CodeableConcept[] valueCode?;
+    string id?;
+    r4:CodeableConcept 'type;
+    r4:Quantity[] valueQuantity?;
+|};
+
+# USCoreImplantableDeviceProfileDeviceNameType enum
+public enum USCoreImplantableDeviceProfileDeviceNameType {
+   CODE_TYPE_UDI_LABEL_NAME = "udi-label-name",
+   CODE_TYPE_OTHER = "other",
+   CODE_TYPE_MANUFACTURER_NAME = "manufacturer-name",
+   CODE_TYPE_MODEL_NAME = "model-name",
+   CODE_TYPE_USER_FRIENDLY_NAME = "user-friendly-name",
+   CODE_TYPE_PATIENT_REPORTED_NAME = "patient-reported-name"
+}
 
