@@ -98,7 +98,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONREQUESTPROFILE = "MedicationRequest";
         },
         "substitution" : {
             name: "substitution",
-            dataType: MedicationRequestSubstitution,
+            dataType: USCoreMedicationRequestProfileSubstitution,
             min: 0,
             max: 1,
             isArray: false,
@@ -190,7 +190,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONREQUESTPROFILE = "MedicationRequest";
         },
         "dispenseRequest" : {
             name: "dispenseRequest",
-            dataType: MedicationRequestDispenseRequest,
+            dataType: USCoreMedicationRequestProfileDispenseRequest,
             min: 0,
             max: 1,
             isArray: false,
@@ -328,7 +328,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONREQUESTPROFILE = "MedicationRequest";
         },
         "priority" : {
             name: "priority",
-            dataType: MedicationRequestPriority,
+            dataType: USCoreMedicationRequestProfilePriority,
             min: 0,
             max: 1,
             isArray: false,
@@ -337,7 +337,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONREQUESTPROFILE = "MedicationRequest";
         },
         "intent" : {
             name: "intent",
-            dataType: MedicationRequestIntent,
+            dataType: USCoreMedicationRequestProfileIntent,
             min: 1,
             max: 1,
             isArray: false,
@@ -412,7 +412,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONREQUESTPROFILE = "MedicationRequest";
         },
         "status" : {
             name: "status",
-            dataType: MedicationRequestStatus,
+            dataType: USCoreMedicationRequestProfileStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -436,7 +436,7 @@ public type USCoreMedicationRequestProfile record {|
     r4:Reference[] insurance?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
-    MedicationRequestSubstitution substitution?;
+    USCoreMedicationRequestProfileSubstitution substitution?;
     r4:CodeableConcept courseOfTherapyType?;
     r4:Reference priorPrescription?;
     r4:Reference subject;
@@ -447,7 +447,7 @@ public type USCoreMedicationRequestProfile record {|
     r4:Reference medicationReference;
     r4:Reference reportedReference?;
     r4:CodeableConcept statusReason?;
-    MedicationRequestDispenseRequest dispenseRequest?;
+    USCoreMedicationRequestProfileDispenseRequest dispenseRequest?;
     string id?;
     r4:CodeableConcept[] reasonCode?;
     r4:Narrative text?;
@@ -464,8 +464,8 @@ public type USCoreMedicationRequestProfile record {|
     r4:Reference encounter?;
     r4:canonical[] instantiatesCanonical?;
     r4:CodeableConcept medicationCodeableConcept;
-    MedicationRequestPriority priority?;
-    MedicationRequestIntent intent;
+    USCoreMedicationRequestProfilePriority priority?;
+    USCoreMedicationRequestProfileIntent intent;
     r4:CodeableConcept performerType?;
     r4:Resource[] contained?;
     r4:Dosage[] dosageInstruction?;
@@ -473,7 +473,7 @@ public type USCoreMedicationRequestProfile record {|
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Identifier groupIdentifier?;
-    MedicationRequestStatus status;
+    USCoreMedicationRequestProfileStatus status;
     never...;
 |};
 
@@ -502,8 +502,103 @@ public type BaseUSCoreMedicationRequestProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
-# MedicationRequestStatus enum
-public enum MedicationRequestStatus {
+# USCoreMedicationRequestProfileIntent enum
+public enum USCoreMedicationRequestProfileIntent {
+   CODE_INTENT_PROPOSAL = "proposal",
+   CODE_INTENT_INSTANCE_ORDER = "instance-order",
+   CODE_INTENT_FILLER_ORDER = "filler-order",
+   CODE_INTENT_ORIGINAL_ORDER = "original-order",
+   CODE_INTENT_REFLEX_ORDER = "reflex-order",
+   CODE_INTENT_PLAN = "plan",
+   CODE_INTENT_ORDER = "order",
+   CODE_INTENT_OPTION = "option"
+}
+
+# FHIR USCoreMedicationRequestProfileSubstitution datatype record.
+#
+# + allowedCodeableConcept - True if the prescriber allows a different drug to be dispensed from what was prescribed.
+# + reason - Indicates the reason for the substitution, or why substitution must or must not be performed.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + allowedBoolean - True if the prescriber allows a different drug to be dispensed from what was prescribed.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@r4:DataTypeDefinition {
+    name: "USCoreMedicationRequestProfileSubstitution",
+    baseType: (),
+    elements: {
+        "allowedCodeableConcept": {
+            name: "allowedCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "True if the prescriber allows a different drug to be dispensed from what was prescribed.",
+            path: "MedicationRequest.substitution.allowed[x]"
+        },
+        "reason": {
+            name: "reason",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates the reason for the substitution, or why substitution must or must not be performed.",
+            path: "MedicationRequest.substitution.reason"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MedicationRequest.substitution.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "MedicationRequest.substitution.modifierExtension"
+        },
+        "allowedBoolean": {
+            name: "allowedBoolean",
+            dataType: boolean,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "True if the prescriber allows a different drug to be dispensed from what was prescribed.",
+            path: "MedicationRequest.substitution.allowed[x]"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MedicationRequest.substitution.id"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreMedicationRequestProfileSubstitution record {|
+    *r4:BackboneElement;
+
+    r4:CodeableConcept allowedCodeableConcept;
+    r4:CodeableConcept reason?;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    boolean allowedBoolean;
+    string id?;
+|};
+
+# USCoreMedicationRequestProfileStatus enum
+public enum USCoreMedicationRequestProfileStatus {
    CODE_STATUS_STOPPED = "stopped",
    CODE_STATUS_DRAFT = "draft",
    CODE_STATUS_ACTIVE = "active",
@@ -514,7 +609,7 @@ public enum MedicationRequestStatus {
    CODE_STATUS_UNKNOWN = "unknown"
 }
 
-# FHIR MedicationRequestDispenseRequestInitialFill datatype record.
+# FHIR USCoreMedicationRequestProfileDispenseRequestInitialFill datatype record.
 #
 # + duration - The length of time that the first dispense is expected to last.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -522,7 +617,7 @@ public enum MedicationRequestStatus {
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "MedicationRequestDispenseRequestInitialFill",
+    name: "USCoreMedicationRequestProfileDispenseRequestInitialFill",
     baseType: (),
     elements: {
         "duration": {
@@ -576,7 +671,9 @@ public enum MedicationRequestStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type MedicationRequestDispenseRequestInitialFill record {|
+public type USCoreMedicationRequestProfileDispenseRequestInitialFill record {|
+    *r4:BackboneElement;
+
     r4:Duration duration?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -584,7 +681,15 @@ public type MedicationRequestDispenseRequestInitialFill record {|
     string id?;
 |};
 
-# FHIR MedicationRequestDispenseRequest datatype record.
+# USCoreMedicationRequestProfilePriority enum
+public enum USCoreMedicationRequestProfilePriority {
+   CODE_PRIORITY_STAT = "stat",
+   CODE_PRIORITY_ROUTINE = "routine",
+   CODE_PRIORITY_URGENT = "urgent",
+   CODE_PRIORITY_ASAP = "asap"
+}
+
+# FHIR USCoreMedicationRequestProfileDispenseRequest datatype record.
 #
 # + validityPeriod - This indicates the validity period of a prescription (stale dating the Prescription).
 # + dispenseInterval - The minimum period of time that must occur between dispenses of the medication.
@@ -597,7 +702,7 @@ public type MedicationRequestDispenseRequestInitialFill record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + expectedSupplyDuration - Identifies the period time over which the supplied product is expected to be used, or the length of time the dispense is expected to last.
 @r4:DataTypeDefinition {
-    name: "MedicationRequestDispenseRequest",
+    name: "USCoreMedicationRequestProfileDispenseRequest",
     baseType: (),
     elements: {
         "validityPeriod": {
@@ -665,7 +770,7 @@ public type MedicationRequestDispenseRequestInitialFill record {|
         },
         "initialFill": {
             name: "initialFill",
-            dataType: MedicationRequestDispenseRequestInitialFill,
+            dataType: USCoreMedicationRequestProfileDispenseRequestInitialFill,
             min: 0,
             max: 1,
             isArray: false,
@@ -696,7 +801,9 @@ public type MedicationRequestDispenseRequestInitialFill record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type MedicationRequestDispenseRequest record {|
+public type USCoreMedicationRequestProfileDispenseRequest record {|
+    *r4:BackboneElement;
+
     r4:Period validityPeriod?;
     r4:Duration dispenseInterval?;
     r4:Extension[] extension?;
@@ -704,109 +811,8 @@ public type MedicationRequestDispenseRequest record {|
     r4:Quantity quantity?;
     r4:unsignedInt numberOfRepeatsAllowed?;
     r4:Extension[] modifierExtension?;
-    MedicationRequestDispenseRequestInitialFill initialFill?;
+    USCoreMedicationRequestProfileDispenseRequestInitialFill initialFill?;
     string id?;
     r4:Duration expectedSupplyDuration?;
-|};
-
-# MedicationRequestPriority enum
-public enum MedicationRequestPriority {
-   CODE_PRIORITY_STAT = "stat",
-   CODE_PRIORITY_ROUTINE = "routine",
-   CODE_PRIORITY_URGENT = "urgent",
-   CODE_PRIORITY_ASAP = "asap"
-}
-
-# MedicationRequestIntent enum
-public enum MedicationRequestIntent {
-   CODE_INTENT_PROPOSAL = "proposal",
-   CODE_INTENT_INSTANCE_ORDER = "instance-order",
-   CODE_INTENT_FILLER_ORDER = "filler-order",
-   CODE_INTENT_ORIGINAL_ORDER = "original-order",
-   CODE_INTENT_REFLEX_ORDER = "reflex-order",
-   CODE_INTENT_PLAN = "plan",
-   CODE_INTENT_ORDER = "order",
-   CODE_INTENT_OPTION = "option"
-}
-
-# FHIR MedicationRequestSubstitution datatype record.
-#
-# + allowedCodeableConcept - True if the prescriber allows a different drug to be dispensed from what was prescribed.
-# + reason - Indicates the reason for the substitution, or why substitution must or must not be performed.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + allowedBoolean - True if the prescriber allows a different drug to be dispensed from what was prescribed.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-@r4:DataTypeDefinition {
-    name: "MedicationRequestSubstitution",
-    baseType: (),
-    elements: {
-        "allowedCodeableConcept": {
-            name: "allowedCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "True if the prescriber allows a different drug to be dispensed from what was prescribed.",
-            path: "MedicationRequest.substitution.allowed[x]"
-        },
-        "reason": {
-            name: "reason",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Indicates the reason for the substitution, or why substitution must or must not be performed.",
-            path: "MedicationRequest.substitution.reason"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "MedicationRequest.substitution.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "MedicationRequest.substitution.modifierExtension"
-        },
-        "allowedBoolean": {
-            name: "allowedBoolean",
-            dataType: boolean,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "True if the prescriber allows a different drug to be dispensed from what was prescribed.",
-            path: "MedicationRequest.substitution.allowed[x]"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "MedicationRequest.substitution.id"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type MedicationRequestSubstitution record {|
-    r4:CodeableConcept allowedCodeableConcept;
-    r4:CodeableConcept reason?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    boolean allowedBoolean;
-    string id?;
 |};
 

@@ -156,7 +156,7 @@ public const RESOURCE_NAME_USCOREDOCUMENTREFERENCEPROFILE = "DocumentReference";
         },
         "content" : {
             name: "content",
-            dataType: DocumentReferenceContent,
+            dataType: USCoreDocumentReferenceProfileContent,
             min: 1,
             max: 1,
             isArray: false,
@@ -172,7 +172,7 @@ public const RESOURCE_NAME_USCOREDOCUMENTREFERENCEPROFILE = "DocumentReference";
         },
         "docStatus" : {
             name: "docStatus",
-            dataType: DocumentReferenceDocStatus,
+            dataType: USCoreDocumentReferenceProfileDocStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -189,7 +189,7 @@ public const RESOURCE_NAME_USCOREDOCUMENTREFERENCEPROFILE = "DocumentReference";
         },
         "context" : {
             name: "context",
-            dataType: DocumentReferenceContext,
+            dataType: USCoreDocumentReferenceProfileContext,
             min: 0,
             max: 1,
             isArray: false,
@@ -230,7 +230,7 @@ public const RESOURCE_NAME_USCOREDOCUMENTREFERENCEPROFILE = "DocumentReference";
         },
         "relatesTo" : {
             name: "relatesTo",
-            dataType: DocumentReferenceRelatesTo,
+            dataType: USCoreDocumentReferenceProfileRelatesTo,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -246,7 +246,7 @@ public const RESOURCE_NAME_USCOREDOCUMENTREFERENCEPROFILE = "DocumentReference";
         },
         "status" : {
             name: "status",
-            dataType: DocumentReferenceStatus,
+            dataType: USCoreDocumentReferenceProfileStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -279,10 +279,10 @@ public type USCoreDocumentReferenceProfile record {|
     r4:code language?;
     r4:Identifier masterIdentifier?;
     r4:CodeableConcept 'type;
-    DocumentReferenceContent content;
+    USCoreDocumentReferenceProfileContent content;
     r4:Resource[] contained?;
-    DocumentReferenceDocStatus docStatus?;
-    DocumentReferenceContext context?;
+    USCoreDocumentReferenceProfileDocStatus docStatus?;
+    USCoreDocumentReferenceProfileContext context?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
@@ -290,9 +290,9 @@ public type USCoreDocumentReferenceProfile record {|
        minLength: 1
     }
     r4:CodeableConcept[] category;
-    DocumentReferenceRelatesTo[] relatesTo?;
+    USCoreDocumentReferenceProfileRelatesTo[] relatesTo?;
     r4:Reference authenticator?;
-    DocumentReferenceStatus status;
+    USCoreDocumentReferenceProfileStatus status;
     never...;
 |};
 
@@ -321,7 +321,102 @@ public type BaseUSCoreDocumentReferenceProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
-# FHIR DocumentReferenceContext datatype record.
+# USCoreDocumentReferenceProfileStatus enum
+public enum USCoreDocumentReferenceProfileStatus {
+   CODE_STATUS_CURRENT = "current",
+   CODE_STATUS_SUPERSEDED = "superseded",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
+}
+
+# USCoreDocumentReferenceProfileDocStatus enum
+public enum USCoreDocumentReferenceProfileDocStatus {
+   CODE_DOCSTATUS_AMENDED = "amended",
+   CODE_DOCSTATUS_FINAL = "final",
+   CODE_DOCSTATUS_PRELIMINARY = "preliminary",
+   CODE_DOCSTATUS_ENTERED_IN_ERROR = "entered-in-error"
+}
+
+# FHIR USCoreDocumentReferenceProfileContent datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + attachment - The document or URL of the document along with critical metadata to prove content has integrity.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + format - An identifier of the document encoding, structure, and template that the document conforms to beyond the base format indicated in the mimeType.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@r4:DataTypeDefinition {
+    name: "USCoreDocumentReferenceProfileContent",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "DocumentReference.content.extension"
+        },
+        "attachment": {
+            name: "attachment",
+            dataType: r4:Attachment,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The document or URL of the document along with critical metadata to prove content has integrity.",
+            path: "DocumentReference.content.attachment"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "DocumentReference.content.modifierExtension"
+        },
+        "format": {
+            name: "format",
+            dataType: r4:Coding,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "An identifier of the document encoding, structure, and template that the document conforms to beyond the base format indicated in the mimeType.",
+            path: "DocumentReference.content.format"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "DocumentReference.content.id"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreDocumentReferenceProfileContent record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Attachment attachment;
+    r4:Extension[] modifierExtension?;
+    r4:Coding format?;
+    string id?;
+|};
+
+# USCoreDocumentReferenceProfileRelatesToCode enum
+public enum USCoreDocumentReferenceProfileRelatesToCode {
+   CODE_CODE_SIGNS = "signs",
+   CODE_CODE_REPLACES = "replaces",
+   CODE_CODE_TRANSFORMS = "transforms",
+   CODE_CODE_APPENDS = "appends"
+}
+
+# FHIR USCoreDocumentReferenceProfileContext datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + period - The time period over which the service that is described by the document was provided.
@@ -334,7 +429,7 @@ public type BaseUSCoreDocumentReferenceProfileMeta record {|
 # + event - This list of codes represents the main clinical acts, such as a colonoscopy or an appendectomy, being documented. In some cases, the event is inherent in the type Code, such as a 'History and Physical Report' in which the procedure being documented is necessarily a 'History and Physical' act.
 # + sourcePatientInfo - The Patient Information as known when the document was published. May be a reference to a version specific, or contained.
 @r4:DataTypeDefinition {
-    name: "DocumentReferenceContext",
+    name: "USCoreDocumentReferenceProfileContext",
     baseType: (),
     elements: {
         "extension": {
@@ -433,7 +528,9 @@ public type BaseUSCoreDocumentReferenceProfileMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DocumentReferenceContext record {|
+public type USCoreDocumentReferenceProfileContext record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Reference[] related?;
@@ -446,7 +543,7 @@ public type DocumentReferenceContext record {|
     r4:Reference sourcePatientInfo?;
 |};
 
-# FHIR DocumentReferenceRelatesTo datatype record.
+# FHIR USCoreDocumentReferenceProfileRelatesTo datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - The type of relationship that this document has with anther document.
@@ -454,7 +551,7 @@ public type DocumentReferenceContext record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + target - The target document of this relationship.
 @r4:DataTypeDefinition {
-    name: "DocumentReferenceRelatesTo",
+    name: "USCoreDocumentReferenceProfileRelatesTo",
     baseType: (),
     elements: {
         "extension": {
@@ -468,7 +565,7 @@ public type DocumentReferenceContext record {|
         },
         "code": {
             name: "code",
-            dataType: DocumentReferenceRelatesToCode,
+            dataType: USCoreDocumentReferenceProfileRelatesToCode,
             min: 1,
             max: 1,
             isArray: false,
@@ -508,104 +605,13 @@ public type DocumentReferenceContext record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DocumentReferenceRelatesTo record {|
+public type USCoreDocumentReferenceProfileRelatesTo record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
-    DocumentReferenceRelatesToCode code;
+    USCoreDocumentReferenceProfileRelatesToCode code;
     r4:Extension[] modifierExtension?;
     string id?;
     r4:Reference target;
 |};
-
-# FHIR DocumentReferenceContent datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + attachment - The document or URL of the document along with critical metadata to prove content has integrity.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + format - An identifier of the document encoding, structure, and template that the document conforms to beyond the base format indicated in the mimeType.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-@r4:DataTypeDefinition {
-    name: "DocumentReferenceContent",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "DocumentReference.content.extension"
-        },
-        "attachment": {
-            name: "attachment",
-            dataType: r4:Attachment,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The document or URL of the document along with critical metadata to prove content has integrity.",
-            path: "DocumentReference.content.attachment"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "DocumentReference.content.modifierExtension"
-        },
-        "format": {
-            name: "format",
-            dataType: r4:Coding,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "An identifier of the document encoding, structure, and template that the document conforms to beyond the base format indicated in the mimeType.",
-            path: "DocumentReference.content.format"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "DocumentReference.content.id"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type DocumentReferenceContent record {|
-    r4:Extension[] extension?;
-    r4:Attachment attachment;
-    r4:Extension[] modifierExtension?;
-    r4:Coding format?;
-    string id?;
-|};
-
-# DocumentReferenceDocStatus enum
-public enum DocumentReferenceDocStatus {
-   CODE_DOCSTATUS_AMENDED = "amended",
-   CODE_DOCSTATUS_FINAL = "final",
-   CODE_DOCSTATUS_PRELIMINARY = "preliminary",
-   CODE_DOCSTATUS_ENTERED_IN_ERROR = "entered-in-error"
-}
-
-# DocumentReferenceStatus enum
-public enum DocumentReferenceStatus {
-   CODE_STATUS_CURRENT = "current",
-   CODE_STATUS_SUPERSEDED = "superseded",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
-}
-
-# DocumentReferenceRelatesToCode enum
-public enum DocumentReferenceRelatesToCode {
-   CODE_CODE_SIGNS = "signs",
-   CODE_CODE_REPLACES = "replaces",
-   CODE_CODE_TRANSFORMS = "transforms",
-   CODE_CODE_APPENDS = "appends"
-}
 

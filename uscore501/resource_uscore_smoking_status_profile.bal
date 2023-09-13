@@ -34,12 +34,12 @@ public const RESOURCE_NAME_USCORESMOKINGSTATUSPROFILE = "Observation";
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + focus - The actual focus of an observation when it is not the patient of record representing something or someone associated with the patient such as a spouse, parent, fetus, or donor. For example, fetus observations in a mother's record. The focus of an observation could also be an existing condition, an intervention, the subject's diet, another observation of the subject, or a body structure such as tumor or implanted device. An example use case would be using the Observation resource to capture whether the mother is trained to change her child's tracheostomy tube. In this example, the child is the patient of record and the mother is the focus.
 # + language - The base language in which the resource is written.
+# + valueCodeableConcept - The information determined as a result of making the observation, if the information has a simple value.
 # + specimen - The specimen that was used when this observation was made.
 # + derivedFrom - The target resource that represents a measurement from which this observation value is derived. For example, a calculated anion gap or a fetal measurement based on an ultrasound image.
 # + id - The logical id of the resource, as used in the URL for the resource. Once assigned, this value never changes.
 # + text - A human-readable narrative that contains a summary of the resource and can be used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative. Resource definitions may define what content should be represented in the narrative to ensure clinical safety.
 # + issued - The date and time this version of the observation was made available to providers, typically after the results have been reviewed and verified.
-# + value - The information determined as a result of making the observation, if the information has a simple value.
 # + basedOn - A plan, proposal or order that is fulfilled in whole or in part by this event. For example, a MedicationRequest may require a patient to have laboratory test performed before it is dispensed.
 # + identifier - A unique identifier assigned to this observation.
 # + performer - Who was responsible for asserting the observed value as 'true'.
@@ -140,6 +140,15 @@ public const RESOURCE_NAME_USCORESMOKINGSTATUSPROFILE = "Observation";
             path: "Observation.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
+        "valueCodeableConcept" : {
+            name: "valueCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            path: "Observation.value[x]",
+            valueSet: "http://hl7.org/fhir/us/core/ValueSet/us-core-observation-smokingstatus"
+        },
         "specimen" : {
             name: "specimen",
             dataType: r4:Reference,
@@ -179,14 +188,6 @@ public const RESOURCE_NAME_USCORESMOKINGSTATUSPROFILE = "Observation";
             max: 1,
             isArray: false,
             path: "Observation.issued"
-        },
-        "value[x]" : {
-            name: "value[x]",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Observation.value[x]"
         },
         "basedOn" : {
             name: "basedOn",
@@ -264,7 +265,7 @@ public const RESOURCE_NAME_USCORESMOKINGSTATUSPROFILE = "Observation";
         },
         "component" : {
             name: "component",
-            dataType: ObservationComponentFive,
+            dataType: USCoreSmokingStatusProfileComponent,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -280,7 +281,7 @@ public const RESOURCE_NAME_USCORESMOKINGSTATUSPROFILE = "Observation";
         },
         "referenceRange" : {
             name: "referenceRange",
-            dataType: ObservationReferenceRangeFive,
+            dataType: USCoreSmokingStatusProfileReferenceRange,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -346,7 +347,7 @@ public const RESOURCE_NAME_USCORESMOKINGSTATUSPROFILE = "Observation";
         },
         "status" : {
             name: "status",
-            dataType: ObservationStatusFive,
+            dataType: USCoreSmokingStatusProfileStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -376,12 +377,12 @@ public type USCoreSmokingStatusProfile record {|
     r4:Extension[] modifierExtension?;
     r4:Reference[] focus?;
     r4:code language?;
+    r4:CodeableConcept valueCodeableConcept;
     r4:Reference specimen?;
     r4:Reference[] derivedFrom?;
     string id?;
     r4:Narrative text?;
     r4:instant issued;
-    r4:CodeableConcept value?;
     r4:Reference[] basedOn?;
     r4:Identifier[] identifier?;
     r4:Reference[] performer?;
@@ -391,16 +392,16 @@ public type USCoreSmokingStatusProfile record {|
     r4:Reference[] hasMember?;
     r4:Reference encounter?;
     r4:CodeableConcept bodySite?;
-    ObservationComponentFive[] component?;
+    USCoreSmokingStatusProfileComponent[] component?;
     r4:Resource[] contained?;
-    ObservationReferenceRangeFive[] referenceRange?;
+    USCoreSmokingStatusProfileReferenceRange[] referenceRange?;
     r4:dateTime effectiveDateTime?;
     r4:CodeableConcept[] interpretation?;
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Reference device?;
     r4:instant effectiveInstant?;
-    ObservationStatusFive status;
+    USCoreSmokingStatusProfileStatus status;
     never...;
 |};
 
@@ -429,15 +430,15 @@ public type BaseUSCoreSmokingStatusProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
-# ObservationStatusFive enum
-public enum ObservationStatusFive {
+# USCoreSmokingStatusProfileStatus enum
+public enum USCoreSmokingStatusProfileStatus {
    CODE_STATUS_AMENDED = "amended",
    CODE_STATUS_FINAL = "final",
    CODE_STATUS_REGISTERED = "registered",
    CODE_STATUS_PRELIMINARY = "preliminary"
 }
 
-# FHIR ObservationReferenceRangeFive datatype record.
+# FHIR USCoreSmokingStatusProfileReferenceRange datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + high - The value of the high bound of the reference range. The high bound of the reference range endpoint is inclusive of the value (e.g. reference range is >=5 - <=9). If the high bound is omitted, it is assumed to be meaningless (e.g. reference range is >= 2.3).
@@ -449,7 +450,7 @@ public enum ObservationStatusFive {
 # + 'type - Codes to indicate the what part of the targeted reference population it applies to. For example, the normal or therapeutic range.
 # + age - The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so.
 @r4:DataTypeDefinition {
-    name: "ObservationReferenceRangeFive",
+    name: "USCoreSmokingStatusProfileReferenceRange",
     baseType: (),
     elements: {
         "extension": {
@@ -539,7 +540,9 @@ public enum ObservationStatusFive {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ObservationReferenceRangeFive record {|
+public type USCoreSmokingStatusProfileReferenceRange record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Quantity high?;
     r4:Quantity low?;
@@ -551,7 +554,7 @@ public type ObservationReferenceRangeFive record {|
     r4:Range age?;
 |};
 
-# FHIR ObservationComponentFive datatype record.
+# FHIR USCoreSmokingStatusProfileComponent datatype record.
 #
 # + valueBoolean - The information determined as a result of making the observation, if the information has a simple value.
 # + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
@@ -571,7 +574,7 @@ public type ObservationReferenceRangeFive record {|
 # + valueInteger - The information determined as a result of making the observation, if the information has a simple value.
 # + valueQuantity - The information determined as a result of making the observation, if the information has a simple value.
 @r4:DataTypeDefinition {
-    name: "ObservationComponentFive",
+    name: "USCoreSmokingStatusProfileComponent",
     baseType: (),
     elements: {
         "valueBoolean": {
@@ -733,7 +736,9 @@ public type ObservationReferenceRangeFive record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ObservationComponentFive record {|
+public type USCoreSmokingStatusProfileComponent record {|
+    *r4:BackboneElement;
+
     boolean valueBoolean?;
     r4:CodeableConcept dataAbsentReason?;
     r4:Extension[] extension?;

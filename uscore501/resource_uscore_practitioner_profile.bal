@@ -27,6 +27,11 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
 #
 # + resourceType - The type of the resource describes
 # + identifier - An identifier that applies to this person in this role.
+# * identifier Slicings
+# 1) USCorePractitionerProfileIdentifierNPI: An identifier for the person as this agent
+#       - min = 0
+#       - max = 1
+#
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - Address(es) of the practitioner that are not role specific (typically home address). Work addresses are not typically entered in this property as they are usually role dependent.
 # + gender - Administrative Gender - the gender that the person is considered to have for administration and record keeping purposes.
@@ -75,7 +80,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
         },
         "gender" : {
             name: "gender",
-            dataType: PractitionerGender,
+            dataType: USCorePractitionerProfileGender,
             min: 0,
             max: 1,
             isArray: false,
@@ -125,7 +130,7 @@ public const RESOURCE_NAME_USCOREPRACTITIONERPROFILE = "Practitioner";
         },
         "qualification" : {
             name: "qualification",
-            dataType: PractitionerQualification,
+            dataType: USCorePractitionerProfileQualification,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -216,13 +221,13 @@ public type USCorePractitionerProfile record {|
     r4:Identifier[] identifier;
     r4:Extension[] extension?;
     r4:Address[] address?;
-    PractitionerGender gender?;
+    USCorePractitionerProfileGender gender?;
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:Attachment[] photo?;
     r4:code language?;
     r4:date birthDate?;
-    PractitionerQualification[] qualification?;
+    USCorePractitionerProfileQualification[] qualification?;
     r4:Resource[] contained?;
     @constraint:Array {
        minLength: 1
@@ -261,8 +266,16 @@ public type BaseUSCorePractitionerProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
-# PractitionerIdentifierUse enum
-public enum PractitionerIdentifierUse {
+# USCorePractitionerProfileGender enum
+public enum USCorePractitionerProfileGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
+
+# USCorePractitionerProfileIdentifierUse enum
+public enum USCorePractitionerProfileIdentifierUse {
    CODE_USE_SECONDARY = "secondary",
    CODE_USE_TEMP = "temp",
    CODE_USE_USUAL = "usual",
@@ -270,16 +283,36 @@ public enum PractitionerIdentifierUse {
    CODE_USE_OFFICIAL = "official"
 }
 
-# PractitionerGender enum
-public enum PractitionerGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
+# FHIR USCorePractitionerProfileIdentifierNPI datatype record.
+#
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+@r4:DataTypeDefinition {
+    name: "USCorePractitionerProfileIdentifierNPI",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Practitioner.identifier.system"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
 }
+public type USCorePractitionerProfileIdentifierNPI record {|
+    *r4:Identifier;
 
-# PractitionerNameUse enum
-public enum PractitionerNameUse {
+    r4:uri system = "http://hl7.org/fhir/sid/us-npi";
+|};
+
+# USCorePractitionerProfileNameUse enum
+public enum USCorePractitionerProfileNameUse {
    CODE_USE_MAIDEN = "maiden",
    CODE_USE_TEMP = "temp",
    CODE_USE_USUAL = "usual",
@@ -289,7 +322,7 @@ public enum PractitionerNameUse {
    CODE_USE_ANONYMOUS = "anonymous"
 }
 
-# FHIR PractitionerQualification datatype record.
+# FHIR USCorePractitionerProfileQualification datatype record.
 #
 # + identifier - An identifier that applies to this person's qualification in this role.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -299,7 +332,7 @@ public enum PractitionerNameUse {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + issuer - Organization that regulates and issues the qualification.
 @r4:DataTypeDefinition {
-    name: "PractitionerQualification",
+    name: "USCorePractitionerProfileQualification",
     baseType: (),
     elements: {
         "identifier": {
@@ -371,7 +404,9 @@ public enum PractitionerNameUse {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type PractitionerQualification record {|
+public type USCorePractitionerProfileQualification record {|
+    *r4:BackboneElement;
+
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Period period?;

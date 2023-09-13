@@ -89,7 +89,7 @@ public const RESOURCE_NAME_USCOREGOALPROFILE = "Goal";
         },
         "lifecycleStatus" : {
             name: "lifecycleStatus",
-            dataType: GoalLifecycleStatus,
+            dataType: USCoreGoalProfileLifecycleStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -190,7 +190,7 @@ public const RESOURCE_NAME_USCOREGOALPROFILE = "Goal";
         },
         "target" : {
             name: "target",
-            dataType: GoalTarget,
+            dataType: USCoreGoalProfileTarget,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -282,7 +282,7 @@ public type USCoreGoalProfile record {|
     r4:Annotation[] note?;
     r4:Reference[] addresses?;
     r4:Extension[] extension?;
-    GoalLifecycleStatus lifecycleStatus;
+    USCoreGoalProfileLifecycleStatus lifecycleStatus;
     r4:Reference[] outcomeReference?;
     r4:Reference subject;
     r4:Extension[] modifierExtension?;
@@ -294,7 +294,7 @@ public type USCoreGoalProfile record {|
     r4:Narrative text?;
     r4:Identifier[] identifier?;
     r4:CodeableConcept priority?;
-    GoalTarget[] target?;
+    USCoreGoalProfileTarget[] target?;
     r4:Resource[] contained?;
     r4:Reference expressedBy?;
     r4:CodeableConcept startCodeableConcept?;
@@ -330,7 +330,7 @@ public type BaseUSCoreGoalProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
-# FHIR GoalTarget datatype record.
+# FHIR USCoreGoalProfileTarget datatype record.
 #
 # + detailRange - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -338,14 +338,14 @@ public type BaseUSCoreGoalProfileMeta record {|
 # + detailRatio - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
 # + detailInteger - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
 # + detailQuantity - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
+# + dueDate - Indicates either the date or the duration after start by which the goal should be met.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + detailCodeableConcept - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
-# + due - Indicates either the date or the duration after start by which the goal should be met.
 # + detailString - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
 # + detailBoolean - The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "GoalTarget",
+    name: "USCoreGoalProfileTarget",
     baseType: (),
     elements: {
         "detailRange": {
@@ -402,6 +402,15 @@ public type BaseUSCoreGoalProfileMeta record {|
             description: "The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.",
             path: "Goal.target.detail[x]"
         },
+        "dueDate": {
+            name: "dueDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates either the date or the duration after start by which the goal should be met.",
+            path: "Goal.target.due[x]"
+        },
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -419,15 +428,6 @@ public type BaseUSCoreGoalProfileMeta record {|
             isArray: false,
             description: "The target value of the focus to be achieved to signify the fulfillment of the goal, e.g. 150 pounds, 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any focus value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any focus value at or above the low value.",
             path: "Goal.target.detail[x]"
-        },
-        "due[x]": {
-            name: "due[x]",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Indicates either the date or the duration after start by which the goal should be met.",
-            path: "Goal.target.due[x]"
         },
         "detailString": {
             name: "detailString",
@@ -462,23 +462,25 @@ public type BaseUSCoreGoalProfileMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type GoalTarget record {|
+public type USCoreGoalProfileTarget record {|
+    *r4:BackboneElement;
+
     r4:Range detailRange?;
     r4:Extension[] extension?;
     r4:CodeableConcept measure?;
     r4:Ratio detailRatio?;
     r4:integer detailInteger?;
     r4:Quantity detailQuantity?;
+    r4:date dueDate?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept detailCodeableConcept?;
-    r4:date due?;
     string detailString?;
     boolean detailBoolean?;
     string id?;
 |};
 
-# GoalLifecycleStatus enum
-public enum GoalLifecycleStatus {
+# USCoreGoalProfileLifecycleStatus enum
+public enum USCoreGoalProfileLifecycleStatus {
    CODE_LIFECYCLESTATUS_PROPOSED = "proposed",
    CODE_LIFECYCLESTATUS_REJECTED = "rejected",
    CODE_LIFECYCLESTATUS_ACCEPTED = "accepted",
