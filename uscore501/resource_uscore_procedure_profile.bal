@@ -261,7 +261,7 @@ public const RESOURCE_NAME_USCOREPROCEDUREPROFILE = "Procedure";
         },
         "performer" : {
             name: "performer",
-            dataType: ProcedurePerformer,
+            dataType: USCoreProcedureProfilePerformer,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -277,7 +277,7 @@ public const RESOURCE_NAME_USCOREPROCEDUREPROFILE = "Procedure";
         },
         "focalDevice" : {
             name: "focalDevice",
-            dataType: ProcedureFocalDevice,
+            dataType: USCoreProcedureProfileFocalDevice,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -367,7 +367,7 @@ public const RESOURCE_NAME_USCOREPROCEDUREPROFILE = "Procedure";
         },
         "status" : {
             name: "status",
-            dataType: ProcedureStatus,
+            dataType: USCoreProcedureProfileStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -411,9 +411,9 @@ public type USCoreProcedureProfile record {|
     r4:Identifier[] identifier?;
     r4:Reference recorder?;
     r4:Reference[] complicationDetail?;
-    ProcedurePerformer[] performer?;
+    USCoreProcedureProfilePerformer[] performer?;
     r4:Reference[] usedReference?;
-    ProcedureFocalDevice[] focalDevice?;
+    USCoreProcedureProfileFocalDevice[] focalDevice?;
     r4:Reference encounter?;
     r4:canonical[] instantiatesCanonical?;
     r4:CodeableConcept[] bodySite?;
@@ -423,7 +423,7 @@ public type USCoreProcedureProfile record {|
     r4:uri implicitRules?;
     r4:Reference location?;
     r4:CodeableConcept category?;
-    ProcedureStatus status;
+    USCoreProcedureProfileStatus status;
     never...;
 |};
 
@@ -452,19 +452,7 @@ public type BaseUSCoreProcedureProfileMeta record {|
     r4:Coding[] tag?;
 |};
 
-# ProcedureStatus enum
-public enum ProcedureStatus {
-   CODE_STATUS_STOPPED = "stopped",
-   CODE_STATUS_COMPLETED = "completed",
-   CODE_STATUS_NOT_DONE = "not-done",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
-   CODE_STATUS_IN_PROGRESS = "in-progress",
-   CODE_STATUS_ON_HOLD = "on-hold",
-   CODE_STATUS_PREPARATION = "preparation",
-   CODE_STATUS_UNKNOWN = "unknown"
-}
-
-# FHIR ProcedureFocalDevice datatype record.
+# FHIR USCoreProcedureProfileFocalDevice datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -472,7 +460,7 @@ public enum ProcedureStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + manipulated - The device that was manipulated (changed) during the procedure.
 @r4:DataTypeDefinition {
-    name: "ProcedureFocalDevice",
+    name: "USCoreProcedureProfileFocalDevice",
     baseType: (),
     elements: {
         "extension": {
@@ -526,7 +514,9 @@ public enum ProcedureStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ProcedureFocalDevice record {|
+public type USCoreProcedureProfileFocalDevice record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept action?;
@@ -534,7 +524,7 @@ public type ProcedureFocalDevice record {|
     r4:Reference manipulated;
 |};
 
-# FHIR ProcedurePerformer datatype record.
+# FHIR USCoreProcedureProfilePerformer datatype record.
 #
 # + actor - The practitioner who was involved in the procedure.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -543,7 +533,7 @@ public type ProcedureFocalDevice record {|
 # + onBehalfOf - The organization the device or practitioner was acting on behalf of.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "ProcedurePerformer",
+    name: "USCoreProcedureProfilePerformer",
     baseType: (),
     elements: {
         "actor": {
@@ -606,7 +596,9 @@ public type ProcedureFocalDevice record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ProcedurePerformer record {|
+public type USCoreProcedureProfilePerformer record {|
+    *r4:BackboneElement;
+
     r4:Reference actor;
     r4:Extension[] extension?;
     r4:CodeableConcept 'function?;
@@ -614,4 +606,16 @@ public type ProcedurePerformer record {|
     r4:Reference onBehalfOf?;
     string id?;
 |};
+
+# USCoreProcedureProfileStatus enum
+public enum USCoreProcedureProfileStatus {
+   CODE_STATUS_STOPPED = "stopped",
+   CODE_STATUS_COMPLETED = "completed",
+   CODE_STATUS_NOT_DONE = "not-done",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+   CODE_STATUS_IN_PROGRESS = "in-progress",
+   CODE_STATUS_ON_HOLD = "on-hold",
+   CODE_STATUS_PREPARATION = "preparation",
+   CODE_STATUS_UNKNOWN = "unknown"
+}
 

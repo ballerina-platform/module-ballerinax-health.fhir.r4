@@ -51,6 +51,11 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILELABORATORYREPORTING = "D
 # + meta - The metadata about the resource. This is content that is maintained by the infrastructure. Changes to the content might not always be associated with version changes to the resource.
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes.
+# * category Slicings
+# 1) USCoreDiagnosticReportProfileLaboratoryReportingCategoryLaboratorySlice: Service category
+#       - min = 1
+#       - max = 1
+#
 # + imagingStudy - One or more links to full details of any imaging performed during the diagnostic investigation. Typically, this is imaging performed by DICOM enabled modalities, but this is not required. A fully enabled PACS viewer can use this information to provide views of the source images.
 # + status - The status of the diagnostic report.
 @r4:ResourceDefinition {
@@ -110,7 +115,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILELABORATORYREPORTING = "D
         },
         "media" : {
             name: "media",
-            dataType: DiagnosticReportMediaOne,
+            dataType: USCoreDiagnosticReportProfileLaboratoryReportingMedia,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -272,7 +277,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILELABORATORYREPORTING = "D
         },
         "status" : {
             name: "status",
-            dataType: DiagnosticReportStatusOne,
+            dataType: USCoreDiagnosticReportProfileLaboratoryReportingStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -299,7 +304,7 @@ public type USCoreDiagnosticReportProfileLaboratoryReporting record {|
     r4:Extension[] modifierExtension?;
     r4:Attachment[] presentedForm?;
     r4:code language?;
-    DiagnosticReportMediaOne[] media?;
+    USCoreDiagnosticReportProfileLaboratoryReportingMedia[] media?;
     string conclusion?;
     r4:Reference[] result?;
     r4:Reference[] specimen?;
@@ -321,7 +326,7 @@ public type USCoreDiagnosticReportProfileLaboratoryReporting record {|
     }
     r4:CodeableConcept[] category;
     r4:Reference[] imagingStudy?;
-    DiagnosticReportStatusOne status;
+    USCoreDiagnosticReportProfileLaboratoryReportingStatus status;
     never...;
 |};
 
@@ -350,15 +355,54 @@ public type BaseUSCoreDiagnosticReportProfileLaboratoryReportingMeta record {|
     r4:Coding[] tag?;
 |};
 
-# DiagnosticReportStatusOne enum
-public enum DiagnosticReportStatusOne {
+# USCoreDiagnosticReportProfileLaboratoryReportingStatus enum
+public enum USCoreDiagnosticReportProfileLaboratoryReportingStatus {
    CODE_STATUS_FINAL = "final",
    CODE_STATUS_REGISTERED = "registered",
    CODE_STATUS_PRELIMINARY = "preliminary",
    CODE_STATUS_PARTIAL = "partial"
 }
 
-# FHIR DiagnosticReportMediaOne datatype record.
+# FHIR USCoreDiagnosticReportProfileLaboratoryReportingCategoryCoding datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+@r4:DataTypeDefinition {
+    name: "USCoreDiagnosticReportProfileLaboratoryReportingCategoryCoding",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "DiagnosticReport.category.coding.system"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "DiagnosticReport.category.coding.code"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreDiagnosticReportProfileLaboratoryReportingCategoryCoding record {|
+    *r4:Coding;
+
+    r4:uri system = "http://terminology.hl7.org/CodeSystem/v2-0074";
+    r4:code code = "LAB";
+|};
+
+# FHIR USCoreDiagnosticReportProfileLaboratoryReportingMedia datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -366,7 +410,7 @@ public enum DiagnosticReportStatusOne {
 # + comment - A comment about the image. Typically, this is used to provide an explanation for why the image is included, or to draw the viewer's attention to important features.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "DiagnosticReportMediaOne",
+    name: "USCoreDiagnosticReportProfileLaboratoryReportingMedia",
     baseType: (),
     elements: {
         "extension": {
@@ -420,11 +464,44 @@ public enum DiagnosticReportStatusOne {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DiagnosticReportMediaOne record {|
+public type USCoreDiagnosticReportProfileLaboratoryReportingMedia record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Reference link;
     string comment?;
     string id?;
+|};
+
+# FHIR USCoreDiagnosticReportProfileLaboratoryReportingCategoryLaboratorySlice datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+@r4:DataTypeDefinition {
+    name: "USCoreDiagnosticReportProfileLaboratoryReportingCategoryLaboratorySlice",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCoreDiagnosticReportProfileLaboratoryReportingCategoryCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "DiagnosticReport.category.coding"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreDiagnosticReportProfileLaboratoryReportingCategoryLaboratorySlice record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCoreDiagnosticReportProfileLaboratoryReportingCategoryCoding[] coding;
 |};
 

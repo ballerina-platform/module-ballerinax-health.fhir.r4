@@ -127,7 +127,7 @@ public const RESOURCE_NAME_USCORECARETEAM = "CareTeam";
         },
         "participant" : {
             name: "participant",
-            dataType: CareTeamParticipant,
+            dataType: USCoreCareTeamParticipant,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -217,7 +217,7 @@ public const RESOURCE_NAME_USCORECARETEAM = "CareTeam";
         },
         "status" : {
             name: "status",
-            dataType: CareTeamStatus,
+            dataType: USCoreCareTeamStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -250,7 +250,7 @@ public type USCoreCareTeam record {|
     @constraint:Array {
        minLength: 1
     }
-    CareTeamParticipant[] participant;
+    USCoreCareTeamParticipant[] participant;
     r4:Resource[] contained?;
     r4:Reference[] managingOrganization?;
     string name?;
@@ -260,7 +260,7 @@ public type USCoreCareTeam record {|
     r4:CodeableConcept[] reasonCode?;
     r4:Narrative text?;
     r4:CodeableConcept[] category?;
-    CareTeamStatus status?;
+    USCoreCareTeamStatus status?;
     never...;
 |};
 
@@ -289,7 +289,7 @@ public type BaseUSCoreCareTeamMeta record {|
     r4:Coding[] tag?;
 |};
 
-# FHIR CareTeamParticipant datatype record.
+# FHIR USCoreCareTeamParticipant datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + period - Indicates when the specific member or organization did (or is intended to) come into effect and end.
@@ -299,7 +299,7 @@ public type BaseUSCoreCareTeamMeta record {|
 # + onBehalfOf - The organization of the practitioner.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "CareTeamParticipant",
+    name: "USCoreCareTeamParticipant",
     baseType: (),
     elements: {
         "extension": {
@@ -371,7 +371,9 @@ public type BaseUSCoreCareTeamMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type CareTeamParticipant record {|
+public type USCoreCareTeamParticipant record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:CodeableConcept role;
@@ -381,8 +383,8 @@ public type CareTeamParticipant record {|
     string id?;
 |};
 
-# CareTeamStatus enum
-public enum CareTeamStatus {
+# USCoreCareTeamStatus enum
+public enum USCoreCareTeamStatus {
    CODE_STATUS_INACTIVE = "inactive",
    CODE_STATUS_PROPOSED = "proposed",
    CODE_STATUS_ACTIVE = "active",
