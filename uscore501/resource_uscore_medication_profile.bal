@@ -77,11 +77,11 @@ public const RESOURCE_NAME_USCOREMEDICATIONPROFILE = "Medication";
             max: 1,
             isArray: false,
             path: "Medication.code",
-            valueSet: "http://hl7.org/fhir/us/core/ValueSet/us-core-medication-codes"
+            valueSet: "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1010.4"
         },
         "ingredient" : {
             name: "ingredient",
-            dataType: MedicationIngredient,
+            dataType: USCoreMedicationProfileIngredient,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -97,7 +97,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONPROFILE = "Medication";
         },
         "batch" : {
             name: "batch",
-            dataType: MedicationBatch,
+            dataType: USCoreMedicationProfileBatch,
             min: 0,
             max: 1,
             isArray: false,
@@ -171,7 +171,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONPROFILE = "Medication";
         },
         "status" : {
             name: "status",
-            dataType: MedicationStatus,
+            dataType: USCoreMedicationProfileStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -189,60 +189,105 @@ public type USCoreMedicationProfile record {|
 
     RESOURCE_NAME_USCOREMEDICATIONPROFILE resourceType = RESOURCE_NAME_USCOREMEDICATIONPROFILE;
 
-    BaseUSCoreMedicationProfileMeta meta = {
-        profile : [PROFILE_BASE_USCOREMEDICATIONPROFILE]
-    };
     r4:Identifier[] identifier?;
     r4:Ratio amount?;
     r4:Extension[] extension?;
     r4:CodeableConcept code;
-    MedicationIngredient[] ingredient?;
+    USCoreMedicationProfileIngredient[] ingredient?;
     r4:Extension[] modifierExtension?;
-    MedicationBatch batch?;
+    USCoreMedicationProfileBatch batch?;
     r4:code language?;
     r4:Reference manufacturer?;
     r4:Resource[] contained?;
     r4:CodeableConcept form?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
-    MedicationStatus status?;
-    never...;
+    USCoreMedicationProfileStatus status?;
+    r4:Element ...;
 |};
 
+# FHIR USCoreMedicationProfileBatch datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + lotNumber - The assigned lot number of a batch of the specified product.
+# + expirationDate - When this specific batch of product will expire.
 @r4:DataTypeDefinition {
-    name: "BaseMedicationMeta",
-    baseType: r4:Meta,
-    elements: {},
+    name: "USCoreMedicationProfileBatch",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Medication.batch.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Medication.batch.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Medication.batch.id"
+        },
+        "lotNumber": {
+            name: "lotNumber",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The assigned lot number of a batch of the specified product.",
+            path: "Medication.batch.lotNumber"
+        },
+        "expirationDate": {
+            name: "expirationDate",
+            dataType: r4:dateTime,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "When this specific batch of product will expire.",
+            path: "Medication.batch.expirationDate"
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type BaseUSCoreMedicationProfileMeta record {|
-    *r4:Meta;
+public type USCoreMedicationProfileBatch record {|
+    *r4:BackboneElement;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
     r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-medication"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    string lotNumber?;
+    r4:dateTime expirationDate?;
 |};
 
-# MedicationStatus enum
-public enum MedicationStatus {
+# USCoreMedicationProfileStatus enum
+public enum USCoreMedicationProfileStatus {
    CODE_STATUS_INACTIVE = "inactive",
    CODE_STATUS_ACTIVE = "active",
    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
 }
 
-# FHIR MedicationIngredient datatype record.
+# FHIR USCoreMedicationProfileIngredient datatype record.
 #
 # + itemReference - The actual ingredient - either a substance (simple ingredient) or another medication of a medication.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -252,7 +297,7 @@ public enum MedicationStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + isActive - Indication of whether this ingredient affects the therapeutic action of the drug.
 @r4:DataTypeDefinition {
-    name: "MedicationIngredient",
+    name: "USCoreMedicationProfileIngredient",
     baseType: (),
     elements: {
         "itemReference": {
@@ -324,7 +369,9 @@ public enum MedicationStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type MedicationIngredient record {|
+public type USCoreMedicationProfileIngredient record {|
+    *r4:BackboneElement;
+
     r4:Reference itemReference;
     r4:Extension[] extension?;
     r4:Ratio strength?;
@@ -332,75 +379,5 @@ public type MedicationIngredient record {|
     r4:Extension[] modifierExtension?;
     string id?;
     boolean isActive?;
-|};
-
-# FHIR MedicationBatch datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + lotNumber - The assigned lot number of a batch of the specified product.
-# + expirationDate - When this specific batch of product will expire.
-@r4:DataTypeDefinition {
-    name: "MedicationBatch",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Medication.batch.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Medication.batch.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Medication.batch.id"
-        },
-        "lotNumber": {
-            name: "lotNumber",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The assigned lot number of a batch of the specified product.",
-            path: "Medication.batch.lotNumber"
-        },
-        "expirationDate": {
-            name: "expirationDate",
-            dataType: r4:dateTime,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "When this specific batch of product will expire.",
-            path: "Medication.batch.expirationDate"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type MedicationBatch record {|
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    string lotNumber?;
-    r4:dateTime expirationDate?;
 |};
 

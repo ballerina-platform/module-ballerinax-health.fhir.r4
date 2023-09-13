@@ -20,14 +20,19 @@
 import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_USCORECONDITION = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition";
-public const RESOURCE_NAME_USCORECONDITION = "Condition";
+public const string PROFILE_BASE_USCORECONDITIONPROBLEMSHEALTHCONCERNSPROFILE = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns";
+public const RESOURCE_NAME_USCORECONDITIONPROBLEMSHEALTHCONCERNSPROFILE = "Condition";
 
-# FHIR USCoreCondition resource record.
+# FHIR USCoreConditionProblemsHealthConcernsProfile resource record.
 #
 # + resourceType - The type of the resource describes
 # + note - Additional information about the Condition. This is a general notes/comments entry for description of the Condition, its diagnosis and prognosis.
-# + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + extension - An Extension
+# * extension Slicings
+# 1) Extension: Date the condition was first asserted
+#       - min = 0
+#       - max = 1
+#
 # + code - Identification of the condition, problem or diagnosis.
 # + evidence - Supporting evidence / manifestations that are the basis of the Condition's verification status, such as evidence that confirmed or refuted the condition.
 # + onsetRange - Estimated or actual date or date-time the condition began, in the opinion of the clinician.
@@ -58,11 +63,20 @@ public const RESOURCE_NAME_USCORECONDITION = "Condition";
 # + meta - The metadata about the resource. This is content that is maintained by the infrastructure. Changes to the content might not always be associated with version changes to the resource.
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - A category assigned to the condition.
+# * category Slicings
+# 1) USCoreConditionProblemsHealthConcernsProfileCategorySdoh: problem-list-item | encounter-diagnosis
+#       - min = 0
+#       - max = 1
+#
+# 2) USCoreConditionProblemsHealthConcernsProfileCategoryUscore: problem-list-item | health-concern
+#       - min = 1
+#       - max = *
+#
 # + abatementAge - The date or estimated date that the condition resolved or went into remission. This is called 'abatement' because of the many overloaded connotations associated with 'remission' or 'resolution' - Conditions are never really resolved, but they can abate.
 @r4:ResourceDefinition {
     resourceType: "Condition",
     baseType: r4:DomainResource,
-    profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition",
+    profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns",
     elements: {
         "note" : {
             name: "note",
@@ -91,7 +105,7 @@ public const RESOURCE_NAME_USCORECONDITION = "Condition";
         },
         "evidence" : {
             name: "evidence",
-            dataType: USCoreConditionEvidence,
+            dataType: USCoreConditionProblemsHealthConcernsProfileEvidence,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -296,7 +310,7 @@ public const RESOURCE_NAME_USCORECONDITION = "Condition";
         },
         "stage" : {
             name: "stage",
-            dataType: USCoreConditionStage,
+            dataType: USCoreConditionProblemsHealthConcernsProfileStage,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -325,7 +339,7 @@ public const RESOURCE_NAME_USCORECONDITION = "Condition";
             max: int:MAX_VALUE,
             isArray: true,
             path: "Condition.category",
-            valueSet: "http://hl7.org/fhir/us/core/ValueSet/us-core-condition-category"
+            valueSet: "http://hl7.org/fhir/ValueSet/condition-category"
         },
         "abatementAge" : {
             name: "abatementAge",
@@ -341,18 +355,15 @@ public const RESOURCE_NAME_USCORECONDITION = "Condition";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type USCoreCondition record {|
+public type USCoreConditionProblemsHealthConcernsProfile record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_USCORECONDITION resourceType = RESOURCE_NAME_USCORECONDITION;
+    RESOURCE_NAME_USCORECONDITIONPROBLEMSHEALTHCONCERNSPROFILE resourceType = RESOURCE_NAME_USCORECONDITIONPROBLEMSHEALTHCONCERNSPROFILE;
 
-    BaseUSCoreConditionMeta meta = {
-        profile : [PROFILE_BASE_USCORECONDITION]
-    };
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:CodeableConcept code;
-    USCoreConditionEvidence[] evidence?;
+    USCoreConditionProblemsHealthConcernsProfileEvidence[] evidence?;
     r4:Range onsetRange?;
     r4:dateTime abatementDateTime?;
     r4:Reference subject;
@@ -377,42 +388,90 @@ public type USCoreCondition record {|
     r4:CodeableConcept[] bodySite?;
     r4:Resource[] contained?;
     r4:Reference asserter?;
-    USCoreConditionStage[] stage?;
+    USCoreConditionProblemsHealthConcernsProfileStage[] stage?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     @constraint:Array {
        minLength: 1
     }
     r4:CodeableConcept[] category;
     r4:Age abatementAge?;
-    never...;
+    r4:Element ...;
 |};
 
+# FHIR USCoreConditionProblemsHealthConcernsProfileEvidence datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - A manifestation or symptom that led to the recording of this condition.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + detail - Links to other relevant information, including pathology reports.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "BaseConditionMeta",
-    baseType: r4:Meta,
-    elements: {},
+    name: "USCoreConditionProblemsHealthConcernsProfileEvidence",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Condition.evidence.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A manifestation or symptom that led to the recording of this condition.",
+            path: "Condition.evidence.code"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Condition.evidence.modifierExtension"
+        },
+        "detail": {
+            name: "detail",
+            dataType: r4:Reference,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Links to other relevant information, including pathology reports.",
+            path: "Condition.evidence.detail"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Condition.evidence.id"
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type BaseUSCoreConditionMeta record {|
-    *r4:Meta;
+public type USCoreConditionProblemsHealthConcernsProfileEvidence record {|
+    *r4:BackboneElement;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
     r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:CodeableConcept[] code?;
+    r4:Extension[] modifierExtension?;
+    r4:Reference[] detail?;
+    string id?;
 |};
 
-# FHIR USCoreConditionStage datatype record.
+# FHIR USCoreConditionProblemsHealthConcernsProfileStage datatype record.
 #
 # + summary - A simple summary of the stage such as 'Stage 3'. The determination of the stage is disease-specific.
 # + assessment - Reference to a formal record of the evidence on which the staging assessment is based.
@@ -421,7 +480,7 @@ public type BaseUSCoreConditionMeta record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'type - The kind of staging, such as pathological or clinical staging.
 @r4:DataTypeDefinition {
-    name: "USCoreConditionStage",
+    name: "USCoreConditionProblemsHealthConcernsProfileStage",
     baseType: (),
     elements: {
         "summary": {
@@ -484,7 +543,7 @@ public type BaseUSCoreConditionMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreConditionStage record {|
+public type USCoreConditionProblemsHealthConcernsProfileStage record {|
     *r4:BackboneElement;
 
     r4:CodeableConcept summary?;
@@ -495,61 +554,31 @@ public type USCoreConditionStage record {|
     r4:CodeableConcept 'type?;
 |};
 
-# FHIR USCoreConditionEvidence datatype record.
+# FHIR USCoreConditionProblemsHealthConcernsProfileCategoryCoding datatype record.
 #
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - A manifestation or symptom that led to the recording of this condition.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + detail - Links to other relevant information, including pathology reports.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
 @r4:DataTypeDefinition {
-    name: "USCoreConditionEvidence",
+    name: "USCoreConditionProblemsHealthConcernsProfileCategoryCoding",
     baseType: (),
     elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Condition.evidence.extension"
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Condition.category.coding.system"
         },
         "code": {
             name: "code",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A manifestation or symptom that led to the recording of this condition.",
-            path: "Condition.evidence.code"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Condition.evidence.modifierExtension"
-        },
-        "detail": {
-            name: "detail",
-            dataType: r4:Reference,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Links to other relevant information, including pathology reports.",
-            path: "Condition.evidence.detail"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
+            dataType: r4:code,
+            min: 1,
             max: 1,
             isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Condition.evidence.id"
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Condition.category.coding.code"
         }
     },
     serializers: {
@@ -557,13 +586,58 @@ public type USCoreConditionStage record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreConditionEvidence record {|
-    *r4:BackboneElement;
+public type USCoreConditionProblemsHealthConcernsProfileCategoryCoding record {|
+    *r4:Coding;
 
-    r4:Extension[] extension?;
-    r4:CodeableConcept[] code?;
-    r4:Extension[] modifierExtension?;
-    r4:Reference[] detail?;
-    string id?;
+    r4:uri system = "http://hl7.org/fhir/us/core/CodeSystem/us-core-tags";
+    r4:code code = "sdoh";
+|};
+
+# FHIR USCoreConditionProblemsHealthConcernsProfileCategoryUscore datatype record.
+#
+@r4:DataTypeDefinition {
+    name: "USCoreConditionProblemsHealthConcernsProfileCategoryUscore",
+    baseType: (),
+    elements: {
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreConditionProblemsHealthConcernsProfileCategoryUscore record {|
+    *r4:CodeableConcept;
+
+|};
+
+# FHIR USCoreConditionProblemsHealthConcernsProfileCategorySdoh datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+@r4:DataTypeDefinition {
+    name: "USCoreConditionProblemsHealthConcernsProfileCategorySdoh",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCoreConditionProblemsHealthConcernsProfileCategoryCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Condition.category.coding"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreConditionProblemsHealthConcernsProfileCategorySdoh record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCoreConditionProblemsHealthConcernsProfileCategoryCoding[] coding;
 |};
 
