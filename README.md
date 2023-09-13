@@ -36,6 +36,10 @@ Execute the commands below to build from the source.
     ```shell
     mvn clean install
     ```
+- Use the following to run with tests
+    ```shell
+    mvn clean install -PrunBalTest
+    ```
 - To publish fhirservice packages, navigate to the `fhirr4/ballerina/target/classes/fhirservice` directory and run the Ballerina push command
     - To the Ballerina central 
     ```shell
