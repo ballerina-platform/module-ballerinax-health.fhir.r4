@@ -70,13 +70,18 @@ public isolated class FHIRPreprocessor {
         r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
 
         // Create interaction
-        readonly & r4:FHIRReadInteraction readInteraction = {id: id};
+        readonly & FHIRReadInteraction readInteraction = {id: id};
 
         // Create FHIR request
         r4:FHIRRequest fhirRequest = new (readInteraction, fhirResourceType, (), {}, clientHeaders.acceptType);
 
         // Populate JWT information in FHIR context
         readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        // Handle SMART security
+        if fhirResourceType == PATIENT_RESOURCE {
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
+        }
 
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
 
@@ -105,7 +110,7 @@ public isolated class FHIRPreprocessor {
                                                     check self.processSearchParameters(fhirResourceType, httpRequest);
 
         // Create interaction
-        readonly & r4:FHIRSearchInteraction searchInteraction = {};
+        readonly & FHIRSearchInteraction searchInteraction = {};
 
         r4:FHIRRequest fhirRequest = new (searchInteraction,
         fhirResourceType,
@@ -115,6 +120,10 @@ public isolated class FHIRPreprocessor {
 
         // Populate JWT information in FHIR context
         readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        // Handle SMART security
+        string? id = fhirResourceType == PATIENT_RESOURCE ? httpRequest.getQueryParamValue(PATIENT_ID_QUERY_PARAM) : httpRequest.getQueryParamValue(PATIENT_QUERY_PARAM);
+        _ = check self.handleSmartSecurity(fhirSecurity, id);
 
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
 
@@ -149,7 +158,7 @@ public isolated class FHIRPreprocessor {
         r4:FHIRResourceEntity resourceEntity = new (parsedResource);
 
         // Create interaction
-        readonly & r4:FHIRCreateInteraction createInteraction = {};
+        readonly & FHIRCreateInteraction createInteraction = {};
 
         // Create FHIR request
         r4:FHIRRequest fhirRequest = new (createInteraction, resourceType, resourceEntity, {}, clientHeaders.acceptType);
@@ -165,6 +174,278 @@ public isolated class FHIRPreprocessor {
         // Set FHIR context inside HTTP context
         setFHIRContext(fhirCtx, httpCtx);
     }
+
+    # Process the FHIR Instance History interaction.
+    #
+    # + fhirResourceType - The FHIR resource type
+    # + id - The FHIR resource id
+    # + httpRequest - The HTTP request
+    # + httpCtx - The HTTP request context
+    # + return - Error if occurs
+    public isolated function processInstanceHistory (string fhirResourceType, string id, http:Request httpRequest, http:RequestContext httpCtx)
+                                                                                    returns r4:FHIRError? {
+        log:printDebug("Pre-processing FHIR interaction : instance history");
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
+
+        // Create interaction
+        readonly & FHIRInstanceHistoryInteraction historyInteraction = {id: id};
+
+        // Create FHIR request
+        r4:FHIRRequest fhirRequest = new (historyInteraction, fhirResourceType, (), {}, clientHeaders.acceptType);
+
+        // Populate JWT information in FHIR context
+        readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        // Handle SMART security
+        if fhirResourceType == PATIENT_RESOURCE {
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
+        }
+
+        r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
+
+        // Create FHIR context
+        r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Set FHIR context inside HTTP context
+        setFHIRContext(fCtx, httpCtx);
+    }
+
+    # Process the FHIR Vread interaction.
+    #
+    # + fhirResourceType - The FHIR resource type  
+    # + id - The FHIR resource id  
+    # + vid - Resource's version id  
+    # + httpRequest - The HTTP request  
+    # + httpCtx - The HTTP request context
+    # + return - Error if occurs
+    public isolated function processVread (string fhirResourceType, string id, string vid, http:Request httpRequest, http:RequestContext httpCtx)
+                                                                                    returns r4:FHIRError? {
+        log:printDebug("Pre-processing FHIR interaction : vread");
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
+
+        // Create interaction
+        readonly & FHIRVReadInteraction vreadInteraction = {id: id, vid: vid};
+
+        // Create FHIR request
+        r4:FHIRRequest fhirRequest = new (vreadInteraction, fhirResourceType, (), {}, clientHeaders.acceptType);
+
+        // Populate JWT information in FHIR context
+        readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        // Handle SMART security
+        if fhirResourceType == PATIENT_RESOURCE {
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
+        }
+
+        r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
+
+        // Create FHIR context
+        r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Set FHIR context inside HTTP context
+        setFHIRContext(fCtx, httpCtx);
+    }
+
+    # Process the FHIR History interaction.
+    # 
+    # + httpRequest - The HTTP request  
+    # + httpCtx - The HTTP request context
+    # + return - Error if occurs
+    public isolated function processHistory (http:Request httpRequest, http:RequestContext httpCtx)
+                                                                                    returns r4:FHIRError? {
+        log:printDebug("Pre-processing FHIR interaction : vread");
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
+
+        // Create interaction
+        readonly & FHIRHistoryInteraction historyInteraction = {};
+
+        // Create FHIR request
+        r4:FHIRRequest fhirRequest = new (historyInteraction, (), (), {}, clientHeaders.acceptType);
+
+        // Populate JWT information in FHIR context
+        readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
+
+        // Create FHIR context
+        r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Set FHIR context inside HTTP context
+        setFHIRContext(fCtx, httpCtx);
+    }
+
+    # Process the FHIR Capabilities interaction.
+    # 
+    # + httpRequest - The HTTP request  
+    # + httpCtx - The HTTP request context
+    # + return - Error if occurs
+    public isolated function processCapability (http:Request httpRequest, http:RequestContext httpCtx)
+                                                                                    returns r4:FHIRError? {
+        log:printDebug("Pre-processing FHIR interaction : vread");
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
+
+        // Create interaction
+        readonly & FHIRCapabilitiesInteraction capabilitiesInteraction = {};
+
+        // Create FHIR request
+        r4:FHIRRequest fhirRequest = new (capabilitiesInteraction, (), (), {}, clientHeaders.acceptType);
+
+        // Populate JWT information in FHIR context
+        readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
+
+        // Create FHIR context
+        r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Set FHIR context inside HTTP context
+        setFHIRContext(fCtx, httpCtx);
+    }
+
+    # Process the FHIR Update interaction.
+    #
+    # + fhirResourceType - The FHIR resource type  
+    # + id - The FHIR resource id  
+    # + payload - Request payload  
+    # + httpRequest - The HTTP request  
+    # + httpCtx - The HTTP request context
+    # + return - The next service or an error
+    public isolated function processUpdate (string fhirResourceType, string id, json payload, http:Request httpRequest, http:RequestContext httpCtx)
+                                                                                    returns r4:FHIRError? {
+        log:printDebug("Pre-processing FHIR interaction : update");
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
+
+        // Create interaction
+        readonly & FHIRUpdateInteraction updateInteraction = {id: id};
+
+        if self.apiConfig.resourceType != fhirResourceType {
+            string diagMsg = string `Request path level resource type : \" ${fhirResourceType}\" does not match API config resource type: 
+                \"${self.apiConfig.resourceType}\"`;
+            return  r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
+        }
+        
+
+        // Validate and parse payload to FHIR resource model and create resource entity
+        anydata parsedResource = check parser:validateAndParse(payload, self.apiConfig);
+        r4:FHIRResourceEntity resourceEntity = new (parsedResource);
+        
+        // Validate resource ID
+        json|error idInPayload = payload.id;
+        if idInPayload is error {
+            return r4:createFHIRError("Payload doesn't have the mandatory ID field", r4:ERROR, r4:PROCESSING, 
+                                        errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+        } else {
+            if idInPayload.toString() != id {
+                return r4:createFHIRError("Payload ID doesn't match with the resource ID", r4:ERROR, r4:PROCESSING, 
+                                            errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+        }
+
+        // Create FHIR request
+        r4:FHIRRequest fhirRequest = new (updateInteraction, fhirResourceType, resourceEntity, {}, clientHeaders.acceptType);
+
+        // Populate JWT information in FHIR context
+        readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        // Handle SMART security
+        if fhirResourceType == PATIENT_RESOURCE {
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
+        }
+        
+        r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
+
+        // Create FHIR context
+        r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Set FHIR context inside HTTP context
+        setFHIRContext(fCtx, httpCtx);
+    }
+
+    # Process the FHIR Patch interaction.
+    #
+    # + fhirResourceType - The FHIR resource type  
+    # + id - The FHIR resource id  
+    # + payload - Request payload  
+    # + httpRequest - The HTTP request  
+    # + httpCtx - The HTTP request context
+    # + return - The next service or an error
+    public isolated function processPatch (string fhirResourceType, string id, json payload, http:Request httpRequest, http:RequestContext httpCtx)
+                                                                                    returns r4:FHIRError? {
+        log:printDebug("Pre-processing FHIR interaction : patch");
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientPatchRequestHeaders(httpRequest);
+
+        // Create interaction
+        readonly & FHIRPatchInteraction patchInteraction = {id: id};
+
+        if self.apiConfig.resourceType != fhirResourceType {
+            string diagMsg = string `Request path level resource type : \" ${fhirResourceType}\" does not match API config resource type: 
+                \"${self.apiConfig.resourceType}\"`;
+            return  r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
+        }
+        
+        // Create FHIR request
+        r4:FHIRRequest fhirRequest = new (patchInteraction, fhirResourceType, (), {}, clientHeaders.acceptType);
+
+        // Populate JWT information in FHIR context
+        readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        // Handle SMART security
+        if fhirResourceType == PATIENT_RESOURCE {
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
+        }
+        
+        r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
+
+        // Create FHIR context
+        r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Set FHIR context inside HTTP context
+        setFHIRContext(fCtx, httpCtx);
+    }
+
+    # Process the FHIR Delete interaction.
+    #
+    # + fhirResourceType - FHIR resource  
+    # + id - Resource ID  
+    # + httpRequest - The HTTP request  
+    # + httpCtx - The HTTP request context
+    # + return - Error if occurs
+    public isolated function processDelete (string fhirResourceType, string id, http:Request httpRequest, http:RequestContext httpCtx)
+                                                                                    returns r4:FHIRError? {
+        log:printDebug("Pre-processing FHIR interaction : delete");
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
+
+        // Create interaction
+        readonly & FHIRDeleteInteraction deleteInteraction = {id: id};
+
+        // Create FHIR request
+        r4:FHIRRequest fhirRequest = new (deleteInteraction, fhirResourceType, (), {}, clientHeaders.acceptType);
+
+        // Populate JWT information in FHIR context
+        readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        // Handle SMART security
+        if fhirResourceType == PATIENT_RESOURCE {
+            _ = check self.handleSmartSecurity(fhirSecurity, id);
+        }
+
+        r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
+
+        // Create FHIR context
+        r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Set FHIR context inside HTTP context
+        setFHIRContext(fCtx, httpCtx);
+    }
+
+    
 
     isolated function processSearchParameters(string fhirResourceType, http:Request request)
                                                                 returns map<r4:RequestSearchParameter[]>|r4:FHIRError {
@@ -257,6 +538,13 @@ public isolated class FHIRPreprocessor {
         }
 
         return processedSearchParams;
+    }
+
+    isolated function handleSmartSecurity(r4:FHIRSecurity fhirSecurity, string? id) returns r4:FHIRError? {
+        r4:AuthzConfig? authzConfig = self.apiConfig.authzConfig;
+        if authzConfig is r4:AuthzConfig {
+            _ = check r4:handleSmartSecurity(authzConfig, fhirSecurity, id);
+        }
     }
 }
 
@@ -376,6 +664,54 @@ isolated function validateClientRequestHeaders(http:Request request) returns r4:
         _ => {
             string message = string `Unsupported Content-Type header value of \"${contentType}\" was provided in the request. 
                 Only \"application/fhir+json\" is supported.`;
+            return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, message, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_UNSUPPORTED_MEDIA_TYPE);
+        }
+    }
+
+    string|http:HeaderNotFoundError acceptHeader = request.getHeader("Accept");
+    if acceptHeader is string {
+        match acceptHeader {
+            "" => {
+                // Accept since it is not mandatory
+            }
+            "*/*" => {
+                // Client accepts anything, go with the default
+            }
+            "application/fhir+json" => {
+                headers.acceptType = r4:JSON;
+            }
+            _ => {
+                string message = string `Unsupported Accept header value of \"${acceptHeader}\" was provided in the request. 
+                    Only \"application/fhir+json\" is supported.`;
+                return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, message, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_NOT_ACCEPTABLE);
+            }
+        }
+    }
+
+    return headers;
+}
+
+# Function to validate FHIR request in HTTP level.
+#
+# + request - HTTP request object
+# + return - FHIRRequestMimeHeaders containing details extracted from about MIME types. FHIRError otherwise
+isolated function validateClientPatchRequestHeaders(http:Request request) returns r4:FHIRRequestMimeHeaders|r4:FHIRError {
+    r4:FHIRRequestMimeHeaders headers = {};
+    string contentType = request.getContentType();
+
+    match contentType {
+        "" => {
+            // Accept since it is not mandatory
+        }
+        "application/fhir+json" => {
+            headers.contentType = r4:JSON;
+        }
+        "application/json-patch+json" => {
+            headers.contentType = r4:JSON;
+        }
+        _ => {
+            string message = string `Unsupported Content-Type header value of \"${contentType}\" was provided in the request. 
+                Only \"application/fhir+json\" and \"application/json-patch+json\" are supported.`;
             return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, message, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_UNSUPPORTED_MEDIA_TYPE);
         }
     }

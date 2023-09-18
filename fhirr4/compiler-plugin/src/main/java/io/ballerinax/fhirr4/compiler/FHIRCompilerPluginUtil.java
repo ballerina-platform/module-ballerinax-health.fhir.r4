@@ -21,6 +21,7 @@ package io.ballerinax.fhirr4.compiler;
 import io.ballerina.compiler.api.symbols.ArrayTypeSymbol;
 import io.ballerina.compiler.api.symbols.IntersectionTypeSymbol;
 import io.ballerina.compiler.api.symbols.MapTypeSymbol;
+import io.ballerina.compiler.api.symbols.ModuleSymbol;
 import io.ballerina.compiler.api.symbols.TableTypeSymbol;
 import io.ballerina.compiler.api.symbols.TypeDescKind;
 import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
@@ -39,19 +40,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.wso2.ballerinalang.compiler.bir.codegen.JvmConstants.BALLERINA;
+
 /**
  * Utility class providing fhir compiler plugin utility methods.
  */
 public class FHIRCompilerPluginUtil {
 
-    private static final List<TypeDescKind> ALLOWED_PAYLOAD_TYPES = Arrays.asList(
-            TypeDescKind.BOOLEAN, TypeDescKind.INT, TypeDescKind.FLOAT, TypeDescKind.DECIMAL,
-            TypeDescKind.STRING, TypeDescKind.XML, TypeDescKind.JSON,
-            TypeDescKind.ANYDATA, TypeDescKind.NIL, TypeDescKind.BYTE, TypeDescKind.STRING_CHAR,
-            TypeDescKind.XML_ELEMENT, TypeDescKind.XML_COMMENT, TypeDescKind.XML_PROCESSING_INSTRUCTION,
-            TypeDescKind.XML_TEXT, TypeDescKind.INT_SIGNED8, TypeDescKind.INT_UNSIGNED8,
-            TypeDescKind.INT_SIGNED16, TypeDescKind.INT_UNSIGNED16, TypeDescKind.INT_SIGNED32,
-            TypeDescKind.INT_UNSIGNED32);
     private static final List<TypeDescKind> ALLOWED_RETURN_TYPES = Arrays.asList(
             TypeDescKind.BOOLEAN, TypeDescKind.INT, TypeDescKind.FLOAT, TypeDescKind.DECIMAL,
             TypeDescKind.STRING, TypeDescKind.XML, TypeDescKind.JSON,
@@ -114,7 +109,16 @@ public class FHIRCompilerPluginUtil {
                     ctx, node, returnTypeStringValue, memberTypeDescriptor, diagnosticCode);
         } else if (kind == TypeDescKind.TYPE_REFERENCE) {
             TypeSymbol typeDescriptor = ((TypeReferenceTypeSymbol) returnTypeSymbol).typeDescriptor();
-            validateReturnType(ctx, node, returnTypeStringValue, typeDescriptor, diagnosticCode, isInterceptorType);
+            TypeDescKind typeDescKind = retrieveEffectiveTypeDesc(typeDescriptor);
+            if (typeDescKind == TypeDescKind.OBJECT) {
+                // only an object of type http:Response is allowed as a return
+                // no other object types can be parsed to an http response
+                if (!isHttpResponse(typeDescriptor)) {
+                    reportInvalidReturnType(ctx, node, returnTypeStringValue, diagnosticCode);
+                }
+            } else {
+                validateReturnType(ctx, node, returnTypeStringValue, typeDescriptor, diagnosticCode, isInterceptorType);
+            }
         } else if (kind == TypeDescKind.MAP) {
             TypeSymbol typeSymbol = ((MapTypeSymbol) returnTypeSymbol).typeParam();
             validateReturnType(ctx, node, returnTypeStringValue, typeSymbol, diagnosticCode, isInterceptorType);
@@ -176,5 +180,20 @@ public class FHIRCompilerPluginUtil {
     private static void reportInvalidReturnType(SyntaxNodeAnalysisContext ctx, Node node,
                                                 String returnType, FHIRDiagnosticCodes diagnosticCode) {
         FHIRCompilerPluginUtil.updateDiagnostic(ctx, node.location(), diagnosticCode, returnType);
+    }
+
+    private static boolean isHttpResponse(TypeSymbol typeDescriptor) {
+        Optional<ModuleSymbol> module = typeDescriptor.getModule();
+        if (module.isEmpty()) {
+            return false;
+        }
+        if (!BALLERINA.equals(module.get().id().orgName()) || !Constants.HTTP_MODULE.equals(module.get().getName().get())) {
+            return false;
+        }
+        Optional<String> typeName = typeDescriptor.getName();
+        if (typeName.isEmpty()) {
+            return false;
+        }
+        return Constants.HTTP_RESPONSE.equals(typeName.get());
     }
 }

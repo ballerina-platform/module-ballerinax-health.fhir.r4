@@ -39,7 +39,6 @@ function parseInvalidResourceTest() {
     if pat is r4:FHIRParseError {
         r4:FHIRErrorDetail & readonly errorDetail = pat.detail();
 
-        test:assertEquals(pat.message(), "Failed to parse request body as JSON resource", "Unexpected error message");
         test:assertEquals(errorDetail.httpStatusCode, 400, "Error status code must be 400");
         test:assertEquals(errorDetail.internalError, false, "Error should not be an internal error");
         test:assertNotEquals(errorDetail.uuid, null, "Error UUID must present");

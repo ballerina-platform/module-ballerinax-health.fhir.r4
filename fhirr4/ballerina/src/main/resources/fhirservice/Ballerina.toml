@@ -20,6 +20,11 @@ org = "ballerinax"
 name = "health.fhir.r4.parser"
 version = "${parser.version}"
 
+[[dependency]]
+org = "ballerinax"
+name = "health.fhir.r4.international401"
+version = "${international401.version}"
+
 [[platform.java11.dependency]]
 groupId = "io.ballerinax"
 artifactId = "fhirr4-native"

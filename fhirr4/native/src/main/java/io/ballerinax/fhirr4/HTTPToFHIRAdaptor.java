@@ -31,9 +31,6 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static io.ballerinax.fhirr4.ModuleUtils.getModule;
 import static io.ballerinax.fhirr4.Utils.isPathsMatching;
 
@@ -46,18 +43,30 @@ public class HTTPToFHIRAdaptor {
 
     private HTTPToFHIRAdaptor(){}
 
-    public static final StrandMetadata EXECUTE_READ_BY_ID = new StrandMetadata(getModule().getOrg(),
-                                                                               getModule().getName(),
-                                                                               getModule().getMajorVersion(),
-                                                                               "executeReadByID");
-    public static final StrandMetadata EXECUTE_SEARCH = new StrandMetadata(getModule().getOrg(),
-                                                                               getModule().getName(),
-                                                                               getModule().getMajorVersion(),
-                                                                               "executeSearch");
-    public static final StrandMetadata EXECUTE_CREATE = new StrandMetadata(getModule().getOrg(),
-                                                                                   getModule().getName(),
-                                                                                   getModule().getMajorVersion(),
-                                                                                   "executeCreate");
+    public static final StrandMetadata EXECUTE_WITH_ID = new StrandMetadata(getModule().getOrg(),
+                                                                            getModule().getName(),
+                                                                            getModule().getMajorVersion(),
+                                                                            "executeWithID");
+
+    public static final StrandMetadata EXECUTE_WITH_ID_AND_VID = new StrandMetadata(getModule().getOrg(),
+                                                                            getModule().getName(),
+                                                                            getModule().getMajorVersion(),
+                                                                            "executeWithIDAndVID");
+
+    public static final StrandMetadata EXECUTE_WITH_NO_PARAM = new StrandMetadata(getModule().getOrg(),
+                                                                                  getModule().getName(),
+                                                                                  getModule().getMajorVersion(),
+                                                                                  "executeWithNoParam");
+
+    public static final StrandMetadata EXECUTE_WITH_PAYLOAD = new StrandMetadata(getModule().getOrg(),
+                                                                                 getModule().getName(),
+                                                                                 getModule().getMajorVersion(),
+                                                                                 "executeWithPayload");
+
+    public static final StrandMetadata EXECUTE_WITH_ID_AND_PAYLOAD = new StrandMetadata(getModule().getOrg(),
+                                                                                    getModule().getName(),
+                                                                                    getModule().getMajorVersion(),
+                                                                                    "executeWithIDAndPayload");
 
     public static void addFhirServiceToHolder(BObject holder, BObject service) {
         holder.addNativeData("FHIR_SERVICE", service);
@@ -67,7 +76,7 @@ public class HTTPToFHIRAdaptor {
         return (BObject) holder.getNativeData("FHIR_SERVICE");
     }
 
-    public static Object executeReadByID(Environment environment, BString id, BObject fhirCtx, BObject service,
+    public static Object executeWithID(Environment environment, BString id, BObject fhirCtx, BObject service,
                                               ResourceMethodType resourceMethod) {
         Future future = environment.markAsync();
         ExecutionCallback executionCallback = new ExecutionCallback(future);
@@ -76,18 +85,40 @@ public class HTTPToFHIRAdaptor {
         if (resourceMethod != null) {
             if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
                 environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_READ_BY_ID, executionCallback,
+                                                                       EXECUTE_WITH_ID, executionCallback,
                                                                        null, returnType, id, true, fhirCtx, true);
             } else {
                 environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_READ_BY_ID, executionCallback,
+                                                                       EXECUTE_WITH_ID, executionCallback,
                                                                        null, returnType, id, true, fhirCtx, true);
             }
         }
         return null;
     }
 
-    public static Object executeSearch(Environment environment, BObject fhirCtx, BObject service,
+    public static Object executeWithIDAndVID(Environment environment, BString id, BString vid, BObject fhirCtx,
+                                             BObject service, ResourceMethodType resourceMethod) {
+        Future future = environment.markAsync();
+        ExecutionCallback executionCallback = new ExecutionCallback(future);
+        ServiceType serviceType = (ServiceType) service.getType();
+        Type returnType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ANY, PredefinedTypes.TYPE_ERROR);
+        if (resourceMethod != null) {
+            if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
+                environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
+                                                                       EXECUTE_WITH_ID_AND_VID, executionCallback,
+                                                                       null, returnType, id, true, vid, true, fhirCtx,
+                                                                       true);
+            } else {
+                environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
+                                                                       EXECUTE_WITH_ID_AND_VID, executionCallback,
+                                                                       null, returnType, id, true, vid, true, fhirCtx,
+                                                                       true);
+            }
+        }
+        return null;
+    }
+
+    public static Object executeWithNoParam(Environment environment, BObject fhirCtx, BObject service,
                                          ResourceMethodType resourceMethod) {
         Future future = environment.markAsync();
         ExecutionCallback executionCallback = new ExecutionCallback(future);
@@ -96,18 +127,18 @@ public class HTTPToFHIRAdaptor {
         if (resourceMethod != null) {
             if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
                 environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_SEARCH, executionCallback,
+                                                                       EXECUTE_WITH_NO_PARAM, executionCallback,
                                                                        null, returnType, fhirCtx, true);
             } else {
                 environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_SEARCH, executionCallback,
+                                                                       EXECUTE_WITH_NO_PARAM, executionCallback,
                                                                        null, returnType, fhirCtx, true);
             }
         }
         return null;
     }
 
-    public static Object executeCreate(Environment environment, BMap r4Payload, BObject fhirCtx, BObject service,
+    public static Object executeWithPayload(Environment environment, BMap r4Payload, BObject fhirCtx, BObject service,
                                        ResourceMethodType resourceMethod) {
         Future future = environment.markAsync();
         ExecutionCallback executionCallback = new ExecutionCallback(future);
@@ -116,14 +147,34 @@ public class HTTPToFHIRAdaptor {
         if (resourceMethod != null) {
             if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
                 environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_CREATE, executionCallback,
+                                                                       EXECUTE_WITH_PAYLOAD, executionCallback,
                                                                        null, returnType, fhirCtx, true,
                                                                        r4Payload, true);
             } else {
                 environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_CREATE, executionCallback,
+                                                                       EXECUTE_WITH_PAYLOAD, executionCallback,
                                                                        null, returnType, fhirCtx, true,
                                                                        r4Payload, true);
+            }
+        }
+        return null;
+    }
+
+    public static Object executeWithIDAndPayload(Environment environment, BString id, BMap patchPayload,
+                                                 BObject fhirCtx, BObject service, ResourceMethodType resourceMethod) {
+        Future future = environment.markAsync();
+        ExecutionCallback executionCallback = new ExecutionCallback(future);
+        ServiceType serviceType = (ServiceType) service.getType();
+        Type returnType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ANY, PredefinedTypes.TYPE_ERROR);
+        if (resourceMethod != null) {
+            if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
+                environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
+                                          EXECUTE_WITH_ID_AND_PAYLOAD, executionCallback,null, returnType, id, true,
+                                          fhirCtx, true, patchPayload, true);
+            } else {
+                environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
+                                          EXECUTE_WITH_ID_AND_PAYLOAD, executionCallback,null, returnType, id, true,
+                                          fhirCtx, true, patchPayload, true);
             }
         }
         return null;
@@ -147,7 +198,7 @@ public class HTTPToFHIRAdaptor {
 
     private static ResourceMethodType getResourceMethod(ServiceType serviceType, String[] path, String accessor) {
         for (ResourceMethodType resourceMethod : serviceType.getResourceMethods()) {
-            if (accessor.equals(resourceMethod.getAccessor()) && isPathsMatching(resourceMethod.getResourcePath(), path)) {
+            if (accessor.equalsIgnoreCase(resourceMethod.getAccessor()) && isPathsMatching(resourceMethod.getResourcePath(), path)) {
                 return resourceMethod;
             }
         }
