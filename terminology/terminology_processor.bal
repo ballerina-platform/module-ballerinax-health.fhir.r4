@@ -162,7 +162,8 @@ public isolated class TerminologyProcessor {
                     r4:INVALID,
                     diagnostic = "Please check the provided json structure and re-try with this data again",
                     cause = result,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
 
                 errors.push(er);
             } else {
@@ -208,7 +209,8 @@ public isolated class TerminologyProcessor {
                     r4:INVALID,
                     diagnostic = "Please check the provided json structure and re-try with this data again",
                     cause = result,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
 
                 errors.push(er);
             } else {
@@ -232,26 +234,26 @@ public isolated class TerminologyProcessor {
         lock {
             if codeSystem.url == () {
                 return r4:createFHIRError(
-            string `Can not find the URL of the CodeSystem with name: ${codeSystem.name.toBalString()}`,
-            r4:ERROR,
-            r4:INVALID_REQUIRED,
-            diagnostic = string `Add a proper URL for the resource: 
-                                    http://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.url`,
-            errorType = r4:VALIDATION_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST
-            );
+                    string `Can not find the URL of the CodeSystem with name: ${codeSystem.name.toBalString()}`,
+                    r4:ERROR,
+                    r4:INVALID_REQUIRED,
+                    diagnostic = string `Add a proper URL for the resource: 
+                                            http://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.url`,
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             if codeSystem.'version == () {
                 return r4:createFHIRError(
-            string `Can not find the version of the CodeSystem with name: ${codeSystem.name.toBalString()}`,
-            r4:ERROR,
-            r4:INVALID_REQUIRED,
-            diagnostic = string `Add appropriate version for the resource: 
-                                    https://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.version`,
-            errorType = r4:VALIDATION_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST
-            );
+                    string `Can not find the version of the CodeSystem with name: ${codeSystem.name.toBalString()}`,
+                    r4:ERROR,
+                    r4:INVALID_REQUIRED,
+                    diagnostic = string `Add appropriate version for the resource: 
+                                            https://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.version`,
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             string url = <string>codeSystem.url;
@@ -260,28 +262,28 @@ public isolated class TerminologyProcessor {
 
             if self.finder is () && self.codeSystems.hasKey(key) {
                 return r4:createFHIRError(
-            "Duplicate entry",
-            r4:ERROR,
-            r4:PROCESSING_DUPLICATE,
-            diagnostic = string `Already there is a CodeSystem exists in the registry with the URL: ${url}`,
-            errorType = r4:PROCESSING_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST
-            );
+                    "Duplicate entry",
+                    r4:ERROR,
+                    r4:PROCESSING_DUPLICATE,
+                    diagnostic = string `Already there is a CodeSystem exists in the registry with the URL: ${url}`,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             r4:FHIRValidationError? validateResult = validator:validate(codeSystem.clone(), i4:CodeSystem);
 
             if validateResult is r4:FHIRValidationError {
                 return r4:createFHIRError(
-            "Validation failed",
-            r4:ERROR,
-            r4:INVALID,
-            diagnostic = string `Check whether the data conforms to the specification: 
-                                    http://hl7.org/fhir/R4/codesystem-definitions.html`,
-            errorType = r4:VALIDATION_ERROR,
-            cause = validateResult,
-            httpStatusCode = http:STATUS_BAD_REQUEST
-            );
+                    "Validation failed",
+                    r4:ERROR,
+                    r4:INVALID,
+                    diagnostic = string `Check whether the data conforms to the specification: 
+                                            http://hl7.org/fhir/R4/codesystem-definitions.html`,
+                    errorType = r4:VALIDATION_ERROR,
+                    cause = validateResult,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             if self.finder is Finder {
@@ -303,25 +305,25 @@ public isolated class TerminologyProcessor {
         lock {
             if valueSet.url == () {
                 return r4:createFHIRError(
-            string `Can not find the URL of the ValueSet with name: ${valueSet.name.toBalString()}`,
-            r4:ERROR,
-            r4:INVALID_REQUIRED,
-            diagnostic = "Add a proper URL for the resource: http://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.url",
-            errorType = r4:VALIDATION_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST
-            );
+                    string `Can not find the URL of the ValueSet with name: ${valueSet.name.toBalString()}`,
+                    r4:ERROR,
+                    r4:INVALID_REQUIRED,
+                    diagnostic = "Add a proper URL for the resource: http://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.url",
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             if valueSet.'version == () {
                 return r4:createFHIRError(
-            string `Can not find the version of the ValueSet with name: ${valueSet.name.toBalString()}`,
-            r4:ERROR,
-            r4:INVALID_REQUIRED,
-            diagnostic = string `Add appropriate version for the resource: 
-                                     http://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.version`,
-            errorType = r4:VALIDATION_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST
-            );
+                    string `Can not find the version of the ValueSet with name: ${valueSet.name.toBalString()}`,
+                    r4:ERROR,
+                    r4:INVALID_REQUIRED,
+                    diagnostic = string `Add appropriate version for the resource: 
+                                            http://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.version`,
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             string url = <string>valueSet.url;
@@ -330,28 +332,28 @@ public isolated class TerminologyProcessor {
 
             if self.finder is () && self.valueSets.hasKey(rKey) {
                 return r4:createFHIRError(
-            "Duplicate entry",
-            r4:ERROR,
-            r4:PROCESSING_DUPLICATE,
-            diagnostic = string `Already there is a ValueSet exists in the registry with the URL: ${url}`,
-            errorType = r4:VALIDATION_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST
-            );
+                    "Duplicate entry",
+                    r4:ERROR,
+                    r4:PROCESSING_DUPLICATE,
+                    diagnostic = string `Already there is a ValueSet exists in the registry with the URL: ${url}`,
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             r4:FHIRValidationError? validateResult = validator:validate(valueSet.clone(), i4:ValueSet);
 
             if validateResult is r4:FHIRValidationError {
                 return r4:createFHIRError(
-            "Validation failed",
-            r4:ERROR,
-            r4:INVALID,
-            diagnostic = string `Check whether the data conforms to the specification: 
-                                    http://hl7.org/fhir/R4/valueset-definitions.html`,
-            errorType = r4:VALIDATION_ERROR,
-            cause = validateResult,
-            httpStatusCode = http:STATUS_BAD_REQUEST
-            );
+                    "Validation failed",
+                    r4:ERROR,
+                    r4:INVALID,
+                    diagnostic = string `Check whether the data conforms to the specification: 
+                                            http://hl7.org/fhir/R4/valueset-definitions.html`,
+                    errorType = r4:VALIDATION_ERROR,
+                    cause = validateResult,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             if self.finder is Finder {
@@ -392,15 +394,15 @@ public isolated class TerminologyProcessor {
                     }
                     if codeSystems.length() < 1 {
                         return r4:createFHIRError(
-                        string `Unknown version: '${'version.toString()}'`,
-                        r4:ERROR,
-                        r4:PROCESSING_NOT_FOUND,
-                        diagnostic = string
-                        `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
-                        httpStatusCode = http:STATUS_NOT_FOUND
+                            string `Unknown version: '${'version.toString()}'`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            diagnostic = string
+                            `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
+                            httpStatusCode = http:STATUS_NOT_FOUND
                         );
                     } else {
-                        string latestVersion = "0.0.0";
+                        string latestVersion = DEFAULT_VERSION;
                         foreach var item in codeSystems {
                             if item.'version > latestVersion {
                                 latestVersion = <string>item.'version;
@@ -410,11 +412,11 @@ public isolated class TerminologyProcessor {
                     }
                 } else {
                     return r4:createFHIRError(
-                    string `Unknown CodeSystem: '${id}'`,
-                                                r4:ERROR,
-                                                r4:PROCESSING_NOT_FOUND,
-                                                httpStatusCode = http:STATUS_NOT_FOUND
-                                                );
+                        string `Unknown CodeSystem: '${id}'`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                    );
                 }
 
                 return cs.clone();
@@ -453,15 +455,15 @@ public isolated class TerminologyProcessor {
                     }
                     if valueSets.length() < 1 {
                         return r4:createFHIRError(
-                        string `Unknown version: '${'version.toString()}'`,
-                        r4:ERROR,
-                        r4:PROCESSING_NOT_FOUND,
-                        diagnostic = string
-                        `There is ValueSet in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
-                        httpStatusCode = http:STATUS_NOT_FOUND
+                            string `Unknown version: '${'version.toString()}'`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            diagnostic = string
+                            `There is ValueSet in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
+                            httpStatusCode = http:STATUS_NOT_FOUND
                         );
                     } else {
-                        string latestVersion = "0.0.0";
+                        string latestVersion = DEFAULT_VERSION;
                         foreach var item in valueSets {
                             if item.'version > latestVersion {
                                 latestVersion = <string>item.'version;
@@ -471,11 +473,11 @@ public isolated class TerminologyProcessor {
                     }
                 } else {
                     return r4:createFHIRError(
-                    string `Unknown ValueSet: '${id}'`,
-                                                r4:ERROR,
-                                                r4:PROCESSING_NOT_FOUND,
-                                                httpStatusCode = http:STATUS_NOT_FOUND
-                                                );
+                        string `Unknown ValueSet: '${id}'`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                    );
                 }
                 return vs.clone();
             }
@@ -493,43 +495,44 @@ public isolated class TerminologyProcessor {
         lock {
             map<r4:RequestSearchParameter[]> searchParameters = params.clone();
             int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
-            if searchParameters.hasKey("_count") {
-                int|error y = langint:fromString(searchParameters.get("_count")[0].value);
+            if searchParameters.hasKey(SEARCH_COUNT_ATTRIBUTE) {
+                int|error y = langint:fromString(searchParameters.get(SEARCH_COUNT_ATTRIBUTE)[0].value);
                 if y is int {
                     count = y;
                 }
-                _ = searchParameters.remove("_count");
+                _ = searchParameters.remove(SEARCH_COUNT_ATTRIBUTE);
             }
 
             int offset = 0;
-            if searchParameters.hasKey("_offset") {
-                int|error y = langint:fromString(searchParameters.get("_offset")[0].value);
+            if searchParameters.hasKey(SEARCH_OFFSET_ATTRIBUTE) {
+                int|error y = langint:fromString(searchParameters.get(SEARCH_OFFSET_ATTRIBUTE)[0].value);
                 if y is int {
                     offset = y;
                 }
-                _ = searchParameters.remove("_offset");
+                _ = searchParameters.remove(SEARCH_OFFSET_ATTRIBUTE);
             }
 
             if count > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
                 return r4:createFHIRError(
-                string `Requested size of the response: ${count.toBalString()} is too large`,
-                r4:ERROR,
-                r4:PROCESSING_NOT_SUPPORTED,
-                diagnostic = string `Allowed maximum size of output is: ${TERMINOLOGY_SEARCH_MAXIMUM_COUNT}; therefore, reduce the value of size parameter accordingly`,
-                errorType = r4:PROCESSING_ERROR,
-                httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
+                    string `Requested size of the response: ${count.toBalString()} is too large`,
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_SUPPORTED,
+                    diagnostic = string `Allowed maximum size of output is: ${TERMINOLOGY_SEARCH_MAXIMUM_COUNT}; therefore, reduce the value of size parameter accordingly`,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
                 );
             }
 
             // Validate whether the requested search parameters in the allowed list
-            foreach var param in searchParameters.clone().keys() {
+            foreach var param in searchParameters.keys() {
                 if !CODESYSTEMS_SEARCH_PARAMS.hasKey(param) {
                     return r4:createFHIRError(
-                string `This search parameter is not implemented yet: ${param}`,
-                r4:ERROR,
-                r4:PROCESSING_NOT_SUPPORTED,
-                diagnostic = string `Allowed search parameters: ${CODESYSTEMS_SEARCH_PARAMS.keys().toBalString()}`,
-                errorType = r4:VALIDATION_ERROR);
+                        string `Invalid search parameter: ${param}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_SUPPORTED,
+                        diagnostic = string `Allowed search parameters: ${CODESYSTEMS_SEARCH_PARAMS.keys().toBalString()}`,
+                        errorType = r4:VALIDATION_ERROR
+                    );
                 }
             }
 
@@ -538,8 +541,8 @@ public isolated class TerminologyProcessor {
             } else {
                 i4:CodeSystem[] codeSystemArray = self.codeSystems.toArray();
 
-                foreach var searchParam in searchParameters.clone().keys() {
-                    r4:RequestSearchParameter[] searchParamValues = searchParameters.clone()[searchParam] ?: [];
+                foreach var searchParam in searchParameters.keys() {
+                    r4:RequestSearchParameter[] searchParamValues = searchParameters[searchParam] ?: [];
 
                     i4:CodeSystem[] filteredList = [];
                     if searchParamValues.length() != 0 {
@@ -563,7 +566,7 @@ public isolated class TerminologyProcessor {
                         diagnostic = "The response size is too large; therefore search with more specific parameter values",
                         errorType = r4:PROCESSING_ERROR,
                         httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
-                        );
+                    );
                 } else if total >= offset + count {
                     return codeSystemArray.slice(offset, offset + count).clone();
                 } else if total >= offset {
@@ -585,43 +588,44 @@ public isolated class TerminologyProcessor {
         lock {
             map<r4:RequestSearchParameter[]> searchParameters = params.clone();
             int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
-            if searchParameters.hasKey("_count") {
-                int|error y = langint:fromString(searchParameters.get("_count")[0].value);
+            if searchParameters.hasKey(SEARCH_COUNT_ATTRIBUTE) {
+                int|error y = langint:fromString(searchParameters.get(SEARCH_COUNT_ATTRIBUTE)[0].value);
                 if y is int {
                     count = y;
                 }
-                _ = searchParameters.remove("_count");
+                _ = searchParameters.remove(SEARCH_COUNT_ATTRIBUTE);
             }
 
             int offset = 0;
-            if searchParameters.hasKey("_offset") {
-                int|error y = langint:fromString(searchParameters.get("_offset")[0].value);
+            if searchParameters.hasKey(SEARCH_OFFSET_ATTRIBUTE) {
+                int|error y = langint:fromString(searchParameters.get(SEARCH_OFFSET_ATTRIBUTE)[0].value);
                 if y is int {
                     offset = y;
                 }
-                _ = searchParameters.remove("_offset");
+                _ = searchParameters.remove(SEARCH_OFFSET_ATTRIBUTE);
             }
 
             if count > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
                 return r4:createFHIRError(
-                string `Requested size of the response: ${count.toBalString()} is too large`,
-                r4:ERROR,
-                r4:PROCESSING_NOT_SUPPORTED,
-                diagnostic = string `Allowed maximum size of output is: ${TERMINOLOGY_SEARCH_MAXIMUM_COUNT}; therefore, reduce the value of size parameter accordingly`,
-                errorType = r4:PROCESSING_ERROR,
-                httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
+                    string `Requested size of the response: ${count.toBalString()} is too large`,
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_SUPPORTED,
+                    diagnostic = string `Allowed maximum size of output is: ${TERMINOLOGY_SEARCH_MAXIMUM_COUNT}; therefore, reduce the value of size parameter accordingly`,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
                 );
             }
 
             // Validate the requested search parameters in the allowed list
-            foreach var param in searchParameters.clone().keys() {
+            foreach var param in searchParameters.keys() {
                 if !VALUESETS_SEARCH_PARAMS.hasKey(param) {
                     return r4:createFHIRError(
-                string `This search parameter is not implemented yet: ${param}`,
-                r4:ERROR,
-                r4:PROCESSING_NOT_SUPPORTED,
-                diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toBalString()}`,
-                errorType = r4:VALIDATION_ERROR);
+                        string `Invalid search parameter: ${param}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_SUPPORTED,
+                        diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toBalString()}`,
+                        errorType = r4:VALIDATION_ERROR
+                    );
                 }
             }
 
@@ -630,8 +634,8 @@ public isolated class TerminologyProcessor {
             } else {
                 i4:ValueSet[] valueSetArray = self.valueSets.toArray();
 
-                foreach var searchParam in searchParameters.clone().keys() {
-                    r4:RequestSearchParameter[] searchParamValues = searchParameters.clone()[searchParam] ?: [];
+                foreach var searchParam in searchParameters.keys() {
+                    r4:RequestSearchParameter[] searchParamValues = searchParameters[searchParam] ?: [];
 
                     i4:ValueSet[] filteredList = [];
                     if searchParamValues.length() != 0 {
@@ -654,7 +658,7 @@ public isolated class TerminologyProcessor {
                         diagnostic = string `The response size is too large; therefore, search with more specific parameter values`,
                         errorType = r4:PROCESSING_ERROR,
                         httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
-                        );
+                    );
                 } else if total >= offset + count {
                     return valueSetArray.slice(offset, offset + count).clone();
                 } else if total >= offset {
@@ -695,19 +699,21 @@ public isolated class TerminologyProcessor {
                         codeSystem = codeSystemById;
                     } else {
                         return r4:createFHIRError(string `Cannot find a CodeSystem for the provided system URL: ${system}`,
-                    r4:ERROR,
-                    r4:INVALID,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND);
+                            r4:ERROR,
+                            r4:INVALID,
+                            errorType = r4:PROCESSING_ERROR,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
                     }
                 } else {
                     return r4:createFHIRError(
-                    "Can not find a CodeSystem",
-                    r4:ERROR,
-                    r4:INVALID_REQUIRED,
-                    diagnostic = "Either CodeSystem record or system URL should be provided as input",
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND);
+                        "Can not find a CodeSystem",
+                        r4:ERROR,
+                        r4:INVALID_REQUIRED,
+                        diagnostic = "Either CodeSystem record or system URL should be provided as input",
+                        errorType = r4:PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                    );
                 }
             }
 
@@ -721,7 +727,8 @@ public isolated class TerminologyProcessor {
                             r4:ERROR,
                             r4:INVALID_REQUIRED,
                             errorType = r4:PROCESSING_ERROR,
-                            httpStatusCode = http:STATUS_BAD_REQUEST);
+                            httpStatusCode = http:STATUS_BAD_REQUEST
+                        );
                     }
                 } else {
                     CodeConceptDetails? result = self.findConceptInCodeSystem(codeSystem, codeValue);
@@ -730,11 +737,12 @@ public isolated class TerminologyProcessor {
                         return result.concept.clone();
                     } else {
                         return r4:createFHIRError(
-                    string `Can not find any valid concepts for the code: ${codeValue.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND);
+                            string `Can not find any valid concepts for the code: ${codeValue.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            errorType = r4:PROCESSING_ERROR,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
                     }
                 }
             } else if codeValue is r4:Coding {
@@ -747,7 +755,8 @@ public isolated class TerminologyProcessor {
                             r4:ERROR,
                             r4:INVALID_REQUIRED,
                             errorType = r4:PROCESSING_ERROR,
-                            httpStatusCode = http:STATUS_BAD_REQUEST);
+                            httpStatusCode = http:STATUS_BAD_REQUEST
+                        );
                     }
                 } else {
                     CodeConceptDetails? result = self.findConceptInCodeSystemFromCoding(codeSystem, codeValue.clone());
@@ -756,11 +765,12 @@ public isolated class TerminologyProcessor {
                         return result.concept.clone();
                     } else {
                         return r4:createFHIRError(
-                    string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND);
+                            string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            errorType = r4:PROCESSING_ERROR,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
                     }
                 }
             }
@@ -776,11 +786,12 @@ public isolated class TerminologyProcessor {
                                 findConceptResult = check (<Finder>self.finder).findConcept(<r4:uri>system, <r4:code>c.code);
                             } else {
                                 return r4:createFHIRError(
-                                        "Provided CodeSystem or system url is invalide",
-                                        r4:ERROR,
-                                        r4:INVALID_REQUIRED,
-                                        errorType = r4:PROCESSING_ERROR,
-                                        httpStatusCode = http:STATUS_BAD_REQUEST);
+                                    "Provided CodeSystem or system url is invalide",
+                                    r4:ERROR,
+                                    r4:INVALID_REQUIRED,
+                                    errorType = r4:PROCESSING_ERROR,
+                                    httpStatusCode = http:STATUS_BAD_REQUEST
+                                );
                             }
 
                             result = {
@@ -798,11 +809,12 @@ public isolated class TerminologyProcessor {
 
                     if codeConceptDetailsList.length() < 0 {
                         return r4:createFHIRError(
-                    string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND);
+                            string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} in CodeSystem: ${codeSystem.id.toBalString()}`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            errorType = r4:PROCESSING_ERROR,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
                     }
 
                     if codeConceptDetailsList.length() == 1 {
@@ -814,19 +826,20 @@ public isolated class TerminologyProcessor {
                 }
                 else {
                     return r4:createFHIRError(
-                    "Can not find any valid Codings in the provide CodeableConcept data",
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                        "Can not find any valid Codings in the provide CodeableConcept data",
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        errorType = r4:PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_BAD_REQUEST
+                    );
                 }
             }
 
             return r4:createFHIRError(
-            "Either code or Coding or CodeableConcept should be provided as input",
-            r4:ERROR,
-            r4:PROCESSING_NOT_FOUND,
-            httpStatusCode = http:STATUS_BAD_REQUEST
+                "Either code or Coding or CodeableConcept should be provided as input",
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND,
+                httpStatusCode = http:STATUS_BAD_REQUEST
             );
         }
     }
@@ -857,10 +870,11 @@ public isolated class TerminologyProcessor {
                     valueSet = check self.readValueSetByUrl(system, 'version);
                 } else {
                     return r4:createFHIRError(string `Cannot find a ValueSet for the provided system URL: ${system}`,
-                    r4:ERROR,
-                    r4:INVALID,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                        r4:ERROR,
+                        r4:INVALID,
+                        errorType = r4:PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_BAD_REQUEST
+                    );
                 }
             } else {
                 return r4:createFHIRError(
@@ -869,7 +883,8 @@ public isolated class TerminologyProcessor {
                     r4:INVALID_REQUIRED,
                     diagnostic = "Either ValueSet record or system URL should be provided as input",
                     errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             if codeValue is r4:code && codeValue.trim() !is "" {
@@ -878,11 +893,12 @@ public isolated class TerminologyProcessor {
                     return result.concept.clone();
                 } else {
                     return r4:createFHIRError(
-                    string `Can not find any valid concepts for the code: ${codeValue.toBalString()} in ValueSet: ${valueSet.id.toBalString()}`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND);
+                        string `Can not find any valid concepts for the code: ${codeValue.toBalString()} in ValueSet: ${valueSet.id.toBalString()}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        errorType = r4:PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                    );
                 }
             } else if codeValue is r4:Coding {
 
@@ -892,11 +908,12 @@ public isolated class TerminologyProcessor {
                     return result.concept.clone();
                 } else {
                     return r4:createFHIRError(
-                    string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} in ValueSet: ${valueSet.id.toBalString()}`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND);
+                        string `Can not find any valid concepts for the coding with code: ${codeValue.code.toBalString()} in ValueSet: ${valueSet.id.toBalString()}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        errorType = r4:PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                    );
                 }
             } else if codeValue is r4:CodeableConcept {
                 r4:Coding[]? codings = codeValue.coding.clone();
@@ -912,11 +929,12 @@ public isolated class TerminologyProcessor {
 
                     if codeConceptDetailsList.length() < 0 {
                         return r4:createFHIRError(
-                    string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} in CodeSystem: ${valueSet.id.toBalString()}`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND);
+                            string `Can not find any valid concepts for the CodeableConcept: ${codeValue.toBalString()} in CodeSystem: ${valueSet.id.toBalString()}`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            errorType = r4:PROCESSING_ERROR,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
                     }
                     if codeConceptDetailsList.length() == 1 {
                         return codeConceptDetailsList[0].clone();
@@ -925,20 +943,21 @@ public isolated class TerminologyProcessor {
                     }
                 } else {
                     return r4:createFHIRError(
-                    "Can not find any valid Codings in the provide CodeableConcept data",
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                        "Can not find any valid Codings in the provide CodeableConcept data",
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        errorType = r4:PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_BAD_REQUEST
+                    );
                 }
             } else {
                 return r4:createFHIRError(
-            "Either code or Coding or CodeableConcept should be provided as input",
-            r4:ERROR,
-            r4:PROCESSING_NOT_FOUND,
-            errorType = r4:PROCESSING_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST
-            );
+                    "Either code or Coding or CodeableConcept should be provided as input",
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_FOUND,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
         }
     }
@@ -957,47 +976,48 @@ public isolated class TerminologyProcessor {
         lock {
             map<r4:RequestSearchParameter[]> searchParameters = searchParams.clone();
             int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
-            if searchParameters.hasKey("_count") {
-                int|error y = langint:fromString(searchParameters.get("_count")[0].value);
+            if searchParameters.hasKey(SEARCH_COUNT_ATTRIBUTE) {
+                int|error y = langint:fromString(searchParameters.get(SEARCH_COUNT_ATTRIBUTE)[0].value);
                 if y is int {
                     count = y;
                 }
                 map<r4:RequestSearchParameter[]> clone = searchParameters.clone();
-                _ = clone.remove("_count");
+                _ = clone.remove(SEARCH_COUNT_ATTRIBUTE);
                 searchParameters = clone;
             }
 
             int offset = 0;
-            if searchParameters.hasKey("_offset") {
-                int|error y = langint:fromString(searchParameters.get("_offset")[0].value);
+            if searchParameters.hasKey(SEARCH_OFFSET_ATTRIBUTE) {
+                int|error y = langint:fromString(searchParameters.get(SEARCH_OFFSET_ATTRIBUTE)[0].value);
                 if y is int {
                     offset = y;
                 }
                 map<r4:RequestSearchParameter[]> clone = searchParameters.clone();
-                _ = clone.remove("_offset");
+                _ = clone.remove(SEARCH_OFFSET_ATTRIBUTE);
                 searchParameters = clone;
             }
 
             if count > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
                 return r4:createFHIRError(
-                string `Requested size of the response: ${count.toBalString()} is too large`,
-                r4:ERROR,
-                r4:PROCESSING_NOT_SUPPORTED,
-                diagnostic = string `Allowed maximum size of output is: ${TERMINOLOGY_SEARCH_MAXIMUM_COUNT}; therefore, reduce the value of size parameter accordingly`,
-                errorType = r4:PROCESSING_ERROR,
-                httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
+                    string `Requested size of the response: ${count.toBalString()} is too large`,
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_SUPPORTED,
+                    diagnostic = string `Allowed maximum size of output is: ${TERMINOLOGY_SEARCH_MAXIMUM_COUNT}; therefore, reduce the value of size parameter accordingly`,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_PAYLOAD_TOO_LARGE
                 );
             }
 
             // Validate the requested search parameters in the allowed list
-            foreach var param in searchParameters.clone().keys() {
+            foreach var param in searchParameters.keys() {
                 if !VALUESETS_EXPANSION_PARAMS.hasKey(param) {
                     return r4:createFHIRError(
-                        string `This search parameter is not implemented yet: ${param}`,
+                        string `Invalid search parameter: ${param}`,
                         r4:ERROR,
                         r4:PROCESSING_NOT_SUPPORTED,
                         diagnostic = string `Allowed search parameters: ${VALUESETS_EXPANSION_PARAMS.keys().toBalString()}`,
-                        errorType = r4:VALIDATION_ERROR);
+                        errorType = r4:VALIDATION_ERROR
+                    );
                 }
             }
 
@@ -1009,8 +1029,8 @@ public isolated class TerminologyProcessor {
                 valueSet = ensured;
             } else if system is string {
                 map<r4:RequestSearchParameter[]> clone = searchParameters.clone();
-                if clone.hasKey("filter") {
-                    _ = clone.remove("filter");
+                if clone.hasKey(FILTER) {
+                    _ = clone.remove(FILTER);
                 }
 
                 if !clone.hasKey(VALUESETS_SEARCH_PARAMS.url) {
@@ -1048,7 +1068,8 @@ public isolated class TerminologyProcessor {
                         r4:ERROR,
                         r4:INVALID_REQUIRED,
                         errorType = r4:PROCESSING_ERROR,
-                        httpStatusCode = http:STATUS_BAD_REQUEST);
+                        httpStatusCode = http:STATUS_BAD_REQUEST
+                    );
                 }
             }
             else {
@@ -1058,7 +1079,8 @@ public isolated class TerminologyProcessor {
                     r4:INVALID_REQUIRED,
                     diagnostic = "Either ValueSet record or system URL should be provided as input",
                     errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             ValueSetExpansionDetails? details = self.getAllConceptInValueSet(valueSet);
@@ -1067,10 +1089,10 @@ public isolated class TerminologyProcessor {
                 i4:CodeSystemConcept[]|i4:ValueSetComposeIncludeConcept[] concepts = details.concepts;
 
                 if concepts is i4:ValueSetComposeIncludeConcept[] {
-                    if searchParameters.hasKey("filter") {
-                        string filter = searchParameters.get("filter")[0].value;
+                    if searchParameters.hasKey(FILTER) {
+                        string filter = searchParameters.get(FILTER)[0].value;
                         i4:ValueSetComposeIncludeConcept[] result = from i4:ValueSetComposeIncludeConcept entry in concepts
-                            where entry["display"] is string && regex:matches((<string>entry["display"]).toUpperAscii(),
+                            where entry[DISPLAY] is string && regex:matches((<string>entry[DISPLAY]).toUpperAscii(),
                         string `.*${filter.toUpperAscii()}.*`)
                             select entry;
                         concepts = result;
@@ -1093,13 +1115,13 @@ public isolated class TerminologyProcessor {
                     valueSet.expansion = expansion.clone();
 
                 } else {
-                    if searchParameters.hasKey("filter") {
-                        string filter = searchParameters.get("filter")[0].value;
+                    if searchParameters.hasKey(FILTER) {
+                        string filter = searchParameters.get(FILTER)[0].value;
                         i4:CodeSystemConcept[] result = from i4:CodeSystemConcept entry in concepts
-                            where entry["display"] is string
-                            && regex:matches((<string>entry["display"]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
-                        || entry["definition"] is string
-                            && regex:matches((<string>entry["definition"]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
+                            where entry[DISPLAY] is string
+                            && regex:matches((<string>entry[DISPLAY]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
+                        || entry[DEFINITION] is string
+                            && regex:matches((<string>entry[DEFINITION]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
                             select entry;
                         concepts = result;
                     }
@@ -1146,12 +1168,13 @@ public isolated class TerminologyProcessor {
                 codeSystem = cs.clone();
             } else {
                 return r4:createFHIRError(
-            "Can not find a CodeSystem",
-            r4:ERROR,
-            r4:INVALID_REQUIRED,
-            diagnostic = "CodeSystem record or system URL should be provided as input",
-            errorType = r4:PROCESSING_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST);
+                    "Can not find a CodeSystem",
+                    r4:ERROR,
+                    r4:INVALID_REQUIRED,
+                    diagnostic = "CodeSystem record or system URL should be provided as input",
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
 
             i4:CodeSystemConcept? conceptDetailsA = self.retrieveCodeSystemConcept(codeSystem, conceptA.clone());
@@ -1159,9 +1182,9 @@ public isolated class TerminologyProcessor {
 
             if conceptDetailsA != () && conceptDetailsB != () {
                 if conceptDetailsA.code == conceptDetailsB.code && conceptDetailsA.display == conceptDetailsB.display {
-                    return {'parameter: [{name: "outcome", valueCode: "equivalent"}]};
+                    return {'parameter: [{name: OUTCOME, valueCode: EQUIVALENT}]};
                 } else {
-                    return {'parameter: [{name: "outcome", valueCode: "not-subsumed"}]};
+                    return {'parameter: [{name: OUTCOME, valueCode: NOT_SUBSUMED}]};
                 }
             } else if conceptDetailsA is () {
                 return r4:createFHIRError(
@@ -1169,14 +1192,16 @@ public isolated class TerminologyProcessor {
                     r4:ERROR,
                     r4:PROCESSING_NOT_FOUND,
                     errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             } else {
                 return r4:createFHIRError(
                     string `Code/ Coding: ${conceptB.toBalString()} is not included in the provided CodeSystem`,
                     r4:ERROR,
                     r4:PROCESSING_NOT_FOUND,
                     errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
             }
         }
     }
@@ -1204,22 +1229,22 @@ public isolated class TerminologyProcessor {
 
                     if isIdExistInRegistry {
                         return r4:createFHIRError(
-                    string `Unknown version: '${'version}'`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    diagnostic = string `There is CodeSystem in the registry with Id: '${url}' but can not find version: '${'version}' of it`,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+                            string `Unknown version: '${'version}'`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            diagnostic = string `There is CodeSystem in the registry with Id: '${url}' but can not find version: '${'version}' of it`,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
                     }
                 } else {
                     i4:CodeSystem codeSystem = {content: "example", status: "unknown"};
-                    string latestVersion = "0.0.0";
+                    string latestVersion = DEFAULT_VERSION;
                     foreach var item in self.codeSystems.keys() {
                         if regex:matches(item, string `${url}\|.*`)
                 && self.codeSystems[item] is i4:CodeSystem
                 && (<i4:CodeSystem>self.codeSystems[item]).'version > latestVersion {
                             codeSystem = <i4:CodeSystem>self.codeSystems[item];
-                            latestVersion = codeSystem.'version ?: "0.0.0";
+                            latestVersion = codeSystem.'version ?: DEFAULT_VERSION;
                             isIdExistInRegistry = true;
                         }
                     }
@@ -1228,11 +1253,11 @@ public isolated class TerminologyProcessor {
                         return codeSystem.clone();
                     } else {
                         return r4:createFHIRError(
-                    string `Unknown CodeSystem: '${url.toBalString()}'`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+                            string `Unknown CodeSystem: '${url.toBalString()}'`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
                     }
                 }
                 return r4:createFHIRError(
@@ -1240,7 +1265,7 @@ public isolated class TerminologyProcessor {
                     r4:ERROR,
                     r4:PROCESSING_NOT_FOUND,
                     httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+                );
             }
         }
     }
@@ -1268,34 +1293,34 @@ public isolated class TerminologyProcessor {
 
                     if isIdExistInRegistry {
                         return r4:createFHIRError(
-                    string `Unknown version: '${'version}'`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    diagnostic = string `There is ValueSet in the registry with Id: '${url}' but can not find version: '${'version}' of it`,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+                            string `Unknown version: '${'version}'`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            diagnostic = string `There is ValueSet in the registry with Id: '${url}' but can not find version: '${'version}' of it`,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
                     }
                 } else {
                     i4:ValueSet valueSet = {status: "unknown"};
-                    string latestVersion = "0.0.0";
+                    string latestVersion = DEFAULT_VERSION;
                     foreach var item in self.valueSets.keys() {
                         if regex:matches(item, string `${url}\|.*`)
                         && self.valueSets[item] is i4:ValueSet
                         && (<i4:ValueSet>self.valueSets[item]).'version > latestVersion {
 
                             valueSet = <i4:ValueSet>self.valueSets[item];
-                            latestVersion = valueSet.'version ?: "0.0.0";
+                            latestVersion = valueSet.'version ?: DEFAULT_VERSION;
                             isIdExistInRegistry = true;
                         }
                     }
 
                     if !isIdExistInRegistry {
                         return r4:createFHIRError(
-                    string `Unknown ValueSet: '${url}'`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+                            string `Unknown ValueSet: '${url}'`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
                     } else {
                         return valueSet.clone();
                     }
@@ -1306,7 +1331,7 @@ public isolated class TerminologyProcessor {
                     r4:ERROR,
                     r4:PROCESSING_NOT_FOUND,
                     httpStatusCode = http:STATUS_NOT_FOUND
-                    );
+                );
             }
         }
 
@@ -1329,9 +1354,9 @@ public isolated class TerminologyProcessor {
                 return self.conceptToCodeableConcept(conceptResult.concept.clone(), conceptResult.url.clone());
             }
             return r4:createInternalFHIRError(
-            string `Code : ${code} not found in system : ${system}`,
-            r4:ERROR,
-            r4:PROCESSING_NOT_FOUND
+                string `Code : ${code} not found in system : ${system}`,
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND
             );
         }
     }
@@ -1354,9 +1379,10 @@ public isolated class TerminologyProcessor {
             }
 
             return r4:createInternalFHIRError(
-            string `Code : ${code} not found in system : ${system}`,
-            r4:ERROR,
-            r4:PROCESSING_NOT_FOUND);
+                string `Code : ${code} not found in system : ${system}`,
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND
+            );
         }
     }
 

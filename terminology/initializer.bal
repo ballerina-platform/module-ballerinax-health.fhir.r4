@@ -36,8 +36,13 @@ function init() returns r4:FHIRError? {
         codeSystemsJsonArray = check DEFAULT_FHIR_CODE_SYSTEMS.fromJsonString();
         valueSetsJsonArray = check DEFAULT_FHIR_VALUE_SETS.fromJsonString();
     } on fail var e {
-        r4:FHIRError fHIRError = r4:createFHIRError("Error occurred while type casting json string Terminologies json objects",
-                                                            r4:ERROR, r4:PROCESSING, diagnostic = e.message(), cause = e);
+        r4:FHIRError fHIRError = r4:createFHIRError(
+                                    "Error occurred while type casting json string Terminologies json objects",
+                                    r4:ERROR,
+                                    r4:PROCESSING,
+                                    diagnostic = e.message(),
+                                    cause = e
+                                );
         log:printError(fHIRError.toBalString());
     }
 
@@ -45,8 +50,12 @@ function init() returns r4:FHIRError? {
     foreach json jCodeSystem in <json[]>codeSystemsJsonArray {
         i4:CodeSystem|error c = jCodeSystem.cloneWithType();
         if c is error {
-            r4:FHIRError fHIRError = r4:createFHIRError("Error occurred while type casting json code system to CodeSystem type", r4:ERROR,
-                                                                        r4:PROCESSING, diagnostic = c.message(), cause = c);
+            r4:FHIRError fHIRError = r4:createFHIRError(
+                                        "Error occurred while type casting json code system to CodeSystem type", r4:ERROR,
+                                        r4:PROCESSING,
+                                        diagnostic = c.message(),
+                                        cause = c
+                                    );
             log:printError(fHIRError.toBalString());
         } else {
             string key = string `${<string>c.url}|${<string>c.'version}`;
@@ -58,8 +67,12 @@ function init() returns r4:FHIRError? {
     foreach json jValueSet in <json[]>valueSetsJsonArray {
         i4:ValueSet|error v = jValueSet.cloneWithType();
         if v is error {
-            r4:FHIRError fHIRError = r4:createFHIRError("Error occurred while type casting json value set to ValueSet type", r4:ERROR,
-                                                                        r4:PROCESSING, diagnostic = v.message(), cause = v);
+            r4:FHIRError fHIRError = r4:createFHIRError(
+                                        "Error occurred while type casting json value set to ValueSet type", r4:ERROR,
+                                        r4:PROCESSING,
+                                        diagnostic = v.message(),
+                                        cause = v
+                                    );
             log:printError(fHIRError.toBalString());
         } else {
             string key = string `${<string>v.url}|${<string>v.'version}`;

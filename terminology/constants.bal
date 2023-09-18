@@ -53,3 +53,12 @@ public const map<string> VALUESETS_EXPANSION_PARAMS = {
 
 public const TERMINOLOGY_SEARCH_DEFAULT_COUNT = 20;
 public const TERMINOLOGY_SEARCH_MAXIMUM_COUNT = 300;
+public const SEARCH_COUNT_ATTRIBUTE = "_count";
+public const SEARCH_OFFSET_ATTRIBUTE = "_offset";
+public const FILTER = "filter";
+public const DISPLAY = "display";
+public const DEFINITION = "definition";
+public const OUTCOME = "outcome";
+public const EQUIVALENT = "equivalent";
+public const NOT_SUBSUMED = "not-subsumed";
+public const DEFAULT_VERSION = "0.0.0";

@@ -49,7 +49,6 @@ public isolated function readValueSetById(string id, string? 'version = ()) retu
 # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided URL
 public isolated function readCodeSystemByUrl(r4:uri url, string? 'version = ()) returns i4:CodeSystem|r4:FHIRError {
     return terminologyProcessor.readCodeSystemByUrl(url, 'version);
-
 }
 
 # Find a ValueSet for a provided URL and version.
