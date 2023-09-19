@@ -110,9 +110,6 @@ public isolated class TerminologyProcessor {
     private map<i4:ValueSet> valueSets = {};
     private Finder? finder = ();
 
-    public function init() {
-    }
-
     # It will initialize the Terminology map.
     # It will delete the existing records if it is re-initialized.
     # It will be used during the package initialization. 
