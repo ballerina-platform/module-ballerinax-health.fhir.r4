@@ -24,15 +24,15 @@ const string BRACKET_START = "[";
 # + fhirResource - requested fhir resource
 # + fhirPathExpression - requested fhirpath expression
 # + return - result of the fhirpath expression
-public isolated function evaluateFhirPath(map<json> fhirResource, string fhirPathExpression) returns string|json|int|float|boolean|byte|error {
+public isolated function evaluateFhirPath(json fhirResource, string fhirPathExpression) returns string|json|int|float|boolean|byte|error {
 
     // Set the root result as the first token
-    map<json> result = <map<json>>fhirResource.toJson();
+    map<json> result = <map<json>>fhirResource;
     string resourceType = fhirPathExpression.substring(0, <int>fhirPathExpression.indexOf("."));
     Token[]|error tokenRecords = getTokens(fhirPathExpression);
 
     // Check if the expression and the resource are same.
-    if resourceType != fhirResource["resourceType"] {
+    if resourceType != result["resourceType"] {
         return createFhirPathError("Resource is not match with the FhirPath expression", fhirPathExpression);
     }
     // Iterate through the tokens and updating the results iteratively.

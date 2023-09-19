@@ -19,7 +19,7 @@
 # + fhirResource - requested fhir resource
 # + fhirPath - fhirpath requested for evaluvation
 # + return - result of the fhirpath expression
-public isolated function getFhirPathResult(map<json> fhirResource, string fhirPath) returns FhirPathResult {
+public isolated function getFhirPathResult(json fhirResource, string fhirPath) returns FhirPathResult {
 
     string|json|int|float|boolean|byte|error results = evaluateFhirPath(fhirResource, fhirPath);
 
