@@ -14,4 +14,3 @@ This package provides the following functionalities required for FHIR terminolog
 4. ValueSet-expand - Get the definition of a value set.
 5. ValueSet-validate-code - Validate that a coded value is in the set of codes allowed by a value set.
 6. CodeSystem-subsumes - Test the subsumption(The meaning of the hierarchy of concepts as represented in this resource) relationship between code/Coding A and code/Coding B given the semantics of subsumption in the underlying code system.
-

@@ -1,0 +1,88 @@
+{
+  "resourceType": "ValueSet",
+  "meta": {
+      "lastUpdated": "2019-11-01T09:29:23.356+11:00",
+      "profile": [
+          "http://hl7.org/fhir/StructureDefinition/shareablevalueset"
+      ]
+  },
+  "date": "2019-11-01T09:29:23+11:00",
+  "extension": [
+      {
+          "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-wg",
+          "valueCode": "pa"
+      },
+      {
+          "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-standards-status",
+          "valueCode": "trial-use"
+      },
+      {
+          "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-fmm",
+          "valueInteger": 2
+      }
+  ],
+  "description": "Indicates whether the account is available to be used.",
+  "experimental": false,
+  "title": "AccountStatus",
+  "contact": [
+      {
+          "telecom": [
+              {
+                  "system": "url",
+                  "value": "http://hl7.org/fhir"
+              },
+              {
+                  "system": "email",
+                  "value": "fhir@lists.hl7.org"
+              }
+          ]
+      }
+  ],
+  "id": "account-status",
+  "text": {
+      "status": "generated",
+      "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h2>AccountStatus</h2><div><p>Indicates whether the account is available to be used.</p>\n</div><p>This value set includes codes from the following code systems:</p><ul><li>Include all codes defined in <a href=\"codesystem-account-status.html\"><code>http://hl7.org/fhir/account-status</code></a></li></ul></div>"
+  },
+  "identifier": [
+      {
+          "system": "urn:ietf:rfc:3986",
+          "value": "urn:oid:2.16.840.1.113883.4.642.3.726"
+      }
+  ],
+  "version": "4.0.1",
+  "url": "http://hl7.org/fhir/ValueSet/account-status",
+  "immutable": true,
+  "compose": {
+      "include": [
+          {
+              "system": "http://hl7.org/fhir/account-status"
+          }
+      ]
+  },
+  "name": "AccountStatus",
+  "publisher": "HL7 (FHIR Project)",
+  "status": "draft",
+  "expansion": {
+      "contains": [
+          {
+              "code": "active",
+              "display": "Active"
+          },
+          {
+              "code": "inactive",
+              "display": "Inactive"
+          },
+          {
+              "code": "on-hold",
+              "display": "On Hold"
+          },
+          {
+              "code": "unknown",
+              "display": "Unknown"
+          }
+      ],
+      "total": 4,
+      "offset": 0,
+      "timestamp": "2023-07-14T05:15:22.670314Z"
+  }
+}
