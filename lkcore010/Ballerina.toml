@@ -1,0 +1,9 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.r4.lkcore010"
+version = "1.0.0"
+distribution = "2201.7.0"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "LKCore"]
+repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+export = ["health.fhir.r4.lkcore010"]
