@@ -16,8 +16,8 @@
 
 import ballerina/test;
 
-public function getResource() returns map<json> {
-    map<json> patientPayload = {
+public function getResource() returns json {
+    json patientPayload = {
         "resourceType" : "Patient",
         "id": "1",
         "meta": {
@@ -78,8 +78,8 @@ public function getResource() returns map<json> {
 
 }
 
-public function getOrgResource() returns map<json> {
-    map<json> org ={
+public function getOrgResource() returns json {
+    json org ={
         "resourceType" : "Organization",
         address: [
             {
@@ -143,8 +143,8 @@ public function testFunction() returns error? {
     // Unit tests for error paths.
     string|json|int|float|boolean|byte|error evaluateFhirPathResult = evaluateFhirPath(getResource(), "Patient.mother[a]");
     if evaluateFhirPathResult is error {
-        test:assertEquals(evaluateFhirPathResult.message() ,"The given FhirPath expression is incorrect as it contains english " +
-                "letter instead of number for array access", msg = "Failed!");
+        test:assertEquals(evaluateFhirPathResult.message() ,"The given FhirPath expression is incorrect as it contains invalid " +
+                "character instead of a number for array access", msg = "Failed!");
     }
     string|json|int|float|boolean|byte|error testOne = evaluateFhirPath(getResource(), "Pat.name");
     if testOne is error {
@@ -156,7 +156,7 @@ public function testFunction() returns error? {
     }
     string|json|int|float|boolean|byte|error testThree = evaluateFhirPath(getResource(), "Patient.name[0].given[a]");
     if testThree is error {
-        test:assertEquals(testThree.message() ,"The given FhirPath expression is incorrect as it contains english letter instead of number for array access", msg = "Failed!");
+        test:assertEquals(testThree.message() ,"The given FhirPath expression is incorrect as it contains invalid character instead of a number for array access", msg = "Failed!");
     }
     string|json|int|float|boolean|byte|error testFour = evaluateFhirPath(getResource(), "Patient.meta.profile[8]");
     if testFour is error {
@@ -167,9 +167,9 @@ public function testFunction() returns error? {
         test:assertEquals(testFive.message() ,"The given FhirPath expression is incorrect for the given FHIR resource", msg = "Failed!");
     }
     FhirPathResult fhirPathResult = getFhirPathResult(getResource(), "Patient.address.mor" );
-    string? testSix = fhirPathResult?.resultenError;
+    FhirPathErrorRecord? testSix = fhirPathResult?.resultenError;
     if testSix !is () {
-        test:assertEquals(testSix, "The given FhirPath expression is incorrect for the given FHIR resource", msg = "Failed!");
+        test:assertEquals(testSix.message, "The given FhirPath expression is incorrect for the given FHIR resource", msg = "Failed!");
     }
 
     FhirPathResult fhirPathResultTwo = getFhirPathResult(getResource(), "Patient.id" );

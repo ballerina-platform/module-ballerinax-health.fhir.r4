@@ -15,10 +15,15 @@
 // under the License.
 
 import ballerina/lang.'int as langint;
+import ballerina/log;
 import ballerina/regex;
 
-const string BRACKET_END = "]";
-const string BRACKET_START = "[";
+const BRACKET_END = "]";
+const BRACKET_START = "[";
+const INVALID_CHARACTER_MSG = "The given FhirPath expression is incorrect as it contains invalid " +
+"character instead of a number for array access";
+const INVALID_FHIRPATH_MSG = "The given FhirPath expression is incorrect for the given FHIR resource";
+
 # Evaluate the fhirpath expression.
 #
 # + fhirResource - requested fhir resource
@@ -33,6 +38,7 @@ public isolated function evaluateFhirPath(json fhirResource, string fhirPathExpr
 
     // Check if the expression and the resource are same.
     if resourceType != result["resourceType"] {
+        log:printDebug("ResourceType parameter in the resource is not match with the FhirPath expression: " + fhirPathExpression);
         return createFhirPathError("Resource is not match with the FhirPath expression", fhirPathExpression);
     }
     // Iterate through the tokens and updating the results iteratively.
@@ -51,12 +57,12 @@ public isolated function evaluateFhirPath(json fhirResource, string fhirPathExpr
                             result = <map<json>>tempArrayResult;
                         }
                     } else {
+                        log:printDebug("The given array index should be less than array length", fhirPath = fhirPathExpression);
                         return createFhirPathError("The given array index is incorrect for the given FHIR" +
                     "resource", fhirPathExpression);
                     }
                 } else {
-                    return createFhirPathError("The given FhirPath expression is incorrect for the given FHIR " +
-                    "resource", fhirPathExpression);
+                    return createFhirPathError(INVALID_FHIRPATH_MSG, fhirPathExpression);
                 }
 
             } else {
@@ -64,22 +70,19 @@ public isolated function evaluateFhirPath(json fhirResource, string fhirPathExpr
                     if result.hasKey(tokenRecords[i].value) {
                         result = <map<json>>result[tokenRecords[i].value];
                     } else {
-                        return createFhirPathError("The given FhirPath expression is incorrect for the given FHIR " +
-                    "resource", fhirPathExpression);
+                        return createFhirPathError(INVALID_FHIRPATH_MSG, fhirPathExpression);
                     }
                 } else if result[tokenRecords[i].value] is json[] {
                     if i == tokenRecords.length() - 1 {
                         if result.hasKey(tokenRecords[i].value) {
                             return result[tokenRecords[i].value];
                         } else {
-                            return createFhirPathError("The given FhirPath expression is incorrect for the given FHIR " +
-                    "resource", fhirPathExpression);
+                            return createFhirPathError(INVALID_FHIRPATH_MSG, fhirPathExpression);
                         }
                     } else if !(getSubResultForJsonArray(<json[]>result[tokenRecords[i].value], tokenRecords[i + 1]) is error) {
                         return getSubResultForJsonArray(<json[]>result[tokenRecords[i].value], tokenRecords[i + 1]);
                     } else {
-                        return createFhirPathError("The given FhirPath expression is incorrect for the given FHIR " +
-                    "resource", fhirPathExpression);
+                        return createFhirPathError(INVALID_FHIRPATH_MSG, fhirPathExpression);
                     }
                 } else {
                     if result.hasKey(tokenRecords[i].value) {
@@ -89,18 +92,18 @@ public isolated function evaluateFhirPath(json fhirResource, string fhirPathExpr
                             result = <map<json>>result[tokenRecords[i].value];
                         }
                     } else {
-                        return createFhirPathError("The given FhirPath expression is incorrect for the given FHIR " +
-                    "resource", fhirPathExpression);
+                        log:printDebug("The given FhirPath expression is incorrect for the resource given", fhirPath = fhirPathExpression);
+                        return createFhirPathError(INVALID_FHIRPATH_MSG, fhirPathExpression);
                     }
                 }
             }
         }
 
     } else {
-        return createFhirPathError("The given FhirPath expression is incorrect as it contains english " +
-                "letter instead of number for array access", fhirPathExpression);
+        log:printDebug("Unable to get tokens from the Fhirpath given", fhirPath = fhirPathExpression);
+        return createFhirPathError(INVALID_CHARACTER_MSG, fhirPathExpression);
     }
-
+    return result;
 }
 
 # Get the sub result of the particular token from the json array.
@@ -128,8 +131,8 @@ isolated function getSubResultForJsonArray(json[] result, Token token) returns j
                         continue;
                     }
                 } else {
-                    return createFhirPathError("The given FhirPath expression is incorrect as it contains english " +
-                "letter instead of number for array access", "");
+                    log:printDebug("Only numbers are allowed for array access", tokenName = token);
+                    return createFhirPathError(INVALID_CHARACTER_MSG, "");
                 }
             }
         } else
@@ -148,8 +151,8 @@ isolated function getSubResultForJsonArray(json[] result, Token token) returns j
         }
     }
     if !validToken {
-        return createFhirPathError("The given FhirPath expression is incorrect as it contains english " +
-                "letter instead of number for array access", "");
+        log:printDebug("One of the sub token in the given FhirPath is incorrect", TokenName = token);
+        return createFhirPathError(INVALID_CHARACTER_MSG, "");
     }
 }
 
@@ -189,10 +192,9 @@ isolated function getTokens(string fhirPathExpression) returns Token[]|error {
                 arrayAccessToken aat = {index: valueNum, value: arrayTokenName};
                 tokenRecordArray[tokenRecordArray.length()] = aat;
             } else {
-                return createFhirPathError("The given FhirPath expression is incorrect as it contains english " +
-                "letter instead of number for array access", fhirPathExpression);
+                log:printDebug("Only numbers are allowed for array access", tokenName = arrayTokenName);
+                return createFhirPathError(INVALID_CHARACTER_MSG, fhirPathExpression);
             }
-
         }
     }
     return tokenRecordArray;
