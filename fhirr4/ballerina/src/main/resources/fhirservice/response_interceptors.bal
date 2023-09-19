@@ -57,6 +57,15 @@ public isolated service class FHIRResponseInterceptor {
             // set the proper response code
             res.statusCode = fhirContext.getErrorCode();
         }
+
+        r4:AuditConfig? & readonly auditConfig = self.apiConfig.auditConfig;
+        if auditConfig != () && auditConfig.enabled {
+            r4:FHIRError? failed = r4:handleAuditEvent(auditConfig, fhirContext);
+            // todo handle properly
+            if failed != () {
+                log:printError("Error while sending audit event", 'error = failed);
+            }
+        }
         return getNextService(ctx);
     }
 
