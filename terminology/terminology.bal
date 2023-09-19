@@ -27,8 +27,8 @@ public type TerminologyRetriever isolated function (r4:uri system, r4:code code)
 # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
-public isolated function readCodeSystemById(string id, string? 'version = ()) returns i4:CodeSystem|r4:FHIRError {
-    return terminologyProcessor.readCodeSystemById(id, 'version);
+public isolated function readCodeSystemById(string id, string? version = ()) returns i4:CodeSystem|r4:FHIRError {
+    return terminologyProcessor.readCodeSystemById(id, version);
 }
 
 # Find a ValueSet for a provided Id and version.
@@ -37,8 +37,8 @@ public isolated function readCodeSystemById(string id, string? 'version = ()) re
 # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
-public isolated function readValueSetById(string id, string? 'version = ()) returns i4:ValueSet|r4:FHIRError {
-    return terminologyProcessor.readValueSetById(id, 'version);
+public isolated function readValueSetById(string id, string? version = ()) returns i4:ValueSet|r4:FHIRError {
+    return terminologyProcessor.readValueSetById(id, version);
 }
 
 # Find a CodeSystem based on the provided URL and version.
@@ -47,8 +47,8 @@ public isolated function readValueSetById(string id, string? 'version = ()) retu
 # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided URL
-public isolated function readCodeSystemByUrl(r4:uri url, string? 'version = ()) returns i4:CodeSystem|r4:FHIRError {
-    return terminologyProcessor.readCodeSystemByUrl(url, 'version);
+public isolated function readCodeSystemByUrl(r4:uri url, string? version = ()) returns i4:CodeSystem|r4:FHIRError {
+    return terminologyProcessor.readCodeSystemByUrl(url, version);
 }
 
 # Find a ValueSet for a provided URL and version.
@@ -57,8 +57,8 @@ public isolated function readCodeSystemByUrl(r4:uri url, string? 'version = ()) 
 # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided URL
-public isolated function readValueSetByUrl(r4:uri url, string? 'version = ()) returns i4:ValueSet|r4:FHIRError {
-    return terminologyProcessor.readValueSetByUrl(url, 'version);
+public isolated function readValueSetByUrl(r4:uri url, string? version = ()) returns i4:ValueSet|r4:FHIRError {
+    return terminologyProcessor.readValueSetByUrl(url, version);
 }
 
 # Search for Code systems based on the provided search parameters.
@@ -93,8 +93,8 @@ public isolated function searchValueSets(map<r4:RequestSearchParameter[]> search
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return list of Concepts if processing is successful, return FHIRError if fails
 public isolated function codeSystemLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, r4:CodeSystem? cs = (),
-        r4:uri? system = (), string? 'version = ()) returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
-    return terminologyProcessor.codeSystemLookUp(codeValue, cs, system, 'version);
+        r4:uri? system = (), string? version = ()) returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
+    return terminologyProcessor.codeSystemLookUp(codeValue, cs, system, version);
 }
 
 # Extract the respective concepts from a given ValueSet based on the give code or Coding or CodeableConcept data.
@@ -109,8 +109,8 @@ public isolated function codeSystemLookUp(r4:code|r4:Coding|r4:CodeableConcept c
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up. 
 # + return - Return list of Concepts if processing is successful, return FHIRError if fails
 public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, r4:ValueSet? vs = (),
-        r4:uri? system = (), string? 'version = ()) returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
-    return terminologyProcessor.valueSetLookUp(codeValue, vs, system, 'version);
+        r4:uri? system = (), string? version = ()) returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
+    return terminologyProcessor.valueSetLookUp(codeValue, vs, system, version);
 }
 
 # Extract all the concepts from a given valueSet based on the given filter parameters.
@@ -138,8 +138,8 @@ public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]> sear
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return Values either equivalent or not-subsumed if processing is successful, FHIRError processing fails
 public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding conceptB, r4:CodeSystem? cs = (),
-        r4:uri? system = (), string? 'version = ()) returns i4:Parameters|r4:FHIRError {
-    return terminologyProcessor.subsumes(conceptA, conceptB, cs, system, 'version);
+        r4:uri? system = (), string? version = ()) returns i4:Parameters|r4:FHIRError {
+    return terminologyProcessor.subsumes(conceptA, conceptB, cs, system, version);
 }
 
 # Create CodeableConcept data type for given code in a given system.
@@ -149,9 +149,9 @@ public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding 
 # + version - Version of the CodeSystem and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Created CodeableConcept record or FHIRError if not found
-public isolated function createCodeableConcept(r4:uri system, r4:code code, string? 'version = ()
+public isolated function createCodeableConcept(r4:uri system, r4:code code, string? version = ()
         ) returns r4:CodeableConcept|r4:FHIRError {
-    return terminologyProcessor.createCodeableConcept(system, code, 'version);
+    return terminologyProcessor.createCodeableConcept(system, code, version);
 }
 
 # Create Coding data type for given code in a given system.
@@ -161,9 +161,9 @@ public isolated function createCodeableConcept(r4:uri system, r4:code code, stri
 # + version - Version of the CodeSystem and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Created CodeableConcept record or FHIRError if not found
-public isolated function createCoding(r4:uri system, r4:code code, string? 'version = ()
+public isolated function createCoding(r4:uri system, r4:code code, string? version = ()
         ) returns r4:Coding|r4:FHIRError {
-    return terminologyProcessor.createCoding(system, code, 'version);
+    return terminologyProcessor.createCoding(system, code, version);
 }
 
 # Add a list of new CodeSystems.

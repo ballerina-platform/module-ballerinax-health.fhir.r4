@@ -67,17 +67,17 @@ public type Finder readonly & object {
     #
     # + system - System URL of the CodeSystem to be added.  
     # + concepts - Concept array to be added.
-    # + 'version - version of the CodeSystem to be added.
+    # + version - version of the CodeSystem to be added.
     # + return - Error array if any.
-    public isolated function addConcepts(r4:uri system, i4:CodeSystemConcept[] concepts, string? 'version = ()) returns r4:FHIRError[]?;
+    public isolated function addConcepts(r4:uri system, i4:CodeSystemConcept[] concepts, string? version = ()) returns r4:FHIRError[]?;
 
     # The function definition for Concept finder implementations.
     #
     # + system - System URL of the CodeSystem to be searched.
     # + code - Code of the Concept to be searched.
-    # + 'version - version of the CodeSystem to be searched.
+    # + version - version of the CodeSystem to be searched.
     # + return - CodeSystemConcept if found or else FHIRError.
-    public isolated function findConcept(r4:uri system, r4:code code, string? 'version = ()) returns i4:CodeSystemConcept|r4:FHIRError;
+    public isolated function findConcept(r4:uri system, r4:code code, string? version = ()) returns i4:CodeSystemConcept|r4:FHIRError;
 
     # The function definition for add ValueSets implementations.
     #
@@ -89,9 +89,9 @@ public type Finder readonly & object {
     #
     # + system - System URL of the ValueSet to be searched.
     # + id - Id of the ValueSet to be searched.  
-    # + 'version - version of the ValueSet to be searched.
+    # + version - version of the ValueSet to be searched.
     # + return - ValueSet if found or else FHIRError.
-    public isolated function findValueSet(r4:uri? system = (), string? id = (), string? 'version = ()) returns i4:ValueSet|r4:FHIRError;
+    public isolated function findValueSet(r4:uri? system = (), string? id = (), string? version = ()) returns i4:ValueSet|r4:FHIRError;
 
     # Search ValueSets.
     #
@@ -241,7 +241,7 @@ public isolated class TerminologyProcessor {
                 );
             }
 
-            if codeSystem.'version == () {
+            if codeSystem.version == () {
                 return r4:createFHIRError(
                     string `Can not find the version of the CodeSystem with name: ${codeSystem.name.toBalString()}`,
                     r4:ERROR,
@@ -254,8 +254,8 @@ public isolated class TerminologyProcessor {
             }
 
             string url = <string>codeSystem.url;
-            string 'version = <string>codeSystem.'version;
-            string key = string `${url}|${'version}`;
+            string version = <string>codeSystem.version;
+            string key = string `${url}|${version}`;
 
             if self.finder is () && self.codeSystems.hasKey(key) {
                 return r4:createFHIRError(
@@ -311,7 +311,7 @@ public isolated class TerminologyProcessor {
                 );
             }
 
-            if valueSet.'version == () {
+            if valueSet.version == () {
                 return r4:createFHIRError(
                     string `Can not find the version of the ValueSet with name: ${valueSet.name.toBalString()}`,
                     r4:ERROR,
@@ -324,7 +324,7 @@ public isolated class TerminologyProcessor {
             }
 
             string url = <string>valueSet.url;
-            string rVersion = <string>valueSet.'version;
+            string rVersion = <string>valueSet.version;
             string rKey = string `${url}|${rVersion}`;
 
             if self.finder is () && self.valueSets.hasKey(rKey) {
@@ -370,10 +370,10 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
-    public isolated function readCodeSystemById(string id, string? 'version = ()) returns i4:CodeSystem|r4:FHIRError {
+    public isolated function readCodeSystemById(string id, string? version = ()) returns i4:CodeSystem|r4:FHIRError {
         lock {
             if self.finder is Finder {
-                return (<Finder>self.finder).findCodeSystem(id = id, version = 'version);
+                return (<Finder>self.finder).findCodeSystem(id = id, version = version);
             }
 
             i4:CodeSystem[] codeSystems = self.codeSystems.toArray();
@@ -384,26 +384,26 @@ public isolated class TerminologyProcessor {
                 select entry;
 
             if codeSystems.length() > 0 {
-                if 'version is string {
+                if version is string {
                     codeSystems = from i4:CodeSystem entry in codeSystems
-                        where entry.'version == 'version
+                        where entry.version == version
                         select entry;
                     cs = codeSystems.length() > 0 ? codeSystems[0] : cs;
                 }
                 if codeSystems.length() < 1 {
                     return r4:createFHIRError(
-                            string `Unknown version: '${'version.toString()}'`,
+                            string `Unknown version: '${version.toString()}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
                             diagnostic = string
-                            `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
+                            `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${version.toString()}' of it`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
                 } else {
                     string latestVersion = DEFAULT_VERSION;
                     foreach var item in codeSystems {
-                        if item.'version > latestVersion {
-                            latestVersion = <string>item.'version;
+                        if item.version > latestVersion {
+                            latestVersion = <string>item.version;
                             cs = item;
                         }
                     }
@@ -427,10 +427,10 @@ public isolated class TerminologyProcessor {
     # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
-    public isolated function readValueSetById(string id, string? 'version = ()) returns i4:ValueSet|r4:FHIRError {
+    public isolated function readValueSetById(string id, string? version = ()) returns i4:ValueSet|r4:FHIRError {
         lock {
             if self.finder is Finder {
-                return (<Finder>self.finder).findValueSet(id = id, version = 'version);
+                return (<Finder>self.finder).findValueSet(id = id, version = version);
             }
 
             i4:ValueSet[] valueSets = self.valueSets.toArray();
@@ -441,9 +441,9 @@ public isolated class TerminologyProcessor {
                 select entry;
 
             if valueSets.length() > 0 {
-                if 'version is string {
+                if version is string {
                     valueSets = from i4:ValueSet entry in valueSets
-                        where entry.'version == 'version
+                        where entry.version == version
                         select entry;
 
                     if valueSets.length() > 0 {
@@ -452,18 +452,18 @@ public isolated class TerminologyProcessor {
                 }
                 if valueSets.length() < 1 {
                     return r4:createFHIRError(
-                            string `Unknown version: '${'version.toString()}'`,
+                            string `Unknown version: '${version.toString()}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
                             diagnostic = string
-                            `There is ValueSet in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
+                            `There is ValueSet in the registry with Id: '${id}' but can not find version: '${version.toString()}' of it`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
                 } else {
                     string latestVersion = DEFAULT_VERSION;
                     foreach var item in valueSets {
-                        if item.'version > latestVersion {
-                            latestVersion = <string>item.'version;
+                        if item.version > latestVersion {
+                            latestVersion = <string>item.version;
                             vs = item;
                         }
                     }
@@ -678,7 +678,7 @@ public isolated class TerminologyProcessor {
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return list of Concepts if processing is successful, return FHIRError if fails
     public isolated function codeSystemLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, i4:CodeSystem? cs = (), r4:uri? system = (),
-            string? 'version = ()) returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
+            string? version = ()) returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
         lock {
             // Create and initialize a CodeSystem record with the mandatory fields
             i4:CodeSystem codeSystem = {content: "example", status: "unknown"};
@@ -689,7 +689,7 @@ public isolated class TerminologyProcessor {
                 if ensured !is error {
                     codeSystem = ensured;
                 } else if system !is () {
-                    i4:CodeSystem|r4:FHIRError codeSystemById = self.readCodeSystemByUrl(system, 'version);
+                    i4:CodeSystem|r4:FHIRError codeSystemById = self.readCodeSystemByUrl(system, version);
                     if codeSystemById is i4:CodeSystem {
                         codeSystem = codeSystemById;
                     } else {
@@ -850,7 +850,7 @@ public isolated class TerminologyProcessor {
     # + version - Version of the ValueSet and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up. 
     # + return - Return list of Concepts if processing is successful, return FHIRError if fails
-    public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, i4:ValueSet? vs = (), r4:uri? system = (), string? 'version = ())
+    public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, i4:ValueSet? vs = (), r4:uri? system = (), string? version = ())
                                                                                     returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
         lock {
             // Create and initialize a ValueSet record with the mandatory fields
@@ -861,8 +861,8 @@ public isolated class TerminologyProcessor {
             if ensured is i4:ValueSet {
                 valueSet = ensured;
             } else if system is r4:uri {
-                if self.readValueSetByUrl(system, 'version) is i4:ValueSet {
-                    valueSet = check self.readValueSetByUrl(system, 'version);
+                if self.readValueSetByUrl(system, version) is i4:ValueSet {
+                    valueSet = check self.readValueSetByUrl(system, version);
                 } else {
                     return r4:createFHIRError(string `Cannot find a ValueSet for the provided system URL: ${system}`,
                         r4:ERROR,
@@ -1042,7 +1042,7 @@ public isolated class TerminologyProcessor {
                     r4:RequestSearchParameter[] p = [];
                     foreach var item in clone.get(VALUESETS_EXPANSION_PARAMS.valueSetVersion) {
                         r4:RequestSearchParameter r = {
-                            name: VALUESETS_SEARCH_PARAMS.'version,
+                            name: VALUESETS_SEARCH_PARAMS.version,
                             value: item.value,
                             typedValue: {modifier: r4:MODIFIER_EXACT},
                             'type: r4:STRING
@@ -1050,7 +1050,7 @@ public isolated class TerminologyProcessor {
 
                         p.push(r);
                     }
-                    clone[VALUESETS_SEARCH_PARAMS.'version] = p;
+                    clone[VALUESETS_SEARCH_PARAMS.version] = p;
                     _ = clone.remove(VALUESETS_EXPANSION_PARAMS.valueSetVersion);
                 }
 
@@ -1153,12 +1153,12 @@ public isolated class TerminologyProcessor {
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return Values either equivalent or not-subsumed if processing is successful, FHIRError processing fails
     public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding conceptB, i4:CodeSystem? cs = (), r4:uri? system = (),
-            string? 'version = ()) returns i4:Parameters|r4:FHIRError {
+            string? version = ()) returns i4:Parameters|r4:FHIRError {
         lock {
             // Create and initialize a CodeSystem record with the mandatory fields
             i4:CodeSystem codeSystem = {content: "example", status: "unknown"};
-            if cs is () && system != () && self.readCodeSystemByUrl(system, 'version) is i4:CodeSystem {
-                codeSystem = check self.readCodeSystemByUrl(system, 'version);
+            if cs is () && system != () && self.readCodeSystemByUrl(system, version) is i4:CodeSystem {
+                codeSystem = check self.readCodeSystemByUrl(system, version);
             } else if cs != () {
                 codeSystem = cs.clone();
             } else {
@@ -1207,16 +1207,16 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided URL
-    public isolated function readCodeSystemByUrl(r4:uri url, string? 'version = ()) returns i4:CodeSystem|r4:FHIRError {
+    public isolated function readCodeSystemByUrl(r4:uri url, string? version = ()) returns i4:CodeSystem|r4:FHIRError {
         lock {
             if self.finder is Finder {
-                return (<Finder>self.finder).findCodeSystem(url, 'version);
+                return (<Finder>self.finder).findCodeSystem(url, version);
             }  
 
             boolean isIdExistInRegistry = false;
-            if 'version is string {
+            if version is string {
                 foreach var item in self.codeSystems.keys() {
-                    if regex:matches(item, string `${url}\|${'version}$`) && self.codeSystems[item] is i4:CodeSystem {
+                    if regex:matches(item, string `${url}\|${version}$`) && self.codeSystems[item] is i4:CodeSystem {
                         return <i4:CodeSystem>self.codeSystems[item].clone();
                     } else if regex:matches(item, string `${url}\|.*`) {
                         isIdExistInRegistry = true;
@@ -1225,10 +1225,10 @@ public isolated class TerminologyProcessor {
 
                 if isIdExistInRegistry {
                     return r4:createFHIRError(
-                            string `Unknown version: '${'version}'`,
+                            string `Unknown version: '${version}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `There is CodeSystem in the registry with Id: '${url}' but can not find version: '${'version}' of it`,
+                            diagnostic = string `There is CodeSystem in the registry with Id: '${url}' but can not find version: '${version}' of it`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
                 }
@@ -1238,9 +1238,9 @@ public isolated class TerminologyProcessor {
                 foreach var item in self.codeSystems.keys() {
                     if regex:matches(item, string `${url}\|.*`)
                 && self.codeSystems[item] is i4:CodeSystem
-                && (<i4:CodeSystem>self.codeSystems[item]).'version > latestVersion {
+                && (<i4:CodeSystem>self.codeSystems[item]).version > latestVersion {
                         codeSystem = <i4:CodeSystem>self.codeSystems[item];
-                        latestVersion = codeSystem.'version ?: DEFAULT_VERSION;
+                        latestVersion = codeSystem.version ?: DEFAULT_VERSION;
                         isIdExistInRegistry = true;
                     }
                 }
@@ -1272,16 +1272,16 @@ public isolated class TerminologyProcessor {
     // # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
     // # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     // # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided URL
-    public isolated function readValueSetByUrl(r4:uri url, string? 'version = ()) returns r4:ValueSet|r4:FHIRError {
+    public isolated function readValueSetByUrl(r4:uri url, string? version = ()) returns r4:ValueSet|r4:FHIRError {
         lock {
             if self.finder is Finder {
-                return (<Finder>self.finder).findValueSet(url, 'version);
+                return (<Finder>self.finder).findValueSet(url, version);
             }  
 
             boolean isIdExistInRegistry = false;
-            if 'version is string {
+            if version is string {
                 foreach var item in self.valueSets.keys() {
-                    if regex:matches(item, string `${url}\|${'version}$`) && self.valueSets[item] is i4:ValueSet {
+                    if regex:matches(item, string `${url}\|${version}$`) && self.valueSets[item] is i4:ValueSet {
                         return <i4:ValueSet>self.valueSets[item].clone();
                     } else if regex:matches(item, string `${url}\|.*`) {
                         isIdExistInRegistry = true;
@@ -1290,10 +1290,10 @@ public isolated class TerminologyProcessor {
 
                 if isIdExistInRegistry {
                     return r4:createFHIRError(
-                            string `Unknown version: '${'version}'`,
+                            string `Unknown version: '${version}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `There is ValueSet in the registry with Id: '${url}' but can not find version: '${'version}' of it`,
+                            diagnostic = string `There is ValueSet in the registry with Id: '${url}' but can not find version: '${version}' of it`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
                 }
@@ -1303,10 +1303,10 @@ public isolated class TerminologyProcessor {
                 foreach var item in self.valueSets.keys() {
                     if regex:matches(item, string `${url}\|.*`)
                         && self.valueSets[item] is i4:ValueSet
-                        && (<i4:ValueSet>self.valueSets[item]).'version > latestVersion {
+                        && (<i4:ValueSet>self.valueSets[item]).version > latestVersion {
 
                         valueSet = <i4:ValueSet>self.valueSets[item];
-                        latestVersion = valueSet.'version ?: DEFAULT_VERSION;
+                        latestVersion = valueSet.version ?: DEFAULT_VERSION;
                         isIdExistInRegistry = true;
                     }
                 }
@@ -1343,10 +1343,10 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCodeableConcept(r4:uri system, r4:code code, string? 'version = (),
+    public isolated function createCodeableConcept(r4:uri system, r4:code code, string? version = (),
             Finder? finder = ()) returns r4:CodeableConcept|r4:FHIRError {
         lock {
-            CodeConceptDetails? conceptResult = check self.findConcept(system, code, finder, 'version = 'version);
+            CodeConceptDetails? conceptResult = check self.findConcept(system, code, finder, version = version);
             if conceptResult != () {
                 return self.conceptToCodeableConcept(conceptResult.concept.clone(), conceptResult.url.clone());
             }
@@ -1367,10 +1367,10 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCoding(r4:uri system, r4:code code, string? 'version = (),
+    public isolated function createCoding(r4:uri system, r4:code code, string? version = (),
             Finder? finder = ()) returns r4:Coding|r4:FHIRError {
         lock {
-            CodeConceptDetails? conceptResult = check self.findConcept(system, code, finder, 'version = 'version);
+            CodeConceptDetails? conceptResult = check self.findConcept(system, code, finder, version = version);
             if conceptResult != () {
                 return self.conceptToCoding(conceptResult.concept.clone(), conceptResult.url.clone());
             }
@@ -1400,7 +1400,7 @@ public isolated class TerminologyProcessor {
     }
 
     // Function to find concept in CodeSystems or ValueSets by passing code data type parameter.
-    private isolated function findConcept(r4:uri system, r4:code code, Finder? codeSystemFinder = (), string? 'version = ())
+    private isolated function findConcept(r4:uri system, r4:code code, Finder? codeSystemFinder = (), string? version = ())
                                                                                 returns CodeConceptDetails|r4:FHIRError? {
         lock {
             if self.finder is Finder {
@@ -1409,10 +1409,10 @@ public isolated class TerminologyProcessor {
                     url: system,
                     concept: concept.clone()
                 };
-            } else if self.readValueSetByUrl(system, 'version) is i4:ValueSet {
-                return self.findConceptInValueSet(check self.readValueSetByUrl(system, 'version), code);
-            } else if self.readCodeSystemByUrl(system, 'version) is i4:CodeSystem {
-                return self.findConceptInCodeSystem(check self.readCodeSystemByUrl(system, 'version), code);
+            } else if self.readValueSetByUrl(system, version) is i4:ValueSet {
+                return self.findConceptInValueSet(check self.readValueSetByUrl(system, version), code);
+            } else if self.readCodeSystemByUrl(system, version) is i4:CodeSystem {
+                return self.findConceptInCodeSystem(check self.readCodeSystemByUrl(system, version), code);
             } else {
                 return r4:createInternalFHIRError(
                 string `Unknown ValueSet or CodeSystem : ${system}`,

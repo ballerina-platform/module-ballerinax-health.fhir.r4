@@ -21,7 +21,7 @@ public const map<string> CODESYSTEMS_SEARCH_PARAMS = {
     name: "name",
     title: "title",
     url: "url",
-    'version: "version",
+    version: "version",
     status: "status",
     system: "system",
     description: "description",
@@ -35,7 +35,7 @@ public const map<string> VALUESETS_SEARCH_PARAMS = {
     name: "name",
     title: "title",
     url: "url",
-    'version: "version",
+    version: "version",
     status: "status",
     description: "description",
     publisher: "publisher"

@@ -58,7 +58,7 @@ function init() returns r4:FHIRError? {
                                     );
             log:printError(fHIRError.toBalString());
         } else {
-            string key = string `${<string>c.url}|${<string>c.'version}`;
+            string key = string `${<string>c.url}|${<string>c.version}`;
             codeSystemMap[key] = c;
         }
     }
@@ -75,7 +75,7 @@ function init() returns r4:FHIRError? {
                                     );
             log:printError(fHIRError.toBalString());
         } else {
-            string key = string `${<string>v.url}|${<string>v.'version}`;
+            string key = string `${<string>v.url}|${<string>v.version}`;
             valueSetMap[key] = v;
         }
     }
