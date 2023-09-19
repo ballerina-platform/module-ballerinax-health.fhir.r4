@@ -377,23 +377,24 @@ public isolated class TerminologyProcessor {
         lock {
             if self.finder is Finder {
                 return (<Finder>self.finder).findCodeSystem(id = id, version = 'version);
-            } else {
-                i4:CodeSystem[] codeSystems = self.codeSystems.toArray();
-                i4:CodeSystem cs = {content: "example", status: "unknown"};
+            }
 
-                codeSystems = from i4:CodeSystem entry in codeSystems
-                    where entry.id == id
-                    select entry;
+            i4:CodeSystem[] codeSystems = self.codeSystems.toArray();
+            i4:CodeSystem cs = {content: "example", status: "unknown"};
 
-                if codeSystems.length() > 0 {
-                    if 'version is string {
-                        codeSystems = from i4:CodeSystem entry in codeSystems
-                            where entry.'version == 'version
-                            select entry;
-                        cs = codeSystems.length() > 0 ? codeSystems[0] : cs;
-                    }
-                    if codeSystems.length() < 1 {
-                        return r4:createFHIRError(
+            codeSystems = from i4:CodeSystem entry in codeSystems
+                where entry.id == id
+                select entry;
+
+            if codeSystems.length() > 0 {
+                if 'version is string {
+                    codeSystems = from i4:CodeSystem entry in codeSystems
+                        where entry.'version == 'version
+                        select entry;
+                    cs = codeSystems.length() > 0 ? codeSystems[0] : cs;
+                }
+                if codeSystems.length() < 1 {
+                    return r4:createFHIRError(
                             string `Unknown version: '${'version.toString()}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
@@ -401,27 +402,25 @@ public isolated class TerminologyProcessor {
                             `There is CodeSystem in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
-                    } else {
-                        string latestVersion = DEFAULT_VERSION;
-                        foreach var item in codeSystems {
-                            if item.'version > latestVersion {
-                                latestVersion = <string>item.'version;
-                                cs = item;
-                            }
+                } else {
+                    string latestVersion = DEFAULT_VERSION;
+                    foreach var item in codeSystems {
+                        if item.'version > latestVersion {
+                            latestVersion = <string>item.'version;
+                            cs = item;
                         }
                     }
-                } else {
-                    return r4:createFHIRError(
+                }
+            } else {
+                return r4:createFHIRError(
                         string `Unknown CodeSystem: '${id}'`,
                         r4:ERROR,
                         r4:PROCESSING_NOT_FOUND,
                         httpStatusCode = http:STATUS_NOT_FOUND
                     );
-                }
-
-                return cs.clone();
             }
 
+            return cs.clone();
         }
     }
 
@@ -435,26 +434,27 @@ public isolated class TerminologyProcessor {
         lock {
             if self.finder is Finder {
                 return (<Finder>self.finder).findValueSet(id = id, version = 'version);
-            } else {
-                i4:ValueSet[] valueSets = self.valueSets.toArray();
-                i4:ValueSet vs = {status: "unknown"};
+            }
 
-                valueSets = from i4:ValueSet entry in valueSets
-                    where entry.id == id
-                    select entry;
+            i4:ValueSet[] valueSets = self.valueSets.toArray();
+            i4:ValueSet vs = {status: "unknown"};
 
-                if valueSets.length() > 0 {
-                    if 'version is string {
-                        valueSets = from i4:ValueSet entry in valueSets
-                            where entry.'version == 'version
-                            select entry;
+            valueSets = from i4:ValueSet entry in valueSets
+                where entry.id == id
+                select entry;
 
-                        if valueSets.length() > 0 {
-                            vs = valueSets[0];
-                        }
+            if valueSets.length() > 0 {
+                if 'version is string {
+                    valueSets = from i4:ValueSet entry in valueSets
+                        where entry.'version == 'version
+                        select entry;
+
+                    if valueSets.length() > 0 {
+                        vs = valueSets[0];
                     }
-                    if valueSets.length() < 1 {
-                        return r4:createFHIRError(
+                }
+                if valueSets.length() < 1 {
+                    return r4:createFHIRError(
                             string `Unknown version: '${'version.toString()}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
@@ -462,26 +462,24 @@ public isolated class TerminologyProcessor {
                             `There is ValueSet in the registry with Id: '${id}' but can not find version: '${'version.toString()}' of it`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
-                    } else {
-                        string latestVersion = DEFAULT_VERSION;
-                        foreach var item in valueSets {
-                            if item.'version > latestVersion {
-                                latestVersion = <string>item.'version;
-                                vs = item;
-                            }
+                } else {
+                    string latestVersion = DEFAULT_VERSION;
+                    foreach var item in valueSets {
+                        if item.'version > latestVersion {
+                            latestVersion = <string>item.'version;
+                            vs = item;
                         }
                     }
-                } else {
-                    return r4:createFHIRError(
+                }
+            } else {
+                return r4:createFHIRError(
                         string `Unknown ValueSet: '${id}'`,
                         r4:ERROR,
                         r4:PROCESSING_NOT_FOUND,
                         httpStatusCode = http:STATUS_NOT_FOUND
                     );
-                }
-                return vs.clone();
             }
-
+            return vs.clone();
         }
     }
 
@@ -538,28 +536,29 @@ public isolated class TerminologyProcessor {
 
             if self.finder is Finder {
                 return check (<Finder>self.finder).searchCodeSystem(searchParameters.clone(), offset = offset, count = count);
-            } else {
-                i4:CodeSystem[] codeSystemArray = self.codeSystems.toArray();
+            } 
 
-                foreach var searchParam in searchParameters.keys() {
-                    r4:RequestSearchParameter[] searchParamValues = searchParameters[searchParam] ?: [];
+            i4:CodeSystem[] codeSystemArray = self.codeSystems.toArray();
 
-                    i4:CodeSystem[] filteredList = [];
-                    if searchParamValues.length() != 0 {
-                        foreach var queriedValue in searchParamValues {
-                            i4:CodeSystem[] result = from i4:CodeSystem entry in codeSystemArray
-                                where entry[CODESYSTEMS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
-                                select entry;
-                            filteredList.push(...result);
-                        }
-                        codeSystemArray = filteredList;
+            foreach var searchParam in searchParameters.keys() {
+                r4:RequestSearchParameter[] searchParamValues = searchParameters[searchParam] ?: [];
+
+                i4:CodeSystem[] filteredList = [];
+                if searchParamValues.length() != 0 {
+                    foreach var queriedValue in searchParamValues {
+                        i4:CodeSystem[] result = from i4:CodeSystem entry in codeSystemArray
+                            where entry[CODESYSTEMS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
+                            select entry;
+                        filteredList.push(...result);
                     }
+                    codeSystemArray = filteredList;
                 }
+            }
 
-                int total = codeSystemArray.length();
+            int total = codeSystemArray.length();
 
-                if total > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
-                    return r4:createFHIRError(
+            if total > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+                return r4:createFHIRError(
                         "The response size is too large",
                         r4:ERROR,
                         r4:PROCESSING_TOO_COSTLY,
@@ -567,13 +566,12 @@ public isolated class TerminologyProcessor {
                         errorType = r4:PROCESSING_ERROR,
                         httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
                     );
-                } else if total >= offset + count {
-                    return codeSystemArray.slice(offset, offset + count).clone();
-                } else if total >= offset {
-                    return codeSystemArray.slice(offset).clone();
-                } else {
-                    return [];
-                }
+            } else if total >= offset + count {
+                return codeSystemArray.slice(offset, offset + count).clone();
+            } else if total >= offset {
+                return codeSystemArray.slice(offset).clone();
+            } else {
+                return [];
             }
         }
     }
@@ -631,27 +629,28 @@ public isolated class TerminologyProcessor {
 
             if self.finder is Finder {
                 return (<Finder>self.finder).searchValueSet(searchParameters.clone(), offset = offset, count = count);
-            } else {
-                i4:ValueSet[] valueSetArray = self.valueSets.toArray();
+            }  
 
-                foreach var searchParam in searchParameters.keys() {
-                    r4:RequestSearchParameter[] searchParamValues = searchParameters[searchParam] ?: [];
+            i4:ValueSet[] valueSetArray = self.valueSets.toArray();
 
-                    i4:ValueSet[] filteredList = [];
-                    if searchParamValues.length() != 0 {
-                        foreach var queriedValue in searchParamValues {
-                            i4:ValueSet[] result = from i4:ValueSet entry in valueSetArray
-                                where entry[VALUESETS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
-                                select entry;
-                            filteredList.push(...result);
-                        }
-                        valueSetArray = filteredList;
+            foreach var searchParam in searchParameters.keys() {
+                r4:RequestSearchParameter[] searchParamValues = searchParameters[searchParam] ?: [];
+
+                i4:ValueSet[] filteredList = [];
+                if searchParamValues.length() != 0 {
+                    foreach var queriedValue in searchParamValues {
+                        i4:ValueSet[] result = from i4:ValueSet entry in valueSetArray
+                            where entry[VALUESETS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
+                            select entry;
+                        filteredList.push(...result);
                     }
+                    valueSetArray = filteredList;
                 }
+            }
 
-                int total = valueSetArray.length();
-                if total > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
-                    return r4:createFHIRError(
+            int total = valueSetArray.length();
+            if total > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
+                return r4:createFHIRError(
                         "The response size is too large",
                         r4:ERROR,
                         r4:PROCESSING_TOO_COSTLY,
@@ -659,13 +658,12 @@ public isolated class TerminologyProcessor {
                         errorType = r4:PROCESSING_ERROR,
                         httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
                     );
-                } else if total >= offset + count {
-                    return valueSetArray.slice(offset, offset + count).clone();
-                } else if total >= offset {
-                    return valueSetArray.slice(offset).clone();
-                } else {
-                    return [];
-                }
+            } else if total >= offset + count {
+                return valueSetArray.slice(offset, offset + count).clone();
+            } else if total >= offset {
+                return valueSetArray.slice(offset).clone();
+            } else {
+                return [];
             }
         }
 
@@ -1216,57 +1214,58 @@ public isolated class TerminologyProcessor {
         lock {
             if self.finder is Finder {
                 return (<Finder>self.finder).findCodeSystem(url, 'version);
-            } else {
-                boolean isIdExistInRegistry = false;
-                if 'version is string {
-                    foreach var item in self.codeSystems.keys() {
-                        if regex:matches(item, string `${url}\|${'version}$`) && self.codeSystems[item] is i4:CodeSystem {
-                            return <i4:CodeSystem>self.codeSystems[item].clone();
-                        } else if regex:matches(item, string `${url}\|.*`) {
-                            isIdExistInRegistry = true;
-                        }
-                    }
+            }  
 
-                    if isIdExistInRegistry {
-                        return r4:createFHIRError(
+            boolean isIdExistInRegistry = false;
+            if 'version is string {
+                foreach var item in self.codeSystems.keys() {
+                    if regex:matches(item, string `${url}\|${'version}$`) && self.codeSystems[item] is i4:CodeSystem {
+                        return <i4:CodeSystem>self.codeSystems[item].clone();
+                    } else if regex:matches(item, string `${url}\|.*`) {
+                        isIdExistInRegistry = true;
+                    }
+                }
+
+                if isIdExistInRegistry {
+                    return r4:createFHIRError(
                             string `Unknown version: '${'version}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
                             diagnostic = string `There is CodeSystem in the registry with Id: '${url}' but can not find version: '${'version}' of it`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
-                    }
-                } else {
-                    i4:CodeSystem codeSystem = {content: "example", status: "unknown"};
-                    string latestVersion = DEFAULT_VERSION;
-                    foreach var item in self.codeSystems.keys() {
-                        if regex:matches(item, string `${url}\|.*`)
+                }
+            } else {
+                i4:CodeSystem codeSystem = {content: "example", status: "unknown"};
+                string latestVersion = DEFAULT_VERSION;
+                foreach var item in self.codeSystems.keys() {
+                    if regex:matches(item, string `${url}\|.*`)
                 && self.codeSystems[item] is i4:CodeSystem
                 && (<i4:CodeSystem>self.codeSystems[item]).'version > latestVersion {
-                            codeSystem = <i4:CodeSystem>self.codeSystems[item];
-                            latestVersion = codeSystem.'version ?: DEFAULT_VERSION;
-                            isIdExistInRegistry = true;
-                        }
+                        codeSystem = <i4:CodeSystem>self.codeSystems[item];
+                        latestVersion = codeSystem.'version ?: DEFAULT_VERSION;
+                        isIdExistInRegistry = true;
                     }
+                }
 
-                    if isIdExistInRegistry {
-                        return codeSystem.clone();
-                    } else {
-                        return r4:createFHIRError(
+                if isIdExistInRegistry {
+                    return codeSystem.clone();
+                } else {
+                    return r4:createFHIRError(
                             string `Unknown CodeSystem: '${url.toBalString()}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
-                    }
                 }
-                return r4:createFHIRError(
-                    string `Unknown CodeSystem: '${url.toBalString()}'`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                );
             }
+            return r4:createFHIRError(
+                string `Unknown CodeSystem: '${url.toBalString()}'`,
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND,
+                httpStatusCode = http:STATUS_NOT_FOUND
+            );
+            
         }
     }
 
@@ -1280,59 +1279,60 @@ public isolated class TerminologyProcessor {
         lock {
             if self.finder is Finder {
                 return (<Finder>self.finder).findValueSet(url, 'version);
-            } else {
-                boolean isIdExistInRegistry = false;
-                if 'version is string {
-                    foreach var item in self.valueSets.keys() {
-                        if regex:matches(item, string `${url}\|${'version}$`) && self.valueSets[item] is i4:ValueSet {
-                            return <i4:ValueSet>self.valueSets[item].clone();
-                        } else if regex:matches(item, string `${url}\|.*`) {
-                            isIdExistInRegistry = true;
-                        }
-                    }
+            }  
 
-                    if isIdExistInRegistry {
-                        return r4:createFHIRError(
+            boolean isIdExistInRegistry = false;
+            if 'version is string {
+                foreach var item in self.valueSets.keys() {
+                    if regex:matches(item, string `${url}\|${'version}$`) && self.valueSets[item] is i4:ValueSet {
+                        return <i4:ValueSet>self.valueSets[item].clone();
+                    } else if regex:matches(item, string `${url}\|.*`) {
+                        isIdExistInRegistry = true;
+                    }
+                }
+
+                if isIdExistInRegistry {
+                    return r4:createFHIRError(
                             string `Unknown version: '${'version}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
                             diagnostic = string `There is ValueSet in the registry with Id: '${url}' but can not find version: '${'version}' of it`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
-                    }
-                } else {
-                    i4:ValueSet valueSet = {status: "unknown"};
-                    string latestVersion = DEFAULT_VERSION;
-                    foreach var item in self.valueSets.keys() {
-                        if regex:matches(item, string `${url}\|.*`)
+                }
+            } else {
+                i4:ValueSet valueSet = {status: "unknown"};
+                string latestVersion = DEFAULT_VERSION;
+                foreach var item in self.valueSets.keys() {
+                    if regex:matches(item, string `${url}\|.*`)
                         && self.valueSets[item] is i4:ValueSet
                         && (<i4:ValueSet>self.valueSets[item]).'version > latestVersion {
 
-                            valueSet = <i4:ValueSet>self.valueSets[item];
-                            latestVersion = valueSet.'version ?: DEFAULT_VERSION;
-                            isIdExistInRegistry = true;
-                        }
+                        valueSet = <i4:ValueSet>self.valueSets[item];
+                        latestVersion = valueSet.'version ?: DEFAULT_VERSION;
+                        isIdExistInRegistry = true;
                     }
+                }
 
-                    if !isIdExistInRegistry {
-                        return r4:createFHIRError(
+                if !isIdExistInRegistry {
+                    return r4:createFHIRError(
                             string `Unknown ValueSet: '${url}'`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
-                    } else {
-                        return valueSet.clone();
-                    }
+                } else {
+                    return valueSet.clone();
                 }
+            }
 
-                return r4:createFHIRError(
+            return r4:createFHIRError(
                     string `Unknown ValueSet: '${url.toBalString()}'`,
                     r4:ERROR,
                     r4:PROCESSING_NOT_FOUND,
                     httpStatusCode = http:STATUS_NOT_FOUND
                 );
-            }
+            
         }
 
     }
