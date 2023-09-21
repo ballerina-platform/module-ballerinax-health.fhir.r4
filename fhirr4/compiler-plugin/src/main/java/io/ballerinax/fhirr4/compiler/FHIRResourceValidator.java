@@ -68,8 +68,7 @@ class FHIRResourceValidator {
         }
         if (parametersOptional.get().size() > 1) {
             TypeSymbol secondParamType = parametersOptional.get().get(1).typeDescriptor();
-            if (!(secondParamType.getModule().isPresent() && secondParamType.getModule().get().getName().get().startsWith(
-                    Constants.HEALTHCARE_PKG) || secondParamType.typeKind() == TypeDescKind.JSON)) {
+            if (!(secondParamType.typeKind() == TypeDescKind.TYPE_REFERENCE || secondParamType.typeKind() == TypeDescKind.JSON)) {
                 updateDiagnostic(ctx, paramLocation, FHIRDiagnosticCodes.FHIR_103,
                                  secondParamType.getName().isPresent() ? secondParamType.getName().get() :
                                          "of type " + secondParamType.typeKind().getName());
