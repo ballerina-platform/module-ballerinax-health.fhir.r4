@@ -19,15 +19,16 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.uscore501;
 
 # Map CCDA Diagnostic Report to FHIR Diagnostic Report.
 #
 # + organizerElement - organizer element of the CCDA Diagnostic Report
 # + return - FHIR Diagnostic Report
-public isolated function mapCcdaDiagnosticReportToFhir(xml organizerElement) returns international401:DiagnosticReport? {
+public isolated function mapCcdaDiagnosticReportToFhir(xml organizerElement) returns uscore501:USCoreDiagnosticReportProfileLaboratoryReporting? {
     if isXMLElementNotNull(organizerElement) {
-        international401:DiagnosticReport diagnosticReport = {code: {}, status: "partial"};
+        uscore501:USCoreDiagnosticReportProfileLaboratoryReporting diagnosticReport = {code: {}, status: "partial", effectivePeriod: {}, 
+        effectiveDateTime: "", subject: {}, issued: "", category: []};
 
         xml idElement = organizerElement/<v3:id|id>;
         xml statusCodeElement = organizerElement/<v3:statusCode|statusCode>;
@@ -77,7 +78,7 @@ public isolated function mapCcdaDiagnosticReportToFhir(xml organizerElement) ret
     return ();
 }
 
-isolated function mapCcdatoFhirDiagnosticReportStatus(xml codingElement) returns international401:DiagnosticReportStatus {
+isolated function mapCcdatoFhirDiagnosticReportStatus(xml codingElement) returns uscore501:DiagnosticReportStatus {
     string codeVal = codingElement.data();
-    return codeVal == "completed" ? international401:CODE_STATUS_FINAL : international401:CODE_STATUS_PARTIAL;
+    return codeVal == "completed" ? uscore501:CODE_STATUS_FINAL : uscore501:CODE_STATUS_PARTIAL;
 }

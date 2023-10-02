@@ -20,16 +20,16 @@
 
 import ballerina/log;
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.uscore501;
 
 # Map CCDA Patient Role to FHIR Patient
 #
 # + xmlContent - xml content of the CCDA Patient Role
 # + isNamespaceAvailable - Is CCDA namespace available
 # + return - FHIR Patient
-public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespaceAvailable = true) returns international401:Patient? {
+public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespaceAvailable = true) returns uscore501:USCorePatientProfile? {
     if isXMLElementNotNull(xmlContent) {
-        international401:Patient patient = {};
+        uscore501:USCorePatientProfile patient = {identifier: [], gender: "unknown", name: []};
 
         xml idElement = xmlContent/<v3:id|id>;
         xml addrElement = xmlContent/<v3:addr|addr>;
@@ -51,10 +51,19 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
             patient.address = [mapCcdaAddressToFhirAddressResult];
         }
 
-        r4:ContactPoint?|error mapCcdaTelecomToFhirTelecomResult = mapCcdaTelecomToFhirTelecom(telecomElement);
-        if mapCcdaTelecomToFhirTelecomResult is r4:ContactPoint {
-            patient.telecom = [mapCcdaTelecomToFhirTelecomResult];
+        r4:ContactPoint[] telecoms = [];
+        foreach xml telecomInstance in telecomElement {
+            r4:ContactPoint?|error mapCcdaTelecomToFhirTelecomResult = mapCcdaTelecomToFhirTelecom(telecomInstance);
+            if mapCcdaTelecomToFhirTelecomResult is r4:ContactPoint {
+                telecoms.push(mapCcdaTelecomToFhirTelecomResult);
+            }
         }
+        
+        if telecoms.length() > 0 {
+            patient.telecom = telecoms;
+        }
+
+        patient.telecom = telecoms;
 
         xml nameElement = patientElement/<v3:name|name>;
         r4:HumanName?|error mapCcdaNametoFhirNameResult = mapCcdaNametoFhirName(nameElement);
@@ -62,7 +71,7 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
             patient.name = [mapCcdaNametoFhirNameResult];
         }
 
-        international401:PatientGender mapCcdaGenderCodetoFhirGenderResult = mapCcdaGenderCodetoFhirGender(genderCodeElement);
+        uscore501:PatientGender mapCcdaGenderCodetoFhirGenderResult = mapCcdaGenderCodetoFhirGender(genderCodeElement);
         patient.gender = mapCcdaGenderCodetoFhirGenderResult;
 
         r4:dateTime? mapCCDABirthTimetoFHIRBirthDateResult = mapCcdaDateTimeToFhirDateTime(birthTimeElement);
@@ -78,9 +87,9 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
         xml preferenceIndElement = languageCommunicationElement/<v3:preferenceInd|preferenceInd>;
         xml languageCodeElement = languageCommunicationElement/<v3:languageCode|languageCode>;
 
-        r4:Coding?|error mapCCDALanguageCodetoFHIRCommunicationLanguageResult = mapCcdaCodingtoFhirCode(languageCodeElement);
+        r4:Coding?|error mapCCDALanguageCodetoFHIRCommunicationLanguageResult = mapCcdaCodingtoFhirCoding(languageCodeElement);
         if mapCCDALanguageCodetoFHIRCommunicationLanguageResult is r4:Coding {
-            international401:PatientCommunication patientCommunication = {language: {}};
+            uscore501:PatientCommunication patientCommunication = {language: {}};
             patientCommunication.language.coding = [mapCCDALanguageCodetoFHIRCommunicationLanguageResult];
             string|error? preferenceIdVal = preferenceIndElement.value;
             if preferenceIdVal is string {
@@ -113,29 +122,59 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
         organizationReference.display = organizationName;
 
         patient.managingOrganization = organizationReference;
+
+        r4:Extension[] extensions = [];
+        xml patientRaceElement = patientElement/<v3:raceCode|raceCode>;
+        r4:Coding? mapCCDARaceCodetoFHIRRaceResult = mapCcdaCodingtoFhirCoding(patientRaceElement);
+        if mapCCDARaceCodetoFHIRRaceResult is r4:Coding {
+            r4:CodingExtension raceExtension = {valueCoding: {}, url: "ombCategory"};
+            raceExtension.valueCoding = mapCCDARaceCodetoFHIRRaceResult;
+            r4:Extension uscoreRace = {
+                url: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+                extension: [raceExtension]
+            };
+            extensions.push(uscoreRace);
+        }
+
+        xml patientEthnicityElement = patientElement/<v3:ethnicGroupCode|ethnicGroupCode>;
+        r4:Coding? mapCCDAEthnicityCodetoFHIREthnicityResult = mapCcdaCodingtoFhirCoding(patientEthnicityElement);
+        if mapCCDAEthnicityCodetoFHIREthnicityResult is r4:Coding {
+            r4:CodingExtension ethnicityExtension = {valueCoding: {}, url: "ombCategory"};
+            ethnicityExtension.valueCoding = mapCCDAEthnicityCodetoFHIREthnicityResult;
+            r4:Extension uscoreEthnicity = {
+                url: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+                extension: [ethnicityExtension]
+            };
+            extensions.push(uscoreEthnicity);
+        }
+
+        if extensions.length() > 0 {
+            patient.extension = extensions;
+        }
+
         return patient;
     }
     return ();
 }
 
-isolated function mapCcdaGenderCodetoFhirGender(xml codingElement) returns international401:PatientGender {
+isolated function mapCcdaGenderCodetoFhirGender(xml codingElement) returns uscore501:PatientGender {
     string|error? codeVal = codingElement.code;
     if codeVal is string {
         match codeVal {
             "M" => {
-                return international401:CODE_GENDER_MALE;
+                return uscore501:CODE_GENDER_MALE;
             }
             "F" => {
-                return international401:CODE_GENDER_FEMALE;
+                return uscore501:CODE_GENDER_FEMALE;
             }
             "UN" => {
-                return international401:CODE_GENDER_OTHER;
+                return uscore501:CODE_GENDER_OTHER;
             }
             _ => {
-                return international401:CODE_GENDER_UNKNOWN;
+                return uscore501:CODE_GENDER_UNKNOWN;
             }
         }
     }
     log:printDebug("code is not available", codeVal);
-    return international401:CODE_GENDER_UNKNOWN;
+    return uscore501:CODE_GENDER_UNKNOWN;
 }
