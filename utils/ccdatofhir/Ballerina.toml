@@ -10,10 +10,10 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhi
 
 [[dependency]]
 org = "ballerinax"
-name="health.fhir.r4"
-version="4.1.0"
+name = "health.fhir.r4"
+version = "4.1.0"
 
 [[dependency]]
 org = "ballerinax"
-name="health.fhir.r4.international401"
-version="1.0.0"
+name = "health.fhir.r4.international401"
+version = "1.0.0"
