@@ -20,14 +20,14 @@
 
 import ballerina/log;
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.uscore501;
 
 # Map CCDA Allergy to FHIR AllergyIntolerance.
 #
 # + actElement - xml content of the CCDA Allergy Activity
 # + return - FHIR Allergy Intolerance
-public isolated function mapCcdaAllergyToFhir(xml actElement) returns international401:AllergyIntolerance? {
-    international401:AllergyIntolerance allergyIntolerance = {patient: {}};
+public isolated function mapCcdaAllergyToFhir(xml actElement) returns uscore501:USCoreAllergyIntolerance? {
+    uscore501:USCoreAllergyIntolerance allergyIntolerance = {patient: {}, code: {}};
 
     if isXMLElementNotNull(actElement) {
         xml statusCodeElements = actElement/<v3:statusCode|statusCode>;
@@ -62,13 +62,13 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns internatio
             allergyIntolerance.onsetDateTime = mapCCDALowEffectiveTimetoFHIRDateTimeResult;
         }
 
-        international401:AllergyIntoleranceCategory? mapCCDAValueToFHIRCategoryResult = mapCcdaValueToFhirAllergyIntoleranceCategory(valueElement);
-        if mapCCDAValueToFHIRCategoryResult is international401:AllergyIntoleranceCategory {
+        uscore501:AllergyIntoleranceCategory? mapCCDAValueToFHIRCategoryResult = mapCcdaValueToFhirAllergyIntoleranceCategory(valueElement);
+        if mapCCDAValueToFHIRCategoryResult is uscore501:AllergyIntoleranceCategory {
             allergyIntolerance.category = [mapCCDAValueToFHIRCategoryResult];
         }
 
-        international401:AllergyIntoleranceType? mapCCDAValueToFHIRTypeResult = mapCcdaValueToFhirAllergyIntoleranceType(valueElement);
-        if mapCCDAValueToFHIRTypeResult is international401:AllergyIntoleranceType {
+        uscore501:AllergyIntoleranceType? mapCCDAValueToFHIRTypeResult = mapCcdaValueToFhirAllergyIntoleranceType(valueElement);
+        if mapCCDAValueToFHIRTypeResult is uscore501:AllergyIntoleranceType {
             allergyIntolerance.'type = mapCCDAValueToFHIRTypeResult;
         }
 
@@ -102,7 +102,7 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns internatio
 
         r4:CodeableConcept? manifestation = mapCcdaCodingtoFhirCodeableConcept(observationValueElement);
         if manifestation is r4:CodeableConcept {
-            international401:AllergyIntoleranceReaction reaction = {
+            uscore501:AllergyIntoleranceReaction reaction = {
                 manifestation: [manifestation]
             };
 
@@ -128,7 +128,7 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns internatio
     }
 }
 
-isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement) returns international401:AllergyIntoleranceCategory? {
+isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement) returns uscore501:AllergyIntoleranceCategory? {
     string|error? codeVal = valueElement.code;
     if codeVal !is string {
         log:printDebug("code value not available", codeVal);
@@ -136,22 +136,22 @@ isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement)
     }
     match codeVal {
         "235719002" => {
-            return international401:CODE_CATEGORY_FOOD;
+            return uscore501:CODE_CATEGORY_FOOD;
         }
         "416098002" => {
-            return international401:CODE_CATEGORY_MEDICATION;
+            return uscore501:CODE_CATEGORY_MEDICATION;
         }
         "414285001" => {
-            return international401:CODE_CATEGORY_FOOD;
+            return uscore501:CODE_CATEGORY_FOOD;
         }
         "418471000" => {
-            return international401:CODE_CATEGORY_FOOD;
+            return uscore501:CODE_CATEGORY_FOOD;
         }
         "419511003" => {
-            return international401:CODE_CATEGORY_MEDICATION;
+            return uscore501:CODE_CATEGORY_MEDICATION;
         }
         "59037007" => {
-            return international401:CODE_CATEGORY_MEDICATION;
+            return uscore501:CODE_CATEGORY_MEDICATION;
         }
         _ => {
             log:printDebug("matching code value not available");
@@ -160,7 +160,7 @@ isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement)
     }
 }
 
-isolated function mapCcdaValueToFhirAllergyIntoleranceType(xml valueElement) returns international401:AllergyIntoleranceType? {
+isolated function mapCcdaValueToFhirAllergyIntoleranceType(xml valueElement) returns uscore501:AllergyIntoleranceType? {
     string|error? codeVal = valueElement.code;
     if codeVal !is string {
         log:printDebug("code value is not available", codeVal);
@@ -168,19 +168,19 @@ isolated function mapCcdaValueToFhirAllergyIntoleranceType(xml valueElement) ret
     }
     match codeVal {
         "235719002" => {
-            return international401:CODE_TYPE_INTOLERANCE;
+            return uscore501:CODE_TYPE_INTOLERANCE;
         }
         "416098002" => {
-            return international401:CODE_TYPE_ALLERGY;
+            return uscore501:CODE_TYPE_ALLERGY;
         }
         "414285001" => {
-            return international401:CODE_TYPE_ALLERGY;
+            return uscore501:CODE_TYPE_ALLERGY;
         }
         "419199007" => {
-            return international401:CODE_TYPE_ALLERGY;
+            return uscore501:CODE_TYPE_ALLERGY;
         }
         "59037007" => {
-            return international401:CODE_TYPE_INTOLERANCE;
+            return uscore501:CODE_TYPE_INTOLERANCE;
         }
         _ => {
             log:printDebug("matching code value not available");

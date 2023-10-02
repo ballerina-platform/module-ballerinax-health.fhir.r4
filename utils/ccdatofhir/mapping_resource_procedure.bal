@@ -20,15 +20,15 @@
 
 import ballerina/log;
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.uscore501;
 
 # Map CCDA Procedure Activity to FHIR Procedure
 #
 # + actElement - CCDA Procedure Activity Element
 # + return - FHIR Procedure Resource
-public isolated function mapCcdaProcedureToFhir(xml actElement) returns international401:Procedure? {
+public isolated function mapCcdaProcedureToFhir(xml actElement) returns uscore501:USCoreProcedureProfile? {
     if isXMLElementNotNull(actElement) {
-        international401:Procedure procedure = {subject: {}, status: "unknown"};
+        uscore501:USCoreProcedureProfile procedure = {subject: {}, status: "unknown",code: {}, performedDateTime: "", performedPeriod: {}};
 
         xml idElement = actElement/<v3:id|id>;
         xml codeElement = actElement/<v3:code|code>;
@@ -49,7 +49,10 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns internat
             }
         }
 
-        procedure.code = mapCcdaCodingtoFhirCodeableConcept(codeElement);
+        r4:CodeableConcept? mapCcdaCodeCodingtoFhirCodeCodeableConceptResult = mapCcdaCodingtoFhirCodeableConcept(codeElement);
+        if mapCcdaCodeCodingtoFhirCodeCodeableConceptResult is r4:CodeableConcept {
+            procedure.code = mapCcdaCodeCodingtoFhirCodeCodeableConceptResult;
+        }
         procedure.status = mapCcdatoFhirProcedureStatus(statusCodeElement);
 
         r4:dateTime? mapCCDAEffectiveLowTimetoFHIRDateTimeResult = mapCcdaDateTimeToFhirDateTime(effectiveTimeLowElement);
@@ -65,7 +68,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns internat
 
         xml assignedEntityElements = performerElement/<v3:assignedEntity|assignedEntity>;
 
-        international401:ProcedurePerformer[] performers = [];
+        uscore501:ProcedurePerformer[] performers = [];
         foreach xml assignedEntityElement in assignedEntityElements {
             xml representedOrganizationElement = assignedEntityElement/<v3:representedOrganization|representedOrganization>;
             xml organizationIdElement = representedOrganizationElement/<v3:id|id>;
@@ -78,7 +81,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns internat
                     reference: string `Organization/${id}`
                 };
 
-                international401:ProcedurePerformer performer = {
+                uscore501:ProcedurePerformer performer = {
                     actor: {},
                     onBehalfOf: representedOrganizationReference
                 };
@@ -119,27 +122,27 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns internat
     return ();
 }
 
-isolated function mapCcdatoFhirProcedureStatus(xml codingElement) returns international401:ProcedureStatus {
+isolated function mapCcdatoFhirProcedureStatus(xml codingElement) returns uscore501:ProcedureStatus {
     string|error? codeVal = codingElement.code;
     if codeVal !is string {
         log:printDebug("code is not available in the code element", codeVal);
-        return international401:CODE_STATUS_NOT_DONE;
+        return uscore501:CODE_STATUS_NOT_DONE;
     }
     match codeVal {
         "aborted" => {
-            return international401:CODE_STATUS_STOPPED;
+            return uscore501:CODE_STATUS_STOPPED;
         }
         "active" => {
-            return international401:CODE_STATUS_IN_PROGRESS;
+            return uscore501:CODE_STATUS_IN_PROGRESS;
         }
         "cancelled" => {
-            return international401:CODE_STATUS_NOT_DONE;
+            return uscore501:CODE_STATUS_NOT_DONE;
         }
         "completed" => {
-            return international401:CODE_STATUS_COMPLETED;
+            return uscore501:CODE_STATUS_COMPLETED;
         }
         _ => {
-            return international401:CODE_STATUS_NOT_DONE;
+            return uscore501:CODE_STATUS_NOT_DONE;
         }
     }
 }

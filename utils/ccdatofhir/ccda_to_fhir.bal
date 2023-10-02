@@ -19,6 +19,7 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.uscore501;
 import ballerinax/health.fhir.r4.international401;
 
 # Transform an C-CDA message to FHIR.
@@ -69,27 +70,39 @@ isolated function transformToFhir(xml xmlDocument) returns r4:Bundle {
                 match codeVal {
                     CCDA_ALLERGY_CODE => {
                         mapCCDAToFHIRResult = mapCcdaAllergyToFhir(actElement);
-                        entries.push({'resource: mapCCDAToFHIRResult});
+                        if mapCCDAToFHIRResult is uscore501:USCoreAllergyIntolerance {
+                            entries.push({'resource: mapCCDAToFHIRResult});
+                        }
                     }
                     CCDA_CONDITION_CODE => {
                         mapCCDAToFHIRResult = mapCcdaConditionToFhir(actElement);
-                        entries.push({'resource: mapCCDAToFHIRResult});
+                        if mapCCDAToFHIRResult is uscore501:USCoreCondition {
+                            entries.push({'resource: mapCCDAToFHIRResult});
+                        }
                     }
                     CCDA_IMMUNIZATION_CODE => {
                         mapCCDAToFHIRResult = mapCcdaImmunizationToFhir(substanceAdministrationElement);
-                        entries.push({'resource: mapCCDAToFHIRResult});
+                        if mapCCDAToFHIRResult is uscore501:USCoreImmunizationProfile {
+                            entries.push({'resource: mapCCDAToFHIRResult});
+                        }
                     }
                     CCDA_MEDICATION_CODE => {
                         mapCCDAToFHIRResult = mapCcdaMedicationToFhir(substanceAdministrationElement);
-                        entries.push({'resource: mapCCDAToFHIRResult});
+                        if mapCCDAToFHIRResult is uscore501:USCoreMedicationProfile {
+                            entries.push({'resource: mapCCDAToFHIRResult});
+                        }
                     }
                     CCDA_PROCEDURE_CODE => {
                         mapCCDAToFHIRResult = mapCcdaProcedureToFhir(procedureElement);
-                        entries.push({'resource: mapCCDAToFHIRResult});
+                        if mapCCDAToFHIRResult is uscore501:USCoreProcedureProfile {
+                            entries.push({'resource: mapCCDAToFHIRResult});
+                        }
                     }
                     CCDA_DIAGNOSTIC_REPORT_CODE => {
                         mapCCDAToFHIRResult = mapCcdaDiagnosticReportToFhir(organizerElement);
-                        entries.push({'resource: mapCCDAToFHIRResult});
+                        if mapCCDAToFHIRResult is uscore501:USCoreDiagnosticReportProfileLaboratoryReporting {
+                            entries.push({'resource: mapCCDAToFHIRResult});
+                        }
                     }
                 }
             }

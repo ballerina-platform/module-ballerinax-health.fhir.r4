@@ -102,12 +102,21 @@ public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns
             "WP" => {
                 useVal = "work";
             }
+            "MC" => {
+                useVal = "mobile";
+            }
+            "OP" => {
+                useVal = "old";
+            }
+            "TP" => {
+                useVal = "temp";
+            }
         }
     } else {
         log:printDebug("Telecom use not available", telecomUse);
     }
 
-    if valueVal is string && useVal is string {
+    if valueVal is string || useVal is string {
         return {
             value: valueVal,
             use: useVal
@@ -140,7 +149,7 @@ public isolated function mapCcdaNametoFhirName(xml nameElement) returns r4:Human
 # + codingElement - C-CDA code element
 # + return - Return FHIR CodeableConcept
 public isolated function mapCcdaCodingtoFhirCodeableConcept(xml codingElement) returns r4:CodeableConcept? {
-    r4:Coding? mapCcdaCodingtoFhirCodeResult = mapCcdaCodingtoFhirCode(codingElement);
+    r4:Coding? mapCcdaCodingtoFhirCodeResult = mapCcdaCodingtoFhirCoding(codingElement);
     if mapCcdaCodingtoFhirCodeResult is r4:Coding {
         return {
             coding: [mapCcdaCodingtoFhirCodeResult]
@@ -154,9 +163,10 @@ public isolated function mapCcdaCodingtoFhirCodeableConcept(xml codingElement) r
 #
 # + codingElement - C-CDA code element
 # + return - Return FHIR Coding
-public isolated function mapCcdaCodingtoFhirCode(xml codingElement) returns r4:Coding? {
+public isolated function mapCcdaCodingtoFhirCoding(xml codingElement) returns r4:Coding? {
     string|error? codeVal = codingElement.code;
     string|error? systemVal = codingElement.codeSystem;
+    string|error? displayNameVal = codingElement.displayName;
 
     string? code = ();
     if codeVal is string {
@@ -172,10 +182,18 @@ public isolated function mapCcdaCodingtoFhirCode(xml codingElement) returns r4:C
         log:printDebug("systemVal is not available", systemVal);
     }
 
-    if code is string || system is string {
+    string? display = ();
+    if displayNameVal is string {
+        display = displayNameVal;
+    } else {
+        log:printDebug("displayNameVal is not available", displayNameVal);
+    }
+
+    if code is string || system is string || display is string {
         return {
             code: code,
-            system: system
+            system: system,
+            display: display
         };
     }
     log:printDebug("coding fields not available");
