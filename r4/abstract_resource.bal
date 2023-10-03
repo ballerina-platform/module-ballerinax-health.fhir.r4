@@ -70,4 +70,5 @@ public type Resource record {|
     Meta meta?;
     uri implicitRules?;
     code language?;
+    Element ...;
 |};
