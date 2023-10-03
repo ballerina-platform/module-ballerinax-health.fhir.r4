@@ -177,7 +177,7 @@ public type Dosage record {|
     string patientInstruction?;
     Timing timing?;
     boolean asNeededBoolean?;
-    boolean asNeededCodeableConcept?;
+    CodeableConcept asNeededCodeableConcept?;
     CodeableConcept site?;
     CodeableConcept route?;
     CodeableConcept method?;
