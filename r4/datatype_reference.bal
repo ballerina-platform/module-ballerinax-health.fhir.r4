@@ -78,3 +78,53 @@ public type Reference record {|
     Identifier identifier?;
     string display?;
 |};
+
+# Create a relative Reference to FHIR Resource.
+#
+# + referenceResourceModel - FHIR Resource model of the Reference
+# + relativePathToReference - Relative path to Reference
+# + return - FHIRError if the Reference resource type is not defined, else FHIR Reference
+public isolated function createRelativeFhirReference(typedesc<anydata> referenceResourceModel, string relativePathToReference) returns Reference|FHIRError {
+    return createNonContainedFhirReference(referenceResourceModel, relativePathToReference);
+}
+
+# Create an absolute Reference to FHIR Resource.
+#
+# + referenceResourceModel - FHIR Resource model of the Reference
+# + absolutePathToReference - Absolute path to Reference
+# + return - FHIRError if the Reference resource type is not defined, else FHIR Reference
+public isolated function createAbsoluteFhirReference(typedesc<anydata> referenceResourceModel, string absolutePathToReference) returns Reference|FHIRError {
+    return createNonContainedFhirReference(referenceResourceModel, absolutePathToReference);
+}
+
+# Create a contained Reference to FHIR Resource.
+#
+# + targetResource - FHIR Resource which the Reference is to be contained/embedded
+# + resourceTypeReference - Resource typed Reference to be contained/embedded
+# + return - FHIRError if the target FHIR Resource is not a valid FHIR resource, else FHIR Reference
+public isolated function createContainedFhirReference(map<anydata> targetResource, Resource resourceTypeReference) returns Reference|FHIRError {
+    anydata? targetContained = targetResource[REFERENCE_TYPE_CONTAINED];
+    if targetContained is () {
+        targetResource[REFERENCE_TYPE_CONTAINED] = [resourceTypeReference];
+    } else if targetContained is Resource[] {
+        targetContained.push(resourceTypeReference);
+    }
+
+    string? referenceId = resourceTypeReference.id;
+    if referenceId !is string {
+        return createFHIRError("Contained reference id is missing", ERROR, PROCESSING, errorType = PROCESSING_ERROR);
+    }
+    return createReference(string `#${referenceId}`, resourceTypeReference.resourceType);
+}
+
+isolated function createNonContainedFhirReference(typedesc<anydata> referenceResourceModel, string pathToReference) returns Reference|FHIRError {
+    ResourceDefinitionRecord? def = referenceResourceModel.@ResourceDefinition;
+    string? resourceType = def?.resourceType;
+
+    if resourceType !is string {
+        return createFHIRError("Resource type is not defined", ERROR, PROCESSING, errorType = PROCESSING_ERROR);
+    }
+    return createReference(pathToReference, resourceType);
+}
+
+isolated function createReference(string reference, string 'type) returns Reference => {reference, 'type};
