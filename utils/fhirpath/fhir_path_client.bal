@@ -24,16 +24,16 @@ public isolated function getFhirPathResult(json fhirResource, string fhirPath) r
     string|json|int|float|boolean|byte|error results = evaluateFhirPath(fhirResource, fhirPath);
 
     if results is error {
-        FhirPathResult result = {
-            resultenError: results.message()
+        return {
+            resultenError: {
+                message: results.message()
+            }
         };
-        return result;
-    } else {
-        FhirPathResult result = {
-            result: results
-        };
-        return result;
     }
+    return {
+        result: results
+    };
+
 }
 
 # Client record to hold the results of fhirpath evaluation.
@@ -42,5 +42,21 @@ public isolated function getFhirPathResult(json fhirResource, string fhirPath) r
 # + resultenError - Error message if the result is an error  
 public type FhirPathResult record {
     string|json|int|float|boolean|byte result?;
-    string resultenError?;
+    FhirPathErrorRecord resultenError?;
+};
+
+# Record to hold FhirPath request parameters.
+#
+# + fhirResource - the FHIR Resource which the FhirPath expression is evaluated against
+# + fhirPath - the FhirPath expression
+public type FhirPathRequest record {|
+    json fhirResource;
+    string[]|string fhirPath;
+|};
+
+# Record to hold FhirPath error Message.
+#
+# + message - error message
+public type FhirPathErrorRecord record {
+    string message;
 };
