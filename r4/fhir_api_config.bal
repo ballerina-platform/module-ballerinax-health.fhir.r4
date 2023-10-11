@@ -16,9 +16,9 @@
 
 # Function type to be implemented to override the operation pre-processing
 public type OperationPreProcessor function (FHIROperationDefinition definition, FHIRContext context) returns FHIRError?;
+
 # Function type to be implemented to override the operation post-processing
 public type OperationPostProcessor function (FHIROperationDefinition definition, FHIRContext context) returns FHIRError?;
-
 
 # Redefined FHIR read-only FHIR resource API config
 public type ResourceAPIConfig readonly & ResourceAPIConfigType;
@@ -32,6 +32,7 @@ public type ResourceAPIConfig readonly & ResourceAPIConfigType;
 # + operations - Operations supported by the FHIR API  
 # + serverConfig - Serevr configuration  
 # + authzConfig - Authorization service configuration
+# + auditConfig - Audit service configuration
 public type ResourceAPIConfigType record {|
     readonly string resourceType;
     readonly string[] profiles;
@@ -40,6 +41,7 @@ public type ResourceAPIConfigType record {|
     readonly OperationConfig[] operations;
     readonly ServerConfig? serverConfig;
     readonly AuthzConfig? authzConfig;
+    readonly AuditConfig auditConfig?;
 |};
 
 # Search parameter configuration.

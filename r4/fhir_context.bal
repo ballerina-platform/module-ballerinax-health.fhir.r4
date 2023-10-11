@@ -23,6 +23,7 @@ public isolated class FHIRContext {
     private FHIRResponse|FHIRContainerResponse? fhirResponse = ();
     private boolean inErrorState = false;
     private int errorCode = 500;
+    private string rawPath = "";
 
     public isolated function init(FHIRRequest request, readonly & HTTPRequest httpRequest, readonly & FHIRSecurity security) {
         self.fhirRequest = request;
@@ -45,6 +46,23 @@ public isolated class FHIRContext {
     public isolated function getDirection() returns MessageDirection {
         lock {
             return self.direction;
+        }
+    }
+
+    # Set the raw path of the requested resource.
+    #
+    # + path - raw path of the requested resource.
+    public isolated function setRawPath(string path) {
+        lock {
+            self.rawPath = path;
+        }
+    }
+
+    # Gets the raw path of the requested resource.
+    # + return - return the raw path of the requested resource.
+    public isolated function getRawPath() returns string {
+        lock {
+            return self.rawPath;
         }
     }
 
