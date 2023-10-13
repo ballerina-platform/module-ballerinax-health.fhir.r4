@@ -188,9 +188,6 @@ public type EnrollmentResponse record {|
 
     RESOURCE_NAME_ENROLLMENTRESPONSE resourceType = RESOURCE_NAME_ENROLLMENTRESPONSE;
 
-    BaseEnrollmentResponseMeta meta = {
-        profile : [PROFILE_BASE_ENROLLMENTRESPONSE]
-    };
     r4:Identifier[] identifier?;
     r4:Reference request?;
     r4:Extension[] extension?;
@@ -200,38 +197,14 @@ public type EnrollmentResponse record {|
     r4:Resource[] contained?;
     string disposition?;
     r4:Reference requestProvider?;
+    r4:Meta meta?;
     r4:Reference organization?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     EnrollmentResponseOutcome outcome?;
     EnrollmentResponseStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseEnrollmentResponseMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseEnrollmentResponseMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/EnrollmentResponse"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # EnrollmentResponseOutcome enum

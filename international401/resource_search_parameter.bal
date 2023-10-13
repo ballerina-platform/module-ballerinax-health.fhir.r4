@@ -357,9 +357,6 @@ public type SearchParameter record {|
 
     RESOURCE_NAME_SEARCHPARAMETER resourceType = RESOURCE_NAME_SEARCHPARAMETER;
 
-    BaseSearchParameterMeta meta = {
-        profile : [PROFILE_BASE_SEARCHPARAMETER]
-    };
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:code code;
@@ -387,6 +384,7 @@ public type SearchParameter record {|
     SearchParameterComponent[] component?;
     r4:Resource[] contained?;
     boolean multipleOr?;
+    r4:Meta meta?;
     string name;
     r4:uri implicitRules?;
     string publisher?;
@@ -396,32 +394,7 @@ public type SearchParameter record {|
     }
     r4:code[] base;
     SearchParameterStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSearchParameterMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSearchParameterMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/SearchParameter"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # SearchParameterComparator enum
@@ -538,6 +511,8 @@ public enum SearchParameterXpathUsage {
     }
 }
 public type SearchParameterComponent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string expression;
     r4:Extension[] modifierExtension?;

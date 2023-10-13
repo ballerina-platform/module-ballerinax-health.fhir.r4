@@ -252,9 +252,6 @@ public type PaymentReconciliation record {|
 
     RESOURCE_NAME_PAYMENTRECONCILIATION resourceType = RESOURCE_NAME_PAYMENTRECONCILIATION;
 
-    BasePaymentReconciliationMeta meta = {
-        profile : [PROFILE_BASE_PAYMENTRECONCILIATION]
-    };
     r4:Identifier[] identifier?;
     r4:Reference request?;
     r4:Extension[] extension?;
@@ -270,6 +267,7 @@ public type PaymentReconciliation record {|
     r4:Resource[] contained?;
     string disposition?;
     r4:Identifier paymentIdentifier?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     PaymentReconciliationDetail[] detail?;
     string id?;
@@ -277,32 +275,7 @@ public type PaymentReconciliation record {|
     r4:date paymentDate;
     PaymentReconciliationOutcome outcome?;
     PaymentReconciliationStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BasePaymentReconciliationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BasePaymentReconciliationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/PaymentReconciliation"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # PaymentReconciliationProcessNoteType enum
@@ -391,6 +364,8 @@ public enum PaymentReconciliationStatus {
     }
 }
 public type PaymentReconciliationProcessNote record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -541,6 +516,8 @@ public type PaymentReconciliationProcessNote record {|
     }
 }
 public type PaymentReconciliationDetail record {|
+    *r4:BackboneElement;
+
     r4:date date?;
     r4:Identifier identifier?;
     r4:Reference request?;

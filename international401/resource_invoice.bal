@@ -250,9 +250,6 @@ public type Invoice record {|
 
     RESOURCE_NAME_INVOICE resourceType = RESOURCE_NAME_INVOICE;
 
-    BaseInvoiceMeta meta = {
-        profile : [PROFILE_BASE_INVOICE]
-    };
     r4:dateTime date?;
     r4:Identifier[] identifier?;
     r4:Annotation[] note?;
@@ -267,6 +264,7 @@ public type Invoice record {|
     r4:Money totalNet?;
     r4:Resource[] contained?;
     InvoiceLineItem[] lineItem?;
+    r4:Meta meta?;
     r4:Reference recipient?;
     r4:uri implicitRules?;
     string id?;
@@ -275,32 +273,7 @@ public type Invoice record {|
     r4:Reference account?;
     r4:markdown paymentTerms?;
     InvoiceStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseInvoiceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseInvoiceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Invoice"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR InvoiceParticipant datatype record.
@@ -366,6 +339,8 @@ public type BaseInvoiceMeta record {|
     }
 }
 public type InvoiceParticipant record {|
+    *r4:BackboneElement;
+
     r4:Reference actor;
     r4:Extension[] extension?;
     r4:CodeableConcept role?;
@@ -456,6 +431,8 @@ public type InvoiceParticipant record {|
     }
 }
 public type InvoiceLineItemPriceComponent record {|
+    *r4:BackboneElement;
+
     r4:Money amount?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
@@ -548,6 +525,8 @@ public type InvoiceLineItemPriceComponent record {|
     }
 }
 public type InvoiceLineItem record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept chargeItemCodeableConcept;
     r4:positiveInt sequence?;
     r4:Extension[] extension?;

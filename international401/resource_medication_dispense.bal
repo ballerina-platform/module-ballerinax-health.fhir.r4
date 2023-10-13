@@ -355,9 +355,6 @@ public type MedicationDispense record {|
 
     RESOURCE_NAME_MEDICATIONDISPENSE resourceType = RESOURCE_NAME_MEDICATIONDISPENSE;
 
-    BaseMedicationDispenseMeta meta = {
-        profile : [PROFILE_BASE_MEDICATIONDISPENSE]
-    };
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
     r4:Extension[] extension?;
@@ -376,47 +373,23 @@ public type MedicationDispense record {|
     r4:Reference[] authorizingPrescription?;
     r4:Identifier[] identifier?;
     MedicationDispensePerformer[] performer?;
-    r4:Quantity quantity?;
+    r4:SimpleQuantity quantity?;
     r4:Reference[] detectedIssue?;
     r4:Reference[] receiver?;
     r4:dateTime whenPrepared?;
-    r4:Quantity daysSupply?;
+    r4:SimpleQuantity daysSupply?;
     r4:Reference[] supportingInformation?;
     r4:dateTime whenHandedOver?;
     r4:CodeableConcept medicationCodeableConcept;
     r4:Resource[] contained?;
     r4:Dosage[] dosageInstruction?;
+    r4:Meta meta?;
     r4:Reference[] eventHistory?;
     r4:uri implicitRules?;
     r4:Reference location?;
     r4:CodeableConcept category?;
     MedicationDispenseStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicationDispenseMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicationDispenseMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicationDispense"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicationDispensePerformer datatype record.
@@ -482,6 +455,8 @@ public type BaseMedicationDispenseMeta record {|
     }
 }
 public type MedicationDispensePerformer record {|
+    *r4:BackboneElement;
+
     r4:Reference actor;
     r4:Extension[] extension?;
     r4:CodeableConcept 'function?;
@@ -572,6 +547,8 @@ public type MedicationDispensePerformer record {|
     }
 }
 public type MedicationDispenseSubstitution record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept[] reason?;
     r4:Extension[] extension?;
     boolean wasSubstituted;

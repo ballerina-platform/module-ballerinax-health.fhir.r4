@@ -224,9 +224,6 @@ public type EpisodeOfCare record {|
 
     RESOURCE_NAME_EPISODEOFCARE resourceType = RESOURCE_NAME_EPISODEOFCARE;
 
-    BaseEpisodeOfCareMeta meta = {
-        profile : [PROFILE_BASE_EPISODEOFCARE]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Period period?;
@@ -240,38 +237,14 @@ public type EpisodeOfCare record {|
     EpisodeOfCareStatusHistory[] statusHistory?;
     r4:Reference managingOrganization?;
     r4:Reference[] referralRequest?;
+    r4:Meta meta?;
     r4:Reference patient;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     r4:Reference[] account?;
     EpisodeOfCareStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseEpisodeOfCareMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseEpisodeOfCareMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/EpisodeOfCare"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # EpisodeOfCareStatusHistoryStatus enum
@@ -348,6 +321,8 @@ public enum EpisodeOfCareStatusHistoryStatus {
     }
 }
 public type EpisodeOfCareStatusHistory record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period;
     r4:Extension[] modifierExtension?;
@@ -428,6 +403,8 @@ public type EpisodeOfCareStatusHistory record {|
     }
 }
 public type EpisodeOfCareDiagnosis record {|
+    *r4:BackboneElement;
+
     r4:Reference condition;
     r4:Extension[] extension?;
     r4:CodeableConcept role?;

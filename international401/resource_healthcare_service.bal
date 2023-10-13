@@ -337,9 +337,6 @@ public type HealthcareService record {|
 
     RESOURCE_NAME_HEALTHCARESERVICE resourceType = RESOURCE_NAME_HEALTHCARESERVICE;
 
-    BaseHealthcareServiceMeta meta = {
-        profile : [PROFILE_BASE_HEALTHCARESERVICE]
-    };
     r4:CodeableConcept[] serviceProvisionCode?;
     r4:Extension[] extension?;
     r4:CodeableConcept[] specialty?;
@@ -363,6 +360,7 @@ public type HealthcareService record {|
     boolean active?;
     r4:Attachment photo?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
     string comment?;
@@ -371,32 +369,7 @@ public type HealthcareService record {|
     r4:markdown extraDetails?;
     string availabilityExceptions?;
     r4:Reference[] coverageArea?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseHealthcareServiceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseHealthcareServiceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/HealthcareService"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR HealthcareServiceEligibility datatype record.
@@ -462,6 +435,8 @@ public type BaseHealthcareServiceMeta record {|
     }
 }
 public type HealthcareServiceEligibility record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Extension[] modifierExtension?;
@@ -563,6 +538,8 @@ public enum HealthcareServiceAvailableTimeDaysOfWeek {
     }
 }
 public type HealthcareServiceAvailableTime record {|
+    *r4:BackboneElement;
+
     boolean allDay?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -635,6 +612,8 @@ public type HealthcareServiceAvailableTime record {|
     }
 }
 public type HealthcareServiceNotAvailable record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description;

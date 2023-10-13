@@ -258,9 +258,6 @@ public type MedicinalProductAuthorization record {|
 
     RESOURCE_NAME_MEDICINALPRODUCTAUTHORIZATION resourceType = RESOURCE_NAME_MEDICINALPRODUCTAUTHORIZATION;
 
-    BaseMedicinalProductAuthorizationMeta meta = {
-        profile : [PROFILE_BASE_MEDICINALPRODUCTAUTHORIZATION]
-    };
     r4:dateTime statusDate?;
     r4:CodeableConcept[] country?;
     r4:Identifier[] identifier?;
@@ -278,38 +275,14 @@ public type MedicinalProductAuthorization record {|
     r4:Period validityPeriod?;
     r4:Resource[] contained?;
     r4:Period dataExclusivityPeriod?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:Reference regulator?;
     string id?;
     r4:Narrative text?;
     r4:dateTime restoreDate?;
     r4:CodeableConcept status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicinalProductAuthorizationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicinalProductAuthorizationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicinalProductAuthorization"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicinalProductAuthorizationJurisdictionalAuthorization datatype record.
@@ -405,6 +378,8 @@ public type BaseMedicinalProductAuthorizationMeta record {|
     }
 }
 public type MedicinalProductAuthorizationJurisdictionalAuthorization record {|
+    *r4:BackboneElement;
+
     r4:Period validityPeriod?;
     r4:CodeableConcept country?;
     r4:Identifier[] identifier?;
@@ -498,6 +473,8 @@ public type MedicinalProductAuthorizationJurisdictionalAuthorization record {|
     }
 }
 public type MedicinalProductAuthorizationProcedure record {|
+    *r4:BackboneElement;
+
     r4:dateTime dateDateTime?;
     r4:Identifier identifier?;
     r4:Extension[] extension?;

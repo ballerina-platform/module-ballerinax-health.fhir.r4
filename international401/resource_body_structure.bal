@@ -189,9 +189,6 @@ public type BodyStructure record {|
 
     RESOURCE_NAME_BODYSTRUCTURE resourceType = RESOURCE_NAME_BODYSTRUCTURE;
 
-    BaseBodyStructureMeta meta = {
-        profile : [PROFILE_BASE_BODYSTRUCTURE]
-    };
     r4:Identifier[] identifier?;
     r4:Attachment[] image?;
     r4:Extension[] extension?;
@@ -202,36 +199,12 @@ public type BodyStructure record {|
     string description?;
     r4:code language?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:Reference patient;
     r4:uri implicitRules?;
     r4:CodeableConcept location?;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseBodyStructureMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseBodyStructureMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/BodyStructure"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 

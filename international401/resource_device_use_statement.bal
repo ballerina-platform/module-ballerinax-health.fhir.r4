@@ -251,9 +251,6 @@ public type DeviceUseStatement record {|
 
     RESOURCE_NAME_DEVICEUSESTATEMENT resourceType = RESOURCE_NAME_DEVICEUSESTATEMENT;
 
-    BaseDeviceUseStatementMeta meta = {
-        profile : [PROFILE_BASE_DEVICEUSESTATEMENT]
-    };
     r4:Identifier[] identifier?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
@@ -266,6 +263,7 @@ public type DeviceUseStatement record {|
     r4:Reference 'source?;
     r4:CodeableConcept bodySite?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:Reference[] derivedFrom?;
     r4:uri implicitRules?;
     r4:dateTime recordedOn?;
@@ -276,32 +274,7 @@ public type DeviceUseStatement record {|
     r4:Reference[] basedOn?;
     DeviceUseStatementStatus status;
     r4:dateTime timingDateTime?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseDeviceUseStatementMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseDeviceUseStatementMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/DeviceUseStatement"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # DeviceUseStatementStatus enum

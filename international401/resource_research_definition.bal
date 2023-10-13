@@ -434,9 +434,6 @@ public type ResearchDefinition record {|
 
     RESOURCE_NAME_RESEARCHDEFINITION resourceType = RESOURCE_NAME_RESEARCHDEFINITION;
 
-    BaseResearchDefinitionMeta meta = {
-        profile : [PROFILE_BASE_RESEARCHDEFINITION]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -471,6 +468,7 @@ public type ResearchDefinition record {|
     r4:Resource[] contained?;
     r4:Reference exposure?;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     string subtitle?;
     string name?;
     r4:uri implicitRules?;
@@ -479,32 +477,7 @@ public type ResearchDefinition record {|
     string[] comment?;
     r4:UsageContext[] useContext?;
     ResearchDefinitionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseResearchDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseResearchDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ResearchDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ResearchDefinitionStatus enum

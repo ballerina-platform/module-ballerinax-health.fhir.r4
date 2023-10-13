@@ -214,9 +214,6 @@ public type QuestionnaireResponse record {|
 
     RESOURCE_NAME_QUESTIONNAIRERESPONSE resourceType = RESOURCE_NAME_QUESTIONNAIRERESPONSE;
 
-    BaseQuestionnaireResponseMeta meta = {
-        profile : [PROFILE_BASE_QUESTIONNAIRERESPONSE]
-    };
     r4:dateTime authored?;
     r4:Identifier identifier?;
     r4:Reference[] partOf?;
@@ -230,37 +227,13 @@ public type QuestionnaireResponse record {|
     r4:Reference encounter?;
     r4:Reference 'source?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     r4:Reference[] basedOn?;
     QuestionnaireResponseStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseQuestionnaireResponseMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseQuestionnaireResponseMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # QuestionnaireResponseStatus enum
@@ -274,37 +247,28 @@ public enum QuestionnaireResponseStatus {
 
 # FHIR QuestionnaireResponseItemAnswer datatype record.
 #
-# + valueBoolean - The answer (or one of the answers) provided by the respondent to the question.
-# + valueCoding - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseReference - The answer (or one of the answers) provided by the respondent to the question.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + valueTime - The answer (or one of the answers) provided by the respondent to the question.
-# + valueReference - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseAttachment - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseTime - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseQuantity - The answer (or one of the answers) provided by the respondent to the question.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + valueDecimal - The answer (or one of the answers) provided by the respondent to the question.
-# + valueUri - The answer (or one of the answers) provided by the respondent to the question.
-# + valueDate - The answer (or one of the answers) provided by the respondent to the question.
-# + valueAttachment - The answer (or one of the answers) provided by the respondent to the question.
-# + valueString - The answer (or one of the answers) provided by the respondent to the question.
-# + valueDateTime - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseBoolean - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseString - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseUri - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseCoding - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseDecimal - The answer (or one of the answers) provided by the respondent to the question.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + valueInteger - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuantity - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseInteger - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseDate - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuestionnaireResponseDateTime - The answer (or one of the answers) provided by the respondent to the question.
 @r4:DataTypeDefinition {
     name: "QuestionnaireResponseItemAnswer",
     baseType: (),
     elements: {
-        "valueBoolean": {
-            name: "valueBoolean",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
-        },
-        "valueCoding": {
-            name: "valueCoding",
-            dataType: r4:Coding,
+        "valueQuestionnaireResponseReference": {
+            name: "valueQuestionnaireResponseReference",
+            dataType: r4:Reference,
             min: 0,
             max: 1,
             isArray: false,
@@ -320,8 +284,17 @@ public enum QuestionnaireResponseStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "QuestionnaireResponse.item.answer.extension"
         },
-        "valueTime": {
-            name: "valueTime",
+        "valueQuestionnaireResponseAttachment": {
+            name: "valueQuestionnaireResponseAttachment",
+            dataType: r4:Attachment,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+        "valueQuestionnaireResponseTime": {
+            name: "valueQuestionnaireResponseTime",
             dataType: r4:time,
             min: 0,
             max: 1,
@@ -329,9 +302,9 @@ public enum QuestionnaireResponseStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueReference": {
-            name: "valueReference",
-            dataType: r4:Reference,
+        "valueQuestionnaireResponseQuantity": {
+            name: "valueQuestionnaireResponseQuantity",
+            dataType: r4:Quantity,
             min: 0,
             max: 1,
             isArray: false,
@@ -347,44 +320,17 @@ public enum QuestionnaireResponseStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "QuestionnaireResponse.item.answer.modifierExtension"
         },
-        "valueDecimal": {
-            name: "valueDecimal",
-            dataType: decimal,
+        "valueQuestionnaireResponseBoolean": {
+            name: "valueQuestionnaireResponseBoolean",
+            dataType: boolean,
             min: 0,
             max: 1,
             isArray: false,
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueUri": {
-            name: "valueUri",
-            dataType: r4:uri,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
-        },
-        "valueDate": {
-            name: "valueDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
-        },
-        "valueAttachment": {
-            name: "valueAttachment",
-            dataType: r4:Attachment,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
-        },
-        "valueString": {
-            name: "valueString",
+        "valueQuestionnaireResponseString": {
+            name: "valueQuestionnaireResponseString",
             dataType: string,
             min: 0,
             max: 1,
@@ -392,9 +338,27 @@ public enum QuestionnaireResponseStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueDateTime": {
-            name: "valueDateTime",
-            dataType: r4:dateTime,
+        "valueQuestionnaireResponseUri": {
+            name: "valueQuestionnaireResponseUri",
+            dataType: r4:uri,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+        "valueQuestionnaireResponseCoding": {
+            name: "valueQuestionnaireResponseCoding",
+            dataType: r4:Coding,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+        "valueQuestionnaireResponseDecimal": {
+            name: "valueQuestionnaireResponseDecimal",
+            dataType: decimal,
             min: 0,
             max: 1,
             isArray: false,
@@ -410,8 +374,8 @@ public enum QuestionnaireResponseStatus {
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "QuestionnaireResponse.item.answer.id"
         },
-        "valueInteger": {
-            name: "valueInteger",
+        "valueQuestionnaireResponseInteger": {
+            name: "valueQuestionnaireResponseInteger",
             dataType: r4:integer,
             min: 0,
             max: 1,
@@ -419,9 +383,18 @@ public enum QuestionnaireResponseStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuantity": {
-            name: "valueQuantity",
-            dataType: r4:Quantity,
+        "valueQuestionnaireResponseDate": {
+            name: "valueQuestionnaireResponseDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+        "valueQuestionnaireResponseDateTime": {
+            name: "valueQuestionnaireResponseDateTime",
+            dataType: r4:dateTime,
             min: 0,
             max: 1,
             isArray: false,
@@ -435,21 +408,23 @@ public enum QuestionnaireResponseStatus {
     }
 }
 public type QuestionnaireResponseItemAnswer record {|
-    boolean valueBoolean?;
-    r4:Coding valueCoding?;
+    *r4:BackboneElement;
+
+    r4:Reference valueQuestionnaireResponseReference?;
     r4:Extension[] extension?;
-    r4:time valueTime?;
-    r4:Reference valueReference?;
+    r4:Attachment valueQuestionnaireResponseAttachment?;
+    r4:time valueQuestionnaireResponseTime?;
+    r4:Quantity valueQuestionnaireResponseQuantity?;
     r4:Extension[] modifierExtension?;
-    decimal valueDecimal?;
-    r4:uri valueUri?;
-    r4:date valueDate?;
-    r4:Attachment valueAttachment?;
-    string valueString?;
-    r4:dateTime valueDateTime?;
+    boolean valueQuestionnaireResponseBoolean?;
+    string valueQuestionnaireResponseString?;
+    r4:uri valueQuestionnaireResponseUri?;
+    r4:Coding valueQuestionnaireResponseCoding?;
+    decimal valueQuestionnaireResponseDecimal?;
     string id?;
-    r4:integer valueInteger?;
-    r4:Quantity valueQuantity?;
+    r4:integer valueQuestionnaireResponseInteger?;
+    r4:date valueQuestionnaireResponseDate?;
+    r4:dateTime valueQuestionnaireResponseDateTime?;
 |};
 
 # FHIR QuestionnaireResponseItem datatype record.
@@ -535,6 +510,8 @@ public type QuestionnaireResponseItemAnswer record {|
     }
 }
 public type QuestionnaireResponseItem record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string linkId;
     QuestionnaireResponseItemAnswer[] answer?;

@@ -178,9 +178,6 @@ public type Subscription record {|
 
     RESOURCE_NAME_SUBSCRIPTION resourceType = RESOURCE_NAME_SUBSCRIPTION;
 
-    BaseSubscriptionMeta meta = {
-        profile : [PROFILE_BASE_SUBSCRIPTION]
-    };
     string reason;
     r4:Extension[] extension?;
     string criteria;
@@ -189,38 +186,14 @@ public type Subscription record {|
     r4:code language?;
     string 'error?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:ContactPoint[] contact?;
     r4:uri implicitRules?;
     r4:instant end?;
     string id?;
     r4:Narrative text?;
     SubscriptionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSubscriptionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSubscriptionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Subscription"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # SubscriptionChannelType enum
@@ -323,6 +296,8 @@ public enum SubscriptionStatus {
     }
 }
 public type SubscriptionChannel record {|
+    *r4:BackboneElement;
+
     r4:urlType endpoint?;
     r4:Extension[] extension?;
     r4:code payload?;

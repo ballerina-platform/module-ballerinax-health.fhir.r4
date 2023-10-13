@@ -245,9 +245,6 @@ public type VerificationResult record {|
 
     RESOURCE_NAME_VERIFICATIONRESULT resourceType = RESOURCE_NAME_VERIFICATIONRESULT;
 
-    BaseVerificationResultMeta meta = {
-        profile : [PROFILE_BASE_VERIFICATIONRESULT]
-    };
     r4:dateTime statusDate?;
     r4:date nextScheduled?;
     VerificationResultPrimarySource[] primarySource?;
@@ -264,37 +261,13 @@ public type VerificationResult record {|
     r4:Reference[] target?;
     r4:Resource[] contained?;
     r4:dateTime lastPerformed?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept[] validationProcess?;
     VerificationResultStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseVerificationResultMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseVerificationResultMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/VerificationResult"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # VerificationResultStatus enum
@@ -430,6 +403,8 @@ public enum VerificationResultStatus {
     }
 }
 public type VerificationResultAttestation record {|
+    *r4:BackboneElement;
+
     r4:date date?;
     string sourceIdentityCertificate?;
     r4:Extension[] extension?;
@@ -556,6 +531,8 @@ public type VerificationResultAttestation record {|
     }
 }
 public type VerificationResultPrimarySource record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] pushTypeAvailable?;
     r4:CodeableConcept[] communicationMethod?;
@@ -641,6 +618,8 @@ public type VerificationResultPrimarySource record {|
     }
 }
 public type VerificationResultValidator record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Reference organization;

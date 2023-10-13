@@ -351,9 +351,6 @@ public type Device record {|
 
     RESOURCE_NAME_DEVICE resourceType = RESOURCE_NAME_DEVICE;
 
-    BaseDeviceMeta meta = {
-        profile : [PROFILE_BASE_DEVICE]
-    };
     r4:Annotation[] note?;
     r4:Reference parent?;
     r4:Extension[] extension?;
@@ -381,38 +378,14 @@ public type Device record {|
     r4:uri url?;
     r4:Resource[] contained?;
     DeviceUdiCarrier[] udiCarrier?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     DeviceSpecialization[] specialization?;
     r4:Reference location?;
     string modelNumber?;
     string partNumber?;
     DeviceStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseDeviceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseDeviceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Device"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR DeviceProperty datatype record.
@@ -488,6 +461,8 @@ public type BaseDeviceMeta record {|
     }
 }
 public type DeviceProperty record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept[] valueCode?;
@@ -559,6 +534,8 @@ public type DeviceProperty record {|
     }
 }
 public type DeviceSpecialization record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept systemType;
@@ -629,6 +606,8 @@ public type DeviceSpecialization record {|
     }
 }
 public type DeviceDeviceName record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name;
@@ -746,6 +725,8 @@ public enum DeviceUdiCarrierEntryType {
     }
 }
 public type DeviceUdiCarrier record {|
+    *r4:BackboneElement;
+
     DeviceUdiCarrierEntryType entryType?;
     r4:Extension[] extension?;
     string deviceIdentifier?;
@@ -848,6 +829,8 @@ public enum DeviceDeviceNameType {
     }
 }
 public type DeviceVersion record {|
+    *r4:BackboneElement;
+
     r4:Identifier component?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;

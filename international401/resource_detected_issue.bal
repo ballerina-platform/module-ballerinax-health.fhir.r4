@@ -234,9 +234,6 @@ public type DetectedIssue record {|
 
     RESOURCE_NAME_DETECTEDISSUE resourceType = RESOURCE_NAME_DETECTEDISSUE;
 
-    BaseDetectedIssueMeta meta = {
-        profile : [PROFILE_BASE_DETECTEDISSUE]
-    };
     DetectedIssueSeverity severity?;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -248,6 +245,7 @@ public type DetectedIssue record {|
     r4:code language?;
     r4:uri reference?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:Reference patient?;
     r4:dateTime identifiedDateTime?;
     r4:Period identifiedPeriod?;
@@ -257,32 +255,7 @@ public type DetectedIssue record {|
     string id?;
     r4:Narrative text?;
     DetectedIssueStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseDetectedIssueMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseDetectedIssueMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/DetectedIssue"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # DetectedIssueStatus enum
@@ -356,6 +329,8 @@ public enum DetectedIssueStatus {
     }
 }
 public type DetectedIssueEvidence record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] code?;
     r4:Extension[] modifierExtension?;
@@ -436,6 +411,8 @@ public type DetectedIssueEvidence record {|
     }
 }
 public type DetectedIssueMitigation record {|
+    *r4:BackboneElement;
+
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:Reference author?;

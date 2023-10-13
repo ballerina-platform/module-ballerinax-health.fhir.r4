@@ -295,9 +295,6 @@ public type MedicinalProduct record {|
 
     RESOURCE_NAME_MEDICINALPRODUCT resourceType = RESOURCE_NAME_MEDICINALPRODUCT;
 
-    BaseMedicinalProductMeta meta = {
-        profile : [PROFILE_BASE_MEDICINALPRODUCT]
-    };
     r4:Reference[] attachedDocument?;
     r4:Extension[] extension?;
     r4:Identifier[] crossReference?;
@@ -319,6 +316,7 @@ public type MedicinalProduct record {|
     string[] specialMeasures?;
     r4:Resource[] contained?;
     r4:CodeableConcept legalStatusOfSupply?;
+    r4:Meta meta?;
     r4:Coding domain?;
     @constraint:Array {
        minLength: 1
@@ -328,32 +326,7 @@ public type MedicinalProduct record {|
     MedicinalProductSpecialDesignation[] specialDesignation?;
     r4:Reference[] clinicalTrial?;
     r4:CodeableConcept combinedPharmaceuticalDoseForm?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicinalProductMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicinalProductMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicinalProduct"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicinalProductNameCountryLanguage datatype record.
@@ -429,6 +402,8 @@ public type BaseMedicinalProductMeta record {|
     }
 }
 public type MedicinalProductNameCountryLanguage record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept country;
     r4:Extension[] extension?;
     r4:CodeableConcept jurisdiction?;
@@ -560,6 +535,8 @@ public type MedicinalProductNameCountryLanguage record {|
     }
 }
 public type MedicinalProductSpecialDesignation record {|
+    *r4:BackboneElement;
+
     r4:dateTime date?;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -646,6 +623,8 @@ public type MedicinalProductSpecialDesignation record {|
     }
 }
 public type MedicinalProductName record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     MedicinalProductNameCountryLanguage[] countryLanguage?;
@@ -717,6 +696,8 @@ public type MedicinalProductName record {|
     }
 }
 public type MedicinalProductNameNamePart record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string part;
@@ -827,6 +808,8 @@ public type MedicinalProductNameNamePart record {|
     }
 }
 public type MedicinalProductManufacturingBusinessOperation record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept confidentialityIndicator?;
     r4:Extension[] extension?;
     r4:Identifier authorisationReferenceNumber?;

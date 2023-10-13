@@ -188,9 +188,6 @@ public type AppointmentResponse record {|
 
     RESOURCE_NAME_APPOINTMENTRESPONSE resourceType = RESOURCE_NAME_APPOINTMENTRESPONSE;
 
-    BaseAppointmentResponseMeta meta = {
-        profile : [PROFILE_BASE_APPOINTMENTRESPONSE]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -200,38 +197,14 @@ public type AppointmentResponse record {|
     r4:code language?;
     r4:Reference actor?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string comment?;
     r4:instant end?;
     AppointmentResponseParticipantStatus participantStatus;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseAppointmentResponseMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAppointmentResponseMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/AppointmentResponse"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # AppointmentResponseParticipantStatus enum

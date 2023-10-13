@@ -301,9 +301,6 @@ public type AllergyIntolerance record {|
 
     RESOURCE_NAME_ALLERGYINTOLERANCE resourceType = RESOURCE_NAME_ALLERGYINTOLERANCE;
 
-    BaseAllergyIntoleranceMeta meta = {
-        profile : [PROFILE_BASE_ALLERGYINTOLERANCE]
-    };
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
@@ -329,34 +326,10 @@ public type AllergyIntolerance record {|
     r4:Reference encounter?;
     r4:Resource[] contained?;
     r4:Reference asserter?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     AllergyIntoleranceCategory[] category?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseAllergyIntoleranceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAllergyIntoleranceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/AllergyIntolerance"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # AllergyIntoleranceCriticality enum
@@ -479,6 +452,8 @@ public enum AllergyIntoleranceCriticality {
     }
 }
 public type AllergyIntoleranceReaction record {|
+    *r4:BackboneElement;
+
     AllergyIntoleranceReactionSeverity severity?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;

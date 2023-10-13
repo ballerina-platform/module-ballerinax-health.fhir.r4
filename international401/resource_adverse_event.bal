@@ -300,9 +300,6 @@ public type AdverseEvent record {|
 
     RESOURCE_NAME_ADVERSEEVENT resourceType = RESOURCE_NAME_ADVERSEEVENT;
 
-    BaseAdverseEventMeta meta = {
-        profile : [PROFILE_BASE_ADVERSEEVENT]
-    };
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:Reference[] study?;
@@ -325,37 +322,13 @@ public type AdverseEvent record {|
     AdverseEventSuspectEntity[] suspectEntity?;
     r4:Resource[] contained?;
     r4:Reference[] resultingCondition?;
+    r4:Meta meta?;
     r4:CodeableConcept seriousness?;
     r4:dateTime detected?;
     r4:uri implicitRules?;
     r4:Reference location?;
     r4:CodeableConcept[] category?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseAdverseEventMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAdverseEventMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/AdverseEvent"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # AdverseEventActuality enum
@@ -447,6 +420,8 @@ public enum AdverseEventActuality {
     }
 }
 public type AdverseEventSuspectEntityCausality record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept assessment?;
     r4:Extension[] extension?;
     string productRelatedness?;
@@ -519,6 +494,8 @@ public type AdverseEventSuspectEntityCausality record {|
     }
 }
 public type AdverseEventSuspectEntity record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference instance;
     r4:Extension[] modifierExtension?;

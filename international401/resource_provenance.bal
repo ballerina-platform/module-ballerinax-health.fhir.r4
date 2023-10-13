@@ -216,9 +216,6 @@ public type Provenance record {|
 
     RESOURCE_NAME_PROVENANCE resourceType = RESOURCE_NAME_PROVENANCE;
 
-    BaseProvenanceMeta meta = {
-        profile : [PROFILE_BASE_PROVENANCE]
-    };
     r4:CodeableConcept[] reason?;
     @constraint:Array {
        minLength: 1
@@ -236,6 +233,7 @@ public type Provenance record {|
     }
     r4:Reference[] target;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:Reference location?;
     string id?;
@@ -243,32 +241,7 @@ public type Provenance record {|
     ProvenanceEntity[] entity?;
     r4:dateTime occurredDateTime?;
     r4:uri[] policy?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseProvenanceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseProvenanceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Provenance"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ProvenanceAgent datatype record.
@@ -354,6 +327,8 @@ public type BaseProvenanceMeta record {|
     }
 }
 public type ProvenanceAgent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] role?;
     r4:Extension[] modifierExtension?;
@@ -435,6 +410,8 @@ public enum ProvenanceEntityRole {
     }
 }
 public type ProvenanceEntity record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     ProvenanceEntityRole role;
     r4:Reference what;

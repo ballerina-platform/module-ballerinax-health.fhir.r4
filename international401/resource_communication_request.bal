@@ -326,9 +326,6 @@ public type CommunicationRequest record {|
 
     RESOURCE_NAME_COMMUNICATIONREQUEST resourceType = RESOURCE_NAME_COMMUNICATIONREQUEST;
 
-    BaseCommunicationRequestMeta meta = {
-        profile : [PROFILE_BASE_COMMUNICATIONREQUEST]
-    };
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:Reference subject?;
@@ -353,38 +350,14 @@ public type CommunicationRequest record {|
     r4:Resource[] contained?;
     r4:Period occurrencePeriod?;
     r4:Reference sender?;
+    r4:Meta meta?;
     r4:Reference[] recipient?;
     r4:uri implicitRules?;
     r4:dateTime occurrenceDateTime?;
     r4:CodeableConcept[] category?;
     r4:Identifier groupIdentifier?;
     CommunicationRequestStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseCommunicationRequestMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseCommunicationRequestMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/CommunicationRequest"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # CommunicationRequestStatus enum
@@ -479,6 +452,8 @@ public enum CommunicationRequestPriority {
     }
 }
 public type CommunicationRequestPayload record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference contentReference;
     string contentString;

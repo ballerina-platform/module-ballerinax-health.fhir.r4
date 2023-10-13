@@ -178,9 +178,6 @@ public type EnrollmentRequest record {|
 
     RESOURCE_NAME_ENROLLMENTREQUEST resourceType = RESOURCE_NAME_ENROLLMENTREQUEST;
 
-    BaseEnrollmentRequestMeta meta = {
-        profile : [PROFILE_BASE_ENROLLMENTREQUEST]
-    };
     r4:Reference coverage?;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -191,36 +188,12 @@ public type EnrollmentRequest record {|
     r4:Resource[] contained?;
     r4:Reference provider?;
     r4:Reference insurer?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     EnrollmentRequestStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseEnrollmentRequestMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseEnrollmentRequestMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/EnrollmentRequest"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # EnrollmentRequestStatus enum

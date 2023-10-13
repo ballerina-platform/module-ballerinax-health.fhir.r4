@@ -106,40 +106,13 @@ public type Binary record {|
 
     RESOURCE_NAME_BINARY resourceType = RESOURCE_NAME_BINARY;
 
-    BaseBinaryMeta meta = {
-        profile : [PROFILE_BASE_BINARY]
-    };
     r4:base64Binary data?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:code language?;
     string id?;
     r4:Reference securityContext?;
     r4:code contentType;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseBinaryMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseBinaryMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Binary"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 

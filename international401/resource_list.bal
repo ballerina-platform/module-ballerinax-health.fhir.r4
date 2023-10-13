@@ -236,9 +236,6 @@ public type List record {|
 
     RESOURCE_NAME_LIST resourceType = RESOURCE_NAME_LIST;
 
-    BaseListMeta meta = {
-        profile : [PROFILE_BASE_LIST]
-    };
     r4:dateTime date?;
     r4:Identifier[] identifier?;
     r4:Annotation[] note?;
@@ -255,36 +252,12 @@ public type List record {|
     ListEntry[] entry?;
     r4:Resource[] contained?;
     r4:CodeableConcept orderedBy?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     ListStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseListMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseListMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/List"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ListStatus enum
@@ -384,6 +357,8 @@ public enum ListMode {
     }
 }
 public type ListEntry record {|
+    *r4:BackboneElement;
+
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:Reference item;

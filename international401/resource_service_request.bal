@@ -468,9 +468,6 @@ public type ServiceRequest record {|
 
     RESOURCE_NAME_SERVICEREQUEST resourceType = RESOURCE_NAME_SERVICEREQUEST;
 
-    BaseServiceRequestMeta meta = {
-        profile : [PROFILE_BASE_SERVICEREQUEST]
-    };
     r4:Reference[] insurance?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
@@ -509,6 +506,7 @@ public type ServiceRequest record {|
     r4:CodeableConcept[] bodySite?;
     r4:Resource[] contained?;
     r4:Period occurrencePeriod?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:dateTime occurrenceDateTime?;
     r4:CodeableConcept[] orderDetail?;
@@ -516,32 +514,7 @@ public type ServiceRequest record {|
     r4:CodeableConcept[] locationCode?;
     string patientInstruction?;
     ServiceRequestStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseServiceRequestMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseServiceRequestMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ServiceRequest"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ServiceRequestPriority enum

@@ -278,9 +278,6 @@ public type Patient record {|
 
     RESOURCE_NAME_PATIENT resourceType = RESOURCE_NAME_PATIENT;
 
-    BasePatientMeta meta = {
-        profile : [PROFILE_BASE_PATIENT]
-    };
     r4:Extension[] extension?;
     PatientGender gender?;
     r4:Extension[] modifierExtension?;
@@ -302,36 +299,12 @@ public type Patient record {|
     r4:Resource[] contained?;
     boolean deceasedBoolean?;
     r4:Reference managingOrganization?;
+    r4:Meta meta?;
     r4:integer multipleBirthInteger?;
     r4:HumanName[] name?;
     r4:uri implicitRules?;
     r4:CodeableConcept maritalStatus?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BasePatientMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BasePatientMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Patient"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR PatientContact datatype record.
@@ -447,6 +420,8 @@ public type BasePatientMeta record {|
     }
 }
 public type PatientContact record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Address address?;
@@ -530,6 +505,8 @@ public enum PatientLinkType {
     }
 }
 public type PatientLink record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference other;
     r4:Extension[] modifierExtension?;
@@ -616,6 +593,8 @@ public enum PatientGender {
     }
 }
 public type PatientCommunication record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept language;

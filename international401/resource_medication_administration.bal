@@ -309,9 +309,6 @@ public type MedicationAdministration record {|
 
     RESOURCE_NAME_MEDICATIONADMINISTRATION resourceType = RESOURCE_NAME_MEDICATIONADMINISTRATION;
 
-    BaseMedicationAdministrationMeta meta = {
-        profile : [PROFILE_BASE_MEDICATIONADMINISTRATION]
-    };
     MedicationAdministrationDosage dosage?;
     r4:uri[] instantiates?;
     r4:Annotation[] note?;
@@ -335,37 +332,13 @@ public type MedicationAdministration record {|
     r4:CodeableConcept medicationCodeableConcept;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime;
+    r4:Meta meta?;
     r4:Reference[] eventHistory?;
     r4:uri implicitRules?;
     r4:CodeableConcept category?;
     r4:Reference[] device?;
     MedicationAdministrationStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicationAdministrationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicationAdministrationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicationAdministration"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicationAdministrationDosage datatype record.
@@ -481,6 +454,8 @@ public type BaseMedicationAdministrationMeta record {|
     }
 }
 public type MedicationAdministrationDosage record {|
+    *r4:BackboneElement;
+
     r4:Quantity dose?;
     r4:Extension[] extension?;
     r4:Ratio rateRatio?;
@@ -556,6 +531,8 @@ public type MedicationAdministrationDosage record {|
     }
 }
 public type MedicationAdministrationPerformer record {|
+    *r4:BackboneElement;
+
     r4:Reference actor;
     r4:Extension[] extension?;
     r4:CodeableConcept 'function?;

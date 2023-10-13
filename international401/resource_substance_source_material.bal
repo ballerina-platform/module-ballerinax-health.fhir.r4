@@ -231,9 +231,6 @@ public type SubstanceSourceMaterial record {|
 
     RESOURCE_NAME_SUBSTANCESOURCEMATERIAL resourceType = RESOURCE_NAME_SUBSTANCESOURCEMATERIAL;
 
-    BaseSubstanceSourceMaterialMeta meta = {
-        profile : [PROFILE_BASE_SUBSTANCESOURCEMATERIAL]
-    };
     r4:Extension[] extension?;
     string[] geographicalLocation?;
     SubstanceSourceMaterialOrganism organism?;
@@ -244,6 +241,7 @@ public type SubstanceSourceMaterial record {|
     r4:Identifier organismId?;
     string[] parentSubstanceName?;
     r4:CodeableConcept developmentStage?;
+    r4:Meta meta?;
     string organismName?;
     SubstanceSourceMaterialPartDescription[] partDescription?;
     r4:uri implicitRules?;
@@ -254,32 +252,7 @@ public type SubstanceSourceMaterial record {|
     r4:Narrative text?;
     r4:Identifier[] parentSubstanceId?;
     SubstanceSourceMaterialFractionDescription[] fractionDescription?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSubstanceSourceMaterialMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSubstanceSourceMaterialMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/SubstanceSourceMaterial"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR SubstanceSourceMaterialOrganismOrganismGeneral datatype record.
@@ -365,6 +338,8 @@ public type BaseSubstanceSourceMaterialMeta record {|
     }
 }
 public type SubstanceSourceMaterialOrganismOrganismGeneral record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept phylum?;
     r4:Extension[] modifierExtension?;
@@ -437,6 +412,8 @@ public type SubstanceSourceMaterialOrganismOrganismGeneral record {|
     }
 }
 public type SubstanceSourceMaterialPartDescription record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept part?;
@@ -507,6 +484,8 @@ public type SubstanceSourceMaterialPartDescription record {|
     }
 }
 public type SubstanceSourceMaterialFractionDescription record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept materialType?;
     r4:Extension[] modifierExtension?;
@@ -607,6 +586,8 @@ public type SubstanceSourceMaterialFractionDescription record {|
     }
 }
 public type SubstanceSourceMaterialOrganismHybrid record {|
+    *r4:BackboneElement;
+
     string maternalOrganismName?;
     r4:Extension[] extension?;
     string maternalOrganismId?;
@@ -740,6 +721,8 @@ public type SubstanceSourceMaterialOrganismHybrid record {|
     }
 }
 public type SubstanceSourceMaterialOrganism record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     SubstanceSourceMaterialOrganismHybrid hybrid?;
     r4:CodeableConcept intraspecificType?;
@@ -816,6 +799,8 @@ public type SubstanceSourceMaterialOrganism record {|
     }
 }
 public type SubstanceSourceMaterialOrganismAuthor record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept authorType?;
     r4:Extension[] modifierExtension?;

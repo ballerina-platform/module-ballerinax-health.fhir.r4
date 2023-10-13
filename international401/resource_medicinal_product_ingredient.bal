@@ -168,9 +168,6 @@ public type MedicinalProductIngredient record {|
 
     RESOURCE_NAME_MEDICINALPRODUCTINGREDIENT resourceType = RESOURCE_NAME_MEDICINALPRODUCTINGREDIENT;
 
-    BaseMedicinalProductIngredientMeta meta = {
-        profile : [PROFILE_BASE_MEDICINALPRODUCTINGREDIENT]
-    };
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     r4:CodeableConcept role;
@@ -180,36 +177,12 @@ public type MedicinalProductIngredient record {|
     boolean allergenicIndicator?;
     r4:Reference[] manufacturer?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     MedicinalProductIngredientSpecifiedSubstance[] specifiedSubstance?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicinalProductIngredientMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicinalProductIngredientMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicinalProductIngredient"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicinalProductIngredientSpecifiedSubstanceStrengthReferenceStrength datatype record.
@@ -305,6 +278,8 @@ public type BaseMedicinalProductIngredientMeta record {|
     }
 }
 public type MedicinalProductIngredientSpecifiedSubstanceStrengthReferenceStrength record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept[] country?;
     r4:Extension[] extension?;
     r4:Ratio strength;
@@ -428,6 +403,8 @@ public type MedicinalProductIngredientSpecifiedSubstanceStrengthReferenceStrengt
     }
 }
 public type MedicinalProductIngredientSpecifiedSubstanceStrength record {|
+    *r4:BackboneElement;
+
     r4:Ratio concentrationLowLimit?;
     r4:Ratio presentation;
     r4:CodeableConcept[] country?;
@@ -493,6 +470,8 @@ public type MedicinalProductIngredientSpecifiedSubstanceStrength record {|
     }
 }
 public type MedicinalProductIngredientSubstance record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Extension[] modifierExtension?;
@@ -582,6 +561,8 @@ public type MedicinalProductIngredientSubstance record {|
     }
 }
 public type MedicinalProductIngredientSpecifiedSubstance record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     MedicinalProductIngredientSpecifiedSubstanceStrength[] strength?;

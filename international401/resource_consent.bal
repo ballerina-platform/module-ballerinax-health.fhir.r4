@@ -245,9 +245,6 @@ public type Consent record {|
 
     RESOURCE_NAME_CONSENT resourceType = RESOURCE_NAME_CONSENT;
 
-    BaseConsentMeta meta = {
-        profile : [PROFILE_BASE_CONSENT]
-    };
     r4:dateTime dateTime?;
     r4:Reference sourceReference?;
     r4:Identifier[] identifier?;
@@ -258,6 +255,7 @@ public type Consent record {|
     r4:code language?;
     r4:Resource[] contained?;
     r4:CodeableConcept policyRule?;
+    r4:Meta meta?;
     r4:Reference patient?;
     ConsentProvision provision?;
     r4:Reference[] organization?;
@@ -272,32 +270,7 @@ public type Consent record {|
     ConsentVerification[] verification?;
     ConsentPolicy[] policy?;
     ConsentStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseConsentMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseConsentMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Consent"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ConsentProvisionType enum
@@ -377,6 +350,8 @@ public enum ConsentProvisionDataMeaning {
     }
 }
 public type ConsentProvisionActor record {|
+    *r4:BackboneElement;
+
     r4:Reference reference;
     r4:Extension[] extension?;
     r4:CodeableConcept role;
@@ -447,6 +422,8 @@ public type ConsentProvisionActor record {|
     }
 }
 public type ConsentPolicy record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:uri authority?;
     r4:Extension[] modifierExtension?;
@@ -527,6 +504,8 @@ public enum ConsentStatus {
     }
 }
 public type ConsentProvisionData record {|
+    *r4:BackboneElement;
+
     r4:Reference reference;
     r4:Extension[] extension?;
     ConsentProvisionDataMeaning meaning;
@@ -677,6 +656,8 @@ public type ConsentProvisionData record {|
     }
 }
 public type ConsentProvision record {|
+    *r4:BackboneElement;
+
     r4:Period dataPeriod?;
     r4:Extension[] extension?;
     r4:Period period?;
@@ -765,6 +746,8 @@ public type ConsentProvision record {|
     }
 }
 public type ConsentVerification record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference verifiedWith?;
     r4:Extension[] modifierExtension?;

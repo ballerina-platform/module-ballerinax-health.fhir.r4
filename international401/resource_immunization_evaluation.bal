@@ -253,9 +253,6 @@ public type ImmunizationEvaluation record {|
 
     RESOURCE_NAME_IMMUNIZATIONEVALUATION resourceType = RESOURCE_NAME_IMMUNIZATIONEVALUATION;
 
-    BaseImmunizationEvaluationMeta meta = {
-        profile : [PROFILE_BASE_IMMUNIZATIONEVALUATION]
-    };
     r4:dateTime date?;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -269,6 +266,7 @@ public type ImmunizationEvaluation record {|
     string doseNumberString?;
     r4:Resource[] contained?;
     r4:CodeableConcept[] doseStatusReason?;
+    r4:Meta meta?;
     r4:Reference patient;
     string series?;
     r4:Reference authority?;
@@ -278,32 +276,7 @@ public type ImmunizationEvaluation record {|
     string id?;
     r4:Narrative text?;
     ImmunizationEvaluationStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseImmunizationEvaluationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseImmunizationEvaluationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ImmunizationEvaluation"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ImmunizationEvaluationStatus enum
