@@ -364,9 +364,6 @@ public type Claim record {|
 
     RESOURCE_NAME_CLAIM resourceType = RESOURCE_NAME_CLAIM;
 
-    BaseClaimMeta meta = {
-        profile : [PROFILE_BASE_CLAIM]
-    };
     @constraint:Array {
        minLength: 1
     }
@@ -399,37 +396,13 @@ public type Claim record {|
     r4:Resource[] contained?;
     r4:Reference referral?;
     r4:Reference prescription?;
+    r4:Meta meta?;
     r4:Period billablePeriod?;
     r4:uri implicitRules?;
     r4:CodeableConcept subType?;
     r4:Reference facility?;
     ClaimStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseClaimMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseClaimMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Claim"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ClaimItemDetail datatype record.
@@ -595,6 +568,8 @@ public type BaseClaimMeta record {|
     }
 }
 public type ClaimItemDetail record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -675,6 +650,8 @@ public type ClaimItemDetail record {|
     }
 }
 public type ClaimPayee record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -835,6 +812,8 @@ public type ClaimPayee record {|
     }
 }
 public type ClaimSupportingInfo record {|
+    *r4:BackboneElement;
+
     boolean valueBoolean?;
     r4:CodeableConcept reason?;
     r4:Extension[] extension?;
@@ -954,6 +933,8 @@ public type ClaimSupportingInfo record {|
     }
 }
 public type ClaimProcedure record {|
+    *r4:BackboneElement;
+
     r4:dateTime date?;
     r4:positiveInt sequence;
     r4:Extension[] extension?;
@@ -1048,6 +1029,8 @@ public type ClaimProcedure record {|
     }
 }
 public type ClaimAccident record {|
+    *r4:BackboneElement;
+
     r4:date date;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -1160,6 +1143,8 @@ public type ClaimAccident record {|
     }
 }
 public type ClaimDiagnosis record {|
+    *r4:BackboneElement;
+
     r4:positiveInt sequence;
     r4:Extension[] extension?;
     r4:CodeableConcept onAdmission?;
@@ -1324,6 +1309,8 @@ public type ClaimDiagnosis record {|
     }
 }
 public type ClaimItemDetailSubDetail record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -1421,6 +1408,8 @@ public enum ClaimStatus {
     }
 }
 public type ClaimRelated record {|
+    *r4:BackboneElement;
+
     r4:Identifier reference?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -1529,6 +1518,8 @@ public enum ClaimUse {
     }
 }
 public type ClaimCareTeam record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept qualification?;
     r4:positiveInt sequence;
     r4:Extension[] extension?;
@@ -1822,6 +1813,8 @@ public type ClaimCareTeam record {|
     }
 }
 public type ClaimItem record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] modifier?;
     r4:Extension[] modifierExtension?;
@@ -1964,6 +1957,8 @@ public type ClaimItem record {|
     }
 }
 public type ClaimInsurance record {|
+    *r4:BackboneElement;
+
     r4:Reference coverage;
     r4:Identifier identifier?;
     r4:positiveInt sequence;

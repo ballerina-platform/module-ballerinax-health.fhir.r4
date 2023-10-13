@@ -216,9 +216,6 @@ public type MeasureReport record {|
 
     RESOURCE_NAME_MEASUREREPORT resourceType = RESOURCE_NAME_MEASUREREPORT;
 
-    BaseMeasureReportMeta meta = {
-        profile : [PROFILE_BASE_MEASUREREPORT]
-    };
     r4:dateTime date?;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -231,38 +228,14 @@ public type MeasureReport record {|
     MeasureReportType 'type;
     r4:Resource[] contained?;
     r4:canonical measure;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:Reference[] evaluatedResource?;
     string id?;
     r4:Narrative text?;
     MeasureReportGroup[] group?;
     MeasureReportStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMeasureReportMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMeasureReportMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MeasureReport"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MeasureReportGroupStratifierStratum datatype record.
@@ -348,6 +321,8 @@ public type BaseMeasureReportMeta record {|
     }
 }
 public type MeasureReportGroupStratifierStratum record {|
+    *r4:BackboneElement;
+
     MeasureReportGroupStratifierStratumComponent[] component?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -440,6 +415,8 @@ public type MeasureReportGroupStratifierStratum record {|
     }
 }
 public type MeasureReportGroup record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Extension[] modifierExtension?;
@@ -522,6 +499,8 @@ public type MeasureReportGroup record {|
     }
 }
 public type MeasureReportGroupPopulation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Extension[] modifierExtension?;
@@ -593,6 +572,8 @@ public type MeasureReportGroupPopulation record {|
     }
 }
 public type MeasureReportGroupStratifier record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] code?;
     r4:Extension[] modifierExtension?;
@@ -663,6 +644,8 @@ public type MeasureReportGroupStratifier record {|
     }
 }
 public type MeasureReportGroupStratifierStratumComponent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Extension[] modifierExtension?;
@@ -743,6 +726,8 @@ public type MeasureReportGroupStratifierStratumComponent record {|
     }
 }
 public type MeasureReportGroupStratifierStratumPopulation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Extension[] modifierExtension?;

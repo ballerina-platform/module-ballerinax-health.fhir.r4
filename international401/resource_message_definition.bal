@@ -345,9 +345,6 @@ public type MessageDefinition record {|
 
     RESOURCE_NAME_MESSAGEDEFINITION resourceType = RESOURCE_NAME_MESSAGEDEFINITION;
 
-    BaseMessageDefinitionMeta meta = {
-        profile : [PROFILE_BASE_MESSAGEDEFINITION]
-    };
     r4:dateTime date;
     r4:canonical[] parent?;
     r4:markdown copyright?;
@@ -373,6 +370,7 @@ public type MessageDefinition record {|
     MessageDefinitionResponseRequired responseRequired?;
     r4:uri url?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
     string publisher?;
@@ -380,32 +378,7 @@ public type MessageDefinition record {|
     r4:UsageContext[] useContext?;
     r4:canonical base?;
     MessageDefinitionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMessageDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMessageDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MessageDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MessageDefinitionFocus datatype record.
@@ -491,6 +464,8 @@ public type BaseMessageDefinitionMeta record {|
     }
 }
 public type MessageDefinitionFocus record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:code code;
     r4:unsignedInt min;
@@ -563,6 +538,8 @@ public type MessageDefinitionFocus record {|
     }
 }
 public type MessageDefinitionAllowedResponse record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;

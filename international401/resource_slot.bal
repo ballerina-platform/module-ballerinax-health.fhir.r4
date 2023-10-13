@@ -218,9 +218,6 @@ public type Slot record {|
 
     RESOURCE_NAME_SLOT resourceType = RESOURCE_NAME_SLOT;
 
-    BaseSlotMeta meta = {
-        profile : [PROFILE_BASE_SLOT]
-    };
     r4:CodeableConcept[] serviceType?;
     r4:CodeableConcept appointmentType?;
     r4:Identifier[] identifier?;
@@ -232,6 +229,7 @@ public type Slot record {|
     r4:CodeableConcept[] serviceCategory?;
     r4:Reference schedule;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     boolean overbooked?;
     r4:uri implicitRules?;
     string comment?;
@@ -239,32 +237,7 @@ public type Slot record {|
     string id?;
     r4:Narrative text?;
     SlotStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSlotMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSlotMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Slot"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # SlotStatus enum

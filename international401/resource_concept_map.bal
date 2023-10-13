@@ -297,9 +297,6 @@ public type ConceptMap record {|
 
     RESOURCE_NAME_CONCEPTMAP resourceType = RESOURCE_NAME_CONCEPTMAP;
 
-    BaseConceptMapMeta meta = {
-        profile : [PROFILE_BASE_CONCEPTMAP]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -320,6 +317,7 @@ public type ConceptMap record {|
     string 'version?;
     r4:uri url?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name?;
     r4:uri targetUri?;
     r4:canonical targetCanonical?;
@@ -327,32 +325,7 @@ public type ConceptMap record {|
     string publisher?;
     r4:UsageContext[] useContext?;
     ConceptMapStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseConceptMapMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseConceptMapMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ConceptMap"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ConceptMapGroup datatype record.
@@ -458,6 +431,8 @@ public type BaseConceptMapMeta record {|
     }
 }
 public type ConceptMapGroup record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string sourceVersion?;
     r4:Extension[] modifierExtension?;
@@ -569,6 +544,8 @@ public enum ConceptMapGroupElementTargetEquivalence {
     }
 }
 public type ConceptMapGroupUnmapped record {|
+    *r4:BackboneElement;
+
     ConceptMapGroupUnmappedMode mode;
     r4:Extension[] extension?;
     r4:code code?;
@@ -671,6 +648,8 @@ public type ConceptMapGroupUnmapped record {|
     }
 }
 public type ConceptMapGroupElementTarget record {|
+    *r4:BackboneElement;
+
     ConceptMapGroupElementTargetEquivalence equivalence;
     r4:Extension[] extension?;
     r4:code code?;
@@ -764,6 +743,8 @@ public type ConceptMapGroupElementTarget record {|
     }
 }
 public type ConceptMapGroupElementTargetDependsOn record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:canonical system?;
     string display?;
@@ -846,6 +827,8 @@ public type ConceptMapGroupElementTargetDependsOn record {|
     }
 }
 public type ConceptMapGroupElement record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:code code?;
     string display?;

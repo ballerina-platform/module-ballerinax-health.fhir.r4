@@ -232,9 +232,6 @@ public type CatalogEntry record {|
 
     RESOURCE_NAME_CATALOGENTRY resourceType = RESOURCE_NAME_CATALOGENTRY;
 
-    BaseCatalogEntryMeta meta = {
-        profile : [PROFILE_BASE_CATALOGENTRY]
-    };
     r4:CodeableConcept[] additionalClassification?;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -248,6 +245,7 @@ public type CatalogEntry record {|
     r4:Period validityPeriod?;
     r4:dateTime lastUpdated?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept[] additionalCharacteristic?;
     string id?;
@@ -255,32 +253,7 @@ public type CatalogEntry record {|
     r4:Reference referencedItem;
     CatalogEntryStatus status?;
     r4:dateTime validTo?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseCatalogEntryMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseCatalogEntryMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/CatalogEntry"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # CatalogEntryRelatedEntryRelationtype enum
@@ -360,6 +333,8 @@ public enum CatalogEntryStatus {
     }
 }
 public type CatalogEntryRelatedEntry record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference item;
     CatalogEntryRelatedEntryRelationtype relationtype;

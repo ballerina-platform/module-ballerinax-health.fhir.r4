@@ -215,9 +215,6 @@ public type Account record {|
 
     RESOURCE_NAME_ACCOUNT resourceType = RESOURCE_NAME_ACCOUNT;
 
-    BaseAccountMeta meta = {
-        profile : [PROFILE_BASE_ACCOUNT]
-    };
     AccountCoverage[] coverage?;
     r4:Reference owner?;
     r4:Identifier[] identifier?;
@@ -231,37 +228,13 @@ public type Account record {|
     r4:CodeableConcept 'type?;
     r4:Period servicePeriod?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     AccountStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseAccountMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAccountMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Account"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # AccountStatus enum
@@ -336,6 +309,8 @@ public enum AccountStatus {
     }
 }
 public type AccountCoverage record {|
+    *r4:BackboneElement;
+
     r4:Reference coverage;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -416,6 +391,8 @@ public type AccountCoverage record {|
     }
 }
 public type AccountGuarantor record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     boolean onHold?;

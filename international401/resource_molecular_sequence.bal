@@ -259,9 +259,6 @@ public type MolecularSequence record {|
 
     RESOURCE_NAME_MOLECULARSEQUENCE resourceType = RESOURCE_NAME_MOLECULARSEQUENCE;
 
-    BaseMolecularSequenceMeta meta = {
-        profile : [PROFILE_BASE_MOLECULARSEQUENCE]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Reference[] pointer?;
@@ -275,6 +272,7 @@ public type MolecularSequence record {|
     MolecularSequenceQuality[] quality?;
     MolecularSequenceStructureVariant[] structureVariant?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:Reference patient?;
     r4:integer readCoverage?;
     r4:Reference specimen?;
@@ -285,32 +283,7 @@ public type MolecularSequence record {|
     r4:Narrative text?;
     r4:Reference device?;
     MolecularSequenceReferenceSeq referenceSeq?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMolecularSequenceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMolecularSequenceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MolecularSequence"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # MolecularSequenceRepositoryType enum
@@ -415,6 +388,8 @@ public enum MolecularSequenceRepositoryType {
     }
 }
 public type MolecularSequenceStructureVariant record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept variantType?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -558,6 +533,8 @@ public type MolecularSequenceStructureVariant record {|
     }
 }
 public type MolecularSequenceReferenceSeq record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     MolecularSequenceReferenceSeqOrientation orientation?;
     MolecularSequenceReferenceSeqStrand strand?;
@@ -685,6 +662,8 @@ public type MolecularSequenceReferenceSeq record {|
     }
 }
 public type MolecularSequenceQualityRoc record {|
+    *r4:BackboneElement;
+
     r4:integer[] score?;
     r4:Extension[] extension?;
     r4:integer[] numFP?;
@@ -819,6 +798,8 @@ public enum MolecularSequenceType {
     }
 }
 public type MolecularSequenceVariant record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string cigar?;
     r4:Extension[] modifierExtension?;
@@ -933,6 +914,8 @@ public type MolecularSequenceVariant record {|
     }
 }
 public type MolecularSequenceRepository record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string readsetId?;
     r4:Extension[] modifierExtension?;
@@ -1137,6 +1120,8 @@ public type MolecularSequenceRepository record {|
     }
 }
 public type MolecularSequenceQuality record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     decimal fScore?;
     r4:CodeableConcept method?;
@@ -1220,6 +1205,8 @@ public type MolecularSequenceQuality record {|
     }
 }
 public type MolecularSequenceStructureVariantInner record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:integer 'start?;
@@ -1290,6 +1277,8 @@ public type MolecularSequenceStructureVariantInner record {|
     }
 }
 public type MolecularSequenceStructureVariantOuter record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:integer 'start?;

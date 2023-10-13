@@ -234,9 +234,6 @@ public type CareTeam record {|
 
     RESOURCE_NAME_CARETEAM resourceType = RESOURCE_NAME_CARETEAM;
 
-    BaseCareTeamMeta meta = {
-        profile : [PROFILE_BASE_CARETEAM]
-    };
     r4:Identifier[] identifier?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
@@ -249,6 +246,7 @@ public type CareTeam record {|
     CareTeamParticipant[] participant?;
     r4:Resource[] contained?;
     r4:Reference[] managingOrganization?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
     r4:ContactPoint[] telecom?;
@@ -257,32 +255,7 @@ public type CareTeam record {|
     r4:Narrative text?;
     r4:CodeableConcept[] category?;
     CareTeamStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseCareTeamMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseCareTeamMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/CareTeam"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR CareTeamParticipant datatype record.
@@ -368,6 +341,8 @@ public type BaseCareTeamMeta record {|
     }
 }
 public type CareTeamParticipant record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:CodeableConcept[] role?;

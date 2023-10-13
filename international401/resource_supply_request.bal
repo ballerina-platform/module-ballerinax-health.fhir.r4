@@ -282,9 +282,6 @@ public type SupplyRequest record {|
 
     RESOURCE_NAME_SUPPLYREQUEST resourceType = RESOURCE_NAME_SUPPLYREQUEST;
 
-    BaseSupplyRequestMeta meta = {
-        profile : [PROFILE_BASE_SUPPLYREQUEST]
-    };
     r4:Extension[] extension?;
     r4:Reference deliverFrom?;
     r4:Extension[] modifierExtension?;
@@ -306,36 +303,12 @@ public type SupplyRequest record {|
     r4:Reference itemReference;
     r4:Resource[] contained?;
     r4:Period occurrencePeriod?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:dateTime occurrenceDateTime?;
     r4:CodeableConcept category?;
     SupplyRequestStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSupplyRequestMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSupplyRequestMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/SupplyRequest"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # SupplyRequestPriority enum
@@ -439,6 +412,8 @@ public enum SupplyRequestPriority {
     }
 }
 public type SupplyRequestParameter record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept valueCodeableConcept?;
     boolean valueBoolean?;
     r4:Extension[] extension?;

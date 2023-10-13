@@ -225,9 +225,6 @@ public type MessageHeader record {|
 
     RESOURCE_NAME_MESSAGEHEADER resourceType = RESOURCE_NAME_MESSAGEHEADER;
 
-    BaseMessageHeaderMeta meta = {
-        profile : [PROFILE_BASE_MESSAGEHEADER]
-    };
     r4:uri eventUri;
     r4:CodeableConcept reason?;
     r4:Extension[] extension?;
@@ -240,6 +237,7 @@ public type MessageHeader record {|
     r4:Coding eventCoding;
     r4:Resource[] contained?;
     r4:Reference sender?;
+    r4:Meta meta?;
     MessageHeaderResponse response?;
     r4:Reference responsible?;
     r4:Reference enterer?;
@@ -247,32 +245,7 @@ public type MessageHeader record {|
     r4:canonical definition?;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMessageHeaderMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMessageHeaderMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MessageHeader"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # MessageHeaderResponseCode enum
@@ -375,6 +348,8 @@ public enum MessageHeaderResponseCode {
     }
 }
 public type MessageHeaderSource record {|
+    *r4:BackboneElement;
+
     r4:urlType endpoint;
     r4:Extension[] extension?;
     string software?;
@@ -468,6 +443,8 @@ public type MessageHeaderSource record {|
     }
 }
 public type MessageHeaderDestination record {|
+    *r4:BackboneElement;
+
     r4:urlType endpoint;
     r4:Extension[] extension?;
     r4:Reference receiver?;
@@ -550,6 +527,8 @@ public type MessageHeaderDestination record {|
     }
 }
 public type MessageHeaderResponse record {|
+    *r4:BackboneElement;
+
     r4:id identifier;
     r4:Extension[] extension?;
     MessageHeaderResponseCode code;

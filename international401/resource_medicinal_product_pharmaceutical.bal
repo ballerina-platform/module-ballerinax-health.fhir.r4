@@ -178,9 +178,6 @@ public type MedicinalProductPharmaceutical record {|
 
     RESOURCE_NAME_MEDICINALPRODUCTPHARMACEUTICAL resourceType = RESOURCE_NAME_MEDICINALPRODUCTPHARMACEUTICAL;
 
-    BaseMedicinalProductPharmaceuticalMeta meta = {
-        profile : [PROFILE_BASE_MEDICINALPRODUCTPHARMACEUTICAL]
-    };
     r4:Identifier[] identifier?;
     MedicinalProductPharmaceuticalCharacteristics[] characteristics?;
     r4:Extension[] extension?;
@@ -194,36 +191,12 @@ public type MedicinalProductPharmaceutical record {|
     r4:code language?;
     r4:Resource[] contained?;
     r4:CodeableConcept unitOfPresentation?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     r4:Reference[] device?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicinalProductPharmaceuticalMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicinalProductPharmaceuticalMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicinalProductPharmaceutical"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicinalProductPharmaceuticalRouteOfAdministrationTargetSpecies datatype record.
@@ -289,6 +262,8 @@ public type BaseMedicinalProductPharmaceuticalMeta record {|
     }
 }
 public type MedicinalProductPharmaceuticalRouteOfAdministrationTargetSpecies record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Extension[] modifierExtension?;
@@ -359,6 +334,8 @@ public type MedicinalProductPharmaceuticalRouteOfAdministrationTargetSpecies rec
     }
 }
 public type MedicinalProductPharmaceuticalCharacteristics record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Extension[] modifierExtension?;
@@ -439,6 +416,8 @@ public type MedicinalProductPharmaceuticalCharacteristics record {|
     }
 }
 public type MedicinalProductPharmaceuticalRouteOfAdministrationTargetSpeciesWithdrawalPeriod record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string supportingInformation?;
@@ -560,6 +539,8 @@ public type MedicinalProductPharmaceuticalRouteOfAdministrationTargetSpeciesWith
     }
 }
 public type MedicinalProductPharmaceuticalRouteOfAdministration record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Quantity maxSingleDose?;

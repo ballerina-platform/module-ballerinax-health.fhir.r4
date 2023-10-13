@@ -501,9 +501,6 @@ public type Measure record {|
 
     RESOURCE_NAME_MEASURE resourceType = RESOURCE_NAME_MEASURE;
 
-    BaseMeasureMeta meta = {
-        profile : [PROFILE_BASE_MEASURE]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] modifierExtension?;
@@ -526,6 +523,7 @@ public type Measure record {|
     MeasureSupplementalData[] supplementalData?;
     string 'version?;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     string subtitle?;
     string name?;
     r4:uri implicitRules?;
@@ -553,32 +551,7 @@ public type Measure record {|
     r4:uri url?;
     r4:Resource[] contained?;
     r4:markdown guidance?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMeasureMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMeasureMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Measure"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MeasureGroupStratifier datatype record.
@@ -664,6 +637,8 @@ public type BaseMeasureMeta record {|
     }
 }
 public type MeasureGroupStratifier record {|
+    *r4:BackboneElement;
+
     MeasureGroupStratifierComponent[] component?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
@@ -746,6 +721,8 @@ public type MeasureGroupStratifier record {|
     }
 }
 public type MeasureGroupPopulation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Expression criteria;
@@ -837,6 +814,8 @@ public type MeasureGroupPopulation record {|
     }
 }
 public type MeasureGroup record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Extension[] modifierExtension?;
@@ -919,6 +898,8 @@ public type MeasureGroup record {|
     }
 }
 public type MeasureGroupStratifierComponent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Expression criteria;
@@ -1010,6 +991,8 @@ public type MeasureGroupStratifierComponent record {|
     }
 }
 public type MeasureSupplementalData record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Expression criteria;

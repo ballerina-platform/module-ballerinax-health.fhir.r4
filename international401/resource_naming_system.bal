@@ -236,9 +236,6 @@ public type NamingSystem record {|
 
     RESOURCE_NAME_NAMINGSYSTEM resourceType = RESOURCE_NAME_NAMINGSYSTEM;
 
-    BaseNamingSystemMeta meta = {
-        profile : [PROFILE_BASE_NAMINGSYSTEM]
-    };
     r4:dateTime date;
     r4:Extension[] extension?;
     NamingSystemKind kind;
@@ -249,6 +246,7 @@ public type NamingSystem record {|
     r4:code language?;
     r4:CodeableConcept 'type?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:ContactDetail[] contact?;
     string responsible?;
     string name;
@@ -262,32 +260,7 @@ public type NamingSystem record {|
     }
     NamingSystemUniqueId[] uniqueId;
     NamingSystemStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseNamingSystemMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseNamingSystemMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/NamingSystem"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # NamingSystemKind enum
@@ -398,6 +371,8 @@ public enum NamingSystemUniqueIdType {
     }
 }
 public type NamingSystemUniqueId record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Extension[] modifierExtension?;

@@ -205,9 +205,6 @@ public type Organization record {|
 
     RESOURCE_NAME_ORGANIZATION resourceType = RESOURCE_NAME_ORGANIZATION;
 
-    BaseOrganizationMeta meta = {
-        profile : [PROFILE_BASE_ORGANIZATION]
-    };
     r4:Identifier[] identifier?;
     r4:Reference partOf?;
     r4:Extension[] extension?;
@@ -218,6 +215,7 @@ public type Organization record {|
     r4:CodeableConcept[] 'type?;
     r4:Resource[] contained?;
     r4:Reference[] endpoint?;
+    r4:Meta meta?;
     OrganizationContact[] contact?;
     string name?;
     string[] alias?;
@@ -225,32 +223,7 @@ public type Organization record {|
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseOrganizationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseOrganizationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Organization"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR OrganizationContact datatype record.
@@ -336,6 +309,8 @@ public type BaseOrganizationMeta record {|
     }
 }
 public type OrganizationContact record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Address address?;
     r4:CodeableConcept purpose?;

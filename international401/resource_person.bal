@@ -205,9 +205,6 @@ public type Person record {|
 
     RESOURCE_NAME_PERSON resourceType = RESOURCE_NAME_PERSON;
 
-    BasePersonMeta meta = {
-        profile : [PROFILE_BASE_PERSON]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Address[] address?;
@@ -220,37 +217,13 @@ public type Person record {|
     r4:date birthDate?;
     r4:Resource[] contained?;
     r4:Reference managingOrganization?;
+    r4:Meta meta?;
     r4:HumanName[] name?;
     r4:uri implicitRules?;
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BasePersonMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BasePersonMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Person"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # PersonGender enum
@@ -324,6 +297,8 @@ public enum PersonGender {
     }
 }
 public type PersonLink record {|
+    *r4:BackboneElement;
+
     PersonLinkAssurance assurance?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;

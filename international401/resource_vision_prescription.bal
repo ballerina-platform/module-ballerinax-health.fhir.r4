@@ -188,9 +188,6 @@ public type VisionPrescription record {|
 
     RESOURCE_NAME_VISIONPRESCRIPTION resourceType = RESOURCE_NAME_VISIONPRESCRIPTION;
 
-    BaseVisionPrescriptionMeta meta = {
-        profile : [PROFILE_BASE_VISIONPRESCRIPTION]
-    };
     r4:Reference prescriber;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -204,37 +201,13 @@ public type VisionPrescription record {|
     VisionPrescriptionLensSpecification[] lensSpecification;
     r4:dateTime dateWritten;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:Reference patient;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     VisionPrescriptionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseVisionPrescriptionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseVisionPrescriptionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/VisionPrescription"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # VisionPrescriptionLensSpecificationEye enum
@@ -434,6 +407,8 @@ public enum VisionPrescriptionStatus {
     }
 }
 public type VisionPrescriptionLensSpecification record {|
+    *r4:BackboneElement;
+
     decimal add?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
@@ -516,6 +491,8 @@ public type VisionPrescriptionLensSpecification record {|
     }
 }
 public type VisionPrescriptionLensSpecificationPrism record {|
+    *r4:BackboneElement;
+
     decimal amount;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;

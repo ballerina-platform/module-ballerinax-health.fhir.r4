@@ -369,9 +369,6 @@ public type Evidence record {|
 
     RESOURCE_NAME_EVIDENCE resourceType = RESOURCE_NAME_EVIDENCE;
 
-    BaseEvidenceMeta meta = {
-        profile : [PROFILE_BASE_EVIDENCE]
-    };
     r4:dateTime date?;
     r4:Annotation[] note?;
     r4:markdown copyright?;
@@ -400,6 +397,7 @@ public type Evidence record {|
     r4:Resource[] contained?;
     r4:Reference exposureBackground;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     string subtitle?;
     string name?;
     r4:uri implicitRules?;
@@ -407,32 +405,7 @@ public type Evidence record {|
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
     EvidenceStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseEvidenceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseEvidenceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Evidence"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # EvidenceStatus enum

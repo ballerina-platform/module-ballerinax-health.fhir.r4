@@ -242,9 +242,6 @@ public type CompartmentDefinition record {|
 
     RESOURCE_NAME_COMPARTMENTDEFINITION resourceType = RESOURCE_NAME_COMPARTMENTDEFINITION;
 
-    BaseCompartmentDefinitionMeta meta = {
-        profile : [PROFILE_BASE_COMPARTMENTDEFINITION]
-    };
     r4:dateTime date?;
     r4:Extension[] extension?;
     CompartmentDefinitionCode code;
@@ -258,6 +255,7 @@ public type CompartmentDefinition record {|
     r4:uri url;
     r4:Resource[] contained?;
     boolean search;
+    r4:Meta meta?;
     r4:ContactDetail[] contact?;
     string name;
     r4:uri implicitRules?;
@@ -266,32 +264,7 @@ public type CompartmentDefinition record {|
     r4:Narrative text?;
     r4:UsageContext[] useContext?;
     CompartmentDefinitionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseCompartmentDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseCompartmentDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/CompartmentDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR CompartmentDefinitionResource datatype record.
@@ -367,6 +340,8 @@ public type BaseCompartmentDefinitionMeta record {|
     }
 }
 public type CompartmentDefinitionResource record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:code code;
     string[] param?;

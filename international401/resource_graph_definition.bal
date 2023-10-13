@@ -252,9 +252,6 @@ public type GraphDefinition record {|
 
     RESOURCE_NAME_GRAPHDEFINITION resourceType = RESOURCE_NAME_GRAPHDEFINITION;
 
-    BaseGraphDefinitionMeta meta = {
-        profile : [PROFILE_BASE_GRAPHDEFINITION]
-    };
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:markdown purpose?;
@@ -269,6 +266,7 @@ public type GraphDefinition record {|
     string 'version?;
     r4:uri url?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:ContactDetail[] contact?;
     string name;
     r4:uri implicitRules?;
@@ -277,32 +275,7 @@ public type GraphDefinition record {|
     r4:Narrative text?;
     r4:UsageContext[] useContext?;
     GraphDefinitionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseGraphDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseGraphDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/GraphDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR GraphDefinitionLinkTarget datatype record.
@@ -388,6 +361,8 @@ public type BaseGraphDefinitionMeta record {|
     }
 }
 public type GraphDefinitionLinkTarget record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:canonical profile?;
@@ -505,6 +480,8 @@ public enum GraphDefinitionLinkTargetCompartmentCode {
     }
 }
 public type GraphDefinitionLinkTargetCompartment record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     GraphDefinitionLinkTargetCompartmentCode code;
     string expression?;
@@ -618,6 +595,8 @@ public type GraphDefinitionLinkTargetCompartment record {|
     }
 }
 public type GraphDefinitionLink record {|
+    *r4:BackboneElement;
+
     string path?;
     r4:Extension[] extension?;
     string sliceName?;

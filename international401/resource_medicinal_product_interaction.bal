@@ -177,9 +177,6 @@ public type MedicinalProductInteraction record {|
 
     RESOURCE_NAME_MEDICINALPRODUCTINTERACTION resourceType = RESOURCE_NAME_MEDICINALPRODUCTINTERACTION;
 
-    BaseMedicinalProductInteractionMeta meta = {
-        profile : [PROFILE_BASE_MEDICINALPRODUCTINTERACTION]
-    };
     r4:Extension[] extension?;
     r4:Reference[] subject?;
     r4:Extension[] modifierExtension?;
@@ -188,38 +185,14 @@ public type MedicinalProductInteraction record {|
     r4:CodeableConcept 'type?;
     r4:Resource[] contained?;
     r4:CodeableConcept management?;
+    r4:Meta meta?;
     r4:CodeableConcept effect?;
     r4:uri implicitRules?;
     string id?;
     MedicinalProductInteractionInteractant[] interactant?;
     r4:Narrative text?;
     r4:CodeableConcept incidence?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicinalProductInteractionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicinalProductInteractionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicinalProductInteraction"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicinalProductInteractionInteractant datatype record.
@@ -285,6 +258,8 @@ public type BaseMedicinalProductInteractionMeta record {|
     }
 }
 public type MedicinalProductInteractionInteractant record {|
+    *r4:BackboneElement;
+
     r4:Reference itemReference;
     r4:Extension[] extension?;
     r4:CodeableConcept itemCodeableConcept;

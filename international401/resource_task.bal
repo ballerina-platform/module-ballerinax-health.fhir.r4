@@ -398,9 +398,6 @@ public type Task record {|
 
     RESOURCE_NAME_TASK resourceType = RESOURCE_NAME_TASK;
 
-    BaseTaskMeta meta = {
-        profile : [PROFILE_BASE_TASK]
-    };
     r4:Reference[] insurance?;
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
@@ -433,38 +430,14 @@ public type Task record {|
     r4:CodeableConcept[] performerType?;
     TaskInput[] input?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     TaskRestriction restriction?;
     r4:uri implicitRules?;
     r4:Reference location?;
     r4:dateTime lastModified?;
     r4:Identifier groupIdentifier?;
     TaskStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseTaskMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseTaskMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Task"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # TaskPriority enum
@@ -1028,6 +1001,8 @@ public enum TaskPriority {
     }
 }
 public type TaskInput record {|
+    *r4:BackboneElement;
+
     r4:time valueTime;
     r4:TriggerDefinition valueTriggerDefinition;
     r4:Money valueMoney;
@@ -1157,6 +1132,8 @@ public type TaskInput record {|
     }
 }
 public type TaskRestriction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Extension[] modifierExtension?;
@@ -1718,6 +1695,8 @@ public type TaskRestriction record {|
     }
 }
 public type TaskOutput record {|
+    *r4:BackboneElement;
+
     r4:time valueTime;
     r4:TriggerDefinition valueTriggerDefinition;
     r4:Money valueMoney;

@@ -277,9 +277,6 @@ public type RiskAssessment record {|
 
     RESOURCE_NAME_RISKASSESSMENT resourceType = RESOURCE_NAME_RISKASSESSMENT;
 
-    BaseRiskAssessmentMeta meta = {
-        profile : [PROFILE_BASE_RISKASSESSMENT]
-    };
     r4:Annotation[] note?;
     r4:Reference parent?;
     r4:Extension[] extension?;
@@ -301,36 +298,12 @@ public type RiskAssessment record {|
     r4:Reference condition?;
     r4:Resource[] contained?;
     r4:Period occurrencePeriod?;
+    r4:Meta meta?;
     RiskAssessmentPrediction[] prediction?;
     r4:uri implicitRules?;
     r4:dateTime occurrenceDateTime?;
     RiskAssessmentStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseRiskAssessmentMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseRiskAssessmentMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/RiskAssessment"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # RiskAssessmentStatus enum
@@ -464,6 +437,8 @@ public enum RiskAssessmentStatus {
     }
 }
 public type RiskAssessmentPrediction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept qualitativeRisk?;
     decimal relativeRisk?;

@@ -254,9 +254,6 @@ public type Composition record {|
 
     RESOURCE_NAME_COMPOSITION resourceType = RESOURCE_NAME_COMPOSITION;
 
-    BaseCompositionMeta meta = {
-        profile : [PROFILE_BASE_COMPOSITION]
-    };
     r4:dateTime date;
     r4:Identifier identifier?;
     r4:Extension[] extension?;
@@ -275,6 +272,7 @@ public type Composition record {|
     r4:CodeableConcept 'type;
     CompositionAttester[] attester?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
@@ -282,32 +280,7 @@ public type Composition record {|
     CompositionEvent[] event?;
     CompositionRelatesTo[] relatesTo?;
     CompositionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseCompositionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseCompositionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Composition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # CompositionStatus enum
@@ -451,6 +424,8 @@ public enum CompositionStatus {
     }
 }
 public type CompositionSection record {|
+    *r4:BackboneElement;
+
     CompositionSectionMode mode?;
     r4:Reference[] entry?;
     r4:Extension[] extension?;
@@ -553,6 +528,8 @@ public enum CompositionAttesterMode {
     }
 }
 public type CompositionRelatesTo record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Identifier targetIdentifier;
     CompositionRelatesToCode code;
@@ -642,6 +619,8 @@ public enum CompositionRelatesToCode {
     }
 }
 public type CompositionAttester record {|
+    *r4:BackboneElement;
+
     CompositionAttesterMode mode;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -723,6 +702,8 @@ public type CompositionAttester record {|
     }
 }
 public type CompositionEvent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:CodeableConcept[] code?;

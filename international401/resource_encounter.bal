@@ -327,9 +327,6 @@ public type Encounter record {|
 
     RESOURCE_NAME_ENCOUNTER resourceType = RESOURCE_NAME_ENCOUNTER;
 
-    BaseEncounterMeta meta = {
-        profile : [PROFILE_BASE_ENCOUNTER]
-    };
     r4:CodeableConcept serviceType?;
     r4:Reference partOf?;
     r4:Extension[] extension?;
@@ -355,37 +352,13 @@ public type Encounter record {|
     r4:CodeableConcept priority?;
     r4:Resource[] contained?;
     EncounterStatusHistory[] statusHistory?;
+    r4:Meta meta?;
     r4:Reference serviceProvider?;
     r4:uri implicitRules?;
     EncounterLocation[] location?;
     r4:Reference[] account?;
     EncounterStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseEncounterMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseEncounterMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Encounter"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR EncounterHospitalization datatype record.
@@ -521,6 +494,8 @@ public type BaseEncounterMeta record {|
     }
 }
 public type EncounterHospitalization record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] specialArrangement?;
     r4:CodeableConcept reAdmission?;
@@ -608,6 +583,8 @@ public type EncounterHospitalization record {|
     }
 }
 public type EncounterDiagnosis record {|
+    *r4:BackboneElement;
+
     r4:Reference condition;
     r4:Extension[] extension?;
     r4:CodeableConcept use?;
@@ -679,6 +656,8 @@ public type EncounterDiagnosis record {|
     }
 }
 public type EncounterClassHistory record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period;
     r4:Extension[] modifierExtension?;
@@ -777,6 +756,8 @@ public enum EncounterLocationStatus {
     }
 }
 public type EncounterLocation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Extension[] modifierExtension?;
@@ -870,6 +851,8 @@ public enum EncounterStatusHistoryStatus {
     }
 }
 public type EncounterParticipant record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Reference individual?;
@@ -952,6 +935,8 @@ public enum EncounterStatus {
     }
 }
 public type EncounterStatusHistory record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period;
     r4:Extension[] modifierExtension?;

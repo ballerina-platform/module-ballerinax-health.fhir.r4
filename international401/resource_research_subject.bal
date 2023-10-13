@@ -187,9 +187,6 @@ public type ResearchSubject record {|
 
     RESOURCE_NAME_RESEARCHSUBJECT resourceType = RESOURCE_NAME_RESEARCHSUBJECT;
 
-    BaseResearchSubjectMeta meta = {
-        profile : [PROFILE_BASE_RESEARCHSUBJECT]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Period period?;
@@ -200,37 +197,13 @@ public type ResearchSubject record {|
     string actualArm?;
     r4:Reference consent?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     string assignedArm?;
     ResearchSubjectStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseResearchSubjectMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseResearchSubjectMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ResearchSubject"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ResearchSubjectStatus enum

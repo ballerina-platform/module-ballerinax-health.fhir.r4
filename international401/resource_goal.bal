@@ -275,9 +275,6 @@ public type Goal record {|
 
     RESOURCE_NAME_GOAL resourceType = RESOURCE_NAME_GOAL;
 
-    BaseGoalMeta meta = {
-        profile : [PROFILE_BASE_GOAL]
-    };
     r4:date statusDate?;
     r4:Annotation[] note?;
     r4:Reference[] addresses?;
@@ -298,36 +295,12 @@ public type Goal record {|
     r4:Resource[] contained?;
     r4:Reference expressedBy?;
     r4:CodeableConcept startCodeableConcept?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept achievementStatus?;
     r4:CodeableConcept[] category?;
     r4:date startDate?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseGoalMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseGoalMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Goal"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR GoalTarget datatype record.
@@ -473,6 +446,8 @@ public type BaseGoalMeta record {|
     }
 }
 public type GoalTarget record {|
+    *r4:BackboneElement;
+
     r4:Range detailRange?;
     r4:Extension[] extension?;
     r4:Quantity detailQuantity?;

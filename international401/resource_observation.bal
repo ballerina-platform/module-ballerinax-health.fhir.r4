@@ -330,7 +330,7 @@ public const RESOURCE_NAME_OBSERVATION = "Observation";
         },
         "component" : {
             name: "component",
-            dataType: ObservationComponentOne,
+            dataType: ObservationComponent,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -346,7 +346,7 @@ public const RESOURCE_NAME_OBSERVATION = "Observation";
         },
         "referenceRange" : {
             name: "referenceRange",
-            dataType: ObservationReferenceRangeOne,
+            dataType: ObservationReferenceRange,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -436,7 +436,7 @@ public const RESOURCE_NAME_OBSERVATION = "Observation";
         },
         "status" : {
             name: "status",
-            dataType: ObservationStatusOne,
+            dataType: ObservationStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -454,9 +454,6 @@ public type Observation record {|
 
     RESOURCE_NAME_OBSERVATION resourceType = RESOURCE_NAME_OBSERVATION;
 
-    BaseObservationMeta meta = {
-        profile : [PROFILE_BASE_OBSERVATION]
-    };
     boolean valueBoolean?;
     r4:CodeableConcept dataAbsentReason?;
     r4:Annotation[] note?;
@@ -488,56 +485,24 @@ public type Observation record {|
     r4:Reference[] hasMember?;
     r4:Reference encounter?;
     r4:CodeableConcept bodySite?;
-    ObservationComponentOne[] component?;
+    ObservationComponent[] component?;
     r4:Resource[] contained?;
-    ObservationReferenceRangeOne[] referenceRange?;
+    ObservationReferenceRange[] referenceRange?;
     string valueString?;
     r4:dateTime effectiveDateTime?;
     r4:CodeableConcept[] interpretation?;
+    r4:Meta meta?;
     r4:SampledData valueSampledData?;
     r4:Period valuePeriod?;
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Reference device?;
     r4:instant effectiveInstant?;
-    ObservationStatusOne status;
-    never...;
+    ObservationStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseObservationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseObservationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Observation"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# ObservationStatusOne enum
-public enum ObservationStatusOne {
-   CODE_STATUS_AMENDED = "amended",
-   CODE_STATUS_FINAL = "final",
-   CODE_STATUS_REGISTERED = "registered",
-   CODE_STATUS_PRELIMINARY = "preliminary"
-}
-
-# FHIR ObservationReferenceRangeOne datatype record.
+# FHIR ObservationReferenceRange datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + high - The value of the high bound of the reference range. The high bound of the reference range endpoint is inclusive of the value (e.g. reference range is >=5 - <=9). If the high bound is omitted, it is assumed to be meaningless (e.g. reference range is >= 2.3).
@@ -549,7 +514,7 @@ public enum ObservationStatusOne {
 # + 'type - Codes to indicate the what part of the targeted reference population it applies to. For example, the normal or therapeutic range.
 # + age - The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so.
 @r4:DataTypeDefinition {
-    name: "ObservationReferenceRangeOne",
+    name: "ObservationReferenceRange",
     baseType: (),
     elements: {
         "extension": {
@@ -639,7 +604,9 @@ public enum ObservationStatusOne {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ObservationReferenceRangeOne record {|
+public type ObservationReferenceRange record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Quantity high?;
     r4:Quantity low?;
@@ -651,7 +618,15 @@ public type ObservationReferenceRangeOne record {|
     r4:Range age?;
 |};
 
-# FHIR ObservationComponentOne datatype record.
+# ObservationStatus enum
+public enum ObservationStatus {
+   CODE_STATUS_AMENDED = "amended",
+   CODE_STATUS_FINAL = "final",
+   CODE_STATUS_REGISTERED = "registered",
+   CODE_STATUS_PRELIMINARY = "preliminary"
+}
+
+# FHIR ObservationComponent datatype record.
 #
 # + valueBoolean - The information determined as a result of making the observation, if the information has a simple value.
 # + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
@@ -671,7 +646,7 @@ public type ObservationReferenceRangeOne record {|
 # + valueInteger - The information determined as a result of making the observation, if the information has a simple value.
 # + valueQuantity - The information determined as a result of making the observation, if the information has a simple value.
 @r4:DataTypeDefinition {
-    name: "ObservationComponentOne",
+    name: "ObservationComponent",
     baseType: (),
     elements: {
         "valueBoolean": {
@@ -833,7 +808,9 @@ public type ObservationReferenceRangeOne record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ObservationComponentOne record {|
+public type ObservationComponent record {|
+    *r4:BackboneElement;
+
     boolean valueBoolean?;
     r4:CodeableConcept dataAbsentReason?;
     r4:Extension[] extension?;

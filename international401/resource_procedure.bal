@@ -412,9 +412,6 @@ public type Procedure record {|
 
     RESOURCE_NAME_PROCEDURE resourceType = RESOURCE_NAME_PROCEDURE;
 
-    BaseProcedureMeta meta = {
-        profile : [PROFILE_BASE_PROCEDURE]
-    };
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
     r4:CodeableConcept[] complication?;
@@ -449,37 +446,13 @@ public type Procedure record {|
     r4:CodeableConcept[] bodySite?;
     r4:Resource[] contained?;
     r4:Reference asserter?;
+    r4:Meta meta?;
     r4:Reference[] report?;
     r4:uri implicitRules?;
     r4:Reference location?;
     r4:CodeableConcept category?;
     ProcedureStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseProcedureMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseProcedureMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Procedure"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ProcedureStatus enum
@@ -557,6 +530,8 @@ public enum ProcedureStatus {
     }
 }
 public type ProcedureFocalDevice record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept action?;
@@ -637,6 +612,8 @@ public type ProcedureFocalDevice record {|
     }
 }
 public type ProcedurePerformer record {|
+    *r4:BackboneElement;
+
     r4:Reference actor;
     r4:Extension[] extension?;
     r4:CodeableConcept 'function?;

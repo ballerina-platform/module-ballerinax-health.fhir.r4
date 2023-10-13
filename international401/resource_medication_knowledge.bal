@@ -317,9 +317,6 @@ public type MedicationKnowledge record {|
 
     RESOURCE_NAME_MEDICATIONKNOWLEDGE resourceType = RESOURCE_NAME_MEDICATIONKNOWLEDGE;
 
-    BaseMedicationKnowledgeMeta meta = {
-        profile : [PROFILE_BASE_MEDICATIONKNOWLEDGE]
-    };
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Extension[] modifierExtension?;
@@ -335,7 +332,7 @@ public type MedicationKnowledge record {|
     r4:CodeableConcept[] productType?;
     MedicationKnowledgeAdministrationGuidelines[] administrationGuidelines?;
     r4:Reference[] contraindication?;
-    r4:Quantity amount?;
+    r4:SimpleQuantity amount?;
     r4:CodeableConcept[] intendedRoute?;
     MedicationKnowledgeCost[] cost?;
     MedicationKnowledgeIngredient[] ingredient?;
@@ -345,59 +342,26 @@ public type MedicationKnowledge record {|
     r4:Resource[] contained?;
     MedicationKnowledgeDrugCharacteristic[] drugCharacteristic?;
     r4:CodeableConcept doseForm?;
+    r4:Meta meta?;
     MedicationKnowledgeMonograph[] monograph?;
     r4:uri implicitRules?;
     MedicationKnowledgeKinetics[] kinetics?;
     MedicationKnowledgeStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicationKnowledgeMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicationKnowledgeMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicationKnowledge"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicationKnowledgeAdministrationGuidelinesPatientCharacteristics datatype record.
 #
-# + characteristicQuantity - Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + characteristicMedicationKnowledgeQuantity - Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).
+# + characteristicMedicationKnowledgeCodeableConcept - Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + value - The specific characteristic (e.g. height, weight, gender, etc.).
-# + characteristicCodeableConcept - Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).
 @r4:DataTypeDefinition {
     name: "MedicationKnowledgeAdministrationGuidelinesPatientCharacteristics",
     baseType: (),
     elements: {
-        "characteristicQuantity": {
-            name: "characteristicQuantity",
-            dataType: r4:Quantity,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
-            path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.characteristic[x]"
-        },
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -406,6 +370,24 @@ public type BaseMedicationKnowledgeMeta record {|
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.extension"
+        },
+        "characteristicMedicationKnowledgeQuantity": {
+            name: "characteristicMedicationKnowledgeQuantity",
+            dataType: r4:Quantity,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
+            path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.characteristic[x]"
+        },
+        "characteristicMedicationKnowledgeCodeableConcept": {
+            name: "characteristicMedicationKnowledgeCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
+            path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.characteristic[x]"
         },
         "modifierExtension": {
             name: "modifierExtension",
@@ -433,15 +415,6 @@ public type BaseMedicationKnowledgeMeta record {|
             isArray: true,
             description: "The specific characteristic (e.g. height, weight, gender, etc.).",
             path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.value"
-        },
-        "characteristicCodeableConcept": {
-            name: "characteristicCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
-            path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.characteristic[x]"
         }
     },
     serializers: {
@@ -450,12 +423,14 @@ public type BaseMedicationKnowledgeMeta record {|
     }
 }
 public type MedicationKnowledgeAdministrationGuidelinesPatientCharacteristics record {|
-    r4:Quantity characteristicQuantity;
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
+    r4:Quantity characteristicMedicationKnowledgeQuantity;
+    r4:CodeableConcept characteristicMedicationKnowledgeCodeableConcept;
     r4:Extension[] modifierExtension?;
     string id?;
     string[] value?;
-    r4:CodeableConcept characteristicCodeableConcept;
 |};
 
 # FHIR MedicationKnowledgeKinetics datatype record.
@@ -531,6 +506,8 @@ public type MedicationKnowledgeAdministrationGuidelinesPatientCharacteristics re
     }
 }
 public type MedicationKnowledgeKinetics record {|
+    *r4:BackboneElement;
+
     r4:Quantity[] areaUnderCurve?;
     r4:Extension[] extension?;
     r4:Duration halfLifePeriod?;
@@ -602,6 +579,8 @@ public type MedicationKnowledgeKinetics record {|
     }
 }
 public type MedicationKnowledgeRegulatoryMaxDispense record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Duration period?;
     r4:Quantity quantity;
@@ -672,6 +651,8 @@ public type MedicationKnowledgeRegulatoryMaxDispense record {|
     }
 }
 public type MedicationKnowledgeMonograph record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -762,6 +743,8 @@ public type MedicationKnowledgeMonograph record {|
     }
 }
 public type MedicationKnowledgeIngredient record {|
+    *r4:BackboneElement;
+
     r4:Reference itemReference;
     r4:Extension[] extension?;
     r4:Ratio strength?;
@@ -834,6 +817,8 @@ public type MedicationKnowledgeIngredient record {|
     }
 }
 public type MedicationKnowledgeMedicineClassification record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -914,6 +899,8 @@ public type MedicationKnowledgeMedicineClassification record {|
     }
 }
 public type MedicationKnowledgeCost record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Money cost;
     r4:Extension[] modifierExtension?;
@@ -1005,6 +992,8 @@ public type MedicationKnowledgeCost record {|
     }
 }
 public type MedicationKnowledgeAdministrationGuidelines record {|
+    *r4:BackboneElement;
+
     MedicationKnowledgeAdministrationGuidelinesDosage[] dosage?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -1077,6 +1066,8 @@ public type MedicationKnowledgeAdministrationGuidelines record {|
     }
 }
 public type MedicationKnowledgeMonitoringProgram record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name?;
@@ -1177,6 +1168,8 @@ public type MedicationKnowledgeMonitoringProgram record {|
     }
 }
 public type MedicationKnowledgeDrugCharacteristic record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept valueCodeableConcept?;
     r4:base64Binary valueBase64Binary?;
     r4:Extension[] extension?;
@@ -1270,6 +1263,8 @@ public type MedicationKnowledgeDrugCharacteristic record {|
     }
 }
 public type MedicationKnowledgeRegulatory record {|
+    *r4:BackboneElement;
+
     MedicationKnowledgeRegulatorySchedule[] schedule?;
     r4:Extension[] extension?;
     MedicationKnowledgeRegulatorySubstitution[] substitution?;
@@ -1332,6 +1327,8 @@ public type MedicationKnowledgeRegulatory record {|
     }
 }
 public type MedicationKnowledgeRegulatorySchedule record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept schedule;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -1401,6 +1398,8 @@ public type MedicationKnowledgeRegulatorySchedule record {|
     }
 }
 public type MedicationKnowledgePackaging record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Quantity quantity?;
     r4:Extension[] modifierExtension?;
@@ -1471,6 +1470,8 @@ public type MedicationKnowledgePackaging record {|
     }
 }
 public type MedicationKnowledgeRegulatorySubstitution record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     boolean allowed;
     r4:Extension[] modifierExtension?;
@@ -1541,6 +1542,8 @@ public type MedicationKnowledgeRegulatorySubstitution record {|
     }
 }
 public type MedicationKnowledgeRelatedMedicationKnowledge record {|
+    *r4:BackboneElement;
+
     @constraint:Array {
        minLength: 1
     }
@@ -1621,6 +1624,8 @@ public enum MedicationKnowledgeStatus {
     }
 }
 public type MedicationKnowledgeAdministrationGuidelinesDosage record {|
+    *r4:BackboneElement;
+
     @constraint:Array {
        minLength: 1
     }
