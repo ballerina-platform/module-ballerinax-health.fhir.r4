@@ -20,7 +20,7 @@ This package includes,
 **Note:**
 **This package only supports FHIR JSON payload format only. FHIR XML payload support will be added soon.**
 
-[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.0#Bundle
-[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.0#CodeSystem
-[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.0#OperationOutcome
-[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.0#ValueSet
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.1#Bundle
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.1#CodeSystem
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.1#OperationOutcome
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.1#ValueSet
