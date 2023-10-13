@@ -235,9 +235,6 @@ public type ObservationDefinition record {|
 
     RESOURCE_NAME_OBSERVATIONDEFINITION resourceType = RESOURCE_NAME_OBSERVATIONDEFINITION;
 
-    BaseObservationDefinitionMeta meta = {
-        profile : [PROFILE_BASE_OBSERVATIONDEFINITION]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:CodeableConcept code;
@@ -251,6 +248,7 @@ public type ObservationDefinition record {|
     r4:Reference criticalCodedValueSet?;
     r4:Resource[] contained?;
     r4:Reference normalCodedValueSet?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     ObservationDefinitionQuantitativeDetails quantitativeDetails?;
     ObservationDefinitionQualifiedInterval[] qualifiedInterval?;
@@ -258,32 +256,7 @@ public type ObservationDefinition record {|
     r4:Narrative text?;
     r4:CodeableConcept[] category?;
     r4:Reference abnormalCodedValueSet?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseObservationDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseObservationDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ObservationDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ObservationDefinitionPermittedDataType enum
@@ -384,6 +357,8 @@ public enum ObservationDefinitionPermittedDataType {
     }
 }
 public type ObservationDefinitionQuantitativeDetails record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept unit?;
     decimal conversionFactor?;
@@ -531,6 +506,8 @@ public enum ObservationDefinitionQualifiedIntervalCategory {
     }
 }
 public type ObservationDefinitionQualifiedInterval record {|
+    *r4:BackboneElement;
+
     r4:Range gestationalAge?;
     string condition?;
     r4:Extension[] extension?;

@@ -352,9 +352,6 @@ public type OperationDefinition record {|
 
     RESOURCE_NAME_OPERATIONDEFINITION resourceType = RESOURCE_NAME_OPERATIONDEFINITION;
 
-    BaseOperationDefinitionMeta meta = {
-        profile : [PROFILE_BASE_OPERATIONDEFINITION]
-    };
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:code code;
@@ -381,6 +378,7 @@ public type OperationDefinition record {|
     r4:canonical outputProfile?;
     r4:Resource[] contained?;
     boolean system;
+    r4:Meta meta?;
     string name;
     r4:uri implicitRules?;
     string publisher?;
@@ -388,32 +386,7 @@ public type OperationDefinition record {|
     r4:UsageContext[] useContext?;
     r4:canonical base?;
     OperationDefinitionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseOperationDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseOperationDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/OperationDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # OperationDefinitionParameterUse enum
@@ -485,6 +458,8 @@ public enum OperationDefinitionParameterUse {
     }
 }
 public type OperationDefinitionParameterReferencedFrom record {|
+    *r4:BackboneElement;
+
     string sourceId?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -563,6 +538,8 @@ public enum OperationDefinitionParameterBindingStrength {
     }
 }
 public type OperationDefinitionOverload record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string comment?;
@@ -727,6 +704,8 @@ public enum OperationDefinitionKind {
     }
 }
 public type OperationDefinitionParameter record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string max;
     OperationDefinitionParameterSearchType searchType?;
@@ -818,6 +797,8 @@ public enum OperationDefinitionParameterSearchType {
     }
 }
 public type OperationDefinitionParameterBinding record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:canonical valueSet;
     OperationDefinitionParameterBindingStrength strength;

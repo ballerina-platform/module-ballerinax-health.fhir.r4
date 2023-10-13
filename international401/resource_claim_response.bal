@@ -357,9 +357,6 @@ public type ClaimResponse record {|
 
     RESOURCE_NAME_CLAIMRESPONSE resourceType = RESOURCE_NAME_CLAIMRESPONSE;
 
-    BaseClaimResponseMeta meta = {
-        profile : [PROFILE_BASE_CLAIMRESPONSE]
-    };
     ClaimResponseInsurance[] insurance?;
     r4:Reference request?;
     r4:Extension[] extension?;
@@ -390,35 +387,11 @@ public type ClaimResponse record {|
     r4:Resource[] contained?;
     string disposition?;
     r4:Attachment form?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept subType?;
     ClaimResponseStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseClaimResponseMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseClaimResponseMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ClaimResponse"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ClaimResponseError datatype record.
@@ -504,6 +477,8 @@ public type BaseClaimResponseMeta record {|
     }
 }
 public type ClaimResponseError record {|
+    *r4:BackboneElement;
+
     r4:positiveInt subDetailSequence?;
     r4:positiveInt itemSequence?;
     r4:Extension[] extension?;
@@ -616,6 +591,8 @@ public type ClaimResponseError record {|
     }
 }
 public type ClaimResponsePayment record {|
+    *r4:BackboneElement;
+
     r4:date date?;
     r4:Identifier identifier?;
     r4:CodeableConcept adjustmentReason?;
@@ -710,6 +687,8 @@ public type ClaimResponsePayment record {|
     }
 }
 public type ClaimResponseItem record {|
+    *r4:BackboneElement;
+
     @constraint:Array {
        minLength: 1
     }
@@ -805,6 +784,8 @@ public type ClaimResponseItem record {|
     }
 }
 public type ClaimResponseItemAdjudication record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept reason?;
     r4:Money amount?;
     r4:Extension[] extension?;
@@ -897,6 +878,8 @@ public type ClaimResponseItemAdjudication record {|
     }
 }
 public type ClaimResponseProcessNote record {|
+    *r4:BackboneElement;
+
     r4:positiveInt number?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -1149,6 +1132,8 @@ public type ClaimResponseProcessNote record {|
     }
 }
 public type ClaimResponseAddItem record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -1287,6 +1272,8 @@ public type ClaimResponseAddItem record {|
     }
 }
 public type ClaimResponseAddItemDetailSubDetail record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -1380,6 +1367,8 @@ public enum ClaimResponseStatus {
     }
 }
 public type ClaimResponseItemDetail record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:positiveInt detailSequence;
     r4:Extension[] modifierExtension?;
@@ -1466,6 +1455,8 @@ public enum ClaimResponseOutcome {
     }
 }
 public type ClaimResponseItemDetailSubDetail record {|
+    *r4:BackboneElement;
+
     r4:positiveInt subDetailSequence;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -1566,6 +1557,8 @@ public type ClaimResponseItemDetailSubDetail record {|
     }
 }
 public type ClaimResponseInsurance record {|
+    *r4:BackboneElement;
+
     r4:Reference coverage;
     r4:positiveInt sequence;
     r4:Extension[] extension?;
@@ -1699,6 +1692,8 @@ public type ClaimResponseInsurance record {|
     }
 }
 public type ClaimResponseAddItemDetail record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -1775,6 +1770,8 @@ public type ClaimResponseAddItemDetail record {|
     }
 }
 public type ClaimResponseTotal record {|
+    *r4:BackboneElement;
+
     r4:Money amount;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;

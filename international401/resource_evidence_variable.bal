@@ -362,9 +362,6 @@ public type EvidenceVariable record {|
 
     RESOURCE_NAME_EVIDENCEVARIABLE resourceType = RESOURCE_NAME_EVIDENCEVARIABLE;
 
-    BaseEvidenceVariableMeta meta = {
-        profile : [PROFILE_BASE_EVIDENCEVARIABLE]
-    };
     r4:dateTime date?;
     r4:Annotation[] note?;
     r4:markdown copyright?;
@@ -395,6 +392,7 @@ public type EvidenceVariable record {|
     r4:uri url?;
     r4:Resource[] contained?;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     string subtitle?;
     string name?;
     r4:uri implicitRules?;
@@ -402,32 +400,7 @@ public type EvidenceVariable record {|
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
     EvidenceVariableStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseEvidenceVariableMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseEvidenceVariableMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/EvidenceVariable"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # EvidenceVariableCharacteristicGroupMeasure enum
@@ -633,6 +606,8 @@ public enum EvidenceVariableCharacteristicGroupMeasure {
     }
 }
 public type EvidenceVariableCharacteristic record {|
+    *r4:BackboneElement;
+
     r4:Timing participantEffectiveTiming?;
     r4:CodeableConcept definitionCodeableConcept;
     r4:Period participantEffectivePeriod?;

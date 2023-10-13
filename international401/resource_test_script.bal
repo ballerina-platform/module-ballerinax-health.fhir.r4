@@ -333,9 +333,6 @@ public type TestScript record {|
 
     RESOURCE_NAME_TESTSCRIPT resourceType = RESOURCE_NAME_TESTSCRIPT;
 
-    BaseTestScriptMeta meta = {
-        profile : [PROFILE_BASE_TESTSCRIPT]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -360,6 +357,7 @@ public type TestScript record {|
     r4:uri url;
     TestScriptFixture[] fixture?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name;
     TestScriptVariable[] variable?;
     r4:uri implicitRules?;
@@ -367,32 +365,7 @@ public type TestScript record {|
     TestScriptSetup setup?;
     r4:UsageContext[] useContext?;
     TestScriptStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseTestScriptMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseTestScriptMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/TestScript"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR TestScriptSetupActionOperationRequestHeader datatype record.
@@ -458,6 +431,8 @@ public type BaseTestScriptMeta record {|
     }
 }
 public type TestScriptSetupActionOperationRequestHeader record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string 'field;
     r4:Extension[] modifierExtension?;
@@ -538,6 +513,8 @@ public type TestScriptSetupActionOperationRequestHeader record {|
     }
 }
 public type TestScriptTest record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name?;
@@ -622,6 +599,8 @@ public type TestScriptTest record {|
     }
 }
 public type TestScriptFixture record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference 'resource?;
     boolean autocreate;
@@ -717,6 +696,8 @@ public enum TestScriptStatus {
     }
 }
 public type TestScriptDestination record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Coding profile;
@@ -777,6 +758,8 @@ public type TestScriptDestination record {|
     }
 }
 public type TestScriptSetup record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     @constraint:Array {
@@ -850,6 +833,8 @@ public enum TestScriptSetupActionAssertRequestMethod {
     }
 }
 public type TestScriptTeardown record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     @constraint:Array {
@@ -902,6 +887,8 @@ public type TestScriptTeardown record {|
     }
 }
 public type TestScriptTeardownAction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -1030,6 +1017,8 @@ public type TestScriptTeardownAction record {|
     }
 }
 public type TestScriptVariable record {|
+    *r4:BackboneElement;
+
     r4:id sourceId?;
     string path?;
     r4:Extension[] extension?;
@@ -1321,6 +1310,8 @@ public enum TestScriptSetupActionAssertOperator {
     }
 }
 public type TestScriptSetupActionAssert record {|
+    *r4:BackboneElement;
+
     r4:id sourceId?;
     r4:Extension[] extension?;
     string headerField?;
@@ -1411,6 +1402,8 @@ public type TestScriptSetupActionAssert record {|
     }
 }
 public type TestScriptMetadataLink record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description?;
@@ -1481,6 +1474,8 @@ public type TestScriptMetadataLink record {|
     }
 }
 public type TestScriptMetadata record {|
+    *r4:BackboneElement;
+
     @constraint:Array {
        minLength: 1
     }
@@ -1565,6 +1560,8 @@ public enum TestScriptSetupActionOperationMethod {
     }
 }
 public type TestScriptSetupAction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     TestScriptSetupActionAssert assert?;
     r4:Extension[] modifierExtension?;
@@ -1691,6 +1688,8 @@ public enum TestScriptSetupActionAssertDirection {
     }
 }
 public type TestScriptMetadataCapability record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:canonical capabilities;
     boolean validated;
@@ -1766,6 +1765,8 @@ public type TestScriptMetadataCapability record {|
     }
 }
 public type TestScriptOrigin record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Coding profile;
@@ -1986,6 +1987,8 @@ public type TestScriptOrigin record {|
     }
 }
 public type TestScriptSetupActionOperation record {|
+    *r4:BackboneElement;
+
     r4:id sourceId?;
     r4:Extension[] extension?;
     TestScriptSetupActionOperationMethod method?;
@@ -2051,6 +2054,8 @@ public type TestScriptSetupActionOperation record {|
     }
 }
 public type TestScriptTestAction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;

@@ -219,9 +219,6 @@ public type AuditEvent record {|
 
     RESOURCE_NAME_AUDITEVENT resourceType = RESOURCE_NAME_AUDITEVENT;
 
-    BaseAuditEventMeta meta = {
-        profile : [PROFILE_BASE_AUDITEVENT]
-    };
     @constraint:Array {
        minLength: 1
     }
@@ -235,6 +232,7 @@ public type AuditEvent record {|
     r4:Coding 'type;
     r4:Resource[] contained?;
     r4:Coding[] subtype?;
+    r4:Meta meta?;
     string outcomeDesc?;
     r4:code action?;
     r4:uri implicitRules?;
@@ -243,32 +241,7 @@ public type AuditEvent record {|
     r4:Narrative text?;
     AuditEventEntity[] entity?;
     r4:code outcome?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseAuditEventMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAuditEventMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/AuditEvent"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR AuditEventAgent datatype record.
@@ -424,6 +397,8 @@ public type BaseAuditEventMeta record {|
     }
 }
 public type AuditEventAgent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] role?;
     r4:CodeableConcept[] purposeOfUse?;
@@ -573,6 +548,8 @@ public type AuditEventAgent record {|
     }
 }
 public type AuditEventEntity record {|
+    *r4:BackboneElement;
+
     r4:Coding lifecycle?;
     r4:Extension[] extension?;
     r4:Coding role?;
@@ -589,9 +566,9 @@ public type AuditEventEntity record {|
 
 # FHIR AuditEventEntityDetail datatype record.
 #
-# + valueBase64Binary - The value of the extra detail.
+# + valueAuditEventBase64Binary - The value of the extra detail.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + valueString - The value of the extra detail.
+# + valueAuditEventString - The value of the extra detail.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'type - The type of extra detail provided in the value.
@@ -599,8 +576,8 @@ public type AuditEventEntity record {|
     name: "AuditEventEntityDetail",
     baseType: (),
     elements: {
-        "valueBase64Binary": {
-            name: "valueBase64Binary",
+        "valueAuditEventBase64Binary": {
+            name: "valueAuditEventBase64Binary",
             dataType: r4:base64Binary,
             min: 1,
             max: 1,
@@ -617,8 +594,8 @@ public type AuditEventEntity record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "AuditEvent.entity.detail.extension"
         },
-        "valueString": {
-            name: "valueString",
+        "valueAuditEventString": {
+            name: "valueAuditEventString",
             dataType: string,
             min: 1,
             max: 1,
@@ -660,9 +637,11 @@ public type AuditEventEntity record {|
     }
 }
 public type AuditEventEntityDetail record {|
-    r4:base64Binary valueBase64Binary;
+    *r4:BackboneElement;
+
+    r4:base64Binary valueAuditEventBase64Binary;
     r4:Extension[] extension?;
-    string valueString;
+    string valueAuditEventString;
     r4:Extension[] modifierExtension?;
     string id?;
     string 'type;
@@ -731,6 +710,8 @@ public type AuditEventEntityDetail record {|
     }
 }
 public type AuditEventAgentNetwork record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string address?;
     r4:Extension[] modifierExtension?;
@@ -811,6 +792,8 @@ public type AuditEventAgentNetwork record {|
     }
 }
 public type AuditEventSource record {|
+    *r4:BackboneElement;
+
     r4:Reference observer;
     r4:Extension[] extension?;
     string site?;

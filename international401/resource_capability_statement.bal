@@ -355,9 +355,6 @@ public type CapabilityStatement record {|
 
     RESOURCE_NAME_CAPABILITYSTATEMENT resourceType = RESOURCE_NAME_CAPABILITYSTATEMENT;
 
-    BaseCapabilityStatementMeta meta = {
-        profile : [PROFILE_BASE_CAPABILITYSTATEMENT]
-    };
     r4:dateTime date;
     r4:canonical[] instantiates?;
     r4:markdown copyright?;
@@ -389,37 +386,13 @@ public type CapabilityStatement record {|
     CapabilityStatementMessaging[] messaging?;
     r4:canonical[] implementationGuide?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
     string publisher?;
     r4:UsageContext[] useContext?;
     CapabilityStatementStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseCapabilityStatementMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseCapabilityStatementMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/CapabilityStatement"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # CapabilityStatementKind enum
@@ -649,6 +622,8 @@ public enum CapabilityStatementRestResourceConditionalDelete {
     }
 }
 public type CapabilityStatementRestResource record {|
+    *r4:BackboneElement;
+
     boolean updateCreate?;
     string[] searchInclude?;
     r4:Extension[] extension?;
@@ -752,6 +727,8 @@ public enum CapabilityStatementRestInteractionCode {
     }
 }
 public type CapabilityStatementSoftware record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:dateTime releaseDate?;
     r4:Extension[] modifierExtension?;
@@ -863,6 +840,8 @@ public type CapabilityStatementSoftware record {|
     }
 }
 public type CapabilityStatementRest record {|
+    *r4:BackboneElement;
+
     CapabilityStatementRestMode mode;
     r4:Extension[] extension?;
     CapabilityStatementRestSecurity security?;
@@ -947,6 +926,8 @@ public type CapabilityStatementRest record {|
     }
 }
 public type CapabilityStatementDocument record {|
+    *r4:BackboneElement;
+
     CapabilityStatementDocumentMode mode;
     r4:Extension[] extension?;
     r4:markdown documentation?;
@@ -1028,6 +1009,8 @@ public type CapabilityStatementDocument record {|
     }
 }
 public type CapabilityStatementRestSecurity record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     boolean cors?;
     r4:CodeableConcept[] 'service?;
@@ -1109,6 +1092,8 @@ public type CapabilityStatementRestSecurity record {|
     }
 }
 public type CapabilityStatementRestResourceOperation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:markdown documentation?;
     r4:Extension[] modifierExtension?;
@@ -1236,6 +1221,8 @@ public enum CapabilityStatementRestMode {
     }
 }
 public type CapabilityStatementRestResourceSearchParam record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:markdown documentation?;
     r4:Extension[] modifierExtension?;
@@ -1341,6 +1328,8 @@ public enum CapabilityStatementMessagingSupportedMessageMode {
     }
 }
 public type CapabilityStatementRestResourceInteraction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     CapabilityStatementRestResourceInteractionCode code;
     r4:markdown documentation?;
@@ -1419,6 +1408,8 @@ public enum CapabilityStatementFormat {
     }
 }
 public type CapabilityStatementMessagingSupportedMessage record {|
+    *r4:BackboneElement;
+
     CapabilityStatementMessagingSupportedMessageMode mode;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -1509,6 +1500,8 @@ public type CapabilityStatementMessagingSupportedMessage record {|
     }
 }
 public type CapabilityStatementMessaging record {|
+    *r4:BackboneElement;
+
     CapabilityStatementMessagingEndpoint[] endpoint?;
     r4:Extension[] extension?;
     r4:markdown documentation?;
@@ -1581,6 +1574,8 @@ public type CapabilityStatementMessaging record {|
     }
 }
 public type CapabilityStatementRestInteraction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     CapabilityStatementRestInteractionCode code;
     r4:markdown documentation?;
@@ -1661,6 +1656,8 @@ public type CapabilityStatementRestInteraction record {|
     }
 }
 public type CapabilityStatementImplementation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference custodian?;
     r4:Extension[] modifierExtension?;
@@ -1732,6 +1729,8 @@ public type CapabilityStatementImplementation record {|
     }
 }
 public type CapabilityStatementMessagingEndpoint record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Coding protocol;
     r4:urlType address;

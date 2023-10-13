@@ -196,9 +196,6 @@ public type MedicinalProductPackaged record {|
 
     RESOURCE_NAME_MEDICINALPRODUCTPACKAGED resourceType = RESOURCE_NAME_MEDICINALPRODUCTPACKAGED;
 
-    BaseMedicinalProductPackagedMeta meta = {
-        profile : [PROFILE_BASE_MEDICINALPRODUCTPACKAGED]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Reference marketingAuthorization?;
@@ -214,36 +211,12 @@ public type MedicinalProductPackaged record {|
     MedicinalProductPackagedPackageItem[] packageItem;
     r4:Resource[] contained?;
     r4:CodeableConcept legalStatusOfSupply?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     MedicinalProductPackagedBatchIdentifier[] batchIdentifier?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicinalProductPackagedMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicinalProductPackagedMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicinalProductPackaged"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicinalProductPackagedBatchIdentifier datatype record.
@@ -309,6 +282,8 @@ public type BaseMedicinalProductPackagedMeta record {|
     }
 }
 public type MedicinalProductPackagedBatchIdentifier record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Identifier immediatePackaging?;
@@ -469,6 +444,8 @@ public type MedicinalProductPackagedBatchIdentifier record {|
     }
 }
 public type MedicinalProductPackagedPackageItem record {|
+    *r4:BackboneElement;
+
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:CodeableConcept[] otherCharacteristics?;

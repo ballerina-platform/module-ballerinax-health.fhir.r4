@@ -215,9 +215,6 @@ public type BiologicallyDerivedProduct record {|
 
     RESOURCE_NAME_BIOLOGICALLYDERIVEDPRODUCT resourceType = RESOURCE_NAME_BIOLOGICALLYDERIVEDPRODUCT;
 
-    BaseBiologicallyDerivedProductMeta meta = {
-        profile : [PROFILE_BASE_BIOLOGICALLYDERIVEDPRODUCT]
-    };
     r4:Identifier[] identifier?;
     r4:Reference[] parent?;
     r4:Reference[] request?;
@@ -230,38 +227,14 @@ public type BiologicallyDerivedProduct record {|
     BiologicallyDerivedProductProductCategory productCategory?;
     r4:Resource[] contained?;
     r4:CodeableConcept productCode?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     BiologicallyDerivedProductProcessing[] processing?;
     string id?;
     r4:Narrative text?;
     BiologicallyDerivedProductManipulation manipulation?;
     BiologicallyDerivedProductStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseBiologicallyDerivedProductMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseBiologicallyDerivedProductMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/BiologicallyDerivedProduct"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR BiologicallyDerivedProductStorage datatype record.
@@ -347,6 +320,8 @@ public type BaseBiologicallyDerivedProductMeta record {|
     }
 }
 public type BiologicallyDerivedProductStorage record {|
+    *r4:BackboneElement;
+
     r4:Period duration?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -449,6 +424,8 @@ public type BiologicallyDerivedProductStorage record {|
     }
 }
 public type BiologicallyDerivedProductProcessing record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Period timePeriod?;
@@ -532,6 +509,8 @@ public type BiologicallyDerivedProductProcessing record {|
     }
 }
 public type BiologicallyDerivedProductManipulation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Period timePeriod?;
@@ -638,6 +617,8 @@ public enum BiologicallyDerivedProductProductCategory {
     }
 }
 public type BiologicallyDerivedProductCollection record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period collectedPeriod?;
     r4:dateTime collectedDateTime?;

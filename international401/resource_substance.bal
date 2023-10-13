@@ -180,9 +180,6 @@ public type Substance record {|
 
     RESOURCE_NAME_SUBSTANCE resourceType = RESOURCE_NAME_SUBSTANCE;
 
-    BaseSubstanceMeta meta = {
-        profile : [PROFILE_BASE_SUBSTANCE]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:CodeableConcept code;
@@ -192,37 +189,13 @@ public type Substance record {|
     string description?;
     r4:code language?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept[] category?;
     SubstanceStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSubstanceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSubstanceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Substance"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR SubstanceIngredient datatype record.
@@ -298,6 +271,8 @@ public type BaseSubstanceMeta record {|
     }
 }
 public type SubstanceIngredient record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Ratio quantity?;
     r4:CodeableConcept substanceCodeableConcept;
@@ -379,6 +354,8 @@ public type SubstanceIngredient record {|
     }
 }
 public type SubstanceInstance record {|
+    *r4:BackboneElement;
+
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;

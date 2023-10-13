@@ -305,9 +305,6 @@ public type ClinicalImpression record {|
 
     RESOURCE_NAME_CLINICALIMPRESSION resourceType = RESOURCE_NAME_CLINICALIMPRESSION;
 
-    BaseClinicalImpressionMeta meta = {
-        profile : [PROFILE_BASE_CLINICALIMPRESSION]
-    };
     r4:dateTime date?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
@@ -333,35 +330,11 @@ public type ClinicalImpression record {|
     r4:CodeableConcept[] prognosisCodeableConcept?;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     ClinicalImpressionInvestigation[] investigation?;
     ClinicalImpressionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseClinicalImpressionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseClinicalImpressionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ClinicalImpression"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ClinicalImpressionFinding datatype record.
@@ -437,6 +410,8 @@ public type BaseClinicalImpressionMeta record {|
     }
 }
 public type ClinicalImpressionFinding record {|
+    *r4:BackboneElement;
+
     r4:Reference itemReference?;
     r4:Extension[] extension?;
     r4:CodeableConcept itemCodeableConcept?;
@@ -515,6 +490,8 @@ public enum ClinicalImpressionStatus {
     }
 }
 public type ClinicalImpressionInvestigation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference[] item?;
     r4:CodeableConcept code;

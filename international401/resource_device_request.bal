@@ -364,9 +364,6 @@ public type DeviceRequest record {|
 
     RESOURCE_NAME_DEVICEREQUEST resourceType = RESOURCE_NAME_DEVICEREQUEST;
 
-    BaseDeviceRequestMeta meta = {
-        profile : [PROFILE_BASE_DEVICEREQUEST]
-    };
     r4:Reference[] insurance?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
@@ -396,37 +393,13 @@ public type DeviceRequest record {|
     r4:CodeableConcept performerType?;
     r4:Resource[] contained?;
     r4:Period occurrencePeriod?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:dateTime occurrenceDateTime?;
     r4:Identifier groupIdentifier?;
     r4:CodeableConcept codeCodeableConcept;
     DeviceRequestStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseDeviceRequestMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseDeviceRequestMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/DeviceRequest"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # DeviceRequestStatus enum
@@ -533,6 +506,8 @@ public enum DeviceRequestStatus {
     }
 }
 public type DeviceRequestParameter record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept valueCodeableConcept?;
     boolean valueBoolean?;
     r4:Extension[] extension?;

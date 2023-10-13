@@ -408,9 +408,6 @@ public type PlanDefinition record {|
 
     RESOURCE_NAME_PLANDEFINITION resourceType = RESOURCE_NAME_PLANDEFINITION;
 
-    BasePlanDefinitionMeta meta = {
-        profile : [PROFILE_BASE_PLANDEFINITION]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -443,6 +440,7 @@ public type PlanDefinition record {|
     r4:uri url?;
     r4:Resource[] contained?;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     string subtitle?;
     string name?;
     r4:uri implicitRules?;
@@ -450,32 +448,7 @@ public type PlanDefinition record {|
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
     PlanDefinitionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BasePlanDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BasePlanDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/PlanDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # PlanDefinitionActionParticipantType enum
@@ -599,6 +572,8 @@ public enum PlanDefinitionActionParticipantType {
     }
 }
 public type PlanDefinitionGoal record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept[] addresses?;
     r4:Extension[] extension?;
     r4:RelatedArtifact[] documentation?;
@@ -613,21 +588,21 @@ public type PlanDefinitionGoal record {|
 
 # FHIR PlanDefinitionGoalTarget datatype record.
 #
-# + detailRange - The target value of the measure to be achieved to signify fulfillment of the goal, e.g. 150 pounds or 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any value at or above the low value.
+# + detailPlanDefinitionCodeableConcept - The target value of the measure to be achieved to signify fulfillment of the goal, e.g. 150 pounds or 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any value at or above the low value.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + measure - The parameter whose value is to be tracked, e.g. body weight, blood pressure, or hemoglobin A1c level.
 # + due - Indicates the timeframe after the start of the goal in which the goal should be met.
-# + detailQuantity - The target value of the measure to be achieved to signify fulfillment of the goal, e.g. 150 pounds or 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any value at or above the low value.
+# + detailPlanDefinitionQuantity - The target value of the measure to be achieved to signify fulfillment of the goal, e.g. 150 pounds or 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any value at or above the low value.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + detailCodeableConcept - The target value of the measure to be achieved to signify fulfillment of the goal, e.g. 150 pounds or 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any value at or above the low value.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + detailPlanDefinitionRange - The target value of the measure to be achieved to signify fulfillment of the goal, e.g. 150 pounds or 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any value at or above the low value.
 @r4:DataTypeDefinition {
     name: "PlanDefinitionGoalTarget",
     baseType: (),
     elements: {
-        "detailRange": {
-            name: "detailRange",
-            dataType: r4:Range,
+        "detailPlanDefinitionCodeableConcept": {
+            name: "detailPlanDefinitionCodeableConcept",
+            dataType: r4:CodeableConcept,
             min: 0,
             max: 1,
             isArray: false,
@@ -661,8 +636,8 @@ public type PlanDefinitionGoal record {|
             description: "Indicates the timeframe after the start of the goal in which the goal should be met.",
             path: "PlanDefinition.goal.target.due"
         },
-        "detailQuantity": {
-            name: "detailQuantity",
+        "detailPlanDefinitionQuantity": {
+            name: "detailPlanDefinitionQuantity",
             dataType: r4:Quantity,
             min: 0,
             max: 1,
@@ -679,15 +654,6 @@ public type PlanDefinitionGoal record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "PlanDefinition.goal.target.modifierExtension"
         },
-        "detailCodeableConcept": {
-            name: "detailCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The target value of the measure to be achieved to signify fulfillment of the goal, e.g. 150 pounds or 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any value at or above the low value.",
-            path: "PlanDefinition.goal.target.detail[x]"
-        },
         "id": {
             name: "id",
             dataType: string,
@@ -696,6 +662,15 @@ public type PlanDefinitionGoal record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "PlanDefinition.goal.target.id"
+        },
+        "detailPlanDefinitionRange": {
+            name: "detailPlanDefinitionRange",
+            dataType: r4:Range,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target value of the measure to be achieved to signify fulfillment of the goal, e.g. 150 pounds or 7.0%. Either the high or low or both values of the range can be specified. When a low value is missing, it indicates that the goal is achieved at any value at or below the high value. Similarly, if the high value is missing, it indicates that the goal is achieved at any value at or above the low value.",
+            path: "PlanDefinition.goal.target.detail[x]"
         }
     },
     serializers: {
@@ -704,14 +679,16 @@ public type PlanDefinitionGoal record {|
     }
 }
 public type PlanDefinitionGoalTarget record {|
-    r4:Range detailRange?;
+    *r4:BackboneElement;
+
+    r4:CodeableConcept detailPlanDefinitionCodeableConcept?;
     r4:Extension[] extension?;
     r4:CodeableConcept measure?;
     r4:Duration due?;
-    r4:Quantity detailQuantity?;
+    r4:Quantity detailPlanDefinitionQuantity?;
     r4:Extension[] modifierExtension?;
-    r4:CodeableConcept detailCodeableConcept?;
     string id?;
+    r4:Range detailPlanDefinitionRange?;
 |};
 
 # FHIR PlanDefinitionActionDynamicValue datatype record.
@@ -777,6 +754,8 @@ public type PlanDefinitionGoalTarget record {|
     }
 }
 public type PlanDefinitionActionDynamicValue record {|
+    *r4:BackboneElement;
+
     string path?;
     r4:Extension[] extension?;
     r4:Expression expression?;
@@ -793,17 +772,26 @@ public enum PlanDefinitionActionGroupingBehavior {
 
 # FHIR PlanDefinitionActionRelatedAction datatype record.
 #
+# + offsetPlanDefinitionRange - A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + offsetPlanDefinitionDuration - A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + actionId - The element id of the related action.
-# + offsetDuration - A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.
-# + offsetRange - A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + relationship - The relationship of this action to the related action.
 @r4:DataTypeDefinition {
     name: "PlanDefinitionActionRelatedAction",
     baseType: (),
     elements: {
+        "offsetPlanDefinitionRange": {
+            name: "offsetPlanDefinitionRange",
+            dataType: r4:Range,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.",
+            path: "PlanDefinition.action.relatedAction.offset[x]"
+        },
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -812,6 +800,15 @@ public enum PlanDefinitionActionGroupingBehavior {
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "PlanDefinition.action.relatedAction.extension"
+        },
+        "offsetPlanDefinitionDuration": {
+            name: "offsetPlanDefinitionDuration",
+            dataType: r4:Duration,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.",
+            path: "PlanDefinition.action.relatedAction.offset[x]"
         },
         "modifierExtension": {
             name: "modifierExtension",
@@ -830,24 +827,6 @@ public enum PlanDefinitionActionGroupingBehavior {
             isArray: false,
             description: "The element id of the related action.",
             path: "PlanDefinition.action.relatedAction.actionId"
-        },
-        "offsetDuration": {
-            name: "offsetDuration",
-            dataType: r4:Duration,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.",
-            path: "PlanDefinition.action.relatedAction.offset[x]"
-        },
-        "offsetRange": {
-            name: "offsetRange",
-            dataType: r4:Range,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.",
-            path: "PlanDefinition.action.relatedAction.offset[x]"
         },
         "id": {
             name: "id",
@@ -874,11 +853,13 @@ public enum PlanDefinitionActionGroupingBehavior {
     }
 }
 public type PlanDefinitionActionRelatedAction record {|
+    *r4:BackboneElement;
+
+    r4:Range offsetPlanDefinitionRange?;
     r4:Extension[] extension?;
+    r4:Duration offsetPlanDefinitionDuration?;
     r4:Extension[] modifierExtension?;
     r4:id actionId;
-    r4:Duration offsetDuration?;
-    r4:Range offsetRange?;
     string id?;
     PlanDefinitionActionRelatedActionRelationship relationship;
 |};
@@ -1284,6 +1265,8 @@ public enum PlanDefinitionStatus {
     }
 }
 public type PlanDefinitionAction record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept[] reason?;
     PlanDefinitionActionCardinalityBehavior cardinalityBehavior?;
     r4:canonical definitionCanonical?;
@@ -1416,6 +1399,8 @@ public enum PlanDefinitionActionCardinalityBehavior {
     }
 }
 public type PlanDefinitionActionParticipant record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept role?;
     r4:Extension[] modifierExtension?;
@@ -1486,6 +1471,8 @@ public type PlanDefinitionActionParticipant record {|
     }
 }
 public type PlanDefinitionActionCondition record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Expression expression?;
     PlanDefinitionActionConditionKind kind;

@@ -242,9 +242,6 @@ public type PractitionerRole record {|
 
     RESOURCE_NAME_PRACTITIONERROLE resourceType = RESOURCE_NAME_PRACTITIONERROLE;
 
-    BasePractitionerRoleMeta meta = {
-        profile : [PROFILE_BASE_PRACTITIONERROLE]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Period period?;
@@ -259,6 +256,7 @@ public type PractitionerRole record {|
     r4:Resource[] contained?;
     r4:Reference[] endpoint?;
     r4:Reference[] healthcareService?;
+    r4:Meta meta?;
     r4:Reference organization?;
     r4:uri implicitRules?;
     r4:Reference[] location?;
@@ -266,32 +264,7 @@ public type PractitionerRole record {|
     string id?;
     r4:Narrative text?;
     string availabilityExceptions?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BasePractitionerRoleMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BasePractitionerRoleMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/PractitionerRole"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR PractitionerRoleAvailableTime datatype record.
@@ -377,6 +350,8 @@ public type BasePractitionerRoleMeta record {|
     }
 }
 public type PractitionerRoleAvailableTime record {|
+    *r4:BackboneElement;
+
     boolean allDay?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -449,6 +424,8 @@ public type PractitionerRoleAvailableTime record {|
     }
 }
 public type PractitionerRoleNotAvailable record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description;

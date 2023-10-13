@@ -408,9 +408,6 @@ public type Library record {|
 
     RESOURCE_NAME_LIBRARY resourceType = RESOURCE_NAME_LIBRARY;
 
-    BaseLibraryMeta meta = {
-        profile : [PROFILE_BASE_LIBRARY]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -442,6 +439,7 @@ public type Library record {|
     r4:uri url?;
     r4:Resource[] contained?;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     string subtitle?;
     string name?;
     r4:DataRequirement[] dataRequirement?;
@@ -450,32 +448,7 @@ public type Library record {|
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
     LibraryStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseLibraryMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseLibraryMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Library"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # LibraryStatus enum

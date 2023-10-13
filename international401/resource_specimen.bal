@@ -234,9 +234,6 @@ public type Specimen record {|
 
     RESOURCE_NAME_SPECIMEN resourceType = RESOURCE_NAME_SPECIMEN;
 
-    BaseSpecimenMeta meta = {
-        profile : [PROFILE_BASE_SPECIMEN]
-    };
     SpecimenContainer[] container?;
     r4:Identifier accessionIdentifier?;
     r4:Identifier[] identifier?;
@@ -251,38 +248,14 @@ public type Specimen record {|
     r4:CodeableConcept 'type?;
     r4:CodeableConcept[] condition?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:dateTime receivedTime?;
     r4:uri implicitRules?;
     SpecimenProcessing[] processing?;
     string id?;
     r4:Narrative text?;
     SpecimenStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSpecimenMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSpecimenMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Specimen"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # SpecimenStatus enum
@@ -386,6 +359,8 @@ public enum SpecimenStatus {
     }
 }
 public type SpecimenProcessing record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Period timePeriod?;
@@ -509,6 +484,8 @@ public type SpecimenProcessing record {|
     }
 }
 public type SpecimenContainer record {|
+    *r4:BackboneElement;
+
     r4:Identifier[] identifier?;
     r4:Quantity specimenQuantity?;
     r4:Extension[] extension?;
@@ -654,6 +631,8 @@ public type SpecimenContainer record {|
     }
 }
 public type SpecimenCollection record {|
+    *r4:BackboneElement;
+
     r4:Duration duration?;
     r4:CodeableConcept bodySite?;
     r4:Extension[] extension?;

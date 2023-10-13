@@ -416,9 +416,6 @@ public type EffectEvidenceSynthesis record {|
 
     RESOURCE_NAME_EFFECTEVIDENCESYNTHESIS resourceType = RESOURCE_NAME_EFFECTEVIDENCESYNTHESIS;
 
-    BaseEffectEvidenceSynthesisMeta meta = {
-        profile : [PROFILE_BASE_EFFECTEVIDENCESYNTHESIS]
-    };
     r4:dateTime date?;
     r4:Annotation[] note?;
     r4:markdown copyright?;
@@ -452,6 +449,7 @@ public type EffectEvidenceSynthesis record {|
     EffectEvidenceSynthesisEffectEstimate[] effectEstimate?;
     r4:Reference exposure;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     r4:CodeableConcept synthesisType?;
     string name?;
     r4:uri implicitRules?;
@@ -459,32 +457,7 @@ public type EffectEvidenceSynthesis record {|
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
     EffectEvidenceSynthesisStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseEffectEvidenceSynthesisMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseEffectEvidenceSynthesisMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/EffectEvidenceSynthesis"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # EffectEvidenceSynthesisResultsByExposureExposureState enum
@@ -566,6 +539,8 @@ public enum EffectEvidenceSynthesisResultsByExposureExposureState {
     }
 }
 public type EffectEvidenceSynthesisCertainty record {|
+    *r4:BackboneElement;
+
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -655,6 +630,8 @@ public enum EffectEvidenceSynthesisStatus {
     }
 }
 public type EffectEvidenceSynthesisSampleSize record {|
+    *r4:BackboneElement;
+
     r4:integer numberOfParticipants?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -746,6 +723,8 @@ public type EffectEvidenceSynthesisSampleSize record {|
     }
 }
 public type EffectEvidenceSynthesisResultsByExposure record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept variantState?;
     EffectEvidenceSynthesisResultsByExposureExposureState exposureState?;
@@ -838,6 +817,8 @@ public type EffectEvidenceSynthesisResultsByExposure record {|
     }
 }
 public type EffectEvidenceSynthesisEffectEstimatePrecisionEstimate record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     decimal level?;
     r4:Extension[] modifierExtension?;
@@ -920,6 +901,8 @@ public type EffectEvidenceSynthesisEffectEstimatePrecisionEstimate record {|
     }
 }
 public type EffectEvidenceSynthesisCertaintyCertaintySubcomponent record {|
+    *r4:BackboneElement;
+
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -1031,6 +1014,8 @@ public type EffectEvidenceSynthesisCertaintyCertaintySubcomponent record {|
     }
 }
 public type EffectEvidenceSynthesisEffectEstimate record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept unitOfMeasure?;
     r4:CodeableConcept variantState?;

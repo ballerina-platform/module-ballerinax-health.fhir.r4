@@ -159,47 +159,20 @@ public type SubstanceNucleicAcid record {|
 
     RESOURCE_NAME_SUBSTANCENUCLEICACID resourceType = RESOURCE_NAME_SUBSTANCENUCLEICACID;
 
-    BaseSubstanceNucleicAcidMeta meta = {
-        profile : [PROFILE_BASE_SUBSTANCENUCLEICACID]
-    };
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:code language?;
     SubstanceNucleicAcidSubunit[] subunit?;
     r4:integer numberOfSubunits?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept oligoNucleotideType?;
     string id?;
     r4:Narrative text?;
     string areaOfHybridisation?;
     r4:CodeableConcept sequenceType?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSubstanceNucleicAcidMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSubstanceNucleicAcidMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/SubstanceNucleicAcid"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR SubstanceNucleicAcidSubunitSugar datatype record.
@@ -275,6 +248,8 @@ public type BaseSubstanceNucleicAcidMeta record {|
     }
 }
 public type SubstanceNucleicAcidSubunitSugar record {|
+    *r4:BackboneElement;
+
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     string residueSite?;
@@ -366,6 +341,8 @@ public type SubstanceNucleicAcidSubunitSugar record {|
     }
 }
 public type SubstanceNucleicAcidSubunitLinkage record {|
+    *r4:BackboneElement;
+
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     string connectivity?;
@@ -498,6 +475,8 @@ public type SubstanceNucleicAcidSubunitLinkage record {|
     }
 }
 public type SubstanceNucleicAcidSubunit record {|
+    *r4:BackboneElement;
+
     string sequence?;
     r4:Extension[] extension?;
     r4:CodeableConcept threePrime?;

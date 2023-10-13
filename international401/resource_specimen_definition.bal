@@ -171,9 +171,6 @@ public type SpecimenDefinition record {|
 
     RESOURCE_NAME_SPECIMENDEFINITION resourceType = RESOURCE_NAME_SPECIMENDEFINITION;
 
-    BaseSpecimenDefinitionMeta meta = {
-        profile : [PROFILE_BASE_SPECIMENDEFINITION]
-    };
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -182,37 +179,13 @@ public type SpecimenDefinition record {|
     r4:code language?;
     r4:CodeableConcept[] collection?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept typeCollected?;
     SpecimenDefinitionTypeTested[] typeTested?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSpecimenDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSpecimenDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/SpecimenDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR SpecimenDefinitionTypeTested datatype record.
@@ -338,6 +311,8 @@ public type BaseSpecimenDefinitionMeta record {|
     }
 }
 public type SpecimenDefinitionTypeTested record {|
+    *r4:BackboneElement;
+
     SpecimenDefinitionTypeTestedContainer container?;
     r4:Extension[] extension?;
     boolean isDerived?;
@@ -440,6 +415,8 @@ public enum SpecimenDefinitionTypeTestedPreference {
     }
 }
 public type SpecimenDefinitionTypeTestedHandling record {|
+    *r4:BackboneElement;
+
     r4:Range temperatureRange?;
     r4:Extension[] extension?;
     string instruction?;
@@ -451,15 +428,24 @@ public type SpecimenDefinitionTypeTestedHandling record {|
 
 # FHIR SpecimenDefinitionTypeTestedContainerAdditive datatype record.
 #
+# + additiveSpecimenDefinitionReference - Substance introduced in the kind of container to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + additiveSpecimenDefinitionCodeableConcept - Substance introduced in the kind of container to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + additiveReference - Substance introduced in the kind of container to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.
-# + additiveCodeableConcept - Substance introduced in the kind of container to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.
 @r4:DataTypeDefinition {
     name: "SpecimenDefinitionTypeTestedContainerAdditive",
     baseType: (),
     elements: {
+        "additiveSpecimenDefinitionReference": {
+            name: "additiveSpecimenDefinitionReference",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Substance introduced in the kind of container to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.",
+            path: "SpecimenDefinition.typeTested.container.additive.additive[x]"
+        },
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -478,6 +464,15 @@ public type SpecimenDefinitionTypeTestedHandling record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "SpecimenDefinition.typeTested.container.additive.modifierExtension"
         },
+        "additiveSpecimenDefinitionCodeableConcept": {
+            name: "additiveSpecimenDefinitionCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Substance introduced in the kind of container to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.",
+            path: "SpecimenDefinition.typeTested.container.additive.additive[x]"
+        },
         "id": {
             name: "id",
             dataType: string,
@@ -486,24 +481,6 @@ public type SpecimenDefinitionTypeTestedHandling record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "SpecimenDefinition.typeTested.container.additive.id"
-        },
-        "additiveReference": {
-            name: "additiveReference",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Substance introduced in the kind of container to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.",
-            path: "SpecimenDefinition.typeTested.container.additive.additive[x]"
-        },
-        "additiveCodeableConcept": {
-            name: "additiveCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Substance introduced in the kind of container to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.",
-            path: "SpecimenDefinition.typeTested.container.additive.additive[x]"
         }
     },
     serializers: {
@@ -512,11 +489,13 @@ public type SpecimenDefinitionTypeTestedHandling record {|
     }
 }
 public type SpecimenDefinitionTypeTestedContainerAdditive record {|
+    *r4:BackboneElement;
+
+    r4:Reference additiveSpecimenDefinitionReference;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
+    r4:CodeableConcept additiveSpecimenDefinitionCodeableConcept;
     string id?;
-    r4:Reference additiveReference;
-    r4:CodeableConcept additiveCodeableConcept;
 |};
 
 # FHIR SpecimenDefinitionTypeTestedContainer datatype record.
@@ -524,12 +503,12 @@ public type SpecimenDefinitionTypeTestedContainerAdditive record {|
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + cap - Color of container cap.
 # + material - The type of material of the container.
-# + minimumVolumeString - The minimum volume to be conditioned in the container.
+# + minimumVolumeSpecimenDefinitionString - The minimum volume to be conditioned in the container.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + description - The textual description of the kind of container.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + minimumVolumeQuantity - The minimum volume to be conditioned in the container.
 # + 'type - The type of container used to contain this kind of specimen.
+# + minimumVolumeSpecimenDefinitionQuantity - The minimum volume to be conditioned in the container.
 # + additive - Substance introduced in the kind of container to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.
 # + capacity - The capacity (volume or other measure) of this kind of container.
 # + preparation - Special processing that should be applied to the container for this kind of specimen.
@@ -564,8 +543,8 @@ public type SpecimenDefinitionTypeTestedContainerAdditive record {|
             description: "The type of material of the container.",
             path: "SpecimenDefinition.typeTested.container.material"
         },
-        "minimumVolumeString": {
-            name: "minimumVolumeString",
+        "minimumVolumeSpecimenDefinitionString": {
+            name: "minimumVolumeSpecimenDefinitionString",
             dataType: string,
             min: 0,
             max: 1,
@@ -600,15 +579,6 @@ public type SpecimenDefinitionTypeTestedContainerAdditive record {|
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "SpecimenDefinition.typeTested.container.id"
         },
-        "minimumVolumeQuantity": {
-            name: "minimumVolumeQuantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The minimum volume to be conditioned in the container.",
-            path: "SpecimenDefinition.typeTested.container.minimumVolume[x]"
-        },
         "type": {
             name: "type",
             dataType: r4:CodeableConcept,
@@ -617,6 +587,15 @@ public type SpecimenDefinitionTypeTestedContainerAdditive record {|
             isArray: false,
             description: "The type of container used to contain this kind of specimen.",
             path: "SpecimenDefinition.typeTested.container.type"
+        },
+        "minimumVolumeSpecimenDefinitionQuantity": {
+            name: "minimumVolumeSpecimenDefinitionQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The minimum volume to be conditioned in the container.",
+            path: "SpecimenDefinition.typeTested.container.minimumVolume[x]"
         },
         "additive": {
             name: "additive",
@@ -652,15 +631,17 @@ public type SpecimenDefinitionTypeTestedContainerAdditive record {|
     }
 }
 public type SpecimenDefinitionTypeTestedContainer record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept cap?;
     r4:CodeableConcept material?;
-    string minimumVolumeString?;
+    string minimumVolumeSpecimenDefinitionString?;
     r4:Extension[] modifierExtension?;
     string description?;
     string id?;
-    r4:Quantity minimumVolumeQuantity?;
     r4:CodeableConcept 'type?;
+    r4:Quantity minimumVolumeSpecimenDefinitionQuantity?;
     SpecimenDefinitionTypeTestedContainerAdditive[] additive?;
     r4:Quantity capacity?;
     string preparation?;

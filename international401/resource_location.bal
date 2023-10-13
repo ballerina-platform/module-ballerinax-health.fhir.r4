@@ -272,9 +272,6 @@ public type Location record {|
 
     RESOURCE_NAME_LOCATION resourceType = RESOURCE_NAME_LOCATION;
 
-    BaseLocationMeta meta = {
-        profile : [PROFILE_BASE_LOCATION]
-    };
     r4:Coding operationalStatus?;
     r4:Reference partOf?;
     r4:Extension[] extension?;
@@ -294,37 +291,13 @@ public type Location record {|
     r4:CodeableConcept physicalType?;
     r4:Resource[] contained?;
     r4:Reference managingOrganization?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
     LocationPosition position?;
     string availabilityExceptions?;
     LocationStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseLocationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseLocationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Location"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # LocationHoursOfOperationDaysOfWeek enum
@@ -417,6 +390,8 @@ public enum LocationMode {
     }
 }
 public type LocationPosition record {|
+    *r4:BackboneElement;
+
     decimal altitude?;
     r4:Extension[] extension?;
     decimal latitude;
@@ -515,6 +490,8 @@ public enum LocationStatus {
     }
 }
 public type LocationHoursOfOperation record {|
+    *r4:BackboneElement;
+
     boolean allDay?;
     r4:Extension[] extension?;
     r4:time closingTime?;

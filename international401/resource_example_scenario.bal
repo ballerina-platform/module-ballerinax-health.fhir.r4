@@ -269,9 +269,6 @@ public type ExampleScenario record {|
 
     RESOURCE_NAME_EXAMPLESCENARIO resourceType = RESOURCE_NAME_EXAMPLESCENARIO;
 
-    BaseExampleScenarioMeta meta = {
-        profile : [PROFILE_BASE_EXAMPLESCENARIO]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -291,37 +288,13 @@ public type ExampleScenario record {|
     r4:uri url?;
     ExampleScenarioActor[] actor?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
     string publisher?;
     r4:UsageContext[] useContext?;
     ExampleScenarioStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseExampleScenarioMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseExampleScenarioMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ExampleScenario"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ExampleScenarioStatus enum
@@ -405,6 +378,8 @@ public enum ExampleScenarioStatus {
     }
 }
 public type ExampleScenarioProcessStep record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     ExampleScenarioProcessStepAlternative[] alternative?;
@@ -482,6 +457,8 @@ public enum ExampleScenarioActorType {
     }
 }
 public type ExampleScenarioProcessStepAlternative record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:markdown description?;
@@ -592,6 +569,8 @@ public type ExampleScenarioProcessStepAlternative record {|
     }
 }
 public type ExampleScenarioInstance record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string resourceId;
     r4:Extension[] modifierExtension?;
@@ -686,6 +665,8 @@ public type ExampleScenarioInstance record {|
     }
 }
 public type ExampleScenarioActor record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string actorId;
     r4:Extension[] modifierExtension?;
@@ -758,6 +739,8 @@ public type ExampleScenarioActor record {|
     }
 }
 public type ExampleScenarioInstanceContainedInstance record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string resourceId;
     string versionId?;
@@ -828,6 +811,8 @@ public type ExampleScenarioInstanceContainedInstance record {|
     }
 }
 public type ExampleScenarioInstanceVersion record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string versionId;
     r4:Extension[] modifierExtension?;
@@ -958,6 +943,8 @@ public type ExampleScenarioInstanceVersion record {|
     }
 }
 public type ExampleScenarioProcessStepOperation record {|
+    *r4:BackboneElement;
+
     string number;
     r4:Extension[] extension?;
     string receiver?;
@@ -1064,6 +1051,8 @@ public type ExampleScenarioProcessStepOperation record {|
     }
 }
 public type ExampleScenarioProcess record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:markdown postConditions?;
     r4:markdown preConditions?;

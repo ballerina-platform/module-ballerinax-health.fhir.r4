@@ -87,39 +87,12 @@ public type Parameters record {|
 
     RESOURCE_NAME_PARAMETERS resourceType = RESOURCE_NAME_PARAMETERS;
 
-    BaseParametersMeta meta = {
-        profile : [PROFILE_BASE_PARAMETERS]
-    };
+    r4:Meta meta?;
     ParametersParameter[] 'parameter?;
     r4:uri implicitRules?;
     r4:code language?;
     string id?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseParametersMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseParametersMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Parameters"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ParametersParameter datatype record.
@@ -685,6 +658,8 @@ public type BaseParametersMeta record {|
     }
 }
 public type ParametersParameter record {|
+    *r4:BackboneElement;
+
     r4:time valueTime?;
     r4:TriggerDefinition valueTriggerDefinition?;
     r4:Money valueMoney?;

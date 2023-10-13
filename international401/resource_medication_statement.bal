@@ -291,9 +291,6 @@ public type MedicationStatement record {|
 
     RESOURCE_NAME_MEDICATIONSTATEMENT resourceType = RESOURCE_NAME_MEDICATIONSTATEMENT;
 
-    BaseMedicationStatementMeta meta = {
-        profile : [PROFILE_BASE_MEDICATIONSTATEMENT]
-    };
     r4:Dosage[] dosage?;
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
@@ -317,35 +314,11 @@ public type MedicationStatement record {|
     r4:CodeableConcept medicationCodeableConcept;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept category?;
     MedicationStatementStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicationStatementMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicationStatementMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicationStatement"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # MedicationStatementStatus enum

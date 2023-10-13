@@ -177,9 +177,6 @@ public type MedicinalProductManufactured record {|
 
     RESOURCE_NAME_MEDICINALPRODUCTMANUFACTURED resourceType = RESOURCE_NAME_MEDICINALPRODUCTMANUFACTURED;
 
-    BaseMedicinalProductManufacturedMeta meta = {
-        profile : [PROFILE_BASE_MEDICINALPRODUCTMANUFACTURED]
-    };
     r4:Extension[] extension?;
     r4:CodeableConcept[] otherCharacteristics?;
     r4:Reference[] ingredient?;
@@ -190,35 +187,11 @@ public type MedicinalProductManufactured record {|
     r4:Reference[] manufacturer?;
     r4:Resource[] contained?;
     r4:CodeableConcept unitOfPresentation?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept manufacturedDoseForm;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicinalProductManufacturedMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicinalProductManufacturedMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicinalProductManufactured"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 

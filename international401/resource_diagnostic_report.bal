@@ -289,9 +289,6 @@ public type DiagnosticReport record {|
 
     RESOURCE_NAME_DIAGNOSTICREPORT resourceType = RESOURCE_NAME_DIAGNOSTICREPORT;
 
-    BaseDiagnosticReportMeta meta = {
-        profile : [PROFILE_BASE_DIAGNOSTICREPORT]
-    };
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Reference subject?;
@@ -314,36 +311,12 @@ public type DiagnosticReport record {|
     r4:Reference encounter?;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Reference[] imagingStudy?;
     DiagnosticReportStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseDiagnosticReportMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseDiagnosticReportMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/DiagnosticReport"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # DiagnosticReportStatus enum
@@ -417,6 +390,8 @@ public enum DiagnosticReportStatus {
     }
 }
 public type DiagnosticReportMedia record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Reference link;

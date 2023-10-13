@@ -365,9 +365,6 @@ public type StructureDefinition record {|
 
     RESOURCE_NAME_STRUCTUREDEFINITION resourceType = RESOURCE_NAME_STRUCTUREDEFINITION;
 
-    BaseStructureDefinitionMeta meta = {
-        profile : [PROFILE_BASE_STRUCTUREDEFINITION]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -394,6 +391,7 @@ public type StructureDefinition record {|
     string 'version?;
     r4:uri url;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name;
     r4:uri implicitRules?;
     string publisher?;
@@ -402,32 +400,7 @@ public type StructureDefinition record {|
     r4:UsageContext[] useContext?;
     StructureDefinitionSnapshot snapshot?;
     StructureDefinitionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseStructureDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseStructureDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/StructureDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR StructureDefinitionDifferential datatype record.
@@ -483,6 +456,8 @@ public type BaseStructureDefinitionMeta record {|
     }
 }
 public type StructureDefinitionDifferential record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -583,6 +558,8 @@ public enum StructureDefinitionKind {
     }
 }
 public type StructureDefinitionMapping record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:id identity;
     r4:Extension[] modifierExtension?;
@@ -660,6 +637,8 @@ public enum StructureDefinitionStatus {
     }
 }
 public type StructureDefinitionSnapshot record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -732,6 +711,8 @@ public type StructureDefinitionSnapshot record {|
     }
 }
 public type StructureDefinitionContext record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string expression;
     r4:Extension[] modifierExtension?;

@@ -209,9 +209,6 @@ public type DeviceMetric record {|
 
     RESOURCE_NAME_DEVICEMETRIC resourceType = RESOURCE_NAME_DEVICEMETRIC;
 
-    BaseDeviceMetricMeta meta = {
-        profile : [PROFILE_BASE_DEVICEMETRIC]
-    };
     DeviceMetricOperationalStatus operationalStatus?;
     r4:Identifier[] identifier?;
     r4:Reference parent?;
@@ -224,37 +221,13 @@ public type DeviceMetric record {|
     r4:CodeableConcept 'type;
     r4:Resource[] contained?;
     r4:CodeableConcept unit?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     DeviceMetricCategory category;
     DeviceMetricCalibration[] calibration?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseDeviceMetricMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseDeviceMetricMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/DeviceMetric"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # DeviceMetricCalibrationType enum
@@ -358,6 +331,8 @@ public enum DeviceMetricCalibrationState {
     }
 }
 public type DeviceMetricCalibration record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;

@@ -271,9 +271,6 @@ public type Coverage record {|
 
     RESOURCE_NAME_COVERAGE resourceType = RESOURCE_NAME_COVERAGE;
 
-    BaseCoverageMeta meta = {
-        profile : [PROFILE_BASE_COVERAGE]
-    };
     r4:Extension[] extension?;
     boolean subrogation?;
     r4:Extension[] modifierExtension?;
@@ -298,35 +295,11 @@ public type Coverage record {|
     string subscriberId?;
     r4:Resource[] contained?;
     r4:Reference beneficiary;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:Reference policyHolder?;
     CoverageStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseCoverageMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseCoverageMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Coverage"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # CoverageStatus enum
@@ -420,6 +393,8 @@ public enum CoverageStatus {
     }
 }
 public type CoverageCostToBeneficiary record {|
+    *r4:BackboneElement;
+
     CoverageCostToBeneficiaryException[] exception?;
     r4:Extension[] extension?;
     r4:Money valueMoney;
@@ -492,6 +467,8 @@ public type CoverageCostToBeneficiary record {|
     }
 }
 public type CoverageCostToBeneficiaryException record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Extension[] modifierExtension?;
@@ -572,6 +549,8 @@ public type CoverageCostToBeneficiaryException record {|
     }
 }
 public type CoverageClass record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name?;
