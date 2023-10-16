@@ -19,7 +19,6 @@
 
 import ballerina/log;
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401 as i4;
 
 public final TerminologyProcessor terminologyProcessor = new ();
 
@@ -46,9 +45,9 @@ function init() returns r4:FHIRError? {
         log:printError(fHIRError.toBalString());
     }
 
-    map<i4:CodeSystem> codeSystemMap = {};
+    map<r4:CodeSystem> codeSystemMap = {};
     foreach json jCodeSystem in <json[]>codeSystemsJsonArray {
-        i4:CodeSystem|error c = jCodeSystem.cloneWithType();
+        r4:CodeSystem|error c = jCodeSystem.cloneWithType();
         if c is error {
             r4:FHIRError fHIRError = r4:createFHIRError(
                                         "Error occurred while type casting json code system to CodeSystem type", r4:ERROR,
@@ -63,9 +62,9 @@ function init() returns r4:FHIRError? {
         }
     }
 
-    map<i4:ValueSet> valueSetMap = {};
+    map<r4:ValueSet> valueSetMap = {};
     foreach json jValueSet in <json[]>valueSetsJsonArray {
-        i4:ValueSet|error v = jValueSet.cloneWithType();
+        r4:ValueSet|error v = jValueSet.cloneWithType();
         if v is error {
             r4:FHIRError fHIRError = r4:createFHIRError(
                                         "Error occurred while type casting json value set to ValueSet type", r4:ERROR,

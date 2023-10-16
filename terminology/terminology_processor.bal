@@ -27,14 +27,14 @@ import ballerinax/health.fhir.r4.validator;
 type CodeConceptDetails record {
     //System URL of the concept.
     r4:uri url;
-    i4:CodeSystemConcept|i4:ValueSetComposeIncludeConcept concept;
+    r4:CodeSystemConcept|r4:ValueSetComposeIncludeConcept concept;
 };
 
 //It is a custom record to hold system URLs and a array of related concepts.
 type ValueSetExpansionDetails record {
     //System URL of the concepts.
     r4:uri url;
-    i4:CodeSystemConcept[]|i4:ValueSetComposeIncludeConcept[] concepts;
+    r4:CodeSystemConcept[]|r4:ValueSetComposeIncludeConcept[] concepts;
 };
 
 # Defines the interface `Finder` object.
@@ -46,7 +46,7 @@ public type Finder readonly & object {
     #
     # + codeSystems - CodeSystem array to be persisted.
     # + return - Error array if any.
-    public isolated function addCodeSystems(i4:CodeSystem[] codeSystems) returns r4:FHIRError[]?;
+    public isolated function addCodeSystems(r4:CodeSystem[] codeSystems) returns r4:FHIRError[]?;
 
     # The function definition for Concept finder implementations.
     #
@@ -54,7 +54,7 @@ public type Finder readonly & object {
     # + id - Id of the CodeSystem to be searched.
     # + version - Version of the CodeSystem to be searched.
     # + return - CodeSystem if found or else FHIRError.
-    public isolated function findCodeSystem(r4:uri? system = (), string? id = (), string? version = ()) returns i4:CodeSystem|r4:FHIRError;
+    public isolated function findCodeSystem(r4:uri? system = (), string? id = (), string? version = ()) returns r4:CodeSystem|r4:FHIRError;
 
     # The function definition for Concept finder implementations.
     #
@@ -62,14 +62,14 @@ public type Finder readonly & object {
     # + offset - Offset value for the search.  
     # + count - Count value for the search.
     # + return - CodeSystem array if found or else FHIRError.
-    public isolated function searchCodeSystem(map<r4:RequestSearchParameter[]> params, int? offset = (), int? count = ()) returns i4:CodeSystem[]|r4:FHIRError;
+    public isolated function searchCodeSystem(map<r4:RequestSearchParameter[]> params, int? offset = (), int? count = ()) returns r4:CodeSystem[]|r4:FHIRError;
     # The function definition for add Concepts implementations.
     #
     # + system - System URL of the CodeSystem to be added.  
     # + concepts - Concept array to be added.
     # + version - version of the CodeSystem to be added.
     # + return - Error array if any.
-    public isolated function addConcepts(r4:uri system, i4:CodeSystemConcept[] concepts, string? version = ()) returns r4:FHIRError[]?;
+    public isolated function addConcepts(r4:uri system, r4:CodeSystemConcept[] concepts, string? version = ()) returns r4:FHIRError[]?;
 
     # The function definition for Concept finder implementations.
     #
@@ -77,13 +77,13 @@ public type Finder readonly & object {
     # + code - Code of the Concept to be searched.
     # + version - version of the CodeSystem to be searched.
     # + return - CodeSystemConcept if found or else FHIRError.
-    public isolated function findConcept(r4:uri system, r4:code code, string? version = ()) returns i4:CodeSystemConcept|r4:FHIRError;
+    public isolated function findConcept(r4:uri system, r4:code code, string? version = ()) returns r4:CodeSystemConcept|r4:FHIRError;
 
     # The function definition for add ValueSets implementations.
     #
     # + valueSets - ValueSet array to be added.
     # + return - Error array if any.
-    public isolated function addValueSets(i4:ValueSet[] valueSets) returns r4:FHIRError[]?;
+    public isolated function addValueSets(r4:ValueSet[] valueSets) returns r4:FHIRError[]?;
 
     # The function definition for ValueSet finder implementations.
     #
@@ -91,7 +91,7 @@ public type Finder readonly & object {
     # + id - Id of the ValueSet to be searched.  
     # + version - version of the ValueSet to be searched.
     # + return - ValueSet if found or else FHIRError.
-    public isolated function findValueSet(r4:uri? system = (), string? id = (), string? version = ()) returns i4:ValueSet|r4:FHIRError;
+    public isolated function findValueSet(r4:uri? system = (), string? id = (), string? version = ()) returns r4:ValueSet|r4:FHIRError;
 
     # Search ValueSets.
     #
@@ -99,15 +99,15 @@ public type Finder readonly & object {
     # + offset - Offset value for the search. 
     # + count - Count value for the search.
     # + return - ValueSet array if found or else FHIRError.
-    public isolated function searchValueSet(map<r4:RequestSearchParameter[]> params, int? offset = (), int? count = ()) returns i4:ValueSet[]|r4:FHIRError;
+    public isolated function searchValueSet(map<r4:RequestSearchParameter[]> params, int? offset = (), int? count = ()) returns r4:ValueSet[]|r4:FHIRError;
 };
 
 # A processor to process terminology data and create relevant data elements.
 public isolated class TerminologyProcessor {
 
     # Global records to store Terminologies across different profiles and packages.
-    private map<i4:CodeSystem> codeSystems = {};
-    private map<i4:ValueSet> valueSets = {};
+    private map<r4:CodeSystem> codeSystems = {};
+    private map<r4:ValueSet> valueSets = {};
     private Finder? finder = ();
 
     # It will initialize the Terminology map.
@@ -116,7 +116,7 @@ public isolated class TerminologyProcessor {
     #
     # + codeSystems - CodeSystem map 
     # + valueSets - ValueSet map
-    public isolated function initTerminology(map<i4:CodeSystem> codeSystems, map<i4:ValueSet> valueSets) {
+    public isolated function initTerminology(map<r4:CodeSystem> codeSystems, map<r4:ValueSet> valueSets) {
         lock {
             self.codeSystems = codeSystems.clone();
             self.valueSets = valueSets.clone();
@@ -133,9 +133,9 @@ public isolated class TerminologyProcessor {
     #
     # + codeSystems - List CodeSystems
     # + return - Return List of FHIRErrors if any
-    public isolated function addCodeSystems(i4:CodeSystem[] codeSystems) returns r4:FHIRError[]? {
+    public isolated function addCodeSystems(r4:CodeSystem[] codeSystems) returns r4:FHIRError[]? {
         r4:FHIRError[] errors = [];
-        foreach i4:CodeSystem codeSystem in codeSystems {
+        foreach r4:CodeSystem codeSystem in codeSystems {
             r4:FHIRError? result = self.addCodeSystem(codeSystem);
             _ = result is r4:FHIRError ? errors.push(result) : "";
         }
@@ -148,10 +148,10 @@ public isolated class TerminologyProcessor {
     # + return - Return List of FHIRErrors if any
     public isolated function addCodeSystemsAsJson(json[] codeSystemJsonArray) returns r4:FHIRError[]? {
         r4:FHIRError[] errors = [];
-        i4:CodeSystem[] codeSystems = [];
+        r4:CodeSystem[] codeSystems = [];
 
         foreach var c in codeSystemJsonArray {
-            i4:CodeSystem|error result = c.cloneWithType();
+            r4:CodeSystem|error result = c.cloneWithType();
             if result is error {
                 r4:FHIRError er = r4:createFHIRError(
                     string `Invalid data. Can not parse the provided json data: ${c.toBalString()}`,
@@ -180,9 +180,9 @@ public isolated class TerminologyProcessor {
     #
     # + valueSets - List ValueSets in the Ballerina record format
     # + return - Return List of FHIRErrors if any
-    public isolated function addValueSets(i4:ValueSet[] valueSets) returns r4:FHIRError[]? {
+    public isolated function addValueSets(r4:ValueSet[] valueSets) returns r4:FHIRError[]? {
         r4:FHIRError[] errors = [];
-        foreach i4:ValueSet valueSet in valueSets {
+        foreach r4:ValueSet valueSet in valueSets {
             r4:FHIRError? result = self.addValueSet(valueSet);
             _ = result is r4:FHIRError ? errors.push(result) : "";
         }
@@ -195,10 +195,10 @@ public isolated class TerminologyProcessor {
     # + return - Return List of FHIRErrors if any
     public isolated function addValueSetsAsJson(json[] valueSetJsonArray) returns r4:FHIRError[]? {
         r4:FHIRError[] errors = [];
-        i4:ValueSet[] valueSets = [];
+        r4:ValueSet[] valueSets = [];
 
         foreach var v in valueSetJsonArray {
-            i4:ValueSet|error result = v.cloneWithType(i4:ValueSet);
+            r4:ValueSet|error result = v.cloneWithType(r4:ValueSet);
             if result is error {
                 r4:FHIRError er = r4:createFHIRError(
                     string `Invalid data. Can not parse the provided json data: ${v.toBalString()}`,
@@ -227,7 +227,7 @@ public isolated class TerminologyProcessor {
     #
     # + codeSystem - ValueSet to be added, data in the Ballerina record format
     # + return - Return FHIRError
-    public isolated function addCodeSystem(i4:CodeSystem codeSystem) returns r4:FHIRError? {
+    public isolated function addCodeSystem(r4:CodeSystem codeSystem) returns r4:FHIRError? {
         lock {
             if codeSystem.url == () {
                 return r4:createFHIRError(
@@ -268,7 +268,7 @@ public isolated class TerminologyProcessor {
                 );
             }
 
-            r4:FHIRValidationError? validateResult = validator:validate(codeSystem.clone(), i4:CodeSystem);
+            r4:FHIRValidationError? validateResult = validator:validate(codeSystem.clone(), r4:CodeSystem);
 
             if validateResult is r4:FHIRValidationError {
                 return r4:createFHIRError(
@@ -298,7 +298,7 @@ public isolated class TerminologyProcessor {
     #
     # + valueSet - ValueSet to be added, data in the Ballerina record format
     # + return - Return FHIRError
-    public isolated function addValueSet(i4:ValueSet valueSet) returns r4:FHIRError? {
+    public isolated function addValueSet(r4:ValueSet valueSet) returns r4:FHIRError? {
         lock {
             if valueSet.url == () {
                 return r4:createFHIRError(
@@ -338,7 +338,7 @@ public isolated class TerminologyProcessor {
                 );
             }
 
-            r4:FHIRValidationError? validateResult = validator:validate(valueSet.clone(), i4:ValueSet);
+            r4:FHIRValidationError? validateResult = validator:validate(valueSet.clone(), r4:ValueSet);
 
             if validateResult is r4:FHIRValidationError {
                 return r4:createFHIRError(
@@ -370,22 +370,22 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
-    public isolated function readCodeSystemById(string id, string? version = ()) returns i4:CodeSystem|r4:FHIRError {
+    public isolated function readCodeSystemById(string id, string? version = ()) returns r4:CodeSystem|r4:FHIRError {
         lock {
             if self.finder is Finder {
                 return (<Finder>self.finder).findCodeSystem(id = id, version = version);
             }
 
-            i4:CodeSystem[] codeSystems = self.codeSystems.toArray();
-            i4:CodeSystem cs = {content: "example", status: "unknown"};
+            r4:CodeSystem[] codeSystems = self.codeSystems.toArray();
+            r4:CodeSystem cs = {content: "example", status: "unknown"};
 
-            codeSystems = from i4:CodeSystem entry in codeSystems
+            codeSystems = from r4:CodeSystem entry in codeSystems
                 where entry.id == id
                 select entry;
 
             if codeSystems.length() > 0 {
                 if version is string {
-                    codeSystems = from i4:CodeSystem entry in codeSystems
+                    codeSystems = from r4:CodeSystem entry in codeSystems
                         where entry.version == version
                         select entry;
                     cs = codeSystems.length() > 0 ? codeSystems[0] : cs;
@@ -427,22 +427,22 @@ public isolated class TerminologyProcessor {
     # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
-    public isolated function readValueSetById(string id, string? version = ()) returns i4:ValueSet|r4:FHIRError {
+    public isolated function readValueSetById(string id, string? version = ()) returns r4:ValueSet|r4:FHIRError {
         lock {
             if self.finder is Finder {
                 return (<Finder>self.finder).findValueSet(id = id, version = version);
             }
 
-            i4:ValueSet[] valueSets = self.valueSets.toArray();
-            i4:ValueSet vs = {status: "unknown"};
+            r4:ValueSet[] valueSets = self.valueSets.toArray();
+            r4:ValueSet vs = {status: "unknown"};
 
-            valueSets = from i4:ValueSet entry in valueSets
+            valueSets = from r4:ValueSet entry in valueSets
                 where entry.id == id
                 select entry;
 
             if valueSets.length() > 0 {
                 if version is string {
-                    valueSets = from i4:ValueSet entry in valueSets
+                    valueSets = from r4:ValueSet entry in valueSets
                         where entry.version == version
                         select entry;
 
@@ -486,7 +486,7 @@ public isolated class TerminologyProcessor {
     # + params - List of search parameters, should be passed as map of string arrays
     # + return - Return array of CodeSystem data if success, return FHIR error if the request contains unsupported search parameters 
     # and for any other processing errors
-    public isolated function searchCodeSystems(map<r4:RequestSearchParameter[]> params) returns i4:CodeSystem[]|r4:FHIRError {
+    public isolated function searchCodeSystems(map<r4:RequestSearchParameter[]> params) returns r4:CodeSystem[]|r4:FHIRError {
         lock {
             map<r4:RequestSearchParameter[]> searchParameters = params.clone();
             int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
@@ -535,15 +535,15 @@ public isolated class TerminologyProcessor {
                 return check (<Finder>self.finder).searchCodeSystem(searchParameters.clone(), offset = offset, count = count);
             } 
 
-            i4:CodeSystem[] codeSystemArray = self.codeSystems.toArray();
+            r4:CodeSystem[] codeSystemArray = self.codeSystems.toArray();
 
             foreach var searchParam in searchParameters.keys() {
                 r4:RequestSearchParameter[] searchParamValues = searchParameters[searchParam] ?: [];
 
-                i4:CodeSystem[] filteredList = [];
+                r4:CodeSystem[] filteredList = [];
                 if searchParamValues.length() != 0 {
                     foreach var queriedValue in searchParamValues {
-                        i4:CodeSystem[] result = from i4:CodeSystem entry in codeSystemArray
+                        r4:CodeSystem[] result = from r4:CodeSystem entry in codeSystemArray
                             where entry[CODESYSTEMS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
                             select entry;
                         filteredList.push(...result);
@@ -579,7 +579,7 @@ public isolated class TerminologyProcessor {
     # + params - List of search parameters, should be passed as map of string arrays  
     # + return - Return array of ValueSet data if success, return FHIR error if the request contains unsupported search parameters
     # and for any other processing errors
-    public isolated function searchValueSets(map<r4:RequestSearchParameter[]> params) returns r4:FHIRError|i4:ValueSet[] {
+    public isolated function searchValueSets(map<r4:RequestSearchParameter[]> params) returns r4:FHIRError|r4:ValueSet[] {
         lock {
             map<r4:RequestSearchParameter[]> searchParameters = params.clone();
             int count = TERMINOLOGY_SEARCH_DEFAULT_COUNT;
@@ -628,15 +628,15 @@ public isolated class TerminologyProcessor {
                 return (<Finder>self.finder).searchValueSet(searchParameters.clone(), offset = offset, count = count);
             }  
 
-            i4:ValueSet[] valueSetArray = self.valueSets.toArray();
+            r4:ValueSet[] valueSetArray = self.valueSets.toArray();
 
             foreach var searchParam in searchParameters.keys() {
                 r4:RequestSearchParameter[] searchParamValues = searchParameters[searchParam] ?: [];
 
-                i4:ValueSet[] filteredList = [];
+                r4:ValueSet[] filteredList = [];
                 if searchParamValues.length() != 0 {
                     foreach var queriedValue in searchParamValues {
-                        i4:ValueSet[] result = from i4:ValueSet entry in valueSetArray
+                        r4:ValueSet[] result = from r4:ValueSet entry in valueSetArray
                             where entry[VALUESETS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
                             select entry;
                         filteredList.push(...result);
@@ -677,20 +677,20 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return list of Concepts if processing is successful, return FHIRError if fails
-    public isolated function codeSystemLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, i4:CodeSystem? cs = (), r4:uri? system = (),
-            string? version = ()) returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
+    public isolated function codeSystemLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, r4:CodeSystem? cs = (), r4:uri? system = (),
+            string? version = ()) returns r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError {
         lock {
             // Create and initialize a CodeSystem record with the mandatory fields
-            i4:CodeSystem codeSystem = {content: "example", status: "unknown"};
-            i4:CodeSystemConcept[] codeConceptDetailsList = [];
+            r4:CodeSystem codeSystem = {content: "example", status: "unknown"};
+            r4:CodeSystemConcept[] codeConceptDetailsList = [];
 
             if self.finder is () {
-                i4:CodeSystem|error ensured = cs.clone().ensureType();
+                r4:CodeSystem|error ensured = cs.clone().ensureType();
                 if ensured !is error {
                     codeSystem = ensured;
                 } else if system !is () {
-                    i4:CodeSystem|r4:FHIRError codeSystemById = self.readCodeSystemByUrl(system, version);
-                    if codeSystemById is i4:CodeSystem {
+                    r4:CodeSystem|r4:FHIRError codeSystemById = self.readCodeSystemByUrl(system, version);
+                    if codeSystemById is r4:CodeSystem {
                         codeSystem = codeSystemById;
                     } else {
                         return r4:createFHIRError(string `Cannot find a CodeSystem for the provided system URL: ${system}`,
@@ -775,7 +775,7 @@ public isolated class TerminologyProcessor {
                 if codings != () {
                     foreach var c in codings {
                         CodeConceptDetails? result = ();
-                        i4:CodeSystemConcept findConceptResult;
+                        r4:CodeSystemConcept findConceptResult;
                         if self.finder is Finder {
                             if system is r4:uri && c.code is r4:code {
                                 findConceptResult = check (<Finder>self.finder).findConcept(<r4:uri>system, <r4:code>c.code);
@@ -850,18 +850,18 @@ public isolated class TerminologyProcessor {
     # + version - Version of the ValueSet and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up. 
     # + return - Return list of Concepts if processing is successful, return FHIRError if fails
-    public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, i4:ValueSet? vs = (), r4:uri? system = (), string? version = ())
-                                                                                    returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
+    public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, r4:ValueSet? vs = (), r4:uri? system = (), string? version = ())
+                                                                                    returns r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError {
         lock {
             // Create and initialize a ValueSet record with the mandatory fields
-            i4:ValueSet valueSet = {status: "unknown"};
-            i4:CodeSystemConcept[] codeConceptDetailsList = [];
+            r4:ValueSet valueSet = {status: "unknown"};
+            r4:CodeSystemConcept[] codeConceptDetailsList = [];
 
-            i4:ValueSet|error ensured = vs.clone().ensureType();
-            if ensured is i4:ValueSet {
+            r4:ValueSet|error ensured = vs.clone().ensureType();
+            if ensured is r4:ValueSet {
                 valueSet = ensured;
             } else if system is r4:uri {
-                if self.readValueSetByUrl(system, version) is i4:ValueSet {
+                if self.readValueSetByUrl(system, version) is r4:ValueSet {
                     valueSet = check self.readValueSetByUrl(system, version);
                 } else {
                     return r4:createFHIRError(string `Cannot find a ValueSet for the provided system URL: ${system}`,
@@ -966,7 +966,7 @@ public isolated class TerminologyProcessor {
     # + system - System URL of the ValueSet to be processed, if system ValueSet(vs) is not supplied then  
     # this value shoud be mandatory
     # + return - List of concepts is successful,  return FHIRError if fails
-    public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]> searchParams, i4:ValueSet? vs = (), r4:uri? system = ())
+    public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]> searchParams, r4:ValueSet? vs = (), r4:uri? system = ())
                                                                 returns r4:ValueSet|r4:FHIRError {
         lock {
             map<r4:RequestSearchParameter[]> searchParameters = searchParams.clone();
@@ -1017,9 +1017,9 @@ public isolated class TerminologyProcessor {
             }
 
             // Create and initialize a ValueSet record with the mandatory fields
-            i4:ValueSet valueSet = {status: "unknown"};
+            r4:ValueSet valueSet = {status: "unknown"};
 
-            i4:ValueSet|error ensured = vs.clone().ensureType();
+            r4:ValueSet|error ensured = vs.clone().ensureType();
             if ensured !is error {
                 valueSet = ensured;
             } else if system is string {
@@ -1054,7 +1054,7 @@ public isolated class TerminologyProcessor {
                     _ = clone.remove(VALUESETS_EXPANSION_PARAMS.valueSetVersion);
                 }
 
-                i4:ValueSet[] v = check self.searchValueSets(clone);
+                r4:ValueSet[] v = check self.searchValueSets(clone);
                 if v.length() > 0 {
                     valueSet = v[0];
                 } else {
@@ -1081,12 +1081,12 @@ public isolated class TerminologyProcessor {
             ValueSetExpansionDetails? details = self.getAllConceptInValueSet(valueSet);
 
             if details is ValueSetExpansionDetails {
-                i4:CodeSystemConcept[]|i4:ValueSetComposeIncludeConcept[] concepts = details.concepts;
+                r4:CodeSystemConcept[]|r4:ValueSetComposeIncludeConcept[] concepts = details.concepts;
 
-                if concepts is i4:ValueSetComposeIncludeConcept[] {
+                if concepts is r4:ValueSetComposeIncludeConcept[] {
                     if searchParameters.hasKey(FILTER) {
                         string filter = searchParameters.get(FILTER)[0].value;
-                        i4:ValueSetComposeIncludeConcept[] result = from i4:ValueSetComposeIncludeConcept entry in concepts
+                        r4:ValueSetComposeIncludeConcept[] result = from r4:ValueSetComposeIncludeConcept entry in concepts
                             where entry[DISPLAY] is string && regex:matches((<string>entry[DISPLAY]).toUpperAscii(),
                         string `.*${filter.toUpperAscii()}.*`)
                             select entry;
@@ -1100,11 +1100,11 @@ public isolated class TerminologyProcessor {
                     } else if totalCount >= offset {
                         concepts = concepts.slice(offset);
                     } else {
-                        i4:CodeSystemConcept[] temp = [];
+                        r4:CodeSystemConcept[] temp = [];
                         concepts = temp;
                     }
 
-                    i4:ValueSetExpansion expansion = self.createExpandedValueSet(valueSet, concepts);
+                    r4:ValueSetExpansion expansion = self.createExpandedValueSet(valueSet, concepts);
                     expansion.offset = offset;
                     expansion.total = totalCount;
                     valueSet.expansion = expansion.clone();
@@ -1112,7 +1112,7 @@ public isolated class TerminologyProcessor {
                 } else {
                     if searchParameters.hasKey(FILTER) {
                         string filter = searchParameters.get(FILTER)[0].value;
-                        i4:CodeSystemConcept[] result = from i4:CodeSystemConcept entry in concepts
+                        r4:CodeSystemConcept[] result = from r4:CodeSystemConcept entry in concepts
                             where entry[DISPLAY] is string
                             && regex:matches((<string>entry[DISPLAY]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
                         || entry[DEFINITION] is string
@@ -1128,11 +1128,11 @@ public isolated class TerminologyProcessor {
                     } else if totalCount >= offset {
                         concepts = concepts.slice(offset);
                     } else {
-                        i4:CodeSystemConcept[] temp = [];
+                        r4:CodeSystemConcept[] temp = [];
                         concepts = temp;
                     }
 
-                    i4:ValueSetExpansion expansion = self.createExpandedValueSet(valueSet, concepts);
+                    r4:ValueSetExpansion expansion = self.createExpandedValueSet(valueSet, concepts);
                     expansion.offset = offset;
                     expansion.total = totalCount;
                     valueSet.expansion = expansion.clone();
@@ -1152,12 +1152,12 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return Values either equivalent or not-subsumed if processing is successful, FHIRError processing fails
-    public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding conceptB, i4:CodeSystem? cs = (), r4:uri? system = (),
+    public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding conceptB, r4:CodeSystem? cs = (), r4:uri? system = (),
             string? version = ()) returns i4:Parameters|r4:FHIRError {
         lock {
             // Create and initialize a CodeSystem record with the mandatory fields
-            i4:CodeSystem codeSystem = {content: "example", status: "unknown"};
-            if cs is () && system != () && self.readCodeSystemByUrl(system, version) is i4:CodeSystem {
+            r4:CodeSystem codeSystem = {content: "example", status: "unknown"};
+            if cs is () && system != () && self.readCodeSystemByUrl(system, version) is r4:CodeSystem {
                 codeSystem = check self.readCodeSystemByUrl(system, version);
             } else if cs != () {
                 codeSystem = cs.clone();
@@ -1172,8 +1172,8 @@ public isolated class TerminologyProcessor {
                 );
             }
 
-            i4:CodeSystemConcept? conceptDetailsA = self.retrieveCodeSystemConcept(codeSystem, conceptA.clone());
-            i4:CodeSystemConcept? conceptDetailsB = self.retrieveCodeSystemConcept(codeSystem, conceptB.clone());
+            r4:CodeSystemConcept? conceptDetailsA = self.retrieveCodeSystemConcept(codeSystem, conceptA.clone());
+            r4:CodeSystemConcept? conceptDetailsB = self.retrieveCodeSystemConcept(codeSystem, conceptB.clone());
 
             if conceptDetailsA != () && conceptDetailsB != () {
                 if conceptDetailsA.code == conceptDetailsB.code && conceptDetailsA.display == conceptDetailsB.display {
@@ -1207,7 +1207,7 @@ public isolated class TerminologyProcessor {
     # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
     # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
     # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided URL
-    public isolated function readCodeSystemByUrl(r4:uri url, string? version = ()) returns i4:CodeSystem|r4:FHIRError {
+    public isolated function readCodeSystemByUrl(r4:uri url, string? version = ()) returns r4:CodeSystem|r4:FHIRError {
         lock {
             if self.finder is Finder {
                 return (<Finder>self.finder).findCodeSystem(url, version);
@@ -1216,8 +1216,8 @@ public isolated class TerminologyProcessor {
             boolean isIdExistInRegistry = false;
             if version is string {
                 foreach var item in self.codeSystems.keys() {
-                    if regex:matches(item, string `${url}\|${version}$`) && self.codeSystems[item] is i4:CodeSystem {
-                        return <i4:CodeSystem>self.codeSystems[item].clone();
+                    if regex:matches(item, string `${url}\|${version}$`) && self.codeSystems[item] is r4:CodeSystem {
+                        return <r4:CodeSystem>self.codeSystems[item].clone();
                     } else if regex:matches(item, string `${url}\|.*`) {
                         isIdExistInRegistry = true;
                     }
@@ -1233,13 +1233,13 @@ public isolated class TerminologyProcessor {
                         );
                 }
             } else {
-                i4:CodeSystem codeSystem = {content: "example", status: "unknown"};
+                r4:CodeSystem codeSystem = {content: "example", status: "unknown"};
                 string latestVersion = DEFAULT_VERSION;
                 foreach var item in self.codeSystems.keys() {
                     if regex:matches(item, string `${url}\|.*`)
-                && self.codeSystems[item] is i4:CodeSystem
-                && (<i4:CodeSystem>self.codeSystems[item]).version > latestVersion {
-                        codeSystem = <i4:CodeSystem>self.codeSystems[item];
+                && self.codeSystems[item] is r4:CodeSystem
+                && (<r4:CodeSystem>self.codeSystems[item]).version > latestVersion {
+                        codeSystem = <r4:CodeSystem>self.codeSystems[item];
                         latestVersion = codeSystem.version ?: DEFAULT_VERSION;
                         isIdExistInRegistry = true;
                     }
@@ -1281,8 +1281,8 @@ public isolated class TerminologyProcessor {
             boolean isIdExistInRegistry = false;
             if version is string {
                 foreach var item in self.valueSets.keys() {
-                    if regex:matches(item, string `${url}\|${version}$`) && self.valueSets[item] is i4:ValueSet {
-                        return <i4:ValueSet>self.valueSets[item].clone();
+                    if regex:matches(item, string `${url}\|${version}$`) && self.valueSets[item] is r4:ValueSet {
+                        return <r4:ValueSet>self.valueSets[item].clone();
                     } else if regex:matches(item, string `${url}\|.*`) {
                         isIdExistInRegistry = true;
                     }
@@ -1298,14 +1298,14 @@ public isolated class TerminologyProcessor {
                         );
                 }
             } else {
-                i4:ValueSet valueSet = {status: "unknown"};
+                r4:ValueSet valueSet = {status: "unknown"};
                 string latestVersion = DEFAULT_VERSION;
                 foreach var item in self.valueSets.keys() {
                     if regex:matches(item, string `${url}\|.*`)
-                        && self.valueSets[item] is i4:ValueSet
-                        && (<i4:ValueSet>self.valueSets[item]).version > latestVersion {
+                        && self.valueSets[item] is r4:ValueSet
+                        && (<r4:ValueSet>self.valueSets[item]).version > latestVersion {
 
-                        valueSet = <i4:ValueSet>self.valueSets[item];
+                        valueSet = <r4:ValueSet>self.valueSets[item];
                         latestVersion = valueSet.version ?: DEFAULT_VERSION;
                         isIdExistInRegistry = true;
                     }
@@ -1385,7 +1385,7 @@ public isolated class TerminologyProcessor {
 
     # Get all the CodeSystem records.
     # + return - Map of CodeSystem records
-    public isolated function getCodeSystemMap() returns map<i4:CodeSystem> {
+    public isolated function getCodeSystemMap() returns map<r4:CodeSystem> {
         lock {
             return self.codeSystems.clone();
         }
@@ -1393,7 +1393,7 @@ public isolated class TerminologyProcessor {
 
     # Get all the ValueSet records.
     # + return - Map of ValueSet records
-    public isolated function getValueSetMap() returns map<i4:ValueSet> {
+    public isolated function getValueSetMap() returns map<r4:ValueSet> {
         lock {
             return self.valueSets.clone();
         }
@@ -1404,14 +1404,14 @@ public isolated class TerminologyProcessor {
                                                                                 returns CodeConceptDetails|r4:FHIRError? {
         lock {
             if self.finder is Finder {
-                i4:CodeSystemConcept concept = check (<Finder>self.finder).findConcept(system, code);
+                r4:CodeSystemConcept concept = check (<Finder>self.finder).findConcept(system, code);
                 return {
                     url: system,
                     concept: concept.clone()
                 };
-            } else if self.readValueSetByUrl(system, version) is i4:ValueSet {
+            } else if self.readValueSetByUrl(system, version) is r4:ValueSet {
                 return self.findConceptInValueSet(check self.readValueSetByUrl(system, version), code);
-            } else if self.readCodeSystemByUrl(system, version) is i4:CodeSystem {
+            } else if self.readCodeSystemByUrl(system, version) is r4:CodeSystem {
                 return self.findConceptInCodeSystem(check self.readCodeSystemByUrl(system, version), code);
             } else {
                 return r4:createInternalFHIRError(
@@ -1424,12 +1424,12 @@ public isolated class TerminologyProcessor {
     }
 
     // Function to find concept in a CodeSystem by passing code data type parameter. 
-    private isolated function findConceptInCodeSystem(i4:CodeSystem codeSystem, r4:code code) returns CodeConceptDetails? {
+    private isolated function findConceptInCodeSystem(r4:CodeSystem codeSystem, r4:code code) returns CodeConceptDetails? {
         lock {
-            i4:CodeSystemConcept[]? concepts = codeSystem.concept;
+            r4:CodeSystemConcept[]? concepts = codeSystem.concept;
             r4:uri? url = codeSystem.url;
             if concepts != () && url != () {
-                foreach i4:CodeSystemConcept concept in concepts {
+                foreach r4:CodeSystemConcept concept in concepts {
                     if concept.code == code {
                         CodeConceptDetails codeConcept = {
                             url: url,
@@ -1444,7 +1444,7 @@ public isolated class TerminologyProcessor {
     }
 
     // Function to find concept in a CodeSystem by passing Coding data type parameter.
-    private isolated function findConceptInCodeSystemFromCoding(i4:CodeSystem codeSystem, r4:Coding coding) returns CodeConceptDetails? {
+    private isolated function findConceptInCodeSystemFromCoding(r4:CodeSystem codeSystem, r4:Coding coding) returns CodeConceptDetails? {
         lock {
             r4:code? code = coding.code;
 
@@ -1459,9 +1459,9 @@ public isolated class TerminologyProcessor {
     }
 
     // Function to get all concepts in a CodeSystem.
-    private isolated function getAllConceptInCodeSystem(i4:CodeSystem codeSystem) returns ValueSetExpansionDetails? {
+    private isolated function getAllConceptInCodeSystem(r4:CodeSystem codeSystem) returns ValueSetExpansionDetails? {
         lock {
-            i4:CodeSystemConcept[]? concepts = codeSystem.concept;
+            r4:CodeSystemConcept[]? concepts = codeSystem.concept;
             r4:uri? url = codeSystem.url;
             if concepts != () && url != () {
                 ValueSetExpansionDetails codeConcept = {
@@ -1475,17 +1475,17 @@ public isolated class TerminologyProcessor {
     }
 
     // // Function to find concept in a ValueSet by passing code data type parameter. 
-    private isolated function findConceptInValueSet(i4:ValueSet valueSet, r4:code code) returns (CodeConceptDetails)? {
+    private isolated function findConceptInValueSet(r4:ValueSet valueSet, r4:code code) returns (CodeConceptDetails)? {
         lock {
-            i4:ValueSetCompose? composeBBE = valueSet.clone().compose;
+            r4:ValueSetCompose? composeBBE = valueSet.clone().compose;
             if composeBBE != () {
-                foreach i4:ValueSetComposeInclude includeBBE in composeBBE.include {
+                foreach r4:ValueSetComposeInclude includeBBE in composeBBE.include {
                     r4:uri? systemValue = includeBBE.system;
 
                     if systemValue != () {
-                        i4:ValueSetComposeIncludeConcept[]? includeConcepts = includeBBE.concept;
+                        r4:ValueSetComposeIncludeConcept[]? includeConcepts = includeBBE.concept;
                         if includeConcepts != () {
-                            foreach i4:ValueSetComposeIncludeConcept includeConcept in includeConcepts {
+                            foreach r4:ValueSetComposeIncludeConcept includeConcept in includeConcepts {
                                 if includeConcept.code == code {
                                     // found the code
                                     return {
@@ -1496,8 +1496,8 @@ public isolated class TerminologyProcessor {
                             }
                         } else {
                             // Find CodeSystem
-                            i4:CodeSystem|r4:FHIRError codeSystemByUrl = self.readCodeSystemByUrl(systemValue);
-                            if codeSystemByUrl is i4:CodeSystem {
+                            r4:CodeSystem|r4:FHIRError codeSystemByUrl = self.readCodeSystemByUrl(systemValue);
+                            if codeSystemByUrl is r4:CodeSystem {
                                 CodeConceptDetails? result = self.findConceptInCodeSystem(codeSystemByUrl, code);
                                 if result != () {
                                     return result.clone();
@@ -1528,7 +1528,7 @@ public isolated class TerminologyProcessor {
     }
 
     // // Function to find concepts in a ValueSet by passing Coding data type parameter.
-    private isolated function findConceptInValueSetFromCoding(i4:ValueSet valueSet, r4:Coding coding) returns CodeConceptDetails? {
+    private isolated function findConceptInValueSetFromCoding(r4:ValueSet valueSet, r4:Coding coding) returns CodeConceptDetails? {
         lock {
             r4:code? code = coding.code;
 
@@ -1543,15 +1543,15 @@ public isolated class TerminologyProcessor {
     }
 
     // // Function to get all concept in a ValueSet. 
-    private isolated function getAllConceptInValueSet(i4:ValueSet valueSet) returns (ValueSetExpansionDetails)? {
+    private isolated function getAllConceptInValueSet(r4:ValueSet valueSet) returns (ValueSetExpansionDetails)? {
         lock {
-            i4:ValueSetCompose? composeBBE = valueSet.clone().compose;
+            r4:ValueSetCompose? composeBBE = valueSet.clone().compose;
             if composeBBE != () {
-                foreach i4:ValueSetComposeInclude includeBBE in composeBBE.include {
+                foreach r4:ValueSetComposeInclude includeBBE in composeBBE.include {
                     r4:uri? systemValue = includeBBE.system;
 
                     if systemValue != () {
-                        i4:ValueSetComposeIncludeConcept[]? includeConcepts = includeBBE.concept;
+                        r4:ValueSetComposeIncludeConcept[]? includeConcepts = includeBBE.concept;
                         if includeConcepts != () {
                             ValueSetExpansionDetails concepts = {
                                 url: systemValue,
@@ -1560,8 +1560,8 @@ public isolated class TerminologyProcessor {
                             return concepts.clone();
                         } else {
                             // Find CodeSystem
-                            i4:CodeSystem|r4:FHIRError codeSystem = self.readCodeSystemByUrl(systemValue);
-                            if codeSystem is i4:CodeSystem {
+                            r4:CodeSystem|r4:FHIRError codeSystem = self.readCodeSystemByUrl(systemValue);
+                            if codeSystem is r4:CodeSystem {
                                 ValueSetExpansionDetails? result = self.getAllConceptInCodeSystem(codeSystem);
                                 if result != () {
                                     return result.clone();
@@ -1593,7 +1593,7 @@ public isolated class TerminologyProcessor {
     }
 
     private isolated function conceptToCodeableConcept(
-            i4:CodeSystemConcept|i4:ValueSetComposeIncludeConcept concept, r4:uri system) returns r4:CodeableConcept {
+            r4:CodeSystemConcept|r4:ValueSetComposeIncludeConcept concept, r4:uri system) returns r4:CodeableConcept {
         lock {
             r4:Coding codingValue = {
                 code: concept.code,
@@ -1610,7 +1610,7 @@ public isolated class TerminologyProcessor {
                 ]
             };
 
-            if concept is i4:CodeSystemConcept {
+            if concept is r4:CodeSystemConcept {
                 string? defValue = concept.definition;
                 if defValue != () {
                     cConcept.text = defValue;
@@ -1620,7 +1620,7 @@ public isolated class TerminologyProcessor {
         }
     }
 
-    private isolated function conceptToCoding(i4:CodeSystemConcept|i4:ValueSetComposeIncludeConcept concept, r4:uri system) returns r4:Coding {
+    private isolated function conceptToCoding(r4:CodeSystemConcept|r4:ValueSetComposeIncludeConcept concept, r4:uri system) returns r4:Coding {
         lock {
             r4:Coding codingValue = {
                 code: concept.code,
@@ -1635,14 +1635,14 @@ public isolated class TerminologyProcessor {
     }
 
     //Only for in-memory opertaions
-    private isolated function retrieveCodeSystemConcept(i4:CodeSystem codeSystem, r4:code|r4:Coding concept) returns i4:CodeSystemConcept? {
+    private isolated function retrieveCodeSystemConcept(r4:CodeSystem codeSystem, r4:code|r4:Coding concept) returns r4:CodeSystemConcept? {
         lock {
             if concept is r4:code {
                 CodeConceptDetails? conceptDetails = self.findConceptInCodeSystem(
                 codeSystem.clone(), concept.clone());
                 if conceptDetails is CodeConceptDetails {
-                    i4:CodeSystemConcept|i4:ValueSetComposeIncludeConcept codeConcept = conceptDetails.concept;
-                    if codeConcept is i4:CodeSystemConcept {
+                    r4:CodeSystemConcept|r4:ValueSetComposeIncludeConcept codeConcept = conceptDetails.concept;
+                    if codeConcept is r4:CodeSystemConcept {
                         return codeConcept.clone();
                     }
                 }
@@ -1651,8 +1651,8 @@ public isolated class TerminologyProcessor {
                 codeSystem.clone(), concept.clone());
 
                 if conceptDetails is CodeConceptDetails {
-                    i4:CodeSystemConcept|i4:ValueSetComposeIncludeConcept temp = conceptDetails.concept;
-                    if temp is i4:CodeSystemConcept {
+                    r4:CodeSystemConcept|r4:ValueSetComposeIncludeConcept temp = conceptDetails.concept;
+                    if temp is r4:CodeSystemConcept {
                         return temp.clone();
                     }
                 }
@@ -1661,23 +1661,23 @@ public isolated class TerminologyProcessor {
         }
     }
 
-    private isolated function createExpandedValueSet(i4:ValueSet vs, i4:CodeSystemConcept[]|i4:ValueSetComposeIncludeConcept[] concepts)
-                                                                                                    returns i4:ValueSetExpansion {
+    private isolated function createExpandedValueSet(r4:ValueSet vs, r4:CodeSystemConcept[]|r4:ValueSetComposeIncludeConcept[] concepts)
+                                                                                                    returns r4:ValueSetExpansion {
         lock {
-            i4:ValueSetExpansionContains[] contains = [];
-            if concepts is i4:ValueSetComposeIncludeConcept[] {
-                foreach i4:ValueSetComposeIncludeConcept concept in concepts {
-                    i4:ValueSetExpansionContains c = {code: concept.code, display: concept.display, id: concept.id};
+            r4:ValueSetExpansionContains[] contains = [];
+            if concepts is r4:ValueSetComposeIncludeConcept[] {
+                foreach r4:ValueSetComposeIncludeConcept concept in concepts {
+                    r4:ValueSetExpansionContains c = {code: concept.code, display: concept.display, id: concept.id};
                     contains.push(c);
                 }
             } else {
-                foreach i4:CodeSystemConcept concept in concepts {
-                    i4:ValueSetExpansionContains c = {code: concept.code, display: concept.display, id: concept.id};
+                foreach r4:CodeSystemConcept concept in concepts {
+                    r4:ValueSetExpansionContains c = {code: concept.code, display: concept.display, id: concept.id};
                     contains.push(c);
                 }
             }
 
-            i4:ValueSetExpansion expansion = {timestamp: time:utcToString(time:utcNow()), contains: contains};
+            r4:ValueSetExpansion expansion = {timestamp: time:utcToString(time:utcNow()), contains: contains};
             return expansion;
         }
     }

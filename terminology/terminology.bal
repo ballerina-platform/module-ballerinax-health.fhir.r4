@@ -19,7 +19,7 @@ import ballerinax/health.fhir.r4.international401 as i4;
 
 # Function type which will be used to extend and retrieve CodeSystem or ValueSet by external source
 public type TerminologyRetriever isolated function (r4:uri system, r4:code code)
-                                                        returns i4:CodeSystem|i4:ValueSet|r4:FHIRError;
+                                                        returns r4:CodeSystem|r4:ValueSet|r4:FHIRError;
 
 # Find a Code System based on the provided Id and version.
 #
@@ -27,7 +27,7 @@ public type TerminologyRetriever isolated function (r4:uri system, r4:code code)
 # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
-public isolated function readCodeSystemById(string id, string? version = ()) returns i4:CodeSystem|r4:FHIRError {
+public isolated function readCodeSystemById(string id, string? version = ()) returns r4:CodeSystem|r4:FHIRError {
     return terminologyProcessor.readCodeSystemById(id, version);
 }
 
@@ -37,7 +37,7 @@ public isolated function readCodeSystemById(string id, string? version = ()) ret
 # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
-public isolated function readValueSetById(string id, string? version = ()) returns i4:ValueSet|r4:FHIRError {
+public isolated function readValueSetById(string id, string? version = ()) returns r4:ValueSet|r4:FHIRError {
     return terminologyProcessor.readValueSetById(id, version);
 }
 
@@ -47,7 +47,7 @@ public isolated function readValueSetById(string id, string? version = ()) retur
 # + version - Version of the CodeSystem to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided URL
-public isolated function readCodeSystemByUrl(r4:uri url, string? version = ()) returns i4:CodeSystem|r4:FHIRError {
+public isolated function readCodeSystemByUrl(r4:uri url, string? version = ()) returns r4:CodeSystem|r4:FHIRError {
     return terminologyProcessor.readCodeSystemByUrl(url, version);
 }
 
@@ -57,7 +57,7 @@ public isolated function readCodeSystemByUrl(r4:uri url, string? version = ()) r
 # + version - Version of the ValueSet to be retrieved and it should be provided with system parameter,
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided URL
-public isolated function readValueSetByUrl(r4:uri url, string? version = ()) returns i4:ValueSet|r4:FHIRError {
+public isolated function readValueSetByUrl(r4:uri url, string? version = ()) returns r4:ValueSet|r4:FHIRError {
     return terminologyProcessor.readValueSetByUrl(url, version);
 }
 
@@ -67,7 +67,7 @@ public isolated function readValueSetByUrl(r4:uri url, string? version = ()) ret
 # + searchParameters - List of search parameters, should be passed as map of string arrays
 # + return - Return array of CodeSystem data if success, return FHIR error if the request contains unsupported search parameters 
 # and for any other processing errors
-public isolated function searchCodeSystems(map<r4:RequestSearchParameter[]> searchParameters) returns i4:CodeSystem[]|r4:FHIRError {
+public isolated function searchCodeSystems(map<r4:RequestSearchParameter[]> searchParameters) returns r4:CodeSystem[]|r4:FHIRError {
     return terminologyProcessor.searchCodeSystems(searchParameters);
 }
 
@@ -77,7 +77,7 @@ public isolated function searchCodeSystems(map<r4:RequestSearchParameter[]> sear
 # + searchParameters - List of search parameters, should be passed as map of string arrays  
 # + return - Return array of ValueSet data if success, return FHIR error if the request contains unsupported search parameters
 # and for any other processing errors
-public isolated function searchValueSets(map<r4:RequestSearchParameter[]> searchParameters) returns r4:FHIRError|i4:ValueSet[] {
+public isolated function searchValueSets(map<r4:RequestSearchParameter[]> searchParameters) returns r4:FHIRError|r4:ValueSet[] {
     return terminologyProcessor.searchValueSets(searchParameters);
 }
 
@@ -93,7 +93,7 @@ public isolated function searchValueSets(map<r4:RequestSearchParameter[]> search
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up.
 # + return - Return list of Concepts if processing is successful, return FHIRError if fails
 public isolated function codeSystemLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, r4:CodeSystem? cs = (),
-        r4:uri? system = (), string? version = ()) returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
+        r4:uri? system = (), string? version = ()) returns r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError {
     return terminologyProcessor.codeSystemLookUp(codeValue, cs, system, version);
 }
 
@@ -109,7 +109,7 @@ public isolated function codeSystemLookUp(r4:code|r4:Coding|r4:CodeableConcept c
 # if this version parameter is not supplied then the latest version of CodeSystem will picked up. 
 # + return - Return list of Concepts if processing is successful, return FHIRError if fails
 public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept codeValue, r4:ValueSet? vs = (),
-        r4:uri? system = (), string? version = ()) returns i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError {
+        r4:uri? system = (), string? version = ()) returns r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError {
     return terminologyProcessor.valueSetLookUp(codeValue, vs, system, version);
 }
 
@@ -123,7 +123,7 @@ public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept cod
 # this value shoud be mandatory
 # + return - List of concepts is successful,  return FHIRError if fails
 public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]> searchParameters, r4:ValueSet? vs = (), r4:uri? system = ())
-                                                                                        returns i4:ValueSet|r4:FHIRError {
+                                                                                        returns r4:ValueSet|r4:FHIRError {
     return terminologyProcessor.valueSetExpansion(searchParameters, vs, system);
 }
 
@@ -170,7 +170,7 @@ public isolated function createCoding(r4:uri system, r4:code code, string? versi
 #
 # + codeSystems - List CodeSystems
 # + return - Return List of FHIRErrors if any
-public isolated function addCodeSystems(i4:CodeSystem[] codeSystems) returns r4:FHIRError[]? {
+public isolated function addCodeSystems(r4:CodeSystem[] codeSystems) returns r4:FHIRError[]? {
     return terminologyProcessor.addCodeSystems(codeSystems);
 }
 
@@ -186,7 +186,7 @@ public isolated function addCodeSystemsAsJson(json[] codeSystemJsonArray) return
 #
 # + valueSets - List ValueSets in the Ballerina record format
 # + return - Return List of FHIRErrors if any
-public isolated function addValueSets(i4:ValueSet[] valueSets) returns r4:FHIRError[]? {
+public isolated function addValueSets(r4:ValueSet[] valueSets) returns r4:FHIRError[]? {
     return terminologyProcessor.addValueSets(valueSets);
 }
 
@@ -202,7 +202,7 @@ public isolated function addValueSetsAsJson(json[] valueSetJsonArray) returns r4
 #
 # + codeSystem - ValueSet to be added, data in the Ballerina record format
 # + return - Return FHIRError
-public isolated function addCodeSystem(i4:CodeSystem codeSystem) returns r4:FHIRError? {
+public isolated function addCodeSystem(r4:CodeSystem codeSystem) returns r4:FHIRError? {
     return terminologyProcessor.addCodeSystem(codeSystem);
 }
 
@@ -210,13 +210,13 @@ public isolated function addCodeSystem(i4:CodeSystem codeSystem) returns r4:FHIR
 #
 # + valueSet - ValueSet to be added, data in the Ballerina record format
 # + return - Return FHIRError
-public isolated function addValueSet(i4:ValueSet valueSet) returns r4:FHIRError? {
+public isolated function addValueSet(r4:ValueSet valueSet) returns r4:FHIRError? {
     return terminologyProcessor.addValueSet(valueSet);
 }
 
 # Get all the CodeSystem records.
 # + return - Map of CodeSystem records
-public isolated function getCodeSystemMap() returns map<i4:CodeSystem> {
+public isolated function getCodeSystemMap() returns map<r4:CodeSystem> {
     lock {
         return terminologyProcessor.getCodeSystemMap();
     }
@@ -224,7 +224,7 @@ public isolated function getCodeSystemMap() returns map<i4:CodeSystem> {
 
 # Get all the ValueSet records.
 # + return - Map of ValueSet records
-public isolated function getValueSetMap() returns map<i4:ValueSet> {
+public isolated function getValueSetMap() returns map<r4:ValueSet> {
     lock {
         return terminologyProcessor.getValueSetMap();
     }
