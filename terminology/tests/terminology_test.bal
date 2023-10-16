@@ -201,7 +201,7 @@ function getByIdValueSetTest4() {
     string incorrectId = "relationship2";
     string version = "4.3.0";
 
-    i4:ValueSet|r4:FHIRError|i4:ValueSet[] actaulVS = terminologyProcessor.readValueSetById(incorrectId, version);
+    r4:ValueSet|r4:FHIRError|r4:ValueSet[] actaulVS = terminologyProcessor.readValueSetById(incorrectId, version);
     test:assertEquals((<r4:FHIRError>actaulVS).message(), string `Unknown ValueSet: '${incorrectId}'`);
 }
 
@@ -212,9 +212,9 @@ function searchCodeSystemTest1() {
     string id = "action-condition-kind";
     map<r4:RequestSearchParameter[]> searchParameters = {"url": [{name: "url", value: "http://hl7.org/fhir/action-condition-kind", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:URI}]};
 
-    i4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
-    i4:CodeSystem expectedCS = returnCodeSystemData(id);
-    if actualCS is i4:CodeSystem[] {
+    r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    r4:CodeSystem expectedCS = returnCodeSystemData(id);
+    if actualCS is r4:CodeSystem[] {
         test:assertEquals(actualCS.length(), 1);
         test:assertEquals(actualCS[0], expectedCS);
     } else {
@@ -229,9 +229,9 @@ function searchCodeSystemTest2() {
     string id = "action-condition-kind";
     map<r4:RequestSearchParameter[]> searchParameters = {"_id": [{name: "_id", value: id, typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:STRING}]};
 
-    i4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
-    i4:CodeSystem expectedCS = returnCodeSystemData(id);
-    if actualCS is i4:CodeSystem[] {
+    r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    r4:CodeSystem expectedCS = returnCodeSystemData(id);
+    if actualCS is r4:CodeSystem[] {
         test:assertEquals(actualCS.length(), 1);
         test:assertEquals(actualCS[0], expectedCS);
     } else {
@@ -248,8 +248,8 @@ function searchCodeSystemTest3() {
         "_count": [{name: "_count", value: "300", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
-    if actualCS is i4:CodeSystem[] {
+    r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    if actualCS is r4:CodeSystem[] {
         test:assertEquals(actualCS.length(), 256);
     } else {
         test:assertFail(actualCS.message());
@@ -266,8 +266,8 @@ function searchCodeSystemTest4() {
         "_offset": [{name: "_offset", value: "200", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
-    if actualCS is i4:CodeSystem[] {
+    r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    if actualCS is r4:CodeSystem[] {
         test:assertEquals(actualCS.length(), 56);
     } else {
         test:assertFail(actualCS.message());
@@ -284,9 +284,9 @@ function searchCodeSystemTest5() {
         "_offset": [{name: "_offset", value: "0", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
-    if actualCS is i4:CodeSystem[] {
-        test:assertEquals(actualCS.length(), 43);
+    r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    if actualCS is r4:CodeSystem[] {
+        test:assertEquals(actualCS.length(), 42);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -302,8 +302,8 @@ function searchCodeSystemTest6() {
         "_offset": [{name: "_offset", value: "50", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
-    if actualCS is i4:CodeSystem[] {
+    r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    if actualCS is r4:CodeSystem[] {
         test:assertEquals(actualCS.length(), 0);
     } else {
         test:assertFail(actualCS.message());
@@ -322,9 +322,9 @@ function searchCodeSystemTest7() {
         "_count": [{name: "_count", value: "300", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
-    if actualCS is i4:CodeSystem[] {
-        test:assertEquals(actualCS.length(), 258);
+    r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    if actualCS is r4:CodeSystem[] {
+        test:assertEquals(actualCS.length(), 257);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -338,9 +338,9 @@ function searchCodeSystemTest8() {
         "_count": [{name: "_count", value: "300", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
-    if actualCS is i4:CodeSystem[] {
-        test:assertEquals(actualCS.length(), 258);
+    r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
+    if actualCS is r4:CodeSystem[] {
+        test:assertEquals(actualCS.length(), 257);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -353,9 +353,9 @@ function searchValueSetTest1() {
     string id = "relationship";
     map<r4:RequestSearchParameter[]> searchParameters = {"url": [{name: "url", value: "http://hl7.org/fhir/ValueSet/relationship", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:URI}]};
 
-    i4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
-    i4:ValueSet expectedVS = returnValueSetData(id);
-    if actualVS is i4:ValueSet[] {
+    r4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
+    r4:ValueSet expectedVS = returnValueSetData(id);
+    if actualVS is r4:ValueSet[] {
         test:assertEquals(actualVS.length(), 1);
         test:assertEquals(actualVS[0], expectedVS);
     } else {
@@ -370,9 +370,9 @@ function searchValueSetTest2() {
     string id = "relationship";
     map<r4:RequestSearchParameter[]> searchParameters = {"url": [{name: "url", value: "http://hl7.org/fhir/ValueSet/relationship", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:URI}]};
 
-    i4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
-    i4:ValueSet expectedVS = returnValueSetData(id);
-    if actualVS is i4:ValueSet[] {
+    r4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
+    r4:ValueSet expectedVS = returnValueSetData(id);
+    if actualVS is r4:ValueSet[] {
         test:assertEquals(actualVS.length(), 1);
         test:assertEquals(actualVS[0], expectedVS);
     } else {
@@ -389,8 +389,8 @@ function searchValueSetTest3() {
         "_count": [{name: "_count", value: "300", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
-    if actualVS is i4:ValueSet[] {
+    r4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
+    if actualVS is r4:ValueSet[] {
         test:assertEquals(actualVS.length(), 268);
     } else {
         test:assertFail(actualVS.message());
@@ -407,8 +407,8 @@ function searchValueSetTest4() {
         "_offset": [{name: "_offset", value: "200", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
-    if actualVS is i4:ValueSet[] {
+    r4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
+    if actualVS is r4:ValueSet[] {
         test:assertEquals(actualVS.length(), 68);
     } else {
         test:assertFail(actualVS.message());
@@ -425,8 +425,8 @@ function searchValueSetTest5() {
         "_offset": [{name: "_offset", value: "0", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
-    if actualVS is i4:ValueSet[] {
+    r4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
+    if actualVS is r4:ValueSet[] {
         test:assertEquals(actualVS.length(), 50);
     } else {
         test:assertFail(actualVS.message());
@@ -443,8 +443,8 @@ function searchValueSetTest6() {
         "_offset": [{name: "_offset", value: "70", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
-    i4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
-    if actualVS is i4:ValueSet[] {
+    r4:ValueSet[]|r4:FHIRError actualVS = terminologyProcessor.searchValueSets(searchParameters);
+    if actualVS is r4:ValueSet[] {
         test:assertEquals(actualVS.length(), 0);
     } else {
         test:assertFail(actualVS.message());
@@ -456,11 +456,11 @@ function searchValueSetTest6() {
 }
 function codeSystemLookupTest1() {
     r4:code code = "inactive";
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .codeSystemLookUp(code, system = "http://hl7.org/fhir/account-status");
-    i4:CodeSystem expectedCS = returnCodeSystemData("account-status");
+    r4:CodeSystem expectedCS = returnCodeSystemData("account-status");
 
-    foreach i4:CodeSystemConcept c in <i4:CodeSystemConcept[]>expectedCS.concept {
+    foreach r4:CodeSystemConcept c in <r4:CodeSystemConcept[]>expectedCS.concept {
         if c.code == code {
             test:assertEquals(actualConcept, c);
         }
@@ -472,11 +472,11 @@ function codeSystemLookupTest1() {
 }
 function codeSystemLookupTest2() returns error? {
     r4:Coding coding = check terminologyProcessor.createCoding("http://hl7.org/fhir/account-status", "inactive");
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .codeSystemLookUp(coding, system = "http://hl7.org/fhir/account-status");
-    i4:CodeSystem expectedCS = returnCodeSystemData("account-status");
+    r4:CodeSystem expectedCS = returnCodeSystemData("account-status");
 
-    foreach i4:CodeSystemConcept c in <i4:CodeSystemConcept[]>expectedCS.concept {
+    foreach r4:CodeSystemConcept c in <r4:CodeSystemConcept[]>expectedCS.concept {
         if c.code == coding.code {
             test:assertEquals(actualConcept, c);
         }
@@ -489,11 +489,11 @@ function codeSystemLookupTest2() returns error? {
 function codeSystemLookupTest3() returns error? {
     r4:code code = "inactive";
     r4:CodeableConcept codeableConcept = check terminologyProcessor.createCodeableConcept("http://hl7.org/fhir/account-status", code);
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .codeSystemLookUp(codeableConcept, system = "http://hl7.org/fhir/account-status");
-    i4:CodeSystem expectedCS = returnCodeSystemData("account-status");
+    r4:CodeSystem expectedCS = returnCodeSystemData("account-status");
 
-    foreach i4:CodeSystemConcept c in <i4:CodeSystemConcept[]>expectedCS.concept {
+    foreach r4:CodeSystemConcept c in <r4:CodeSystemConcept[]>expectedCS.concept {
         if c.code == code {
             test:assertEquals(actualConcept, c);
         }
@@ -506,7 +506,7 @@ function codeSystemLookupTest3() returns error? {
 function codeSystemLookupTest4() returns error? {
     r4:code code = "inactive";
     string system = "http://hl7.org/fhir/account-status2|4.3.0";
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .codeSystemLookUp(code, system = system);
 
     test:assertEquals((<r4:FHIRError>actualConcept).message(),
@@ -518,7 +518,7 @@ function codeSystemLookupTest4() returns error? {
 }
 function codeSystemLookupTest5() returns error? {
     r4:code code = "inactive";
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .codeSystemLookUp(code);
 
     test:assertEquals((<r4:FHIRError>actualConcept).message(), "Can not find a CodeSystem due to Either CodeSystem record or system URL should be provided as input");
@@ -531,7 +531,7 @@ function codeSystemLookupTest5() returns error? {
 function codeSystemLookupTest6() returns error? {
     r4:code code = "inactive2";
     string id = "account-status";
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .codeSystemLookUp(code, system = "http://hl7.org/fhir/account-status");
 
     test:assertEquals((<r4:FHIRError>actualConcept).message(), string `Can not find any valid concepts for the code: "${code}" in CodeSystem: "${id}"`);
@@ -542,11 +542,11 @@ function codeSystemLookupTest6() returns error? {
 }
 function valueSetLookupTest1() {
     r4:code code = "1";
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .valueSetLookUp(code, system = "http://hl7.org/fhir/ValueSet/relationship");
-    i4:CodeSystem expectedVS = returnCodeSystemData("relationship");
+    r4:CodeSystem expectedVS = returnCodeSystemData("relationship");
 
-    foreach i4:CodeSystemConcept c in <i4:CodeSystemConcept[]>expectedVS.concept {
+    foreach r4:CodeSystemConcept c in <r4:CodeSystemConcept[]>expectedVS.concept {
         if c.code == code {
             test:assertEquals(actualConcept, c);
         }
@@ -558,11 +558,11 @@ function valueSetLookupTest1() {
 }
 function valueSetLookupTest2() returns error? {
     r4:Coding coding = check terminologyProcessor.createCoding("http://hl7.org/fhir/relationship", "1");
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .valueSetLookUp(coding, system = "http://hl7.org/fhir/ValueSet/relationship");
-    i4:CodeSystem expectedVS = returnCodeSystemData("relationship");
+    r4:CodeSystem expectedVS = returnCodeSystemData("relationship");
 
-    foreach i4:CodeSystemConcept c in <i4:CodeSystemConcept[]>expectedVS.concept {
+    foreach r4:CodeSystemConcept c in <r4:CodeSystemConcept[]>expectedVS.concept {
         if c.code == coding.code {
             test:assertEquals(actualConcept, c);
         }
@@ -575,11 +575,11 @@ function valueSetLookupTest2() returns error? {
 function valueSetLookupTest3() returns error? {
     r4:code code = "start";
     r4:CodeableConcept codeableConcept = check terminologyProcessor.createCodeableConcept("http://hl7.org/fhir/action-condition-kind", code);
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .valueSetLookUp(codeableConcept, system = "http://hl7.org/fhir/ValueSet/action-condition-kind");
-    i4:CodeSystem expectedVS = returnCodeSystemData("action-condition-kind");
+    r4:CodeSystem expectedVS = returnCodeSystemData("action-condition-kind");
 
-    foreach i4:CodeSystemConcept c in <i4:CodeSystemConcept[]>expectedVS.concept {
+    foreach r4:CodeSystemConcept c in <r4:CodeSystemConcept[]>expectedVS.concept {
         if c.code == code {
             test:assertEquals(actualConcept, c);
         }
@@ -592,7 +592,7 @@ function valueSetLookupTest3() returns error? {
 function valueSetLookupTest4() returns error? {
     r4:code code = "1";
     string system = "http://hl7.org/fhir/ValueSet/relationship2|4.3.0";
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .valueSetLookUp(code, system = system);
 
     test:assertEquals((<r4:FHIRError>actualConcept).message(),
@@ -604,7 +604,7 @@ function valueSetLookupTest4() returns error? {
 }
 function valueSetLookupTest5() returns error? {
     r4:code code = "1";
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .valueSetLookUp(code);
 
     test:assertEquals((<r4:FHIRError>actualConcept).message(), "Can not find a ValueSet due to Either ValueSet record or system URL should be provided as input");
@@ -617,7 +617,7 @@ function valueSetLookupTest5() returns error? {
 function valueSetLookupTest6() returns error? {
     r4:code code = "test";
     string id = "relationship";
-    i4:CodeSystemConcept[]|i4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
+    r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = terminologyProcessor
                                                 .valueSetLookUp(code, system = "http://hl7.org/fhir/ValueSet/relationship");
 
     test:assertEquals((<r4:FHIRError>actualConcept).message(), string `Can not find any valid concepts for the code: "${code}" in ValueSet: "${id}"`);
@@ -627,19 +627,19 @@ function valueSetLookupTest6() returns error? {
     groups: ["valueset", "valueset_expansion", "successful_scenario"]
 }
 function valueSetExpansionTest1() {
-    i4:ValueSet|r4:FHIRError valueSet = terminologyProcessor.readValueSetById("relationship");
+    r4:ValueSet|r4:FHIRError valueSet = terminologyProcessor.readValueSetById("relationship");
     map<r4:RequestSearchParameter[]> searchParameters1 = {
         "valueSetVersion": [{name: "valueSetVersion", value: "active", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:STRING}],
         "_count": [{name: "_count", value: "50", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
-    if valueSet is i4:ValueSet {
-        i4:ValueSet|r4:FHIRError actualVS = terminologyProcessor.
+    if valueSet is r4:ValueSet {
+        r4:ValueSet|r4:FHIRError actualVS = terminologyProcessor.
                                         valueSetExpansion(searchParameters1,
                                         system = "http://hl7.org/fhir/ValueSet/relationship");
-        if actualVS is i4:ValueSet {
-            i4:ValueSet expectedVS = returnValueSetData("expanded-relationship");
-            i4:ValueSetExpansion? expansion = actualVS.expansion;
-            expectedVS.expansion.timestamp = (<i4:ValueSetExpansion>expansion).timestamp;
+        if actualVS is r4:ValueSet {
+            r4:ValueSet expectedVS = returnValueSetData("expanded-relationship");
+            r4:ValueSetExpansion? expansion = actualVS.expansion;
+            expectedVS.expansion.timestamp = (<r4:ValueSetExpansion>expansion).timestamp;
             test:assertEquals(actualVS, expectedVS);
         }
     }
@@ -652,13 +652,13 @@ function valueSetExpansionTest2() {
     map<r4:RequestSearchParameter[]> searchParameters = {
         "filter": [{name: "filter", value: "account", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:STRING}]
     };
-    i4:ValueSet|r4:FHIRError actualVS = terminologyProcessor.
+    r4:ValueSet|r4:FHIRError actualVS = terminologyProcessor.
                                         valueSetExpansion(searchParameters,
                                         system = "http://hl7.org/fhir/ValueSet/account-status");
-    if actualVS is i4:ValueSet {
-        i4:ValueSet expectedVS = returnValueSetData("expanded-account-status");
-        i4:ValueSetExpansion? expansion = actualVS.expansion;
-        expectedVS.expansion.timestamp = (<i4:ValueSetExpansion>expansion).timestamp;
+    if actualVS is r4:ValueSet {
+        r4:ValueSet expectedVS = returnValueSetData("expanded-account-status");
+        r4:ValueSetExpansion? expansion = actualVS.expansion;
+        expectedVS.expansion.timestamp = (<r4:ValueSetExpansion>expansion).timestamp;
         test:assertEquals(actualVS, expectedVS);
     }
 }
@@ -669,7 +669,7 @@ function valueSetExpansionTest2() {
 function codesystemSubsumeTest1() returns error? {
     r4:code codeA = "inactive";
     r4:code codeB = "inactive";
-    i4:CodeSystem codeSystem = check terminologyProcessor.readCodeSystemById("account-status");
+    r4:CodeSystem codeSystem = check terminologyProcessor.readCodeSystemById("account-status");
     i4:Parameters actaulResult = check terminologyProcessor.subsumes(codeA, codeB, codeSystem);
     i4:ParametersParameter actual = (<i4:ParametersParameter[]>actaulResult.'parameter)[0];
     test:assertEquals(actual.name, "outcome");
@@ -692,10 +692,11 @@ function codesystemSubsumeTest2() returns error? {
     groups: ["codesystem", "add_codesystem", "successful_scenario"]
 }
 function addCodeSystem1() {
-    json data = readJsonData("code_systems/additional-codesystem-data");
-    string duplicateEntryUrl = "http://hl7.org/fhir/action-grouping-behavior";
+    json data = readJsonData("code_systems/account-status");
+    string duplicateEntryUrl = "http://hl7.org/fhir/account-status";
 
-    r4:FHIRError[]? actual = terminologyProcessor.addCodeSystemsAsJson(<json[]>data);
+    json[] dataArray = [data];
+    r4:FHIRError[]? actual = terminologyProcessor.addCodeSystemsAsJson(dataArray);
 
     if actual is r4:FHIRError[] && actual.length() > 1 {
         test:assertEquals(actual[0].message(), "Duplicate entry");
@@ -707,13 +708,14 @@ function addCodeSystem1() {
     groups: ["valueset", "add_valueset", "successful_scenario"]
 }
 function addValueset1() {
-    json data = readJsonData("value_sets/additional-valueset-data");
-    string duplicateEntryUrl = "http://hl7.org/fhir/ValueSet/diagnostic-report-status";
+    json data = readJsonData("value_sets/account-status");
+    string duplicateEntryUrl = "http://hl7.org/fhir/ValueSet/account-status";
 
-    r4:FHIRError[]? actual = terminologyProcessor.addValueSetsAsJson(<json[]>data);
+    json[] dataArray = [data];
+    r4:FHIRError[]? actual = terminologyProcessor.addValueSetsAsJson(dataArray);
 
     if actual is r4:FHIRError[] {
-        test:assertEquals(actual[0].message(), "Duplicate entry due to Already there is a ValueSet exists in the registry with the URL: http://hl7.org/fhir/ValueSet/diagnostic-report-status");
+        test:assertEquals(actual[0].message(), "Duplicate entry due to Already there is a ValueSet exists in the registry with the URL: http://hl7.org/fhir/ValueSet/account-status");
         test:assertEquals(actual[0].detail().issues[0].diagnostic, string `Already there is a ValueSet exists in the registry with the URL: ${duplicateEntryUrl}`);
     }
 }
