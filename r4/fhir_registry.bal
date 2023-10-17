@@ -20,13 +20,55 @@ public isolated class FHIRRegistry {
     private FHIRImplementationGuide[] implementationGuides = [];
 
     // profile map (key: profile url)
-    private map<readonly & Profile> profileMap = {};
+    private map<readonly & Profile> profileMap = {
+        "http://hl7.org/fhir/StructureDefinition/Bundle": {
+            url: "http://hl7.org/fhir/StructureDefinition/Bundle",
+            resourceType: "Bundle",
+            modelType: Bundle
+        },
+        "http://hl7.org/fhir/StructureDefinition/CodeSystem": {
+            url: "http://hl7.org/fhir/StructureDefinition/CodeSystem",
+            resourceType: "CodeSystem",
+            modelType: CodeSystem
+        },
+        "http://hl7.org/fhir/StructureDefinition/OperationOutcome": {
+            url: "http://hl7.org/fhir/StructureDefinition/OperationOutcome",
+            resourceType: "OperationOutcome",
+            modelType: OperationOutcome
+        },
+        "http://hl7.org/fhir/StructureDefinition/ValueSet": {
+            url: "http://hl7.org/fhir/StructureDefinition/ValueSet",
+            resourceType: "ValueSet",
+            modelType: ValueSet
+        }
+    };
 
     // maintain resource type to profiles mapping
     private map<map<Profile>> resourceTypeProfiles = {};
 
     // resource type to profile of FHIR Base resources
-    private map<readonly & Profile> fhirBaseIGProfiles = {};
+    private map<readonly & Profile> fhirBaseIGProfiles = {
+        "Bundle": {
+            url: "http://hl7.org/fhir/StructureDefinition/Bundle",
+            resourceType: "Bundle",
+            modelType: Bundle
+        },
+        "CodeSystem": {
+            url: "http://hl7.org/fhir/StructureDefinition/CodeSystem",
+            resourceType: "CodeSystem",
+            modelType: CodeSystem
+        },
+        "OperationOutcome": {
+            url: "http://hl7.org/fhir/StructureDefinition/OperationOutcome",
+            resourceType: "OperationOutcome",
+            modelType: OperationOutcome
+        },
+        "ValueSet": {
+            url: "http://hl7.org/fhir/StructureDefinition/ValueSet",
+            resourceType: "ValueSet",
+            modelType: ValueSet
+        }
+    };
 
     // search parameter map (key: resource type)
     private map<SearchParamCollection> searchParameterMap = {};
