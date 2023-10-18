@@ -1,6 +1,6 @@
-Package containing the FHIR R4 resources types
-
 # FHIR R4 Base package
+
+The package containing the FHIR R4 Data types, Base Resource Types, Error Types, Utilities, etc.
 
 ## Package Overview
 
@@ -20,7 +20,7 @@ This package includes,
 **Note:**
 **This package only supports FHIR JSON payload format only. FHIR XML payload support will be added soon.**
 
-[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.1#Bundle
-[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.1#CodeSystem
-[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.1#OperationOutcome
-[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.1#ValueSet
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.2#Bundle
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.2#CodeSystem
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.2#OperationOutcome
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4/4.1.2#ValueSet
