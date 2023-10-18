@@ -214,9 +214,9 @@ public type TokenSearchParameter record {
 # + url - Absolute URL - a reference to a resource by its absolute location
 public type ReferenceSearchParameter record {
     *FHIRTypedSearchParameter;
-    readonly & string? resourceType;
-    readonly & string? id;
-    readonly & string? url;
+    readonly string? resourceType;
+    readonly string? id;
+    readonly string? url;
 };
 
 # Composite type search parameter information record.
@@ -236,10 +236,10 @@ public type CompositeSearchParameter record {
 # + code - Coded form of the unit
 public type QuantitySearchParameter record {
     *FHIRTypedSearchParameter;
-    readonly & Prefix? prefix;
-    readonly & int|float number;
-    readonly & string? system;
-    readonly & string? code;
+    readonly Prefix? prefix;
+    readonly int|float number;
+    readonly string? system;
+    readonly string? code;
 };
 
 # Special type search parameter information record.
@@ -338,7 +338,7 @@ public isolated class FHIRRequest {
             string? resourceType,
             FHIRResourceEntity? resourceEntity,
             readonly & map<readonly & RequestSearchParameter[]> searchParameters,
-            readonly & FHIRPayloadFormat clientAcceptFormat) {
+            FHIRPayloadFormat clientAcceptFormat) {
         self.resourceEntity = resourceEntity;
         self.searchParameters = searchParameters;
         self.clientAcceptFormat = clientAcceptFormat;
@@ -448,7 +448,7 @@ public isolated class FHIRContainerResponse {
 # + fhirUser - FHIR User information 
 # + jwt - decoded JWT assertion
 public type FHIRSecurity record {
-    readonly & boolean securedAPICall;
+    readonly boolean securedAPICall;
     readonly & FHIRUser? fhirUser;
     readonly & JWT? jwt;
 };
@@ -460,7 +460,7 @@ public type FHIRSecurity record {
 # + claims - The user claims given by the identitty provider
 public type FHIRUser record {
     readonly & string[] scopes;
-    readonly & string userID;
+    readonly string userID;
     readonly & map<string> claims;
 };
 

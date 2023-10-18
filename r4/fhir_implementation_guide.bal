@@ -48,8 +48,8 @@ public isolated class FHIRImplementationGuide {
 # + profiles - profiles supported by the IG (key : profile uri)
 # + searchParameters - search parameters defined in the IG (key: parameter name)
 public type IGInfoRecord record {|
-    readonly & string title;
-    readonly & string name;
+    readonly string title;
+    readonly string name;
     Terminology terminology;
     readonly & map<Profile> profiles;
     readonly & map<FHIRSearchParameterDefinition[]>[]  searchParameters;
