@@ -15,6 +15,7 @@
 
 import ballerina/http;
 import ballerina/time;
+import ballerina/io;
 
 # Audit service integration related configuration.
 #
@@ -56,12 +57,21 @@ public type InternalAuditEvent record {|
     string entityWhatReference;
 |};
 
+# On an error sending an audit event, this record will be used.
+#
+# + fhirError - error occurred while sending audit event
+# + auditEvent - audit event that failed to send
+public type AuditEventSendingError record {|
+    FHIRError fhirError?;
+    InternalAuditEvent auditEvent;
+|};
+
 # Call audit service and handle response.
 #
 # + auditConfig - configuration for audit event
 # + fhirContext - context of the request
 # + return - FHIRError if audit service call fails
-public isolated function handleAuditEvent(AuditConfig auditConfig, FHIRContext fhirContext) returns FHIRError? {
+public isolated function handleAuditEvent(AuditConfig auditConfig, FHIRContext fhirContext) returns AuditEventSendingError? {
     FHIRUser? user = fhirContext.getFHIRUser();
     InternalAuditEvent auditEvent = {
         typeCode: "rest",
@@ -79,15 +89,25 @@ public isolated function handleAuditEvent(AuditConfig auditConfig, FHIRContext f
         entityWhatReference: fhirContext.getRawPath()
     };
 
-    http:Client|http:ClientError auditClient = new (auditConfig.auditServiceUrl);
+    http:Client|http:ClientError auditClient = new (auditConfig.auditServiceUrl, retryConfig = {
+        interval: 5,
+        count: 3,
+        backOffFactor: 2.0,
+        maxWaitInterval: 30
+    });
     if auditClient is http:ClientError {
-        return clientErrorToFhirError(auditClient);
+        // TODO temporary adding the println as errors are not logged by ballerina log module.
+        io:println(auditClient);
+        return {auditEvent: auditEvent, fhirError: clientErrorToFhirError(auditClient)};
     } else {
         InternalAuditEvent|http:ClientError auditRes = auditClient->post("/audits", auditEvent);
         if auditRes is http:ClientError {
-            return clientErrorToFhirError(auditRes);
+            // TODO temporary adding the println as errors are not logged by ballerina log module.
+            io:println(auditRes);
+            return {auditEvent: auditEvent, fhirError: clientErrorToFhirError(auditRes)};
         }
     }
+    return {auditEvent: auditEvent};
 }
 
 isolated function getAction(FHIRInteractionType interaction) returns string {
