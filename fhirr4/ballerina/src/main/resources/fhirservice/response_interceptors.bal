@@ -40,7 +40,7 @@ public isolated service class FHIRResponseInterceptor {
 
     remote isolated function interceptResponse(http:RequestContext ctx, http:Response res) returns http:NextService|r4:FHIRError? {
         log:printDebug("Execute: FHIR Response Interceptor");
-        r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
+        final r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
         fhirContext.setDirection(r4:OUT);
 
         check self.postProcessSearchParameters(fhirContext);
@@ -56,6 +56,19 @@ public isolated service class FHIRResponseInterceptor {
         if (fhirContext.isInErrorState()) {
             // set the proper response code
             res.statusCode = fhirContext.getErrorCode();
+        }
+
+        // Worker to send the audit events asynchronously
+        worker auditWorker {
+            r4:AuditConfig? & readonly auditConfig = self.apiConfig.auditConfig;
+            if auditConfig != () && auditConfig.enabled {
+                // send to the audit service and retries if it fails
+                r4:AuditEventSendingError? failed = r4:handleAuditEvent(auditConfig, fhirContext);
+                if failed != () && failed.fhirError != () {
+                    // if sending the audit event is still fails, log the error and the audit event
+                    log:printError("[Audit Event Sender] Error while sending audit event.", 'error = failed.fhirError, auditEvent = failed.auditEvent);
+                }
+            }
         }
         return getNextService(ctx);
     }
