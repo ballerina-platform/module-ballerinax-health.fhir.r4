@@ -25,8 +25,12 @@ org = "ballerinax"
 name = "health.fhir.r4.international401"
 version = "${international401.version}"
 
+[platform.java11]
+graalvmCompatible = true
+
 [[platform.java11.dependency]]
 groupId = "io.ballerinax"
 artifactId = "fhirr4-native"
 version = "${project.version}"
 path = "./fhirr4-native-${project.version}.jar"
+
