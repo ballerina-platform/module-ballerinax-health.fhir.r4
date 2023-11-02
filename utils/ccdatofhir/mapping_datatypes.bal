@@ -1,25 +1,21 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
 // You may obtain a copy of the License at
-
 // http://www.apache.org/licenses/LICENSE-2.0
-
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 // --------------------------------------------------------------------------------------------#
 // Source C-CDA to FHIR - Datatype Mappings
 // --------------------------------------------------------------------------------------------#
-
 import ballerina/log;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.uscore501;
 
 xmlns "urn:hl7-org:v3" as v3;
 
@@ -27,7 +23,7 @@ xmlns "urn:hl7-org:v3" as v3;
 #
 # + idElement - C-CDA id element
 # + return - Return FHIR Identifier
-public isolated function mapCcdaIdToFhirIdentifier(xml idElement) returns r4:Identifier? {
+public isolated function mapCcdaIdToFhirIdentifier(xml idElement) returns uscore501:USCorePatientProfileIdentifier? {
     string|error? idVal = idElement.extension;
     string|error? rootVal = idElement.root;
     if rootVal !is string {
@@ -82,9 +78,10 @@ public isolated function mapCcdaAddressToFhirAddress(xml addressElement) returns
 #
 # + telecomElement - C-CDA telecom element
 # + return - Return FHIR ContactPoint
-public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns r4:ContactPoint? {
+public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns uscore501:USCorePatientProfileTelecom? {
     string|error? telecomUse = telecomElement.use;
     string|error? telecomValue = telecomElement.value;
+    string|error? telecomSystem = telecomElement.system;
 
     string? valueVal = ();
     if telecomValue is string {
@@ -102,15 +99,45 @@ public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns
             "WP" => {
                 useVal = "work";
             }
+            "MC" => {
+                useVal = "mobile";
+            }
+            "OP" => {
+                useVal = "old";
+            }
+            "TP" => {
+                useVal = "temp";
+            }
         }
     } else {
         log:printDebug("Telecom use not available", telecomUse);
     }
 
-    if valueVal is string && useVal is string {
+    uscore501:USCorePatientProfileTelecomSystem systemVal = "url";
+    if telecomSystem is string {
+        match telecomSystem {
+            "mailto" => {
+                systemVal = "email";
+            }
+            "http" => {
+                systemVal = "url";
+            }
+            "tel" => {
+                systemVal = "phone";
+            }
+            "fax" => {
+                systemVal = "fax";
+            }
+        }
+    } else {
+        log:printDebug("Telecom system not available", telecomSystem);
+    }
+
+    if valueVal is string || useVal is string {
         return {
-            value: valueVal,
-            use: useVal
+            value: valueVal != () ? valueVal : "",
+            use: useVal != () ? useVal : (),
+            system: systemVal
         };
     }
     log:printDebug("telecom fields not available");
@@ -121,7 +148,7 @@ public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns
 #
 # + nameElement - C-CDA name element
 # + return - Return FHIR HumanName
-public isolated function mapCcdaNametoFhirName(xml nameElement) returns r4:HumanName? {
+public isolated function mapCcdaNametoFhirName(xml nameElement) returns uscore501:USCorePractitionerProfileName? {
     xml familyElement = nameElement/<v3:family|family>;
     xml givenElement = nameElement/<v3:given|given>;
 
@@ -140,7 +167,7 @@ public isolated function mapCcdaNametoFhirName(xml nameElement) returns r4:Human
 # + codingElement - C-CDA code element
 # + return - Return FHIR CodeableConcept
 public isolated function mapCcdaCodingtoFhirCodeableConcept(xml codingElement) returns r4:CodeableConcept? {
-    r4:Coding? mapCcdaCodingtoFhirCodeResult = mapCcdaCodingtoFhirCode(codingElement);
+    r4:Coding? mapCcdaCodingtoFhirCodeResult = mapCcdaCodingtoFhirCoding(codingElement);
     if mapCcdaCodingtoFhirCodeResult is r4:Coding {
         return {
             coding: [mapCcdaCodingtoFhirCodeResult]
@@ -154,9 +181,10 @@ public isolated function mapCcdaCodingtoFhirCodeableConcept(xml codingElement) r
 #
 # + codingElement - C-CDA code element
 # + return - Return FHIR Coding
-public isolated function mapCcdaCodingtoFhirCode(xml codingElement) returns r4:Coding? {
+public isolated function mapCcdaCodingtoFhirCoding(xml codingElement) returns r4:Coding? {
     string|error? codeVal = codingElement.code;
     string|error? systemVal = codingElement.codeSystem;
+    string|error? displayNameVal = codingElement.displayName;
 
     string? code = ();
     if codeVal is string {
@@ -172,10 +200,18 @@ public isolated function mapCcdaCodingtoFhirCode(xml codingElement) returns r4:C
         log:printDebug("systemVal is not available", systemVal);
     }
 
-    if code is string || system is string {
+    string? display = ();
+    if displayNameVal is string {
+        display = displayNameVal;
+    } else {
+        log:printDebug("displayNameVal is not available", displayNameVal);
+    }
+
+    if code is string || system is string || display is string {
         return {
             code: code,
-            system: system
+            system: system,
+            display: display
         };
     }
     log:printDebug("coding fields not available");

@@ -2,7 +2,7 @@
 org = "ballerinax"
 name = "health.fhir.r4.uscore501"
 version = "1.1.1"
-distribution = "2201.8.0"
+distribution = "2201.8.1"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "USCore"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"

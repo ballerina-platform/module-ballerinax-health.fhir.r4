@@ -23,34 +23,40 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.uscore501;
 
 # Map CCDA Practitioner to FHIR Practitioner.
 #
 # + authorElement - CCDA Author Element
 # + return - Return FHIR Practitioner resource
-public isolated function mapCcdaPractitionerToFhir(xml authorElement) returns international401:Practitioner? {
+public isolated function mapCcdaPractitionerToFhir(xml authorElement) returns uscore501:USCorePractitionerProfile? {
     if isXMLElementNotNull(authorElement) {
-        international401:Practitioner practitioner = {};
+        uscore501:USCorePractitionerProfile practitioner = {identifier: [], name: []};
 
         xml assignedAuthorElement = authorElement/<v3:assignedAuthor|assignedAuthor>;
-
         xml assignedAuthorCodeElement = assignedAuthorElement/<v3:code|code>;
         xml assignedPersonElement = assignedAuthorElement/<v3:assignedPerson|assignedPerson>;
+        xml assignedAuthorAddressElement = assignedAuthorElement/<v3:addr|addr>;
 
         r4:CodeableConcept? qualificationCode = mapCcdaCodingtoFhirCodeableConcept(assignedAuthorCodeElement);
         if qualificationCode is r4:CodeableConcept {
-            international401:PractitionerQualification qualification = {
+            uscore501:USCorePractitionerProfileQualification qualification = {
                 code: qualificationCode
             };
             practitioner.qualification = [qualification];
         }
 
         xml assignedPersonNameElement = assignedPersonElement/<v3:name|name>;
-        r4:HumanName? name = mapCcdaNametoFhirName(assignedPersonNameElement);
+        uscore501:USCorePractitionerProfileName? name = mapCcdaNametoFhirName(assignedPersonNameElement);
         if name is r4:HumanName {
             practitioner.name = [name];
         }
+
+        r4:Address?|error mapCcdaAddressToFhirAddressResult = mapCcdaAddressToFhirAddress(assignedAuthorAddressElement);
+        if mapCcdaAddressToFhirAddressResult is r4:Address {
+            practitioner.address = [mapCcdaAddressToFhirAddressResult];
+        }
+
         return practitioner;
     }
     return ();

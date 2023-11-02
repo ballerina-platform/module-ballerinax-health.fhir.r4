@@ -19,15 +19,16 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.uscore501;
 
 # Map CCDA Medication Activity to FHIR MedicationRequest
 #
 # + substanceAdministrationElement - CCDA Medication Activity Element
 # + return - FHIR MedicationRequest
-public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElement) returns international401:MedicationRequest? {
+public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElement) returns uscore501:USCoreMedicationRequestProfile? {
     if isXMLElementNotNull(substanceAdministrationElement) {
-        international401:MedicationRequest medication = {medicationReference: {}, subject: {}, medicationCodeableConcept: {}, intent: "option", status: "unknown"};
+        uscore501:USCoreMedicationRequestProfile medication = {medicationReference: {}, subject: {}, medicationCodeableConcept: {}, 
+        intent: "option", status: "unknown",requester: {}, authoredOn: ""};
 
         xml idElement = substanceAdministrationElement/<v3:id|id>;
         xml statusCodeElement = substanceAdministrationElement/<v3:statusCode|statusCode>;
@@ -49,7 +50,7 @@ public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElem
 
         medication.status = mapCcdatoFhirMedicationRequestStatus(statusCodeElement);
 
-        r4:Dosage dosageInstruction = {};
+        uscore501:USCoreMedicationRequestProfileDosageInstruction dosageInstruction = {};
         string|error? effectiveTimeValue = effectiveTimeElement.value;
         if effectiveTimeValue is string {
             dosageInstruction.timing.event = [effectiveTimeValue];
@@ -57,7 +58,7 @@ public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElem
 
         r4:dateTime? mapCCDAEffectiveTimetoFHIRDateTimeResult = mapCcdaDateTimeToFhirDateTime(effectiveTimeElement);
         if mapCCDAEffectiveTimetoFHIRDateTimeResult is r4:dateTime {
-            medication.authoredOn = mapCCDAEffectiveTimetoFHIRDateTimeResult != "" ? mapCCDAEffectiveTimetoFHIRDateTimeResult : ();
+            medication.authoredOn = mapCCDAEffectiveTimetoFHIRDateTimeResult != "" ? mapCCDAEffectiveTimetoFHIRDateTimeResult : "";
         }
 
         xml effectiveLowTimeElement = effectiveTimeElement/<v3:low|low>;
@@ -139,7 +140,7 @@ public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElem
     return ();
 }
 
-isolated function mapCcdatoFhirMedicationRequestStatus(xml codingElement) returns international401:MedicationRequestStatus {
+isolated function mapCcdatoFhirMedicationRequestStatus(xml codingElement) returns uscore501:USCoreMedicationRequestProfileStatus {
     string|error? codeVal = codingElement.code;
     if codeVal is string {
         match codeVal {
@@ -147,18 +148,18 @@ isolated function mapCcdatoFhirMedicationRequestStatus(xml codingElement) return
                 return r4:CODE_STATUS_ACTIVE;
             }
             "aborted" => {
-                return international401:CODE_STATUS_STOPPED;
+                return uscore501:CODE_STATUS_STOPPED;
             }
             "completed" => {
-                return international401:CODE_STATUS_COMPLETED;
+                return uscore501:CODE_STATUS_COMPLETED;
             }
             "nullified" => {
-                return international401:CODE_STATUS_ENTERED_IN_ERROR;
+                return uscore501:CODE_STATUS_ENTERED_IN_ERROR;
             }
             "suspended" => {
-                return international401:CODE_STATUS_ON_HOLD;
+                return uscore501:CODE_STATUS_ON_HOLD;
             }
         }
     }
-    return international401:CODE_STATUS_ENTERED_IN_ERROR;
+    return uscore501:CODE_STATUS_ENTERED_IN_ERROR;
 }
