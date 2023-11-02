@@ -584,7 +584,220 @@ public type MedicationRequestDispenseRequestInitialFill record {|
     string id?;
 |};
 
-# FHIR MedicationRequestDispenseRequest datatype record.
+
+# FHIR USCoreMedicationRequestProfileDosageInstruction datatype record.
+#
+# + maxDosePerLifetime - Upper limit on medication per lifetime of the patient.
+# + additionalInstruction - Supplemental instructions to the patient on how to take the medication (e.g. 'with meals' or'take half to one hour before food') or warnings for the patient about the medication (e.g. 'may cause drowsiness' or 'avoid exposure of skin to direct sunlight or sunlamps').
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + method - Technique for administering medication.
+# + timing - When medication should be administered.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + doseAndRate - The amount of medication administered.
+# + sequence - Indicates the order in which the dosage instructions should be applied or interpreted.
+# + site - Body site to administer to.
+# + route - How drug should enter body.
+# + asNeededBoolean - Indicates whether the Medication is only taken when needed within a specific dosing schedule (Boolean option), or it indicates the precondition for taking the Medication (CodeableConcept).
+# + maxDosePerAdministration - Upper limit on medication per administration.
+# + maxDosePerPeriod - Upper limit on medication per unit of time.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - Free text dosage instructions e.g. SIG.
+# + asNeededCodeableConcept - Indicates whether the Medication is only taken when needed within a specific dosing schedule (Boolean option), or it indicates the precondition for taking the Medication (CodeableConcept).
+# + patientInstruction - Instructions in terms that are understood by the patient or consumer.
+@r4:DataTypeDefinition {
+    name: "USCoreMedicationRequestProfileDosageInstruction",
+    baseType: (),
+    elements: {
+        "maxDosePerLifetime": {
+            name: "maxDosePerLifetime",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Upper limit on medication per lifetime of the patient.",
+            path: "MedicationRequest.dosageInstruction.maxDosePerLifetime"
+        },
+        "additionalInstruction": {
+            name: "additionalInstruction",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Supplemental instructions to the patient on how to take the medication (e.g. 'with meals' or'take half to one hour before food') or warnings for the patient about the medication (e.g. 'may cause drowsiness' or 'avoid exposure of skin to direct sunlight or sunlamps').",
+            path: "MedicationRequest.dosageInstruction.additionalInstruction"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MedicationRequest.dosageInstruction.extension"
+        },
+        "method": {
+            name: "method",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Technique for administering medication.",
+            path: "MedicationRequest.dosageInstruction.method"
+        },
+        "timing": {
+            name: "timing",
+            dataType: r4:Timing,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "When medication should be administered.",
+            path: "MedicationRequest.dosageInstruction.timing"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "MedicationRequest.dosageInstruction.modifierExtension"
+        },
+        "doseAndRate": {
+            name: "doseAndRate",
+            dataType: r4:Element,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The amount of medication administered.",
+            path: "MedicationRequest.dosageInstruction.doseAndRate"
+        },
+        "sequence": {
+            name: "sequence",
+            dataType: r4:integer,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates the order in which the dosage instructions should be applied or interpreted.",
+            path: "MedicationRequest.dosageInstruction.sequence"
+        },
+        "site": {
+            name: "site",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Body site to administer to.",
+            path: "MedicationRequest.dosageInstruction.site"
+        },
+        "route": {
+            name: "route",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "How drug should enter body.",
+            path: "MedicationRequest.dosageInstruction.route"
+        },
+        "asNeededBoolean": {
+            name: "asNeededBoolean",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates whether the Medication is only taken when needed within a specific dosing schedule (Boolean option), or it indicates the precondition for taking the Medication (CodeableConcept).",
+            path: "MedicationRequest.dosageInstruction.asNeeded[x]"
+        },
+        "maxDosePerAdministration": {
+            name: "maxDosePerAdministration",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Upper limit on medication per administration.",
+            path: "MedicationRequest.dosageInstruction.maxDosePerAdministration"
+        },
+        "maxDosePerPeriod": {
+            name: "maxDosePerPeriod",
+            dataType: r4:Ratio,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Upper limit on medication per unit of time.",
+            path: "MedicationRequest.dosageInstruction.maxDosePerPeriod"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MedicationRequest.dosageInstruction.id"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Free text dosage instructions e.g. SIG.",
+            path: "MedicationRequest.dosageInstruction.text"
+        },
+        "asNeededCodeableConcept": {
+            name: "asNeededCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates whether the Medication is only taken when needed within a specific dosing schedule (Boolean option), or it indicates the precondition for taking the Medication (CodeableConcept).",
+            path: "MedicationRequest.dosageInstruction.asNeeded[x]"
+        },
+        "patientInstruction": {
+            name: "patientInstruction",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Instructions in terms that are understood by the patient or consumer.",
+            path: "MedicationRequest.dosageInstruction.patientInstruction"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreMedicationRequestProfileDosageInstruction record {|
+    *r4:Dosage;
+
+    r4:Quantity maxDosePerLifetime?;
+    r4:CodeableConcept[] additionalInstruction?;
+    r4:Extension[] extension?;
+    r4:CodeableConcept method?;
+    r4:Timing timing?;
+    r4:Extension[] modifierExtension?;
+    r4:ElementDoseAndRate[] doseAndRate?;
+    r4:integer sequence?;
+    r4:CodeableConcept site?;
+    r4:CodeableConcept route?;
+    boolean asNeededBoolean?;
+    r4:Quantity maxDosePerAdministration?;
+    r4:Ratio maxDosePerPeriod?;
+    string id?;
+    string text?;
+    r4:CodeableConcept asNeededCodeableConcept?;
+    string patientInstruction?;
+|};
+
+# USCoreMedicationRequestProfilePriority enum
+public enum USCoreMedicationRequestProfilePriority {
+   CODE_PRIORITY_STAT = "stat",
+   CODE_PRIORITY_ROUTINE = "routine",
+   CODE_PRIORITY_URGENT = "urgent",
+   CODE_PRIORITY_ASAP = "asap"
+}
+
+# FHIR USCoreMedicationRequestProfileDispenseRequest datatype record.
 #
 # + validityPeriod - This indicates the validity period of a prescription (stale dating the Prescription).
 # + dispenseInterval - The minimum period of time that must occur between dispenses of the medication.
