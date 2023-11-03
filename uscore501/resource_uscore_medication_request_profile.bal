@@ -867,7 +867,7 @@ public type USCoreMedicationRequestProfileDosageInstruction record {|
     r4:CodeableConcept method?;
     r4:Timing timing?;
     r4:Extension[] modifierExtension?;
-    r4:Element[] doseAndRate?;
+    r4:ElementDoseAndRate[] doseAndRate?;
     r4:integer sequence?;
     r4:CodeableConcept site?;
     r4:CodeableConcept route?;
