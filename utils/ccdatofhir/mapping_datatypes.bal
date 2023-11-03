@@ -140,8 +140,8 @@ public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns
 
     if valueVal is string || useVal is string {
         return {
-            value: valueVal != () ? valueVal : "",
-            use: useVal != () ? useVal : (),
+            value: valueVal ?: "",
+            use: useVal ?: (),
             system: systemVal
         };
     }
