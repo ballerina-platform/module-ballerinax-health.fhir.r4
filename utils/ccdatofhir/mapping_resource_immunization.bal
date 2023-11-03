@@ -106,7 +106,7 @@ public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationEl
 
         string|error? assignedEntityId = assignedEntityIdElement.root;
         if assignedEntityId is string {
-            uscore501:ImmunizationPerformer performer = {
+            uscore501:USCoreImmunizationProfilePerformer performer = {
                 actor: {
                     identifier: {
                         id: assignedEntityId
@@ -137,7 +137,7 @@ public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationEl
             xml reference = entryRelationshipObservationElement/<v3:text|text>/<v3:reference|reference>;
             string|error? referenceValue = reference.value;
             if referenceValue is string {
-                uscore501:ImmunizationReaction immunizationReaction = {
+                uscore501:USCoreImmunizationProfileReaction immunizationReaction = {
                     detail: {
                         reference: referenceValue
                     }
@@ -207,7 +207,7 @@ isolated function mapCcdaRefusalReasonToFhirStatusReason(xml codingElement) retu
     return ();
 }
 
-isolated function mapCcdaStatusCodeToFhirImmunizationStatus(xml codingElement) returns uscore501:ImmunizationStatus {
+isolated function mapCcdaStatusCodeToFhirImmunizationStatus(xml codingElement) returns uscore501:USCoreImmunizationProfileStatus {
     string codeVal = codingElement.data();
     match codeVal {
         "aborted" => {

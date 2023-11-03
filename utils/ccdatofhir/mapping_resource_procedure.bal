@@ -68,7 +68,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns uscore50
 
         xml assignedEntityElements = performerElement/<v3:assignedEntity|assignedEntity>;
 
-        uscore501:ProcedurePerformer[] performers = [];
+        uscore501:USCoreProcedureProfilePerformer[] performers = [];
         foreach xml assignedEntityElement in assignedEntityElements {
             xml representedOrganizationElement = assignedEntityElement/<v3:representedOrganization|representedOrganization>;
             xml organizationIdElement = representedOrganizationElement/<v3:id|id>;
@@ -81,7 +81,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns uscore50
                     reference: string `Organization/${id}`
                 };
 
-                uscore501:ProcedurePerformer performer = {
+                uscore501:USCoreProcedureProfilePerformer performer = {
                     actor: {},
                     onBehalfOf: representedOrganizationReference
                 };
@@ -122,7 +122,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns uscore50
     return ();
 }
 
-isolated function mapCcdatoFhirProcedureStatus(xml codingElement) returns uscore501:ProcedureStatus {
+isolated function mapCcdatoFhirProcedureStatus(xml codingElement) returns uscore501:USCoreProcedureProfileStatus {
     string|error? codeVal = codingElement.code;
     if codeVal !is string {
         log:printDebug("code is not available in the code element", codeVal);

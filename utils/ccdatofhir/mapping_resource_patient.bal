@@ -41,7 +41,7 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
         xml languageCommunicationElement = patientElement/<v3:languageCommunication|languageCommunication>;
         xml providerOrganizationElement = xmlContent/<v3:providerOrganization|providerOrganization>;
 
-        r4:Identifier?|error mapCcdaIdToFhirIdentifierResult = mapCcdaIdToFhirIdentifier(idElement);
+        uscore501:USCorePatientProfileIdentifier?|error mapCcdaIdToFhirIdentifierResult = mapCcdaIdToFhirIdentifier(idElement);
         if mapCcdaIdToFhirIdentifierResult is r4:Identifier {
             patient.identifier = [mapCcdaIdToFhirIdentifierResult];
         }
@@ -51,9 +51,9 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
             patient.address = [mapCcdaAddressToFhirAddressResult];
         }
 
-        r4:ContactPoint[] telecoms = [];
+        uscore501:USCorePatientProfileTelecom[] telecoms = [];
         foreach xml telecomInstance in telecomElement {
-            r4:ContactPoint?|error mapCcdaTelecomToFhirTelecomResult = mapCcdaTelecomToFhirTelecom(telecomInstance);
+            uscore501:USCorePatientProfileTelecom?|error mapCcdaTelecomToFhirTelecomResult = mapCcdaTelecomToFhirTelecom(telecomInstance);
             if mapCcdaTelecomToFhirTelecomResult is r4:ContactPoint {
                 telecoms.push(mapCcdaTelecomToFhirTelecomResult);
             }
@@ -63,15 +63,13 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
             patient.telecom = telecoms;
         }
 
-        patient.telecom = telecoms;
-
         xml nameElement = patientElement/<v3:name|name>;
         r4:HumanName?|error mapCcdaNametoFhirNameResult = mapCcdaNametoFhirName(nameElement);
         if mapCcdaNametoFhirNameResult is r4:HumanName {
             patient.name = [mapCcdaNametoFhirNameResult];
         }
 
-        uscore501:PatientGender mapCcdaGenderCodetoFhirGenderResult = mapCcdaGenderCodetoFhirGender(genderCodeElement);
+        uscore501:USCorePatientProfileGender mapCcdaGenderCodetoFhirGenderResult = mapCcdaGenderCodetoFhirGender(genderCodeElement);
         patient.gender = mapCcdaGenderCodetoFhirGenderResult;
 
         r4:dateTime? mapCCDABirthTimetoFHIRBirthDateResult = mapCcdaDateTimeToFhirDateTime(birthTimeElement);
@@ -89,7 +87,7 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
 
         r4:Coding?|error mapCCDALanguageCodetoFHIRCommunicationLanguageResult = mapCcdaCodingtoFhirCoding(languageCodeElement);
         if mapCCDALanguageCodetoFHIRCommunicationLanguageResult is r4:Coding {
-            uscore501:PatientCommunication patientCommunication = {language: {}};
+            uscore501:USCorePatientProfileCommunication patientCommunication = {language: {}};
             patientCommunication.language.coding = [mapCCDALanguageCodetoFHIRCommunicationLanguageResult];
             string|error? preferenceIdVal = preferenceIndElement.value;
             if preferenceIdVal is string {
@@ -157,7 +155,7 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
     return ();
 }
 
-isolated function mapCcdaGenderCodetoFhirGender(xml codingElement) returns uscore501:PatientGender {
+isolated function mapCcdaGenderCodetoFhirGender(xml codingElement) returns uscore501:USCorePatientProfileGender {
     string|error? codeVal = codingElement.code;
     if codeVal is string {
         match codeVal {

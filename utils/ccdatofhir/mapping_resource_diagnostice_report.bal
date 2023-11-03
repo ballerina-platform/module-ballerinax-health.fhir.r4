@@ -78,7 +78,7 @@ public isolated function mapCcdaDiagnosticReportToFhir(xml organizerElement) ret
     return ();
 }
 
-isolated function mapCcdatoFhirDiagnosticReportStatus(xml codingElement) returns uscore501:DiagnosticReportStatus {
+isolated function mapCcdatoFhirDiagnosticReportStatus(xml codingElement) returns uscore501:USCoreDiagnosticReportProfileLaboratoryReportingStatus {
     string codeVal = codingElement.data();
     return codeVal == "completed" ? uscore501:CODE_STATUS_FINAL : uscore501:CODE_STATUS_PARTIAL;
 }

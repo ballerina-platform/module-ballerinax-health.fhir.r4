@@ -20,6 +20,7 @@
 
 import ballerina/log;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.uscore501;
 
 xmlns "urn:hl7-org:v3" as v3;
 
@@ -27,7 +28,7 @@ xmlns "urn:hl7-org:v3" as v3;
 #
 # + idElement - C-CDA id element
 # + return - Return FHIR Identifier
-public isolated function mapCcdaIdToFhirIdentifier(xml idElement) returns r4:Identifier? {
+public isolated function mapCcdaIdToFhirIdentifier(xml idElement) returns uscore501:USCorePatientProfileIdentifier? {
     string|error? idVal = idElement.extension;
     string|error? rootVal = idElement.root;
     if rootVal !is string {
@@ -82,9 +83,10 @@ public isolated function mapCcdaAddressToFhirAddress(xml addressElement) returns
 #
 # + telecomElement - C-CDA telecom element
 # + return - Return FHIR ContactPoint
-public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns r4:ContactPoint? {
+public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns uscore501:USCorePatientProfileTelecom? {
     string|error? telecomUse = telecomElement.use;
     string|error? telecomValue = telecomElement.value;
+    string|error? telecomSystem = telecomElement.system;
 
     string? valueVal = ();
     if telecomValue is string {
@@ -116,10 +118,31 @@ public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns
         log:printDebug("Telecom use not available", telecomUse);
     }
 
+    uscore501:USCorePatientProfileTelecomSystem systemVal = "url";
+    if telecomSystem is string {
+        match telecomSystem {
+            "mailto" => {
+                systemVal = "email";
+            }
+            "http" => {
+                systemVal = "url";
+            }
+            "tel" => {
+                systemVal = "phone";
+            }
+            "fax" => {
+                systemVal = "fax";
+            }
+        }
+    } else {
+        log:printDebug("Telecom system not available", telecomSystem);
+    }
+
     if valueVal is string || useVal is string {
         return {
-            value: valueVal,
-            use: useVal
+            value: valueVal != () ? valueVal : "",
+            use: useVal != () ? useVal : (),
+            system: systemVal
         };
     }
     log:printDebug("telecom fields not available");
@@ -130,7 +153,7 @@ public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns
 #
 # + nameElement - C-CDA name element
 # + return - Return FHIR HumanName
-public isolated function mapCcdaNametoFhirName(xml nameElement) returns r4:HumanName? {
+public isolated function mapCcdaNametoFhirName(xml nameElement) returns uscore501:USCorePractitionerProfileName? {
     xml familyElement = nameElement/<v3:family|family>;
     xml givenElement = nameElement/<v3:given|given>;
 

@@ -40,15 +40,15 @@ public isolated function mapCcdaPractitionerToFhir(xml authorElement) returns us
 
         r4:CodeableConcept? qualificationCode = mapCcdaCodingtoFhirCodeableConcept(assignedAuthorCodeElement);
         if qualificationCode is r4:CodeableConcept {
-            uscore501:PractitionerQualification qualification = {
+            uscore501:USCorePractitionerProfileQualification qualification = {
                 code: qualificationCode
             };
             practitioner.qualification = [qualification];
         }
 
         xml assignedPersonNameElement = assignedPersonElement/<v3:name|name>;
-        r4:HumanName? name = mapCcdaNametoFhirName(assignedPersonNameElement);
-        if name is r4:HumanName {
+        uscore501:USCorePractitionerProfileName? name = mapCcdaNametoFhirName(assignedPersonNameElement);
+        if name is uscore501:USCorePractitionerProfileName {
             practitioner.name = [name];
         }
 
