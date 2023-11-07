@@ -603,9 +603,6 @@ public type ActivityDefinition record {|
 
     RESOURCE_NAME_ACTIVITYDEFINITION resourceType = RESOURCE_NAME_ACTIVITYDEFINITION;
 
-    BaseActivityDefinitionMeta meta = {
-        profile : [PROFILE_BASE_ACTIVITYDEFINITION]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] modifierExtension?;
@@ -632,6 +629,7 @@ public type ActivityDefinition record {|
     string 'version?;
     r4:Range timingRange?;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     string subtitle?;
     string name?;
     r4:uri implicitRules?;
@@ -654,7 +652,7 @@ public type ActivityDefinition record {|
     ActivityDefinitionDynamicValue[] dynamicValue?;
     r4:canonical[] library?;
     r4:ContactDetail[] editor?;
-    r4:Quantity quantity?;
+    r4:SimpleQuantity quantity?;
     r4:Timing timingTiming?;
     r4:Period timingPeriod?;
     r4:ContactDetail[] reviewer?;
@@ -666,32 +664,7 @@ public type ActivityDefinition record {|
     r4:Resource[] contained?;
     r4:Reference location?;
     r4:dateTime timingDateTime?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseActivityDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseActivityDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ActivityDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # ActivityDefinitionParticipantType enum
@@ -781,6 +754,8 @@ public enum ActivityDefinitionPriority {
     }
 }
 public type ActivityDefinitionParticipant record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept role?;
     r4:Extension[] modifierExtension?;
@@ -864,6 +839,8 @@ public enum ActivityDefinitionIntent {
     }
 }
 public type ActivityDefinitionDynamicValue record {|
+    *r4:BackboneElement;
+
     string path;
     r4:Extension[] extension?;
     r4:Expression expression;

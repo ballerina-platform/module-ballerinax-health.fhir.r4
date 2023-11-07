@@ -20,7 +20,7 @@
 import ballerinax/health.fhir.r4;
 import ballerina/log;
 
-const FHIR_IG = "international";
+const FHIR_IG = "International";
 
 # Initializer for the module
 # + return - returns error if error occurred
@@ -33,7 +33,7 @@ function init() returns r4:FHIRError? {
     r4:Terminology terminology = check terminologyLoader.load();
 
     readonly & r4:IGInfoRecord baseIgRecord = {
-        title: "international",
+        title: "International",
         name: "international",
         terminology: terminology,
         profiles: {
@@ -131,6 +131,11 @@ function init() returns r4:FHIRError? {
                 url: "http://hl7.org/fhir/StructureDefinition/DocumentReference",
                 resourceType: "DocumentReference",
                 modelType: DocumentReference
+            },
+            "http://hl7.org/fhir/StructureDefinition/Parameters": {
+                url: "http://hl7.org/fhir/StructureDefinition/Parameters",
+                resourceType: "Parameters",
+                modelType: Parameters
             },
             "http://hl7.org/fhir/StructureDefinition/CoverageEligibilityResponse": {
                 url: "http://hl7.org/fhir/StructureDefinition/CoverageEligibilityResponse",
@@ -297,6 +302,11 @@ function init() returns r4:FHIRError? {
                 resourceType: "InsurancePlan",
                 modelType: InsurancePlan
             },
+            "http://hl7.org/fhir/StructureDefinition/ActivityDefinition": {
+                url: "http://hl7.org/fhir/StructureDefinition/ActivityDefinition",
+                resourceType: "ActivityDefinition",
+                modelType: ActivityDefinition
+            },
             "http://hl7.org/fhir/StructureDefinition/Linkage": {
                 url: "http://hl7.org/fhir/StructureDefinition/Linkage",
                 resourceType: "Linkage",
@@ -397,11 +407,6 @@ function init() returns r4:FHIRError? {
                 resourceType: "EpisodeOfCare",
                 modelType: EpisodeOfCare
             },
-            "http://hl7.org/fhir/StructureDefinition/OperationOutcome": {
-                url: "http://hl7.org/fhir/StructureDefinition/OperationOutcome",
-                resourceType: "OperationOutcome",
-                modelType: OperationOutcome
-            },
             "http://hl7.org/fhir/StructureDefinition/Procedure": {
                 url: "http://hl7.org/fhir/StructureDefinition/Procedure",
                 resourceType: "Procedure",
@@ -416,11 +421,6 @@ function init() returns r4:FHIRError? {
                 url: "http://hl7.org/fhir/StructureDefinition/ConceptMap",
                 resourceType: "ConceptMap",
                 modelType: ConceptMap
-            },
-            "http://hl7.org/fhir/StructureDefinition/ValueSet": {
-                url: "http://hl7.org/fhir/StructureDefinition/ValueSet",
-                resourceType: "ValueSet",
-                modelType: ValueSet
             },
             "http://hl7.org/fhir/StructureDefinition/OperationDefinition": {
                 url: "http://hl7.org/fhir/StructureDefinition/OperationDefinition",
@@ -492,11 +492,6 @@ function init() returns r4:FHIRError? {
                 resourceType: "Flag",
                 modelType: Flag
             },
-            "http://hl7.org/fhir/StructureDefinition/CodeSystem": {
-                url: "http://hl7.org/fhir/StructureDefinition/CodeSystem",
-                resourceType: "CodeSystem",
-                modelType: CodeSystem
-            },
             "http://hl7.org/fhir/StructureDefinition/SubstanceNucleicAcid": {
                 url: "http://hl7.org/fhir/StructureDefinition/SubstanceNucleicAcid",
                 resourceType: "SubstanceNucleicAcid",
@@ -506,11 +501,6 @@ function init() returns r4:FHIRError? {
                 url: "http://hl7.org/fhir/StructureDefinition/RiskEvidenceSynthesis",
                 resourceType: "RiskEvidenceSynthesis",
                 modelType: RiskEvidenceSynthesis
-            },
-            "http://hl7.org/fhir/StructureDefinition/vitalsigns": {
-                url: "http://hl7.org/fhir/StructureDefinition/vitalsigns",
-                resourceType: "Observation",
-                modelType: observation_vitalsigns
             },
             "http://hl7.org/fhir/StructureDefinition/AppointmentResponse": {
                 url: "http://hl7.org/fhir/StructureDefinition/AppointmentResponse",
@@ -758,12 +748,12 @@ function init() returns r4:FHIRError? {
                 modelType: Location
             }
         },
-        searchParameters: [BASE_IG_SEARCH_PARAMS_1, BASE_IG_SEARCH_PARAMS_2, BASE_IG_SEARCH_PARAMS_3, BASE_IG_SEARCH_PARAMS_4, BASE_IG_SEARCH_PARAMS_5]
+        searchParameters: [INTERNATIONAL_IG_SEARCH_PARAMS_1, INTERNATIONAL_IG_SEARCH_PARAMS_2, INTERNATIONAL_IG_SEARCH_PARAMS_3, INTERNATIONAL_IG_SEARCH_PARAMS_4, INTERNATIONAL_IG_SEARCH_PARAMS_5]
     };
     r4:FHIRImplementationGuide baseImplementationGuide = new(baseIgRecord);
     check fhirRegistry.addImplementationGuide(baseImplementationGuide);
 
-    log:printDebug("FHIR R4 Base Module initialized.");
+    log:printDebug("FHIR R4 International Module initialized.");
 }
 
 # This empty function is used to initialize the module by other modules/packages.

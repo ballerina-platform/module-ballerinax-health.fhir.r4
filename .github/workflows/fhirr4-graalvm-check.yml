@@ -1,0 +1,51 @@
+name: FHIRR4 GraalVM Check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: 'latest'
+          java-version: '11'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check GraalVM installation
+        run: |
+          echo "GRAALVM_HOME: ${{ env.GRAALVM_HOME }}"
+          echo "JAVA_HOME: ${{ env.JAVA_HOME }}"
+          native-image --version
+
+      - name: Set Up Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        with:
+          version: 2201.7.0
+
+      - name: Setup Java and Maven
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Create settings.xml
+        run: echo '<settings>
+              <servers>
+                <server>
+                  <id>ballerina-language-repo</id>
+                  <username>${{ github.actor }}</username>
+                  <password>${{ secrets.GITHUB_TOKEN }}</password>
+                </server>
+              </servers>
+            </settings>' > ~/.m2/settings.xml
+
+      - name: Run maven test
+        run: |
+         mvn clean install -PrunGraalVMTest -f fhirr4

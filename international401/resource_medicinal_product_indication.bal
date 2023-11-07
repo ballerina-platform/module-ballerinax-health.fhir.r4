@@ -195,9 +195,6 @@ public type MedicinalProductIndication record {|
 
     RESOURCE_NAME_MEDICINALPRODUCTINDICATION resourceType = RESOURCE_NAME_MEDICINALPRODUCTINDICATION;
 
-    BaseMedicinalProductIndicationMeta meta = {
-        profile : [PROFILE_BASE_MEDICINALPRODUCTINDICATION]
-    };
     r4:Extension[] extension?;
     r4:CodeableConcept intendedEffect?;
     r4:Reference[] subject?;
@@ -210,36 +207,12 @@ public type MedicinalProductIndication record {|
     r4:Resource[] contained?;
     MedicinalProductIndicationOtherTherapy[] otherTherapy?;
     r4:CodeableConcept[] comorbidity?;
+    r4:Meta meta?;
     r4:CodeableConcept diseaseSymptomProcedure?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicinalProductIndicationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicinalProductIndicationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicinalProductIndication"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR MedicinalProductIndicationOtherTherapy datatype record.
@@ -315,6 +288,8 @@ public type BaseMedicinalProductIndicationMeta record {|
     }
 }
 public type MedicinalProductIndicationOtherTherapy record {|
+    *r4:BackboneElement;
+
     r4:Reference medicationReference;
     r4:Extension[] extension?;
     r4:CodeableConcept therapyRelationshipType;

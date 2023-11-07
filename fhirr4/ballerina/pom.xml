@@ -23,7 +23,7 @@
     <parent>
         <artifactId>fhirr4</artifactId>
         <groupId>io.ballerinax</groupId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -148,6 +148,38 @@
                                     <executable>bal</executable>
                                     <arguments>
                                         <argument>test</argument>
+                                        <argument>${project.build.outputDirectory}/fhirservice</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>runGraalVMTest</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>bal-test</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>bal</executable>
+                                    <arguments>
+                                        <argument>test</argument>
+                                        <argument>--graalvm</argument>
+                                        <argument>--graalvm-build-options="-J-Xmx7G"</argument>
                                         <argument>${project.build.outputDirectory}/fhirservice</argument>
                                     </arguments>
                                 </configuration>

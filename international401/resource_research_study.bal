@@ -336,9 +336,6 @@ public type ResearchStudy record {|
 
     RESOURCE_NAME_RESEARCHSTUDY resourceType = RESOURCE_NAME_RESEARCHSTUDY;
 
-    BaseResearchStudyMeta meta = {
-        profile : [PROFILE_BASE_RESEARCHSTUDY]
-    };
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
     r4:Reference sponsor?;
@@ -366,36 +363,12 @@ public type ResearchStudy record {|
     r4:CodeableConcept[] condition?;
     r4:Resource[] contained?;
     r4:Reference[] site?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept[] location?;
     r4:CodeableConcept[] category?;
     ResearchStudyStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseResearchStudyMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseResearchStudyMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ResearchStudy"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ResearchStudyArm datatype record.
@@ -471,6 +444,8 @@ public type BaseResearchStudyMeta record {|
     }
 }
 public type ResearchStudyArm record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name;
@@ -542,6 +517,8 @@ public type ResearchStudyArm record {|
     }
 }
 public type ResearchStudyObjective record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name?;

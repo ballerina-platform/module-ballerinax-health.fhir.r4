@@ -327,9 +327,6 @@ public type Media record {|
 
     RESOURCE_NAME_MEDIA resourceType = RESOURCE_NAME_MEDIA;
 
-    BaseMediaMeta meta = {
-        profile : [PROFILE_BASE_MEDIA]
-    };
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
     r4:Extension[] extension?;
@@ -356,36 +353,12 @@ public type Media record {|
     r4:Period createdPeriod?;
     r4:CodeableConcept bodySite?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:positiveInt width?;
     r4:uri implicitRules?;
     r4:Reference device?;
     MediaStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMediaMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMediaMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Media"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # MediaStatus enum

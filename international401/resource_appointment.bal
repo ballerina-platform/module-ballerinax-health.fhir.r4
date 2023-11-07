@@ -320,9 +320,6 @@ public type Appointment record {|
 
     RESOURCE_NAME_APPOINTMENT resourceType = RESOURCE_NAME_APPOINTMENT;
 
-    BaseAppointmentMeta meta = {
-        profile : [PROFILE_BASE_APPOINTMENT]
-    };
     r4:CodeableConcept[] serviceType?;
     r4:Extension[] extension?;
     r4:CodeableConcept[] specialty?;
@@ -350,37 +347,13 @@ public type Appointment record {|
     r4:Reference[] supportingInformation?;
     r4:unsignedInt priority?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string comment?;
     r4:CodeableConcept cancelationReason?;
     string patientInstruction?;
     AppointmentStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseAppointmentMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAppointmentMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Appointment"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # AppointmentStatus enum
@@ -498,6 +471,8 @@ public enum AppointmentParticipantStatus {
     }
 }
 public type AppointmentParticipant record {|
+    *r4:BackboneElement;
+
     r4:Reference actor?;
     r4:Extension[] extension?;
     r4:Period period?;

@@ -190,9 +190,6 @@ public type Schedule record {|
 
     RESOURCE_NAME_SCHEDULE resourceType = RESOURCE_NAME_SCHEDULE;
 
-    BaseScheduleMeta meta = {
-        profile : [PROFILE_BASE_SCHEDULE]
-    };
     r4:CodeableConcept[] serviceType?;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -207,35 +204,11 @@ public type Schedule record {|
     }
     r4:Reference[] actor;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string comment?;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseScheduleMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseScheduleMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Schedule"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 

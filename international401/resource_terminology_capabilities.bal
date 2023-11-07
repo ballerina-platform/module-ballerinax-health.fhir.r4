@@ -335,9 +335,6 @@ public type TerminologyCapabilities record {|
 
     RESOURCE_NAME_TERMINOLOGYCAPABILITIES resourceType = RESOURCE_NAME_TERMINOLOGYCAPABILITIES;
 
-    BaseTerminologyCapabilitiesMeta meta = {
-        profile : [PROFILE_BASE_TERMINOLOGYCAPABILITIES]
-    };
     r4:dateTime date;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -363,38 +360,14 @@ public type TerminologyCapabilities record {|
     r4:uri url?;
     TerminologyCapabilitiesExpansion expansion?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name?;
     TerminologyCapabilitiesTranslation translation?;
     r4:uri implicitRules?;
     string publisher?;
     r4:UsageContext[] useContext?;
     TerminologyCapabilitiesStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseTerminologyCapabilitiesMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseTerminologyCapabilitiesMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/TerminologyCapabilities"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR TerminologyCapabilitiesImplementation datatype record.
@@ -460,6 +433,8 @@ public type BaseTerminologyCapabilitiesMeta record {|
     }
 }
 public type TerminologyCapabilitiesImplementation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description;
@@ -570,6 +545,8 @@ public type TerminologyCapabilitiesImplementation record {|
     }
 }
 public type TerminologyCapabilitiesCodeSystemVersion record {|
+    *r4:BackboneElement;
+
     TerminologyCapabilitiesCodeSystemVersionFilter[] filter?;
     r4:Extension[] extension?;
     boolean isDefault?;
@@ -634,6 +611,8 @@ public type TerminologyCapabilitiesCodeSystemVersion record {|
     }
 }
 public type TerminologyCapabilitiesValidateCode record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     boolean translations;
     r4:Extension[] modifierExtension?;
@@ -693,6 +672,8 @@ public type TerminologyCapabilitiesValidateCode record {|
     }
 }
 public type TerminologyCapabilitiesTranslation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     boolean needsMap;
@@ -792,6 +773,8 @@ public type TerminologyCapabilitiesTranslation record {|
     }
 }
 public type TerminologyCapabilitiesExpansion record {|
+    *r4:BackboneElement;
+
     r4:markdown textFilter?;
     r4:Extension[] extension?;
     boolean incomplete?;
@@ -875,6 +858,8 @@ public type TerminologyCapabilitiesExpansion record {|
     }
 }
 public type TerminologyCapabilitiesCodeSystem record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     boolean subsumption?;
@@ -936,6 +921,8 @@ public type TerminologyCapabilitiesCodeSystem record {|
     }
 }
 public type TerminologyCapabilitiesClosure record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     boolean translation?;
@@ -1018,6 +1005,8 @@ public enum TerminologyCapabilitiesKind {
     }
 }
 public type TerminologyCapabilitiesExpansionParameter record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string documentation?;
     r4:Extension[] modifierExtension?;
@@ -1088,6 +1077,8 @@ public type TerminologyCapabilitiesExpansionParameter record {|
     }
 }
 public type TerminologyCapabilitiesCodeSystemVersionFilter record {|
+    *r4:BackboneElement;
+
     @constraint:Array {
        minLength: 1
     }
@@ -1169,6 +1160,8 @@ public enum TerminologyCapabilitiesStatus {
     }
 }
 public type TerminologyCapabilitiesSoftware record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name;

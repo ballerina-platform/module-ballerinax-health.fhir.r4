@@ -276,9 +276,6 @@ public type SubstanceSpecification record {|
 
     RESOURCE_NAME_SUBSTANCESPECIFICATION resourceType = RESOURCE_NAME_SUBSTANCESPECIFICATION;
 
-    BaseSubstanceSpecificationMeta meta = {
-        profile : [PROFILE_BASE_SUBSTANCESPECIFICATION]
-    };
     r4:Reference polymer?;
     r4:Extension[] extension?;
     SubstanceSpecificationCode[] code?;
@@ -299,37 +296,13 @@ public type SubstanceSpecification record {|
     r4:Reference sourceMaterial?;
     r4:Resource[] contained?;
     r4:Reference nucleicAcid?;
+    r4:Meta meta?;
     r4:CodeableConcept domain?;
     SubstanceSpecificationName[] name?;
     r4:uri implicitRules?;
     string comment?;
     r4:CodeableConcept status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSubstanceSpecificationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSubstanceSpecificationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/SubstanceSpecification"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR SubstanceSpecificationRelationship datatype record.
@@ -485,6 +458,8 @@ public type BaseSubstanceSpecificationMeta record {|
     }
 }
 public type SubstanceSpecificationRelationship record {|
+    *r4:BackboneElement;
+
     r4:Ratio amountRatio?;
     r4:CodeableConcept amountType?;
     r4:Extension[] extension?;
@@ -594,6 +569,8 @@ public type SubstanceSpecificationRelationship record {|
     }
 }
 public type SubstanceSpecificationCode record {|
+    *r4:BackboneElement;
+
     r4:dateTime statusDate?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
@@ -717,6 +694,8 @@ public type SubstanceSpecificationCode record {|
     }
 }
 public type SubstanceSpecificationStructure record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept opticalActivity?;
     r4:Extension[] modifierExtension?;
@@ -822,6 +801,8 @@ public type SubstanceSpecificationStructure record {|
     }
 }
 public type SubstanceSpecificationStructureIsotope record {|
+    *r4:BackboneElement;
+
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     r4:CodeableConcept substitution?;
@@ -965,6 +946,8 @@ public type SubstanceSpecificationStructureIsotope record {|
     }
 }
 public type SubstanceSpecificationName record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] domain?;
     r4:CodeableConcept[] jurisdiction?;
@@ -1092,6 +1075,8 @@ public type SubstanceSpecificationName record {|
     }
 }
 public type SubstanceSpecificationProperty record {|
+    *r4:BackboneElement;
+
     r4:Quantity amountQuantity?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
@@ -1177,6 +1162,8 @@ public type SubstanceSpecificationProperty record {|
     }
 }
 public type SubstanceSpecificationStructureRepresentation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Attachment attachment?;
     r4:Extension[] modifierExtension?;
@@ -1258,6 +1245,8 @@ public type SubstanceSpecificationStructureRepresentation record {|
     }
 }
 public type SubstanceSpecificationNameOfficial record {|
+    *r4:BackboneElement;
+
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:CodeableConcept authority?;
@@ -1389,6 +1378,8 @@ public type SubstanceSpecificationNameOfficial record {|
     }
 }
 public type SubstanceSpecificationMoiety record {|
+    *r4:BackboneElement;
+
     r4:Quantity amountQuantity?;
     r4:Identifier identifier?;
     r4:Extension[] extension?;
@@ -1475,6 +1466,8 @@ public type SubstanceSpecificationMoiety record {|
     }
 }
 public type SubstanceSpecificationStructureIsotopeMolecularWeight record {|
+    *r4:BackboneElement;
+
     r4:Quantity amount?;
     r4:Extension[] extension?;
     r4:CodeableConcept method?;

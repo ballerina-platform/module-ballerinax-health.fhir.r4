@@ -205,9 +205,6 @@ public type Group record {|
 
     RESOURCE_NAME_GROUP resourceType = RESOURCE_NAME_GROUP;
 
-    BaseGroupMeta meta = {
-        profile : [PROFILE_BASE_GROUP]
-    };
     boolean actual;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -220,37 +217,13 @@ public type Group record {|
     GroupCharacteristic[] characteristic?;
     r4:Reference managingEntity?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     GroupMember[] member?;
     string name?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseGroupMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseGroupMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Group"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR GroupMember datatype record.
@@ -326,6 +299,8 @@ public type BaseGroupMeta record {|
     }
 }
 public type GroupMember record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     boolean inactive?;
@@ -467,6 +442,8 @@ public enum GroupType {
     }
 }
 public type GroupCharacteristic record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept valueCodeableConcept;
     boolean valueBoolean;
     r4:Extension[] extension?;

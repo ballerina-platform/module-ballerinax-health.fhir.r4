@@ -385,14 +385,11 @@ public type Immunization record {|
 
     RESOURCE_NAME_IMMUNIZATION resourceType = RESOURCE_NAME_IMMUNIZATION;
 
-    BaseImmunizationMeta meta = {
-        profile : [PROFILE_BASE_IMMUNIZATION]
-    };
     r4:Annotation[] note?;
     boolean primarySource?;
     r4:Extension[] extension?;
     ImmunizationEducation[] education?;
-    r4:Quantity doseQuantity?;
+    r4:SimpleQuantity doseQuantity?;
     r4:Extension[] modifierExtension?;
     r4:Reference[] reasonReference?;
     r4:code language?;
@@ -416,6 +413,7 @@ public type Immunization record {|
     r4:Resource[] contained?;
     r4:CodeableConcept site?;
     r4:CodeableConcept route?;
+    r4:Meta meta?;
     ImmunizationProtocolApplied[] protocolApplied?;
     r4:uri implicitRules?;
     r4:CodeableConcept reportOrigin?;
@@ -424,32 +422,7 @@ public type Immunization record {|
     string occurrenceString;
     r4:CodeableConcept fundingSource?;
     ImmunizationStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseImmunizationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseImmunizationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Immunization"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ImmunizationPerformer datatype record.
@@ -515,6 +488,8 @@ public type BaseImmunizationMeta record {|
     }
 }
 public type ImmunizationPerformer record {|
+    *r4:BackboneElement;
+
     r4:Reference actor;
     r4:Extension[] extension?;
     r4:CodeableConcept 'function?;
@@ -612,6 +587,8 @@ public enum ImmunizationStatus {
     }
 }
 public type ImmunizationEducation record {|
+    *r4:BackboneElement;
+
     r4:uri reference?;
     r4:Extension[] extension?;
     string documentType?;
@@ -694,6 +671,8 @@ public type ImmunizationEducation record {|
     }
 }
 public type ImmunizationReaction record {|
+    *r4:BackboneElement;
+
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -815,6 +794,8 @@ public type ImmunizationReaction record {|
     }
 }
 public type ImmunizationProtocolApplied record {|
+    *r4:BackboneElement;
+
     string doseNumberString;
     r4:Extension[] extension?;
     r4:positiveInt seriesDosesPositiveInt?;

@@ -218,9 +218,6 @@ public type Endpoint record {|
 
     RESOURCE_NAME_ENDPOINT resourceType = RESOURCE_NAME_ENDPOINT;
 
-    BaseEndpointMeta meta = {
-        profile : [PROFILE_BASE_ENDPOINT]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Period period?;
@@ -234,6 +231,7 @@ public type Endpoint record {|
        minLength: 1
     }
     r4:CodeableConcept[] payloadType;
+    r4:Meta meta?;
     r4:ContactPoint[] contact?;
     string name?;
     string[] header?;
@@ -242,32 +240,7 @@ public type Endpoint record {|
     r4:Narrative text?;
     r4:code[] payloadMimeType?;
     EndpointStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseEndpointMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseEndpointMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Endpoint"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # EndpointStatus enum

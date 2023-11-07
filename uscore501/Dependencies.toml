@@ -44,7 +44,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "crypto"
-version = "2.4.0"
+version = "2.4.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "time"}
@@ -64,7 +64,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "http"
-version = "2.9.0"
+version = "2.9.5"
 dependencies = [
 	{org = "ballerina", name = "auth"},
 	{org = "ballerina", name = "cache"},
@@ -307,10 +307,11 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4"
-version = "4.0.0"
+version = "4.1.5"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
+	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jwt"},
 	{org = "ballerina", name = "lang.value"},
 	{org = "ballerina", name = "log"},
@@ -327,7 +328,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.uscore501"
-version = "1.0.8"
+version = "1.2.1"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "log"},

@@ -264,9 +264,6 @@ public type DocumentReference record {|
 
     RESOURCE_NAME_DOCUMENTREFERENCE resourceType = RESOURCE_NAME_DOCUMENTREFERENCE;
 
-    BaseDocumentReferenceMeta meta = {
-        profile : [PROFILE_BASE_DOCUMENTREFERENCE]
-    };
     r4:instant date?;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -285,6 +282,7 @@ public type DocumentReference record {|
     DocumentReferenceContent[] content;
     r4:Resource[] contained?;
     DocumentReferenceDocStatus docStatus?;
+    r4:Meta meta?;
     DocumentReferenceContext context?;
     r4:uri implicitRules?;
     string id?;
@@ -293,32 +291,7 @@ public type DocumentReference record {|
     DocumentReferenceRelatesTo[] relatesTo?;
     r4:Reference authenticator?;
     DocumentReferenceStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseDocumentReferenceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseDocumentReferenceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/DocumentReference"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR DocumentReferenceContext datatype record.
@@ -434,6 +407,8 @@ public type BaseDocumentReferenceMeta record {|
     }
 }
 public type DocumentReferenceContext record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Reference[] related?;
@@ -509,6 +484,8 @@ public type DocumentReferenceContext record {|
     }
 }
 public type DocumentReferenceRelatesTo record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     DocumentReferenceRelatesToCode code;
     r4:Extension[] modifierExtension?;
@@ -579,6 +556,8 @@ public type DocumentReferenceRelatesTo record {|
     }
 }
 public type DocumentReferenceContent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Attachment attachment;
     r4:Extension[] modifierExtension?;

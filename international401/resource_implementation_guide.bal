@@ -299,9 +299,6 @@ public type ImplementationGuide record {|
 
     RESOURCE_NAME_IMPLEMENTATIONGUIDE resourceType = RESOURCE_NAME_IMPLEMENTATIONGUIDE;
 
-    BaseImplementationGuideMeta meta = {
-        profile : [PROFILE_BASE_IMPLEMENTATIONGUIDE]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -327,37 +324,13 @@ public type ImplementationGuide record {|
     r4:uri url;
     r4:code license?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name;
     r4:uri implicitRules?;
     string publisher?;
     r4:UsageContext[] useContext?;
     ImplementationGuideStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseImplementationGuideMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseImplementationGuideMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ImplementationGuide"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ImplementationGuideDefinitionGrouping datatype record.
@@ -423,6 +396,8 @@ public type BaseImplementationGuideMeta record {|
     }
 }
 public type ImplementationGuideDefinitionGrouping record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name;
@@ -523,6 +498,8 @@ public type ImplementationGuideDefinitionGrouping record {|
     }
 }
 public type ImplementationGuideDefinition record {|
+    *r4:BackboneElement;
+
     ImplementationGuideDefinitionTemplate[] template?;
     r4:Extension[] extension?;
     @constraint:Array {
@@ -607,6 +584,8 @@ public enum ImplementationGuideDefinitionPageGeneration {
     }
 }
 public type ImplementationGuideDefinitionParameter record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     ImplementationGuideDefinitionParameterCode code;
     r4:Extension[] modifierExtension?;
@@ -687,6 +666,8 @@ public type ImplementationGuideDefinitionParameter record {|
     }
 }
 public type ImplementationGuideManifestPage record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string[] anchor?;
     r4:Extension[] modifierExtension?;
@@ -758,6 +739,8 @@ public type ImplementationGuideManifestPage record {|
     }
 }
 public type ImplementationGuideGlobal record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:canonical profile;
@@ -858,6 +841,8 @@ public type ImplementationGuideGlobal record {|
     }
 }
 public type ImplementationGuideManifest record {|
+    *r4:BackboneElement;
+
     string[] image?;
     r4:Extension[] extension?;
     string[] other?;
@@ -874,12 +859,12 @@ public type ImplementationGuideManifest record {|
 # FHIR ImplementationGuideDefinitionResource datatype record.
 #
 # + reference - Where this resource is found.
-# + exampleCanonical - If true or a reference, indicates the resource is an example instance. If a reference is present, indicates that the example is an example of the specified profile.
+# + exampleImplementationGuideCanonical - If true or a reference, indicates the resource is an example instance. If a reference is present, indicates that the example is an example of the specified profile.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + groupingId - Reference to the id of the grouping this resource appears in.
 # + fhirVersion - Indicates the FHIR Version(s) this artifact is intended to apply to. If no versions are specified, the resource is assumed to apply to all the versions stated in ImplementationGuide.fhirVersion.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + exampleBoolean - If true or a reference, indicates the resource is an example instance. If a reference is present, indicates that the example is an example of the specified profile.
+# + exampleImplementationGuideBoolean - If true or a reference, indicates the resource is an example instance. If a reference is present, indicates that the example is an example of the specified profile.
 # + name - A human assigned name for the resource. All resources SHOULD have a name, but the name may be extracted from the resource (e.g. ValueSet.name).
 # + description - A description of the reason that a resource has been included in the implementation guide.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
@@ -896,8 +881,8 @@ public type ImplementationGuideManifest record {|
             description: "Where this resource is found.",
             path: "ImplementationGuide.definition.resource.reference"
         },
-        "exampleCanonical": {
-            name: "exampleCanonical",
+        "exampleImplementationGuideCanonical": {
+            name: "exampleImplementationGuideCanonical",
             dataType: r4:canonical,
             min: 0,
             max: 1,
@@ -941,8 +926,8 @@ public type ImplementationGuideManifest record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ImplementationGuide.definition.resource.modifierExtension"
         },
-        "exampleBoolean": {
-            name: "exampleBoolean",
+        "exampleImplementationGuideBoolean": {
+            name: "exampleImplementationGuideBoolean",
             dataType: boolean,
             min: 0,
             max: 1,
@@ -984,13 +969,15 @@ public type ImplementationGuideManifest record {|
     }
 }
 public type ImplementationGuideDefinitionResource record {|
+    *r4:BackboneElement;
+
     r4:Reference reference;
-    r4:canonical exampleCanonical?;
+    r4:canonical exampleImplementationGuideCanonical?;
     r4:Extension[] extension?;
     r4:id groupingId?;
     r4:code[] fhirVersion?;
     r4:Extension[] modifierExtension?;
-    boolean exampleBoolean?;
+    boolean exampleImplementationGuideBoolean?;
     string name?;
     string description?;
     string id?;
@@ -999,11 +986,11 @@ public type ImplementationGuideDefinitionResource record {|
 # FHIR ImplementationGuideManifestResource datatype record.
 #
 # + reference - Where this resource is found.
-# + exampleCanonical - If true or a reference, indicates the resource is an example instance. If a reference is present, indicates that the example is an example of the specified profile.
+# + exampleImplementationGuideCanonical - If true or a reference, indicates the resource is an example instance. If a reference is present, indicates that the example is an example of the specified profile.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + relativePath - The relative path for primary page for this resource within the IG.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + exampleBoolean - If true or a reference, indicates the resource is an example instance. If a reference is present, indicates that the example is an example of the specified profile.
+# + exampleImplementationGuideBoolean - If true or a reference, indicates the resource is an example instance. If a reference is present, indicates that the example is an example of the specified profile.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
     name: "ImplementationGuideManifestResource",
@@ -1018,8 +1005,8 @@ public type ImplementationGuideDefinitionResource record {|
             description: "Where this resource is found.",
             path: "ImplementationGuide.manifest.resource.reference"
         },
-        "exampleCanonical": {
-            name: "exampleCanonical",
+        "exampleImplementationGuideCanonical": {
+            name: "exampleImplementationGuideCanonical",
             dataType: r4:canonical,
             min: 0,
             max: 1,
@@ -1054,8 +1041,8 @@ public type ImplementationGuideDefinitionResource record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ImplementationGuide.manifest.resource.modifierExtension"
         },
-        "exampleBoolean": {
-            name: "exampleBoolean",
+        "exampleImplementationGuideBoolean": {
+            name: "exampleImplementationGuideBoolean",
             dataType: boolean,
             min: 0,
             max: 1,
@@ -1079,12 +1066,14 @@ public type ImplementationGuideDefinitionResource record {|
     }
 }
 public type ImplementationGuideManifestResource record {|
+    *r4:BackboneElement;
+
     r4:Reference reference;
-    r4:canonical exampleCanonical?;
+    r4:canonical exampleImplementationGuideCanonical?;
     r4:Extension[] extension?;
     r4:urlType relativePath?;
     r4:Extension[] modifierExtension?;
-    boolean exampleBoolean?;
+    boolean exampleImplementationGuideBoolean?;
     string id?;
 |};
 
@@ -1169,6 +1158,8 @@ public enum ImplementationGuideStatus {
     }
 }
 public type ImplementationGuideDefinitionTemplate record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:code code;
     r4:Extension[] modifierExtension?;
@@ -1181,10 +1172,10 @@ public type ImplementationGuideDefinitionTemplate record {|
 #
 # + generation - A code that indicates how the page is generated.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + nameReference - The source address for the page.
-# + nameUrl - The source address for the page.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + nameImplementationGuideReference - The source address for the page.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + nameImplementationGuideUrl - The source address for the page.
 # + title - A short title used to represent this page in navigational structures such as table of contents, bread crumbs, etc.
 @r4:DataTypeDefinition {
     name: "ImplementationGuideDefinitionPage",
@@ -1208,24 +1199,6 @@ public type ImplementationGuideDefinitionTemplate record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ImplementationGuide.definition.page.extension"
         },
-        "nameReference": {
-            name: "nameReference",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The source address for the page.",
-            path: "ImplementationGuide.definition.page.name[x]"
-        },
-        "nameUrl": {
-            name: "nameUrl",
-            dataType: r4:urlType,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The source address for the page.",
-            path: "ImplementationGuide.definition.page.name[x]"
-        },
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -1235,6 +1208,15 @@ public type ImplementationGuideDefinitionTemplate record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ImplementationGuide.definition.page.modifierExtension"
         },
+        "nameImplementationGuideReference": {
+            name: "nameImplementationGuideReference",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The source address for the page.",
+            path: "ImplementationGuide.definition.page.name[x]"
+        },
         "id": {
             name: "id",
             dataType: string,
@@ -1243,6 +1225,15 @@ public type ImplementationGuideDefinitionTemplate record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ImplementationGuide.definition.page.id"
+        },
+        "nameImplementationGuideUrl": {
+            name: "nameImplementationGuideUrl",
+            dataType: r4:urlType,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The source address for the page.",
+            path: "ImplementationGuide.definition.page.name[x]"
         },
         "title": {
             name: "title",
@@ -1260,12 +1251,14 @@ public type ImplementationGuideDefinitionTemplate record {|
     }
 }
 public type ImplementationGuideDefinitionPage record {|
+    *r4:BackboneElement;
+
     ImplementationGuideDefinitionPageGeneration generation;
     r4:Extension[] extension?;
-    r4:Reference nameReference;
-    r4:urlType nameUrl;
     r4:Extension[] modifierExtension?;
+    r4:Reference nameImplementationGuideReference;
     string id?;
+    r4:urlType nameImplementationGuideUrl;
     string title;
 |};
 
@@ -1356,6 +1349,8 @@ public enum ImplementationGuideDefinitionParameterCode {
     }
 }
 public type ImplementationGuideDependsOn record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:id packageId?;

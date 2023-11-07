@@ -150,11 +150,9 @@ public type SubstanceProtein record {|
 
     RESOURCE_NAME_SUBSTANCEPROTEIN resourceType = RESOURCE_NAME_SUBSTANCEPROTEIN;
 
-    BaseSubstanceProteinMeta meta = {
-        profile : [PROFILE_BASE_SUBSTANCEPROTEIN]
-    };
     r4:Resource[] contained?;
     r4:Extension[] extension?;
+    r4:Meta meta?;
     r4:Extension[] modifierExtension?;
     string[] disulfideLinkage?;
     r4:uri implicitRules?;
@@ -164,32 +162,7 @@ public type SubstanceProtein record {|
     r4:Narrative text?;
     r4:integer numberOfSubunits?;
     r4:CodeableConcept sequenceType?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSubstanceProteinMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSubstanceProteinMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/SubstanceProtein"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR SubstanceProteinSubunit datatype record.
@@ -315,6 +288,8 @@ public type BaseSubstanceProteinMeta record {|
     }
 }
 public type SubstanceProteinSubunit record {|
+    *r4:BackboneElement;
+
     string sequence?;
     r4:Extension[] extension?;
     string cTerminalModification?;

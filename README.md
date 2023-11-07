@@ -40,6 +40,10 @@ Execute the commands below to build from the source.
     ```shell
     mvn clean install -PrunBalTest
     ```
+- Use the following to run tests with Graalvm native image
+    ```shell
+    mvn clean install -PrunGraalVMTest
+    ```
 - To publish fhirservice packages, navigate to the `fhirr4/ballerina/target/classes/fhirservice` directory and run the Ballerina push command
     - To the Ballerina central 
     ```shell

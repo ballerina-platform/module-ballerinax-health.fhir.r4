@@ -243,9 +243,6 @@ public type InsurancePlan record {|
 
     RESOURCE_NAME_INSURANCEPLAN resourceType = RESOURCE_NAME_INSURANCEPLAN;
 
-    BaseInsurancePlanMeta meta = {
-        profile : [PROFILE_BASE_INSURANCEPLAN]
-    };
     InsurancePlanCoverage[] coverage?;
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
@@ -257,6 +254,7 @@ public type InsurancePlan record {|
     r4:Reference[] network?;
     r4:Resource[] contained?;
     r4:Reference[] endpoint?;
+    r4:Meta meta?;
     InsurancePlanContact[] contact?;
     string name?;
     string[] alias?;
@@ -267,32 +265,7 @@ public type InsurancePlan record {|
     InsurancePlanPlan[] plan?;
     r4:Reference[] coverageArea?;
     InsurancePlanStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseInsurancePlanMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseInsurancePlanMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/InsurancePlan"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR InsurancePlanPlanSpecificCostBenefitCost datatype record.
@@ -378,6 +351,8 @@ public type BaseInsurancePlanMeta record {|
     }
 }
 public type InsurancePlanPlanSpecificCostBenefitCost record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept[] qualifiers?;
@@ -490,6 +465,8 @@ public type InsurancePlanPlanSpecificCostBenefitCost record {|
     }
 }
 public type InsurancePlanPlan record {|
+    *r4:BackboneElement;
+
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -584,6 +561,8 @@ public type InsurancePlanPlan record {|
     }
 }
 public type InsurancePlanPlanGeneralCost record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Money cost?;
     r4:Extension[] modifierExtension?;
@@ -666,6 +645,8 @@ public type InsurancePlanPlanGeneralCost record {|
     }
 }
 public type InsurancePlanCoverageBenefit record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     InsurancePlanCoverageBenefitLimit[] 'limit?;
@@ -737,6 +718,8 @@ public type InsurancePlanCoverageBenefit record {|
     }
 }
 public type InsurancePlanPlanSpecificCostBenefit record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     InsurancePlanPlanSpecificCostBenefitCost[] cost?;
     r4:Extension[] modifierExtension?;
@@ -807,6 +790,8 @@ public type InsurancePlanPlanSpecificCostBenefit record {|
     }
 }
 public type InsurancePlanPlanSpecificCost record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -877,6 +862,8 @@ public type InsurancePlanPlanSpecificCost record {|
     }
 }
 public type InsurancePlanCoverageBenefitLimit record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Extension[] modifierExtension?;
@@ -967,6 +954,8 @@ public type InsurancePlanCoverageBenefitLimit record {|
     }
 }
 public type InsurancePlanContact record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Address address?;
     r4:CodeableConcept purpose?;
@@ -1057,6 +1046,8 @@ public enum InsurancePlanStatus {
     }
 }
 public type InsurancePlanCoverage record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;

@@ -16,15 +16,15 @@
 
 import ballerina/io;
 import ballerina/test;
-import ballerinax/health.fhir.r4.international401 as i4;
+import ballerinax/health.fhir.r4;
 
-function returnCodeSystemData(string fileName) returns i4:CodeSystem {
+function returnCodeSystemData(string fileName) returns r4:CodeSystem {
     string filePath = string `tests/resources/terminology/code_systems/${fileName}.json`;
     json|error data = io:fileReadJson(filePath);
 
     if data is json {
-        i4:CodeSystem|error temp = data.cloneWithType(i4:CodeSystem);
-        if temp is i4:CodeSystem {
+        r4:CodeSystem|error temp = data.cloneWithType(r4:CodeSystem);
+        if temp is r4:CodeSystem {
             return temp;
         } else {
             test:assertFail("Can not parse the CodeSystem record");
@@ -34,13 +34,13 @@ function returnCodeSystemData(string fileName) returns i4:CodeSystem {
     }
 }
 
-function returnValueSetData(string fileName) returns i4:ValueSet {
+function returnValueSetData(string fileName) returns r4:ValueSet {
     string filePath = string `tests/resources/terminology/value_sets/${fileName}.json`;
     json|error data = io:fileReadJson(filePath);
 
     if data is json {
-        i4:ValueSet|error temp = data.cloneWithType(i4:ValueSet);
-        if temp is i4:ValueSet {
+        r4:ValueSet|error temp = data.cloneWithType(r4:ValueSet);
+        if temp is r4:ValueSet {
             return temp;
         } else {
             test:assertFail("Can not parse the ValueSet record");

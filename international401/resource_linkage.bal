@@ -142,9 +142,6 @@ public type Linkage record {|
 
     RESOURCE_NAME_LINKAGE resourceType = RESOURCE_NAME_LINKAGE;
 
-    BaseLinkageMeta meta = {
-        profile : [PROFILE_BASE_LINKAGE]
-    };
     r4:Resource[] contained?;
     r4:Extension[] extension?;
     @constraint:Array {
@@ -152,38 +149,14 @@ public type Linkage record {|
     }
     LinkageItem[] item;
     r4:Reference author?;
+    r4:Meta meta?;
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:uri implicitRules?;
     r4:code language?;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseLinkageMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseLinkageMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Linkage"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR LinkageItem datatype record.
@@ -249,6 +222,8 @@ public type BaseLinkageMeta record {|
     }
 }
 public type LinkageItem record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference 'resource;
     r4:Extension[] modifierExtension?;

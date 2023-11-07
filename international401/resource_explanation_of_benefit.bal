@@ -502,9 +502,6 @@ public type ExplanationOfBenefit record {|
 
     RESOURCE_NAME_EXPLANATIONOFBENEFIT resourceType = RESOURCE_NAME_EXPLANATIONOFBENEFIT;
 
-    BaseExplanationOfBenefitMeta meta = {
-        profile : [PROFILE_BASE_EXPLANATIONOFBENEFIT]
-    };
     r4:Period benefitPeriod?;
     @constraint:Array {
        minLength: 1
@@ -532,6 +529,7 @@ public type ExplanationOfBenefit record {|
     ExplanationOfBenefitDiagnosis[] diagnosis?;
     r4:CodeableConcept priority?;
     r4:Period[] preAuthRefPeriod?;
+    r4:Meta meta?;
     r4:Period billablePeriod?;
     r4:uri implicitRules?;
     r4:CodeableConcept subType?;
@@ -557,32 +555,7 @@ public type ExplanationOfBenefit record {|
     r4:Attachment form?;
     r4:Reference prescription?;
     r4:Reference facility?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseExplanationOfBenefitMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseExplanationOfBenefitMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ExplanationOfBenefit"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ExplanationOfBenefitPayment datatype record.
@@ -688,6 +661,8 @@ public type BaseExplanationOfBenefitMeta record {|
     }
 }
 public type ExplanationOfBenefitPayment record {|
+    *r4:BackboneElement;
+
     r4:date date?;
     r4:Identifier identifier?;
     r4:CodeableConcept adjustmentReason?;
@@ -872,6 +847,8 @@ public type ExplanationOfBenefitPayment record {|
     }
 }
 public type ExplanationOfBenefitItemDetail record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -993,6 +970,8 @@ public type ExplanationOfBenefitItemDetail record {|
     }
 }
 public type ExplanationOfBenefitDiagnosis record {|
+    *r4:BackboneElement;
+
     r4:positiveInt sequence;
     r4:Extension[] extension?;
     r4:CodeableConcept onAdmission?;
@@ -1006,21 +985,21 @@ public type ExplanationOfBenefitDiagnosis record {|
 
 # FHIR ExplanationOfBenefitBenefitBalanceFinancial datatype record.
 #
-# + allowedMoney - The quantity of the benefit which is permitted under the coverage.
+# + allowedExplanationOfBenefitMoney - The quantity of the benefit which is permitted under the coverage.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + allowedString - The quantity of the benefit which is permitted under the coverage.
-# + allowedUnsignedInt - The quantity of the benefit which is permitted under the coverage.
-# + usedUnsignedInt - The quantity of the benefit which have been consumed to date.
+# + allowedExplanationOfBenefitUnsignedInt - The quantity of the benefit which is permitted under the coverage.
+# + allowedExplanationOfBenefitString - The quantity of the benefit which is permitted under the coverage.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + usedMoney - The quantity of the benefit which have been consumed to date.
+# + usedExplanationOfBenefitUnsignedInt - The quantity of the benefit which have been consumed to date.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + usedExplanationOfBenefitMoney - The quantity of the benefit which have been consumed to date.
 # + 'type - Classification of benefit being provided.
 @r4:DataTypeDefinition {
     name: "ExplanationOfBenefitBenefitBalanceFinancial",
     baseType: (),
     elements: {
-        "allowedMoney": {
-            name: "allowedMoney",
+        "allowedExplanationOfBenefitMoney": {
+            name: "allowedExplanationOfBenefitMoney",
             dataType: r4:Money,
             min: 0,
             max: 1,
@@ -1037,32 +1016,23 @@ public type ExplanationOfBenefitDiagnosis record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.benefitBalance.financial.extension"
         },
-        "allowedString": {
-            name: "allowedString",
+        "allowedExplanationOfBenefitUnsignedInt": {
+            name: "allowedExplanationOfBenefitUnsignedInt",
+            dataType: r4:unsignedInt,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The quantity of the benefit which is permitted under the coverage.",
+            path: "ExplanationOfBenefit.benefitBalance.financial.allowed[x]"
+        },
+        "allowedExplanationOfBenefitString": {
+            name: "allowedExplanationOfBenefitString",
             dataType: string,
             min: 0,
             max: 1,
             isArray: false,
             description: "The quantity of the benefit which is permitted under the coverage.",
             path: "ExplanationOfBenefit.benefitBalance.financial.allowed[x]"
-        },
-        "allowedUnsignedInt": {
-            name: "allowedUnsignedInt",
-            dataType: r4:unsignedInt,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The quantity of the benefit which is permitted under the coverage.",
-            path: "ExplanationOfBenefit.benefitBalance.financial.allowed[x]"
-        },
-        "usedUnsignedInt": {
-            name: "usedUnsignedInt",
-            dataType: r4:unsignedInt,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The quantity of the benefit which have been consumed to date.",
-            path: "ExplanationOfBenefit.benefitBalance.financial.used[x]"
         },
         "modifierExtension": {
             name: "modifierExtension",
@@ -1073,9 +1043,9 @@ public type ExplanationOfBenefitDiagnosis record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.benefitBalance.financial.modifierExtension"
         },
-        "usedMoney": {
-            name: "usedMoney",
-            dataType: r4:Money,
+        "usedExplanationOfBenefitUnsignedInt": {
+            name: "usedExplanationOfBenefitUnsignedInt",
+            dataType: r4:unsignedInt,
             min: 0,
             max: 1,
             isArray: false,
@@ -1090,6 +1060,15 @@ public type ExplanationOfBenefitDiagnosis record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ExplanationOfBenefit.benefitBalance.financial.id"
+        },
+        "usedExplanationOfBenefitMoney": {
+            name: "usedExplanationOfBenefitMoney",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The quantity of the benefit which have been consumed to date.",
+            path: "ExplanationOfBenefit.benefitBalance.financial.used[x]"
         },
         "type": {
             name: "type",
@@ -1107,14 +1086,16 @@ public type ExplanationOfBenefitDiagnosis record {|
     }
 }
 public type ExplanationOfBenefitBenefitBalanceFinancial record {|
-    r4:Money allowedMoney?;
+    *r4:BackboneElement;
+
+    r4:Money allowedExplanationOfBenefitMoney?;
     r4:Extension[] extension?;
-    string allowedString?;
-    r4:unsignedInt allowedUnsignedInt?;
-    r4:unsignedInt usedUnsignedInt?;
+    r4:unsignedInt allowedExplanationOfBenefitUnsignedInt?;
+    string allowedExplanationOfBenefitString?;
     r4:Extension[] modifierExtension?;
-    r4:Money usedMoney?;
+    r4:unsignedInt usedExplanationOfBenefitUnsignedInt?;
     string id?;
+    r4:Money usedExplanationOfBenefitMoney?;
     r4:CodeableConcept 'type;
 |};
 
@@ -1241,6 +1222,8 @@ public type ExplanationOfBenefitBenefitBalanceFinancial record {|
     }
 }
 public type ExplanationOfBenefitAddItemDetail record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -1317,6 +1300,8 @@ public type ExplanationOfBenefitAddItemDetail record {|
     }
 }
 public type ExplanationOfBenefitPayee record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -1567,6 +1552,8 @@ public type ExplanationOfBenefitPayee record {|
     }
 }
 public type ExplanationOfBenefitAddItem record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -1703,6 +1690,8 @@ public enum ExplanationOfBenefitOutcome {
     }
 }
 public type ExplanationOfBenefitProcedure record {|
+    *r4:BackboneElement;
+
     r4:dateTime date?;
     r4:positiveInt sequence;
     r4:Extension[] extension?;
@@ -1787,6 +1776,8 @@ public type ExplanationOfBenefitProcedure record {|
     }
 }
 public type ExplanationOfBenefitRelated record {|
+    *r4:BackboneElement;
+
     r4:Identifier reference?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -2106,6 +2097,8 @@ public enum ExplanationOfBenefitStatus {
     }
 }
 public type ExplanationOfBenefitItem record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] modifier?;
     r4:Extension[] modifierExtension?;
@@ -2227,6 +2220,8 @@ public enum ExplanationOfBenefitUse {
     }
 }
 public type ExplanationOfBenefitAccident record {|
+    *r4:BackboneElement;
+
     r4:date date?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -2389,6 +2384,8 @@ public type ExplanationOfBenefitAccident record {|
     }
 }
 public type ExplanationOfBenefitSupportingInfo record {|
+    *r4:BackboneElement;
+
     boolean valueBoolean?;
     r4:Coding reason?;
     r4:Extension[] extension?;
@@ -2488,6 +2485,8 @@ public type ExplanationOfBenefitSupportingInfo record {|
     }
 }
 public type ExplanationOfBenefitItemAdjudication record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept reason?;
     r4:Money amount?;
     r4:Extension[] extension?;
@@ -2610,6 +2609,8 @@ public type ExplanationOfBenefitItemAdjudication record {|
     }
 }
 public type ExplanationOfBenefitAddItemDetailSubDetail record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -2705,6 +2706,8 @@ public type ExplanationOfBenefitAddItemDetailSubDetail record {|
     }
 }
 public type ExplanationOfBenefitProcessNote record {|
+    *r4:BackboneElement;
+
     r4:positiveInt number?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -2877,6 +2880,8 @@ public type ExplanationOfBenefitProcessNote record {|
     }
 }
 public type ExplanationOfBenefitItemDetailSubDetail record {|
+    *r4:BackboneElement;
+
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -3017,6 +3022,8 @@ public type ExplanationOfBenefitItemDetailSubDetail record {|
     }
 }
 public type ExplanationOfBenefitBenefitBalance record {|
+    *r4:BackboneElement;
+
     boolean excluded?;
     r4:Extension[] extension?;
     r4:CodeableConcept unit?;
@@ -3123,6 +3130,8 @@ public type ExplanationOfBenefitBenefitBalance record {|
     }
 }
 public type ExplanationOfBenefitCareTeam record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept qualification?;
     r4:positiveInt sequence;
     r4:Extension[] extension?;
@@ -3196,6 +3205,8 @@ public type ExplanationOfBenefitCareTeam record {|
     }
 }
 public type ExplanationOfBenefitTotal record {|
+    *r4:BackboneElement;
+
     r4:Money amount;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -3283,6 +3294,8 @@ public enum ExplanationOfBenefitProcessNoteType {
     }
 }
 public type ExplanationOfBenefitInsurance record {|
+    *r4:BackboneElement;
+
     r4:Reference coverage;
     r4:Extension[] extension?;
     boolean focal;

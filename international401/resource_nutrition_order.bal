@@ -271,9 +271,6 @@ public type NutritionOrder record {|
 
     RESOURCE_NAME_NUTRITIONORDER resourceType = RESOURCE_NAME_NUTRITIONORDER;
 
-    BaseNutritionOrderMeta meta = {
-        profile : [PROFILE_BASE_NUTRITIONORDER]
-    };
     r4:dateTime dateTime;
     r4:uri[] instantiates?;
     r4:Annotation[] note?;
@@ -293,37 +290,13 @@ public type NutritionOrder record {|
     r4:canonical[] instantiatesCanonical?;
     NutritionOrderIntent intent;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     NutritionOrderSupplement[] supplement?;
     r4:Reference orderer?;
     r4:uri implicitRules?;
     r4:Reference[] allergyIntolerance?;
     NutritionOrderStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseNutritionOrderMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseNutritionOrderMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/NutritionOrder"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # NutritionOrderIntent enum
@@ -472,6 +445,8 @@ public enum NutritionOrderIntent {
     }
 }
 public type NutritionOrderEnteralFormula record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string administrationInstruction?;
     string baseFormulaProductName?;
@@ -600,6 +575,8 @@ public enum NutritionOrderStatus {
     }
 }
 public type NutritionOrderOralDiet record {|
+    *r4:BackboneElement;
+
     r4:Timing[] schedule?;
     r4:Extension[] extension?;
     NutritionOrderOralDietNutrient[] nutrient?;
@@ -674,6 +651,8 @@ public type NutritionOrderOralDiet record {|
     }
 }
 public type NutritionOrderOralDietNutrient record {|
+    *r4:BackboneElement;
+
     r4:Quantity amount?;
     r4:Extension[] extension?;
     r4:CodeableConcept modifier?;
@@ -685,11 +664,11 @@ public type NutritionOrderOralDietNutrient record {|
 #
 # + schedule - The time period and frequency at which the enteral formula should be delivered to the patient.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + rateRatio - The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.
 # + quantity - The volume of formula to provide to the patient per the specified administration schedule.
-# + rateQuantity - The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + rateNutritionOrderRatio - The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + rateNutritionOrderQuantity - The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.
 @r4:DataTypeDefinition {
     name: "NutritionOrderEnteralFormulaAdministration",
     baseType: (),
@@ -712,15 +691,6 @@ public type NutritionOrderOralDietNutrient record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "NutritionOrder.enteralFormula.administration.extension"
         },
-        "rateRatio": {
-            name: "rateRatio",
-            dataType: r4:Ratio,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.",
-            path: "NutritionOrder.enteralFormula.administration.rate[x]"
-        },
         "quantity": {
             name: "quantity",
             dataType: r4:Quantity,
@@ -729,15 +699,6 @@ public type NutritionOrderOralDietNutrient record {|
             isArray: false,
             description: "The volume of formula to provide to the patient per the specified administration schedule.",
             path: "NutritionOrder.enteralFormula.administration.quantity"
-        },
-        "rateQuantity": {
-            name: "rateQuantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.",
-            path: "NutritionOrder.enteralFormula.administration.rate[x]"
         },
         "modifierExtension": {
             name: "modifierExtension",
@@ -748,6 +709,15 @@ public type NutritionOrderOralDietNutrient record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "NutritionOrder.enteralFormula.administration.modifierExtension"
         },
+        "rateNutritionOrderRatio": {
+            name: "rateNutritionOrderRatio",
+            dataType: r4:Ratio,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.",
+            path: "NutritionOrder.enteralFormula.administration.rate[x]"
+        },
         "id": {
             name: "id",
             dataType: string,
@@ -756,6 +726,15 @@ public type NutritionOrderOralDietNutrient record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "NutritionOrder.enteralFormula.administration.id"
+        },
+        "rateNutritionOrderQuantity": {
+            name: "rateNutritionOrderQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.",
+            path: "NutritionOrder.enteralFormula.administration.rate[x]"
         }
     },
     serializers: {
@@ -764,13 +743,15 @@ public type NutritionOrderOralDietNutrient record {|
     }
 }
 public type NutritionOrderEnteralFormulaAdministration record {|
+    *r4:BackboneElement;
+
     r4:Timing schedule?;
     r4:Extension[] extension?;
-    r4:Ratio rateRatio?;
     r4:Quantity quantity?;
-    r4:Quantity rateQuantity?;
     r4:Extension[] modifierExtension?;
+    r4:Ratio rateNutritionOrderRatio?;
     string id?;
+    r4:Quantity rateNutritionOrderQuantity?;
 |};
 
 # FHIR NutritionOrderOralDietTexture datatype record.
@@ -836,6 +817,8 @@ public type NutritionOrderEnteralFormulaAdministration record {|
     }
 }
 public type NutritionOrderOralDietTexture record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept foodType?;
     r4:CodeableConcept modifier?;
@@ -936,6 +919,8 @@ public type NutritionOrderOralDietTexture record {|
     }
 }
 public type NutritionOrderSupplement record {|
+    *r4:BackboneElement;
+
     r4:Timing[] schedule?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;

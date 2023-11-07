@@ -298,9 +298,6 @@ public type ImagingStudy record {|
 
     RESOURCE_NAME_IMAGINGSTUDY resourceType = RESOURCE_NAME_IMAGINGSTUDY;
 
-    BaseImagingStudyMeta meta = {
-        profile : [PROFILE_BASE_IMAGINGSTUDY]
-    };
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:Coding[] modality?;
@@ -323,37 +320,13 @@ public type ImagingStudy record {|
     r4:Reference encounter?;
     r4:Reference referrer?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     ImagingStudySeries[] series?;
     r4:Reference procedureReference?;
     r4:uri implicitRules?;
     r4:Reference location?;
     ImagingStudyStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseImagingStudyMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseImagingStudyMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ImagingStudy"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ImagingStudySeriesPerformer datatype record.
@@ -419,6 +392,8 @@ public type BaseImagingStudyMeta record {|
     }
 }
 public type ImagingStudySeriesPerformer record {|
+    *r4:BackboneElement;
+
     r4:Reference actor;
     r4:Extension[] extension?;
     r4:CodeableConcept 'function?;
@@ -589,6 +564,8 @@ public type ImagingStudySeriesPerformer record {|
     }
 }
 public type ImagingStudySeries record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     ImagingStudySeriesInstance[] instance?;
     r4:Coding modality;
@@ -698,6 +675,8 @@ public enum ImagingStudyStatus {
     }
 }
 public type ImagingStudySeriesInstance record {|
+    *r4:BackboneElement;
+
     r4:unsignedInt number?;
     r4:id uid;
     r4:Extension[] extension?;

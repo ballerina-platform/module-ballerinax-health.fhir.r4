@@ -159,9 +159,6 @@ public type SubstanceReferenceInformation record {|
 
     RESOURCE_NAME_SUBSTANCEREFERENCEINFORMATION resourceType = RESOURCE_NAME_SUBSTANCEREFERENCEINFORMATION;
 
-    BaseSubstanceReferenceInformationMeta meta = {
-        profile : [PROFILE_BASE_SUBSTANCEREFERENCEINFORMATION]
-    };
     r4:Extension[] extension?;
     SubstanceReferenceInformationGene[] gene?;
     r4:Extension[] modifierExtension?;
@@ -170,36 +167,12 @@ public type SubstanceReferenceInformation record {|
     SubstanceReferenceInformationTarget[] target?;
     SubstanceReferenceInformationGeneElement[] geneElement?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string comment?;
     string id?;
     r4:Narrative text?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSubstanceReferenceInformationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSubstanceReferenceInformationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/SubstanceReferenceInformation"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR SubstanceReferenceInformationGene datatype record.
@@ -275,6 +248,8 @@ public type BaseSubstanceReferenceInformationMeta record {|
     }
 }
 public type SubstanceReferenceInformationGene record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept gene?;
     r4:Extension[] modifierExtension?;
@@ -356,6 +331,8 @@ public type SubstanceReferenceInformationGene record {|
     }
 }
 public type SubstanceReferenceInformationGeneElement record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -447,6 +424,8 @@ public type SubstanceReferenceInformationGeneElement record {|
     }
 }
 public type SubstanceReferenceInformationClassification record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] subtype?;
     r4:CodeableConcept domain?;
@@ -599,6 +578,8 @@ public type SubstanceReferenceInformationClassification record {|
     }
 }
 public type SubstanceReferenceInformationTarget record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept amountType?;
     r4:CodeableConcept organismType?;
     r4:Extension[] extension?;

@@ -225,9 +225,6 @@ public type TestReport record {|
 
     RESOURCE_NAME_TESTREPORT resourceType = RESOURCE_NAME_TESTREPORT;
 
-    BaseTestReportMeta meta = {
-        profile : [PROFILE_BASE_TESTREPORT]
-    };
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     TestReportTest[] test?;
@@ -238,6 +235,7 @@ public type TestReport record {|
     TestReportResult result;
     decimal score?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:Reference testScript;
     string name?;
     r4:uri implicitRules?;
@@ -247,32 +245,7 @@ public type TestReport record {|
     r4:dateTime issued?;
     TestReportTeardown teardown?;
     TestReportStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseTestReportMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseTestReportMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/TestReport"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR TestReportParticipant datatype record.
@@ -348,6 +321,8 @@ public type BaseTestReportMeta record {|
     }
 }
 public type TestReportParticipant record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string display?;
     r4:Extension[] modifierExtension?;
@@ -438,6 +413,8 @@ public enum TestReportSetupActionOperationResult {
     }
 }
 public type TestReportSetupActionAssert record {|
+    *r4:BackboneElement;
+
     TestReportSetupActionAssertResult result;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -489,6 +466,8 @@ public type TestReportSetupActionAssert record {|
     }
 }
 public type TestReportTeardownAction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -574,6 +553,8 @@ public enum TestReportResult {
     }
 }
 public type TestReportTest record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name?;
@@ -657,6 +638,8 @@ public enum TestReportStatus {
     }
 }
 public type TestReportSetupAction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     TestReportSetupActionAssert assert?;
     r4:Extension[] modifierExtension?;
@@ -707,6 +690,8 @@ public type TestReportSetupAction record {|
     }
 }
 public type TestReportTestAction record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
@@ -765,6 +750,8 @@ public type TestReportTestAction record {|
     }
 }
 public type TestReportTeardown record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     @constraint:Array {
@@ -827,6 +814,8 @@ public type TestReportTeardown record {|
     }
 }
 public type TestReportSetup record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     @constraint:Array {
@@ -916,6 +905,8 @@ public enum TestReportParticipantType {
     }
 }
 public type TestReportSetupActionOperation record {|
+    *r4:BackboneElement;
+
     TestReportSetupActionOperationResult result;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;

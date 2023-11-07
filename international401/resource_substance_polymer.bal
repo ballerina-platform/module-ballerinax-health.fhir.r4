@@ -168,15 +168,13 @@ public type SubstancePolymer record {|
 
     RESOURCE_NAME_SUBSTANCEPOLYMER resourceType = RESOURCE_NAME_SUBSTANCEPOLYMER;
 
-    BaseSubstancePolymerMeta meta = {
-        profile : [PROFILE_BASE_SUBSTANCEPOLYMER]
-    };
     SubstancePolymerMonomerSet[] monomerSet?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:code language?;
     string[] modification?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:CodeableConcept[] copolymerConnectivity?;
     SubstancePolymerRepeat[] repeat?;
     r4:uri implicitRules?;
@@ -184,32 +182,7 @@ public type SubstancePolymer record {|
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept 'class?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseSubstancePolymerMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseSubstancePolymerMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/SubstancePolymer"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR SubstancePolymerRepeat datatype record.
@@ -295,6 +268,8 @@ public type BaseSubstancePolymerMeta record {|
     }
 }
 public type SubstancePolymerRepeat record {|
+    *r4:BackboneElement;
+
     SubstancePolymerRepeatRepeatUnit[] repeatUnit?;
     r4:Extension[] extension?;
     r4:integer numberOfUnits?;
@@ -387,6 +362,8 @@ public type SubstancePolymerRepeat record {|
     }
 }
 public type SubstancePolymerMonomerSetStartingMaterial record {|
+    *r4:BackboneElement;
+
     r4:SubstanceAmount amount?;
     r4:Extension[] extension?;
     r4:CodeableConcept material?;
@@ -459,6 +436,8 @@ public type SubstancePolymerMonomerSetStartingMaterial record {|
     }
 }
 public type SubstancePolymerMonomerSet record {|
+    *r4:BackboneElement;
+
     SubstancePolymerMonomerSetStartingMaterial[] startingMaterial?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -529,6 +508,8 @@ public type SubstancePolymerMonomerSet record {|
     }
 }
 public type SubstancePolymerRepeatRepeatUnitDegreeOfPolymerisation record {|
+    *r4:BackboneElement;
+
     r4:SubstanceAmount amount?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -629,6 +610,8 @@ public type SubstancePolymerRepeatRepeatUnitDegreeOfPolymerisation record {|
     }
 }
 public type SubstancePolymerRepeatRepeatUnit record {|
+    *r4:BackboneElement;
+
     SubstancePolymerRepeatRepeatUnitStructuralRepresentation[] structuralRepresentation?;
     string repeatUnit?;
     r4:SubstanceAmount amount?;
@@ -712,6 +695,8 @@ public type SubstancePolymerRepeatRepeatUnit record {|
     }
 }
 public type SubstancePolymerRepeatRepeatUnitStructuralRepresentation record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Attachment attachment?;
     r4:Extension[] modifierExtension?;

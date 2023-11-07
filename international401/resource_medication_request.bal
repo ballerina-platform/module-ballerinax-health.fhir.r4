@@ -430,9 +430,6 @@ public type MedicationRequest record {|
 
     RESOURCE_NAME_MEDICATIONREQUEST resourceType = RESOURCE_NAME_MEDICATIONREQUEST;
 
-    BaseMedicationRequestMeta meta = {
-        profile : [PROFILE_BASE_MEDICATIONREQUEST]
-    };
     r4:Reference[] insurance?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
@@ -469,37 +466,13 @@ public type MedicationRequest record {|
     r4:CodeableConcept performerType?;
     r4:Resource[] contained?;
     r4:Dosage[] dosageInstruction?;
+    r4:Meta meta?;
     r4:Reference[] eventHistory?;
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Identifier groupIdentifier?;
     MedicationRequestStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicationRequestMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicationRequestMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/MedicationRequest"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # MedicationRequestStatus enum
@@ -577,6 +550,8 @@ public enum MedicationRequestStatus {
     }
 }
 public type MedicationRequestDispenseRequestInitialFill record {|
+    *r4:BackboneElement;
+
     r4:Duration duration?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -697,6 +672,8 @@ public type MedicationRequestDispenseRequestInitialFill record {|
     }
 }
 public type MedicationRequestDispenseRequest record {|
+    *r4:BackboneElement;
+
     r4:Period validityPeriod?;
     r4:Duration dispenseInterval?;
     r4:Extension[] extension?;
@@ -802,6 +779,8 @@ public enum MedicationRequestIntent {
     }
 }
 public type MedicationRequestSubstitution record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept allowedCodeableConcept;
     r4:CodeableConcept reason?;
     r4:Extension[] extension?;

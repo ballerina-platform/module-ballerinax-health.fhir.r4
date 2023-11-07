@@ -56,6 +56,11 @@ public const RESOURCE_NAME_USCORECAREPLANPROFILE = "CarePlan";
 # + meta - The metadata about the resource. This is content that is maintained by the infrastructure. Changes to the content might not always be associated with version changes to the resource.
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - Type of plan.
+# * category Slicings
+# 1) USCoreCarePlanProfileCategoryAssessPlan: Type of plan
+#       - min = 1
+#       - max = 1
+#
 # + status - Indicates whether the plan is currently being acted upon, represents future intentions or is now a historical record.
 @r4:ResourceDefinition {
     resourceType: "CarePlan",
@@ -96,7 +101,7 @@ public const RESOURCE_NAME_USCORECAREPLANPROFILE = "CarePlan";
         },
         "activity" : {
             name: "activity",
-            dataType: CarePlanActivity,
+            dataType: USCoreCarePlanProfileActivity,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -177,7 +182,7 @@ public const RESOURCE_NAME_USCORECAREPLANPROFILE = "CarePlan";
         },
         "text" : {
             name: "text",
-            dataType: r4:Narrative,
+            dataType: USCoreCarePlanProfileText,
             min: 1,
             max: 1,
             isArray: false,
@@ -265,7 +270,7 @@ public const RESOURCE_NAME_USCORECAREPLANPROFILE = "CarePlan";
         },
         "intent" : {
             name: "intent",
-            dataType: CarePlanIntent,
+            dataType: USCoreCarePlanProfileIntent,
             min: 1,
             max: 1,
             isArray: false,
@@ -307,7 +312,7 @@ public const RESOURCE_NAME_USCORECAREPLANPROFILE = "CarePlan";
         },
         "status" : {
             name: "status",
-            dataType: CarePlanStatus,
+            dataType: USCoreCarePlanProfileStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -325,14 +330,11 @@ public type USCoreCarePlanProfile record {|
 
     RESOURCE_NAME_USCORECAREPLANPROFILE resourceType = RESOURCE_NAME_USCORECAREPLANPROFILE;
 
-    BaseUSCoreCarePlanProfileMeta meta = {
-        profile : [PROFILE_BASE_USCORECAREPLANPROFILE]
-    };
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
     r4:Reference[] addresses?;
     r4:Extension[] extension?;
-    CarePlanActivity[] activity?;
+    USCoreCarePlanProfileActivity[] activity?;
     r4:Reference subject;
     r4:Extension[] modifierExtension?;
     string description?;
@@ -342,7 +344,7 @@ public type USCoreCarePlanProfile record {|
     r4:Reference[] contributor?;
     r4:Reference[] supportingInfo?;
     string id?;
-    r4:Narrative text;
+    USCoreCarePlanProfileText text;
     r4:Reference[] basedOn?;
     r4:Reference[] careTeam?;
     r4:Identifier[] identifier?;
@@ -353,43 +355,43 @@ public type USCoreCarePlanProfile record {|
     r4:Reference[] replaces?;
     r4:Reference encounter?;
     r4:canonical[] instantiatesCanonical?;
-    CarePlanIntent intent;
+    USCoreCarePlanProfileIntent intent;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     @constraint:Array {
        minLength: 1
     }
     r4:CodeableConcept[] category;
-    CarePlanStatus status;
-    never...;
+    USCoreCarePlanProfileStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseCarePlanMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
+# USCoreCarePlanProfileStatus enum
+public enum USCoreCarePlanProfileStatus {
+   CODE_STATUS_DRAFT = "draft",
+   CODE_STATUS_ACTIVE = "active",
+   CODE_STATUS_COMPLETED = "completed",
+   CODE_STATUS_REVOKED = "revoked",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+   CODE_STATUS_ON_HOLD = "on-hold",
+   CODE_STATUS_UNKNOWN = "unknown"
 }
-public type BaseUSCoreCarePlanProfileMeta record {|
-    *r4:Meta;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+# USCoreCarePlanProfileActivityDetailStatus enum
+public enum USCoreCarePlanProfileActivityDetailStatus {
+   CODE_STATUS_STOPPED = "stopped",
+   CODE_STATUS_SCHEDULED = "scheduled",
+   CODE_STATUS_NOT_STARTED = "not-started",
+   CODE_STATUS_CANCELLED = "cancelled",
+   CODE_STATUS_COMPLETED = "completed",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+   CODE_STATUS_IN_PROGRESS = "in-progress",
+   CODE_STATUS_ON_HOLD = "on-hold",
+   CODE_STATUS_UNKNOWN = "unknown"
+}
 
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-careplan"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# FHIR CarePlanActivityDetail datatype record.
+# FHIR USCoreCarePlanProfileActivityDetail datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - Detailed description of the type of planned activity; e.g. what lab test, what procedure, what kind of encounter.
@@ -399,23 +401,23 @@ public type BaseUSCoreCarePlanProfileMeta record {|
 # + kind - A description of the kind of resource the in-line definition of a care plan activity is representing. The CarePlan.activity.detail is an in-line definition when a resource is not referenced using CarePlan.activity.reference. For example, a MedicationRequest, a ServiceRequest, or a CommunicationRequest.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + description - This provides a textual description of constraints on the intended activity occurrence, including relation to other activities. It may also include objectives, pre-conditions and end-conditions. Finally, it may convey specifics about the activity such as body site, method, route, etc.
-# + productReference - Identifies the food, drug or other product to be consumed or supplied in the activity.
+# + productCarePlanCodeableConcept - Identifies the food, drug or other product to be consumed or supplied in the activity.
 # + reasonReference - Indicates another resource, such as the health condition(s), whose existence justifies this request and drove the inclusion of this particular activity as part of the plan.
+# + scheduledCarePlanPeriod - The period, timing or frequency upon which the described activity is to occur.
 # + instantiatesCanonical - The URL pointing to a FHIR-defined protocol, guideline, questionnaire or other definition that is adhered to in whole or in part by this CarePlan activity.
+# + scheduledCarePlanString - The period, timing or frequency upon which the described activity is to occur.
 # + instantiatesUri - The URL pointing to an externally maintained protocol, guideline, questionnaire or other definition that is adhered to in whole or in part by this CarePlan activity.
-# + scheduledString - The period, timing or frequency upon which the described activity is to occur.
+# + productCarePlanReference - Identifies the food, drug or other product to be consumed or supplied in the activity.
 # + statusReason - Provides reason why the activity isn't yet started, is on hold, was cancelled, etc.
-# + scheduledTiming - The period, timing or frequency upon which the described activity is to occur.
-# + scheduledPeriod - The period, timing or frequency upon which the described activity is to occur.
 # + dailyAmount - Identifies the quantity expected to be consumed in a given day.
 # + location - Identifies the facility where the activity will occur; e.g. home, hospital, specific clinic, etc.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + reasonCode - Provides the rationale that drove the inclusion of this particular activity as part of the plan or the reason why the activity was prohibited.
 # + doNotPerform - If true, indicates that the described activity is one that must NOT be engaged in when following the plan. If false, or missing, indicates that the described activity is one that should be engaged in when following the plan.
-# + productCodeableConcept - Identifies the food, drug or other product to be consumed or supplied in the activity.
+# + scheduledCarePlanTiming - The period, timing or frequency upon which the described activity is to occur.
 # + status - Identifies what progress is being made for the specific activity.
 @r4:DataTypeDefinition {
-    name: "CarePlanActivityDetail",
+    name: "USCoreCarePlanProfileActivityDetail",
     baseType: (),
     elements: {
         "extension": {
@@ -465,7 +467,7 @@ public type BaseUSCoreCarePlanProfileMeta record {|
         },
         "kind": {
             name: "kind",
-            dataType: CarePlanActivityDetailKind,
+            dataType: USCoreCarePlanProfileActivityDetailKind,
             min: 0,
             max: 1,
             isArray: false,
@@ -490,9 +492,9 @@ public type BaseUSCoreCarePlanProfileMeta record {|
             description: "This provides a textual description of constraints on the intended activity occurrence, including relation to other activities. It may also include objectives, pre-conditions and end-conditions. Finally, it may convey specifics about the activity such as body site, method, route, etc.",
             path: "CarePlan.activity.detail.description"
         },
-        "productReference": {
-            name: "productReference",
-            dataType: r4:Reference,
+        "productCarePlanCodeableConcept": {
+            name: "productCarePlanCodeableConcept",
+            dataType: r4:CodeableConcept,
             min: 0,
             max: 1,
             isArray: false,
@@ -508,6 +510,15 @@ public type BaseUSCoreCarePlanProfileMeta record {|
             description: "Indicates another resource, such as the health condition(s), whose existence justifies this request and drove the inclusion of this particular activity as part of the plan.",
             path: "CarePlan.activity.detail.reasonReference"
         },
+        "scheduledCarePlanPeriod": {
+            name: "scheduledCarePlanPeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The period, timing or frequency upon which the described activity is to occur.",
+            path: "CarePlan.activity.detail.scheduled[x]"
+        },
         "instantiatesCanonical": {
             name: "instantiatesCanonical",
             dataType: r4:canonical,
@@ -516,6 +527,15 @@ public type BaseUSCoreCarePlanProfileMeta record {|
             isArray: true,
             description: "The URL pointing to a FHIR-defined protocol, guideline, questionnaire or other definition that is adhered to in whole or in part by this CarePlan activity.",
             path: "CarePlan.activity.detail.instantiatesCanonical"
+        },
+        "scheduledCarePlanString": {
+            name: "scheduledCarePlanString",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The period, timing or frequency upon which the described activity is to occur.",
+            path: "CarePlan.activity.detail.scheduled[x]"
         },
         "instantiatesUri": {
             name: "instantiatesUri",
@@ -526,14 +546,14 @@ public type BaseUSCoreCarePlanProfileMeta record {|
             description: "The URL pointing to an externally maintained protocol, guideline, questionnaire or other definition that is adhered to in whole or in part by this CarePlan activity.",
             path: "CarePlan.activity.detail.instantiatesUri"
         },
-        "scheduledString": {
-            name: "scheduledString",
-            dataType: string,
+        "productCarePlanReference": {
+            name: "productCarePlanReference",
+            dataType: r4:Reference,
             min: 0,
             max: 1,
             isArray: false,
-            description: "The period, timing or frequency upon which the described activity is to occur.",
-            path: "CarePlan.activity.detail.scheduled[x]"
+            description: "Identifies the food, drug or other product to be consumed or supplied in the activity.",
+            path: "CarePlan.activity.detail.product[x]"
         },
         "statusReason": {
             name: "statusReason",
@@ -543,24 +563,6 @@ public type BaseUSCoreCarePlanProfileMeta record {|
             isArray: false,
             description: "Provides reason why the activity isn't yet started, is on hold, was cancelled, etc.",
             path: "CarePlan.activity.detail.statusReason"
-        },
-        "scheduledTiming": {
-            name: "scheduledTiming",
-            dataType: r4:Timing,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The period, timing or frequency upon which the described activity is to occur.",
-            path: "CarePlan.activity.detail.scheduled[x]"
-        },
-        "scheduledPeriod": {
-            name: "scheduledPeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The period, timing or frequency upon which the described activity is to occur.",
-            path: "CarePlan.activity.detail.scheduled[x]"
         },
         "dailyAmount": {
             name: "dailyAmount",
@@ -607,18 +609,18 @@ public type BaseUSCoreCarePlanProfileMeta record {|
             description: "If true, indicates that the described activity is one that must NOT be engaged in when following the plan. If false, or missing, indicates that the described activity is one that should be engaged in when following the plan.",
             path: "CarePlan.activity.detail.doNotPerform"
         },
-        "productCodeableConcept": {
-            name: "productCodeableConcept",
-            dataType: r4:CodeableConcept,
+        "scheduledCarePlanTiming": {
+            name: "scheduledCarePlanTiming",
+            dataType: r4:Timing,
             min: 0,
             max: 1,
             isArray: false,
-            description: "Identifies the food, drug or other product to be consumed or supplied in the activity.",
-            path: "CarePlan.activity.detail.product[x]"
+            description: "The period, timing or frequency upon which the described activity is to occur.",
+            path: "CarePlan.activity.detail.scheduled[x]"
         },
         "status": {
             name: "status",
-            dataType: CarePlanActivityDetailStatus,
+            dataType: USCoreCarePlanProfileActivityDetailStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -631,58 +633,36 @@ public type BaseUSCoreCarePlanProfileMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type CarePlanActivityDetail record {|
+public type USCoreCarePlanProfileActivityDetail record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Reference[] goal?;
     r4:Reference[] performer?;
     r4:Quantity quantity?;
-    CarePlanActivityDetailKind kind?;
+    USCoreCarePlanProfileActivityDetailKind kind?;
     r4:Extension[] modifierExtension?;
     string description?;
-    r4:Reference productReference?;
+    r4:CodeableConcept productCarePlanCodeableConcept?;
     r4:Reference[] reasonReference?;
+    r4:Period scheduledCarePlanPeriod?;
     r4:canonical[] instantiatesCanonical?;
+    string scheduledCarePlanString?;
     r4:uri[] instantiatesUri?;
-    string scheduledString?;
+    r4:Reference productCarePlanReference?;
     r4:CodeableConcept statusReason?;
-    r4:Timing scheduledTiming?;
-    r4:Period scheduledPeriod?;
     r4:Quantity dailyAmount?;
     r4:Reference location?;
     string id?;
     r4:CodeableConcept[] reasonCode?;
     boolean doNotPerform?;
-    r4:CodeableConcept productCodeableConcept?;
-    CarePlanActivityDetailStatus status;
+    r4:Timing scheduledCarePlanTiming?;
+    USCoreCarePlanProfileActivityDetailStatus status;
 |};
 
-# CarePlanActivityDetailStatus enum
-public enum CarePlanActivityDetailStatus {
-   CODE_STATUS_STOPPED = "stopped",
-   CODE_STATUS_SCHEDULED = "scheduled",
-   CODE_STATUS_NOT_STARTED = "not-started",
-   CODE_STATUS_CANCELLED = "cancelled",
-   CODE_STATUS_COMPLETED = "completed",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
-   CODE_STATUS_IN_PROGRESS = "in-progress",
-   CODE_STATUS_ON_HOLD = "on-hold",
-   CODE_STATUS_UNKNOWN = "unknown"
-}
-
-# CarePlanStatus enum
-public enum CarePlanStatus {
-   CODE_STATUS_DRAFT = "draft",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_COMPLETED = "completed",
-   CODE_STATUS_REVOKED = "revoked",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
-   CODE_STATUS_ON_HOLD = "on-hold",
-   CODE_STATUS_UNKNOWN = "unknown"
-}
-
-# CarePlanActivityDetailKind enum
-public enum CarePlanActivityDetailKind {
+# USCoreCarePlanProfileActivityDetailKind enum
+public enum USCoreCarePlanProfileActivityDetailKind {
    CODE_KIND_APPOINTMENT = "Appointment",
    CODE_KIND_MEDICATIONREQUEST = "MedicationRequest",
    CODE_KIND_TASK = "Task",
@@ -693,15 +673,107 @@ public enum CarePlanActivityDetailKind {
    CODE_KIND_COMMUNICATIONREQUEST = "CommunicationRequest"
 }
 
-# CarePlanIntent enum
-public enum CarePlanIntent {
+# FHIR USCoreCarePlanProfileText datatype record.
+#
+# + div - The actual narrative content, a stripped down version of XHTML.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + status - The status of the narrative - whether it's entirely generated (from just the defined data or the extensions too), or whether a human authored it and it may contain additional data.
+@r4:DataTypeDefinition {
+    name: "USCoreCarePlanProfileText",
+    baseType: (),
+    elements: {
+        "div": {
+            name: "div",
+            dataType: r4:xhtml,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The actual narrative content, a stripped down version of XHTML.",
+            path: "CarePlan.text.div"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "CarePlan.text.extension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "CarePlan.text.id"
+        },
+        "status": {
+            name: "status",
+            dataType: USCoreCarePlanProfileTextStatus,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The status of the narrative - whether it's entirely generated (from just the defined data or the extensions too), or whether a human authored it and it may contain additional data.",
+            path: "CarePlan.text.status"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreCarePlanProfileText record {|
+    *r4:Narrative;
+
+    r4:xhtml div;
+    r4:Extension[] extension?;
+    string id?;
+    USCoreCarePlanProfileTextStatus status;
+|};
+
+# USCoreCarePlanProfileIntent enum
+public enum USCoreCarePlanProfileIntent {
    CODE_INTENT_PROPOSAL = "proposal",
    CODE_INTENT_PLAN = "plan",
    CODE_INTENT_ORDER = "order",
    CODE_INTENT_OPTION = "option"
 }
 
-# FHIR CarePlanActivity datatype record.
+# FHIR USCoreCarePlanProfileCategoryAssessPlan datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+@r4:DataTypeDefinition {
+    name: "USCoreCarePlanProfileCategoryAssessPlan",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCoreCarePlanProfileCategoryCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "CarePlan.category.coding"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreCarePlanProfileCategoryAssessPlan record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCoreCarePlanProfileCategoryCoding[] coding;
+|};
+
+# FHIR USCoreCarePlanProfileActivity datatype record.
 #
 # + reference - The details of the proposed activity represented in a specific resource.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -712,7 +784,7 @@ public enum CarePlanIntent {
 # + detail - A simple summary of a planned activity suitable for a general care plan system (e.g. form driven) that doesn't know about specific resources such as procedure etc.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "CarePlanActivity",
+    name: "USCoreCarePlanProfileActivity",
     baseType: (),
     elements: {
         "reference": {
@@ -771,7 +843,7 @@ public enum CarePlanIntent {
         },
         "detail": {
             name: "detail",
-            dataType: CarePlanActivityDetail,
+            dataType: USCoreCarePlanProfileActivityDetail,
             min: 0,
             max: 1,
             isArray: false,
@@ -793,19 +865,60 @@ public enum CarePlanIntent {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type CarePlanActivity record {|
+public type USCoreCarePlanProfileActivity record {|
+    *r4:BackboneElement;
+
     r4:Reference reference?;
     r4:Extension[] extension?;
     r4:CodeableConcept[] outcomeCodeableConcept?;
     r4:Reference[] outcomeReference?;
     r4:Extension[] modifierExtension?;
     r4:Annotation[] progress?;
-    CarePlanActivityDetail detail?;
+    USCoreCarePlanProfileActivityDetail detail?;
     string id?;
 |};
 
-# CarePlanTextStatus enum
-public enum CarePlanTextStatus {
+# FHIR USCoreCarePlanProfileCategoryCoding datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+@r4:DataTypeDefinition {
+    name: "USCoreCarePlanProfileCategoryCoding",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "CarePlan.category.coding.system"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "CarePlan.category.coding.code"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreCarePlanProfileCategoryCoding record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/core/CodeSystem/careplan-category";
+    r4:code code = "assess-plan";
+|};
+
+# USCoreCarePlanProfileTextStatus enum
+public enum USCoreCarePlanProfileTextStatus {
    CODE_STATUS_EXTENSIONS = "extensions",
    CODE_STATUS_GENERATED = "generated",
    CODE_STATUS_ADDITIONAL = "additional",

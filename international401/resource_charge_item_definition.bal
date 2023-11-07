@@ -324,9 +324,6 @@ public type ChargeItemDefinition record {|
 
     RESOURCE_NAME_CHARGEITEMDEFINITION resourceType = RESOURCE_NAME_CHARGEITEMDEFINITION;
 
-    BaseChargeItemDefinitionMeta meta = {
-        profile : [PROFILE_BASE_CHARGEITEMDEFINITION]
-    };
     r4:dateTime date?;
     ChargeItemDefinitionPropertyGroup[] propertyGroup?;
     r4:canonical[] partOf?;
@@ -352,37 +349,13 @@ public type ChargeItemDefinition record {|
     r4:uri url;
     r4:Resource[] contained?;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string publisher?;
     ChargeItemDefinitionApplicability[] applicability?;
     r4:UsageContext[] useContext?;
     ChargeItemDefinitionStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseChargeItemDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseChargeItemDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/ChargeItemDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR ChargeItemDefinitionPropertyGroupPriceComponent datatype record.
@@ -468,6 +441,8 @@ public type BaseChargeItemDefinitionMeta record {|
     }
 }
 public type ChargeItemDefinitionPropertyGroupPriceComponent record {|
+    *r4:BackboneElement;
+
     r4:Money amount?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
@@ -550,6 +525,8 @@ public type ChargeItemDefinitionPropertyGroupPriceComponent record {|
     }
 }
 public type ChargeItemDefinitionApplicability record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string expression?;
     r4:Extension[] modifierExtension?;
@@ -619,6 +596,8 @@ public enum ChargeItemDefinitionStatus {
     }
 }
 public type ChargeItemDefinitionPropertyGroup record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;

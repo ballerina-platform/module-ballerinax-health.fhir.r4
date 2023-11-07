@@ -16,6 +16,7 @@
 
 import ballerina/http;
 import ballerina/log;
+import ballerina/io;
 import ballerinax/health.fhir.r4;
 
 # Response error interceptor to post-process FHIR responses
@@ -24,9 +25,23 @@ public isolated service class FHIRResponseInterceptor {
 
     final r4:ResourceAPIConfig apiConfig;
     private final readonly & map<r4:SearchParamConfig> searchParamConfigMap;
+    final readonly & r4:AuditConfig? auditConfig;
+    final http:Client|http:ClientError? auditClient;
 
     public function init(r4:ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
+        self.auditConfig = apiConfig.auditConfig;
+        r4:AuditConfig? auditConfig = self.auditConfig;
+        if auditConfig != () {
+            self.auditClient = new (auditConfig.auditServiceUrl, retryConfig = {
+                interval: 5,
+                count: 3,
+                backOffFactor: 2.0,
+                maxWaitInterval: 30
+            });
+        } else {
+            self.auditClient = ();
+        }
 
         map<r4:SearchParamConfig> searchParamConfigs = {};
         // process seach parameters
@@ -40,7 +55,7 @@ public isolated service class FHIRResponseInterceptor {
 
     remote isolated function interceptResponse(http:RequestContext ctx, http:Response res) returns http:NextService|r4:FHIRError? {
         log:printDebug("Execute: FHIR Response Interceptor");
-        r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
+        final r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
         fhirContext.setDirection(r4:OUT);
 
         check self.postProcessSearchParameters(fhirContext);
@@ -53,9 +68,30 @@ public isolated service class FHIRResponseInterceptor {
             }
         }
 
-        if (fhirContext.isInErrorState()) {
+        if fhirContext.isInErrorState() {
             // set the proper response code
             res.statusCode = fhirContext.getErrorCode();
+        }
+
+        // Worker to send the audit events asynchronously
+        worker auditWorker {
+            r4:AuditConfig? auditConfig = self.auditConfig;
+            if auditConfig != () && auditConfig.enabled {
+                http:Client|http:ClientError? auditClient = self.auditClient;
+
+                if auditClient is () || auditClient is http:ClientError {
+                    // TODO temporary adding the println as errors are not logged by ballerina log module.
+                    io:println(self.auditClient);
+                    log:printError("[Audit Event Sender] Failed to establish a connection to audit service.", auditClient);
+                } else {
+                    // send to the audit service and retries if it fails
+                    r4:AuditEventSendingError? failed = r4:handleAuditEvent(auditClient, fhirContext);
+                    if failed != () && failed.fhirError != () {
+                        // if sending the audit event is still fails, log the error and the audit event
+                        log:printError("[Audit Event Sender] Error while sending audit event.", 'error = failed.fhirError, auditEvent = failed.auditEvent);
+                    }
+                }
+            }
         }
         return getNextService(ctx);
     }

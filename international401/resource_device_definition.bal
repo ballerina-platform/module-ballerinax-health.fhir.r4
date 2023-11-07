@@ -323,9 +323,6 @@ public type DeviceDefinition record {|
 
     RESOURCE_NAME_DEVICEDEFINITION resourceType = RESOURCE_NAME_DEVICEDEFINITION;
 
-    BaseDeviceDefinitionMeta meta = {
-        profile : [PROFILE_BASE_DEVICEDEFINITION]
-    };
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -353,35 +350,11 @@ public type DeviceDefinition record {|
     r4:uri url?;
     r4:Resource[] contained?;
     DeviceDefinitionMaterial[] material?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     DeviceDefinitionSpecialization[] specialization?;
     string modelNumber?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseDeviceDefinitionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseDeviceDefinitionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/DeviceDefinition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR DeviceDefinitionMaterial datatype record.
@@ -457,6 +430,8 @@ public type BaseDeviceDefinitionMeta record {|
     }
 }
 public type DeviceDefinitionMaterial record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept substance;
@@ -548,6 +523,8 @@ public enum DeviceDefinitionDeviceNameType {
     }
 }
 public type DeviceDefinitionProperty record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept[] valueCode?;
@@ -619,6 +596,8 @@ public type DeviceDefinitionProperty record {|
     }
 }
 public type DeviceDefinitionDeviceName record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string name;
@@ -689,6 +668,8 @@ public type DeviceDefinitionDeviceName record {|
     }
 }
 public type DeviceDefinitionCapability record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept[] description?;
@@ -769,6 +750,8 @@ public type DeviceDefinitionCapability record {|
     }
 }
 public type DeviceDefinitionUdiDeviceIdentifier record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string deviceIdentifier;
     r4:uri jurisdiction;
@@ -840,6 +823,8 @@ public type DeviceDefinitionUdiDeviceIdentifier record {|
     }
 }
 public type DeviceDefinitionSpecialization record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string systemType;

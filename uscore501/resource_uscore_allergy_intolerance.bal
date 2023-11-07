@@ -82,7 +82,7 @@ public const RESOURCE_NAME_USCOREALLERGYINTOLERANCE = "AllergyIntolerance";
             max: 1,
             isArray: false,
             path: "AllergyIntolerance.code",
-            valueSet: "http://hl7.org/fhir/us/core/ValueSet/us-core-allergy-substance"
+            valueSet: "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1186.8"
         },
         "onsetRange" : {
             name: "onsetRange",
@@ -102,7 +102,7 @@ public const RESOURCE_NAME_USCOREALLERGYINTOLERANCE = "AllergyIntolerance";
         },
         "criticality" : {
             name: "criticality",
-            dataType: AllergyIntoleranceCriticality,
+            dataType: USCoreAllergyIntoleranceCriticality,
             min: 0,
             max: 1,
             isArray: false,
@@ -137,7 +137,7 @@ public const RESOURCE_NAME_USCOREALLERGYINTOLERANCE = "AllergyIntolerance";
         },
         "type" : {
             name: "type",
-            dataType: AllergyIntoleranceType,
+            dataType: USCoreAllergyIntoleranceType,
             min: 0,
             max: 1,
             isArray: false,
@@ -218,7 +218,7 @@ public const RESOURCE_NAME_USCOREALLERGYINTOLERANCE = "AllergyIntolerance";
         },
         "reaction" : {
             name: "reaction",
-            dataType: AllergyIntoleranceReaction,
+            dataType: USCoreAllergyIntoleranceReaction,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -283,7 +283,7 @@ public const RESOURCE_NAME_USCOREALLERGYINTOLERANCE = "AllergyIntolerance";
         },
         "category" : {
             name: "category",
-            dataType: AllergyIntoleranceCategory,
+            dataType: USCoreAllergyIntoleranceCategory,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -301,19 +301,16 @@ public type USCoreAllergyIntolerance record {|
 
     RESOURCE_NAME_USCOREALLERGYINTOLERANCE resourceType = RESOURCE_NAME_USCOREALLERGYINTOLERANCE;
 
-    BaseUSCoreAllergyIntoleranceMeta meta = {
-        profile : [PROFILE_BASE_USCOREALLERGYINTOLERANCE]
-    };
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Range onsetRange?;
     r4:Extension[] modifierExtension?;
-    AllergyIntoleranceCriticality criticality?;
+    USCoreAllergyIntoleranceCriticality criticality?;
     r4:code language?;
     r4:CodeableConcept clinicalStatus?;
     r4:dateTime onsetDateTime?;
-    AllergyIntoleranceType 'type?;
+    USCoreAllergyIntoleranceType 'type?;
     string onsetString?;
     r4:Age onsetAge?;
     r4:dateTime lastOccurrence?;
@@ -323,50 +320,33 @@ public type USCoreAllergyIntolerance record {|
     r4:Identifier[] identifier?;
     r4:Reference recorder?;
     r4:Period onsetPeriod?;
-    AllergyIntoleranceReaction[] reaction?;
+    USCoreAllergyIntoleranceReaction[] reaction?;
     r4:CodeableConcept verificationStatus?;
     r4:dateTime recordedDate?;
     r4:Reference encounter?;
     r4:Resource[] contained?;
     r4:Reference asserter?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
-    AllergyIntoleranceCategory[] category?;
-    never...;
+    USCoreAllergyIntoleranceCategory[] category?;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseAllergyIntoleranceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseUSCoreAllergyIntoleranceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# AllergyIntoleranceCriticality enum
-public enum AllergyIntoleranceCriticality {
-   CODE_CRITICALITY_HIGH = "high",
-   CODE_CRITICALITY_LOW = "low",
-   CODE_CRITICALITY_UNABLE_TO_ASSESS = "unable-to-assess"
+# USCoreAllergyIntoleranceCategory enum
+public enum USCoreAllergyIntoleranceCategory {
+   CODE_CATEGORY_ENVIRONMENT = "environment",
+   CODE_CATEGORY_BIOLOGIC = "biologic",
+   CODE_CATEGORY_MEDICATION = "medication",
+   CODE_CATEGORY_FOOD = "food"
 }
 
-# FHIR AllergyIntoleranceReaction datatype record.
+# USCoreAllergyIntoleranceType enum
+public enum USCoreAllergyIntoleranceType {
+   CODE_TYPE_INTOLERANCE = "intolerance",
+   CODE_TYPE_ALLERGY = "allergy"
+}
+
+# FHIR USCoreAllergyIntoleranceReaction datatype record.
 #
 # + severity - Clinical assessment of the severity of the reaction event as a whole, potentially considering multiple different manifestations.
 # + note - Additional text about the adverse reaction event not captured in other fields.
@@ -379,12 +359,12 @@ public enum AllergyIntoleranceCriticality {
 # + onset - Record of the date and/or time of the onset of the Reaction.
 # + exposureRoute - Identification of the route by which the subject was exposed to the substance.
 @r4:DataTypeDefinition {
-    name: "AllergyIntoleranceReaction",
+    name: "USCoreAllergyIntoleranceReaction",
     baseType: (),
     elements: {
         "severity": {
             name: "severity",
-            dataType: AllergyIntoleranceReactionSeverity,
+            dataType: USCoreAllergyIntoleranceReactionSeverity,
             min: 0,
             max: 1,
             isArray: false,
@@ -478,8 +458,10 @@ public enum AllergyIntoleranceCriticality {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type AllergyIntoleranceReaction record {|
-    AllergyIntoleranceReactionSeverity severity?;
+public type USCoreAllergyIntoleranceReaction record {|
+    *r4:BackboneElement;
+
+    USCoreAllergyIntoleranceReactionSeverity severity?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     @constraint:Array {
@@ -494,24 +476,17 @@ public type AllergyIntoleranceReaction record {|
     r4:CodeableConcept exposureRoute?;
 |};
 
-# AllergyIntoleranceType enum
-public enum AllergyIntoleranceType {
-   CODE_TYPE_INTOLERANCE = "intolerance",
-   CODE_TYPE_ALLERGY = "allergy"
-}
-
-# AllergyIntoleranceCategory enum
-public enum AllergyIntoleranceCategory {
-   CODE_CATEGORY_ENVIRONMENT = "environment",
-   CODE_CATEGORY_BIOLOGIC = "biologic",
-   CODE_CATEGORY_MEDICATION = "medication",
-   CODE_CATEGORY_FOOD = "food"
-}
-
-# AllergyIntoleranceReactionSeverity enum
-public enum AllergyIntoleranceReactionSeverity {
+# USCoreAllergyIntoleranceReactionSeverity enum
+public enum USCoreAllergyIntoleranceReactionSeverity {
    CODE_SEVERITY_MILD = "mild",
    CODE_SEVERITY_SEVERE = "severe",
    CODE_SEVERITY_MODERATE = "moderate"
+}
+
+# USCoreAllergyIntoleranceCriticality enum
+public enum USCoreAllergyIntoleranceCriticality {
+   CODE_CRITICALITY_HIGH = "high",
+   CODE_CRITICALITY_LOW = "low",
+   CODE_CRITICALITY_UNABLE_TO_ASSESS = "unable-to-assess"
 }
 

@@ -398,9 +398,6 @@ public type RiskEvidenceSynthesis record {|
 
     RESOURCE_NAME_RISKEVIDENCESYNTHESIS resourceType = RESOURCE_NAME_RISKEVIDENCESYNTHESIS;
 
-    BaseRiskEvidenceSynthesisMeta meta = {
-        profile : [PROFILE_BASE_RISKEVIDENCESYNTHESIS]
-    };
     r4:dateTime date?;
     r4:Annotation[] note?;
     r4:markdown copyright?;
@@ -432,6 +429,7 @@ public type RiskEvidenceSynthesis record {|
     r4:Resource[] contained?;
     r4:Reference exposure?;
     r4:date lastReviewDate?;
+    r4:Meta meta?;
     r4:CodeableConcept synthesisType?;
     string name?;
     r4:uri implicitRules?;
@@ -439,32 +437,7 @@ public type RiskEvidenceSynthesis record {|
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
     RiskEvidenceSynthesisStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseRiskEvidenceSynthesisMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseRiskEvidenceSynthesisMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/RiskEvidenceSynthesis"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR RiskEvidenceSynthesisRiskEstimate datatype record.
@@ -580,6 +553,8 @@ public type BaseRiskEvidenceSynthesisMeta record {|
     }
 }
 public type RiskEvidenceSynthesisRiskEstimate record {|
+    *r4:BackboneElement;
+
     r4:integer numeratorCount?;
     r4:Extension[] extension?;
     r4:CodeableConcept unitOfMeasure?;
@@ -675,6 +650,8 @@ public type RiskEvidenceSynthesisRiskEstimate record {|
     }
 }
 public type RiskEvidenceSynthesisRiskEstimatePrecisionEstimate record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     decimal level?;
     r4:Extension[] modifierExtension?;
@@ -757,6 +734,8 @@ public type RiskEvidenceSynthesisRiskEstimatePrecisionEstimate record {|
     }
 }
 public type RiskEvidenceSynthesisCertainty record {|
+    *r4:BackboneElement;
+
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -846,6 +825,8 @@ public enum RiskEvidenceSynthesisStatus {
     }
 }
 public type RiskEvidenceSynthesisSampleSize record {|
+    *r4:BackboneElement;
+
     r4:integer numberOfParticipants?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -927,6 +908,8 @@ public type RiskEvidenceSynthesisSampleSize record {|
     }
 }
 public type RiskEvidenceSynthesisCertaintyCertaintySubcomponent record {|
+    *r4:BackboneElement;
+
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;

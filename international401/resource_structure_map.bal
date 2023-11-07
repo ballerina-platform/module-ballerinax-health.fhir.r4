@@ -279,9 +279,6 @@ public type StructureMap record {|
 
     RESOURCE_NAME_STRUCTUREMAP resourceType = RESOURCE_NAME_STRUCTUREMAP;
 
-    BaseStructureMapMeta meta = {
-        profile : [PROFILE_BASE_STRUCTUREMAP]
-    };
     r4:dateTime date?;
     r4:markdown copyright?;
     r4:Extension[] extension?;
@@ -305,37 +302,13 @@ public type StructureMap record {|
     StructureMapStructure[] structure?;
     r4:uri url;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name;
     r4:uri implicitRules?;
     string publisher?;
     r4:UsageContext[] useContext?;
     StructureMapStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseStructureMapMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseStructureMapMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/StructureMap"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR StructureMapGroup datatype record.
@@ -441,6 +414,8 @@ public type BaseStructureMapMeta record {|
     }
 }
 public type StructureMapGroup record {|
+    *r4:BackboneElement;
+
     StructureMapGroupTypeMode typeMode;
     @constraint:Array {
        minLength: 1
@@ -468,21 +443,21 @@ public enum StructureMapStatus {
 
 # FHIR StructureMapGroupRuleTargetParameter datatype record.
 #
-# + valueBoolean - Parameter value - variable or literal.
+# + valueStructureMapDecimal - Parameter value - variable or literal.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + valueId - Parameter value - variable or literal.
-# + valueString - Parameter value - variable or literal.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + valueDecimal - Parameter value - variable or literal.
+# + valueStructureMapString - Parameter value - variable or literal.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + valueInteger - Parameter value - variable or literal.
+# + valueStructureMapBoolean - Parameter value - variable or literal.
+# + valueStructureMapInteger - Parameter value - variable or literal.
+# + valueStructureMapId - Parameter value - variable or literal.
 @r4:DataTypeDefinition {
     name: "StructureMapGroupRuleTargetParameter",
     baseType: (),
     elements: {
-        "valueBoolean": {
-            name: "valueBoolean",
-            dataType: boolean,
+        "valueStructureMapDecimal": {
+            name: "valueStructureMapDecimal",
+            dataType: decimal,
             min: 1,
             max: 1,
             isArray: false,
@@ -498,24 +473,6 @@ public enum StructureMapStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "StructureMap.group.rule.target.parameter.extension"
         },
-        "valueId": {
-            name: "valueId",
-            dataType: r4:id,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Parameter value - variable or literal.",
-            path: "StructureMap.group.rule.target.parameter.value[x]"
-        },
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Parameter value - variable or literal.",
-            path: "StructureMap.group.rule.target.parameter.value[x]"
-        },
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -525,9 +482,9 @@ public enum StructureMapStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "StructureMap.group.rule.target.parameter.modifierExtension"
         },
-        "valueDecimal": {
-            name: "valueDecimal",
-            dataType: decimal,
+        "valueStructureMapString": {
+            name: "valueStructureMapString",
+            dataType: string,
             min: 1,
             max: 1,
             isArray: false,
@@ -543,9 +500,27 @@ public enum StructureMapStatus {
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "StructureMap.group.rule.target.parameter.id"
         },
-        "valueInteger": {
-            name: "valueInteger",
+        "valueStructureMapBoolean": {
+            name: "valueStructureMapBoolean",
+            dataType: boolean,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Parameter value - variable or literal.",
+            path: "StructureMap.group.rule.target.parameter.value[x]"
+        },
+        "valueStructureMapInteger": {
+            name: "valueStructureMapInteger",
             dataType: r4:integer,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Parameter value - variable or literal.",
+            path: "StructureMap.group.rule.target.parameter.value[x]"
+        },
+        "valueStructureMapId": {
+            name: "valueStructureMapId",
+            dataType: r4:id,
             min: 1,
             max: 1,
             isArray: false,
@@ -559,14 +534,16 @@ public enum StructureMapStatus {
     }
 }
 public type StructureMapGroupRuleTargetParameter record {|
-    boolean valueBoolean;
+    *r4:BackboneElement;
+
+    decimal valueStructureMapDecimal;
     r4:Extension[] extension?;
-    r4:id valueId;
-    string valueString;
     r4:Extension[] modifierExtension?;
-    decimal valueDecimal;
+    string valueStructureMapString;
     string id?;
-    r4:integer valueInteger;
+    boolean valueStructureMapBoolean;
+    r4:integer valueStructureMapInteger;
+    r4:id valueStructureMapId;
 |};
 
 # FHIR StructureMapGroupRuleDependent datatype record.
@@ -632,6 +609,8 @@ public type StructureMapGroupRuleTargetParameter record {|
     }
 }
 public type StructureMapGroupRuleDependent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:id name;
@@ -680,85 +659,103 @@ public enum StructureMapGroupTypeMode {
 
 # FHIR StructureMapGroupRuleSource datatype record.
 #
-# + defaultValueDosage - A value to use if there is no existing value in the source object.
-# + defaultValueString - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapRange - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapAnnotation - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapAge - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapQuantity - A value to use if there is no existing value in the source object.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + defaultValueSignature - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapSignature - A value to use if there is no existing value in the source object.
 # + 'type - Specified type for the element. This works as a condition on the mapping - use for polymorphic elements.
-# + defaultValueInstant - A value to use if there is no existing value in the source object.
-# + defaultValueBoolean - A value to use if there is no existing value in the source object.
-# + defaultValueQuantity - A value to use if there is no existing value in the source object.
-# + defaultValueUrl - A value to use if there is no existing value in the source object.
-# + defaultValueRatio - A value to use if there is no existing value in the source object.
-# + defaultValueUri - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapTime - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapDataRequirement - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapUnsignedInt - A value to use if there is no existing value in the source object.
 # + context - Type or variable this rule applies to.
-# + defaultValueMeta - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapTriggerDefinition - A value to use if there is no existing value in the source object.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + defaultValueMoney - A value to use if there is no existing value in the source object.
 # + element - Optional field for this source.
-# + defaultValueBase64Binary - A value to use if there is no existing value in the source object.
-# + defaultValueAddress - A value to use if there is no existing value in the source object.
-# + defaultValueIdentifier - A value to use if there is no existing value in the source object.
-# + defaultValueMarkdown - A value to use if there is no existing value in the source object.
-# + defaultValueAge - A value to use if there is no existing value in the source object.
-# + defaultValueExpression - A value to use if there is no existing value in the source object.
-# + defaultValueId - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapDateTime - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapBoolean - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapInteger - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapUuid - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapPeriod - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapCodeableConcept - A value to use if there is no existing value in the source object.
 # + 'check - FHIRPath expression - must be true or the mapping engine throws an error instead of completing.
+# + defaultValueStructureMapDate - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapSampledData - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapUsageContext - A value to use if there is no existing value in the source object.
 # + condition - FHIRPath expression - must be true or the rule does not apply.
-# + defaultValueUsageContext - A value to use if there is no existing value in the source object.
-# + defaultValueDataRequirement - A value to use if there is no existing value in the source object.
-# + defaultValueDate - A value to use if there is no existing value in the source object.
-# + defaultValueParameterDefinition - A value to use if there is no existing value in the source object.
-# + defaultValueAttachment - A value to use if there is no existing value in the source object.
-# + defaultValueReference - A value to use if there is no existing value in the source object.
-# + defaultValueContactDetail - A value to use if there is no existing value in the source object.
-# + defaultValueDuration - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapInstant - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapRelatedArtifact - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapParameterDefinition - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapAddress - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapReference - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapDosage - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapDecimal - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapMoney - A value to use if there is no existing value in the source object.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + defaultValueRange - A value to use if there is no existing value in the source object.
-# + defaultValueSampledData - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapString - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapIdentifier - A value to use if there is no existing value in the source object.
 # + logMessage - A FHIRPath expression which specifies a message to put in the transform log when content matching the source rule is found.
-# + defaultValueUnsignedInt - A value to use if there is no existing value in the source object.
-# + defaultValueInteger - A value to use if there is no existing value in the source object.
-# + defaultValueTime - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapExpression - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapAttachment - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapOid - A value to use if there is no existing value in the source object.
 # + listMode - How to handle the list mode for this element.
-# + defaultValueRelatedArtifact - A value to use if there is no existing value in the source object.
-# + defaultValueTriggerDefinition - A value to use if there is no existing value in the source object.
-# + defaultValueContactPoint - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapDuration - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapContactDetail - A value to use if there is no existing value in the source object.
 # + min - Specified minimum cardinality for the element. This is optional; if present, it acts an implicit check on the input content.
-# + defaultValueHumanName - A value to use if there is no existing value in the source object.
-# + defaultValueDateTime - A value to use if there is no existing value in the source object.
-# + defaultValueDistance - A value to use if there is no existing value in the source object.
-# + defaultValueCodeableConcept - A value to use if there is no existing value in the source object.
-# + defaultValueDecimal - A value to use if there is no existing value in the source object.
-# + defaultValueUuid - A value to use if there is no existing value in the source object.
-# + defaultValueAnnotation - A value to use if there is no existing value in the source object.
-# + defaultValueCount - A value to use if there is no existing value in the source object.
-# + defaultValueCanonical - A value to use if there is no existing value in the source object.
-# + defaultValuePeriod - A value to use if there is no existing value in the source object.
-# + defaultValueContributor - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapCoding - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapRatio - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapDistance - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapTiming - A value to use if there is no existing value in the source object.
 # + max - Specified maximum cardinality for the element - a number or a '*'. This is optional; if present, it acts an implicit check on the input content (* just serves as documentation; it's the default value).
-# + defaultValueTiming - A value to use if there is no existing value in the source object.
-# + defaultValuePositiveInt - A value to use if there is no existing value in the source object.
-# + defaultValueOid - A value to use if there is no existing value in the source object.
-# + defaultValueCoding - A value to use if there is no existing value in the source object.
-# + defaultValueCode - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapContactPoint - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapCanonical - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapCode - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapCount - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapHumanName - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapMeta - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapId - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapUri - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapBase64Binary - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapUrl - A value to use if there is no existing value in the source object.
 # + variable - Named context for field, if a field is specified.
+# + defaultValueStructureMapMarkdown - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapPositiveInt - A value to use if there is no existing value in the source object.
+# + defaultValueStructureMapContributor - A value to use if there is no existing value in the source object.
 @r4:DataTypeDefinition {
     name: "StructureMapGroupRuleSource",
     baseType: (),
     elements: {
-        "defaultValueDosage": {
-            name: "defaultValueDosage",
-            dataType: r4:Dosage,
+        "defaultValueStructureMapRange": {
+            name: "defaultValueStructureMapRange",
+            dataType: r4:Range,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueString": {
-            name: "defaultValueString",
-            dataType: string,
+        "defaultValueStructureMapAnnotation": {
+            name: "defaultValueStructureMapAnnotation",
+            dataType: r4:Annotation,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapAge": {
+            name: "defaultValueStructureMapAge",
+            dataType: r4:Age,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapQuantity": {
+            name: "defaultValueStructureMapQuantity",
+            dataType: r4:Quantity,
             min: 0,
             max: 1,
             isArray: false,
@@ -774,8 +771,8 @@ public enum StructureMapGroupTypeMode {
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "StructureMap.group.rule.source.modifierExtension"
         },
-        "defaultValueSignature": {
-            name: "defaultValueSignature",
+        "defaultValueStructureMapSignature": {
+            name: "defaultValueStructureMapSignature",
             dataType: r4:Signature,
             min: 0,
             max: 1,
@@ -792,54 +789,27 @@ public enum StructureMapGroupTypeMode {
             description: "Specified type for the element. This works as a condition on the mapping - use for polymorphic elements.",
             path: "StructureMap.group.rule.source.type"
         },
-        "defaultValueInstant": {
-            name: "defaultValueInstant",
-            dataType: r4:instant,
+        "defaultValueStructureMapTime": {
+            name: "defaultValueStructureMapTime",
+            dataType: r4:time,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueBoolean": {
-            name: "defaultValueBoolean",
-            dataType: boolean,
+        "defaultValueStructureMapDataRequirement": {
+            name: "defaultValueStructureMapDataRequirement",
+            dataType: r4:DataRequirement,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueQuantity": {
-            name: "defaultValueQuantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueUrl": {
-            name: "defaultValueUrl",
-            dataType: r4:urlType,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueRatio": {
-            name: "defaultValueRatio",
-            dataType: r4:Ratio,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueUri": {
-            name: "defaultValueUri",
-            dataType: r4:uri,
+        "defaultValueStructureMapUnsignedInt": {
+            name: "defaultValueStructureMapUnsignedInt",
+            dataType: r4:unsignedInt,
             min: 0,
             max: 1,
             isArray: false,
@@ -855,9 +825,9 @@ public enum StructureMapGroupTypeMode {
             description: "Type or variable this rule applies to.",
             path: "StructureMap.group.rule.source.context"
         },
-        "defaultValueMeta": {
-            name: "defaultValueMeta",
-            dataType: r4:Meta,
+        "defaultValueStructureMapTriggerDefinition": {
+            name: "defaultValueStructureMapTriggerDefinition",
+            dataType: r4:TriggerDefinition,
             min: 0,
             max: 1,
             isArray: false,
@@ -873,15 +843,6 @@ public enum StructureMapGroupTypeMode {
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "StructureMap.group.rule.source.id"
         },
-        "defaultValueMoney": {
-            name: "defaultValueMoney",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
         "element": {
             name: "element",
             dataType: string,
@@ -891,63 +852,54 @@ public enum StructureMapGroupTypeMode {
             description: "Optional field for this source.",
             path: "StructureMap.group.rule.source.element"
         },
-        "defaultValueBase64Binary": {
-            name: "defaultValueBase64Binary",
-            dataType: r4:base64Binary,
+        "defaultValueStructureMapDateTime": {
+            name: "defaultValueStructureMapDateTime",
+            dataType: r4:dateTime,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueAddress": {
-            name: "defaultValueAddress",
-            dataType: r4:Address,
+        "defaultValueStructureMapBoolean": {
+            name: "defaultValueStructureMapBoolean",
+            dataType: boolean,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueIdentifier": {
-            name: "defaultValueIdentifier",
-            dataType: r4:Identifier,
+        "defaultValueStructureMapInteger": {
+            name: "defaultValueStructureMapInteger",
+            dataType: r4:integer,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueMarkdown": {
-            name: "defaultValueMarkdown",
-            dataType: r4:markdown,
+        "defaultValueStructureMapUuid": {
+            name: "defaultValueStructureMapUuid",
+            dataType: r4:uuid,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueAge": {
-            name: "defaultValueAge",
-            dataType: r4:Age,
+        "defaultValueStructureMapPeriod": {
+            name: "defaultValueStructureMapPeriod",
+            dataType: r4:Period,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueExpression": {
-            name: "defaultValueExpression",
-            dataType: r4:Expression,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueId": {
-            name: "defaultValueId",
-            dataType: r4:id,
+        "defaultValueStructureMapCodeableConcept": {
+            name: "defaultValueStructureMapCodeableConcept",
+            dataType: r4:CodeableConcept,
             min: 0,
             max: 1,
             isArray: false,
@@ -963,6 +915,33 @@ public enum StructureMapGroupTypeMode {
             description: "FHIRPath expression - must be true or the mapping engine throws an error instead of completing.",
             path: "StructureMap.group.rule.source.check"
         },
+        "defaultValueStructureMapDate": {
+            name: "defaultValueStructureMapDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapSampledData": {
+            name: "defaultValueStructureMapSampledData",
+            dataType: r4:SampledData,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapUsageContext": {
+            name: "defaultValueStructureMapUsageContext",
+            dataType: r4:UsageContext,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
         "condition": {
             name: "condition",
             dataType: string,
@@ -972,35 +951,26 @@ public enum StructureMapGroupTypeMode {
             description: "FHIRPath expression - must be true or the rule does not apply.",
             path: "StructureMap.group.rule.source.condition"
         },
-        "defaultValueUsageContext": {
-            name: "defaultValueUsageContext",
-            dataType: r4:UsageContext,
+        "defaultValueStructureMapInstant": {
+            name: "defaultValueStructureMapInstant",
+            dataType: r4:instant,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueDataRequirement": {
-            name: "defaultValueDataRequirement",
-            dataType: r4:DataRequirement,
+        "defaultValueStructureMapRelatedArtifact": {
+            name: "defaultValueStructureMapRelatedArtifact",
+            dataType: r4:RelatedArtifact,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueDate": {
-            name: "defaultValueDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueParameterDefinition": {
-            name: "defaultValueParameterDefinition",
+        "defaultValueStructureMapParameterDefinition": {
+            name: "defaultValueStructureMapParameterDefinition",
             dataType: r4:ParameterDefinition,
             min: 0,
             max: 1,
@@ -1008,17 +978,17 @@ public enum StructureMapGroupTypeMode {
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueAttachment": {
-            name: "defaultValueAttachment",
-            dataType: r4:Attachment,
+        "defaultValueStructureMapAddress": {
+            name: "defaultValueStructureMapAddress",
+            dataType: r4:Address,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueReference": {
-            name: "defaultValueReference",
+        "defaultValueStructureMapReference": {
+            name: "defaultValueStructureMapReference",
             dataType: r4:Reference,
             min: 0,
             max: 1,
@@ -1026,18 +996,27 @@ public enum StructureMapGroupTypeMode {
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueContactDetail": {
-            name: "defaultValueContactDetail",
-            dataType: r4:ContactDetail,
+        "defaultValueStructureMapDosage": {
+            name: "defaultValueStructureMapDosage",
+            dataType: r4:Dosage,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueDuration": {
-            name: "defaultValueDuration",
-            dataType: r4:Duration,
+        "defaultValueStructureMapDecimal": {
+            name: "defaultValueStructureMapDecimal",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapMoney": {
+            name: "defaultValueStructureMapMoney",
+            dataType: r4:Money,
             min: 0,
             max: 1,
             isArray: false,
@@ -1053,18 +1032,18 @@ public enum StructureMapGroupTypeMode {
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "StructureMap.group.rule.source.extension"
         },
-        "defaultValueRange": {
-            name: "defaultValueRange",
-            dataType: r4:Range,
+        "defaultValueStructureMapString": {
+            name: "defaultValueStructureMapString",
+            dataType: string,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueSampledData": {
-            name: "defaultValueSampledData",
-            dataType: r4:SampledData,
+        "defaultValueStructureMapIdentifier": {
+            name: "defaultValueStructureMapIdentifier",
+            dataType: r4:Identifier,
             min: 0,
             max: 1,
             isArray: false,
@@ -1080,27 +1059,27 @@ public enum StructureMapGroupTypeMode {
             description: "A FHIRPath expression which specifies a message to put in the transform log when content matching the source rule is found.",
             path: "StructureMap.group.rule.source.logMessage"
         },
-        "defaultValueUnsignedInt": {
-            name: "defaultValueUnsignedInt",
-            dataType: r4:unsignedInt,
+        "defaultValueStructureMapExpression": {
+            name: "defaultValueStructureMapExpression",
+            dataType: r4:Expression,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueInteger": {
-            name: "defaultValueInteger",
-            dataType: r4:integer,
+        "defaultValueStructureMapAttachment": {
+            name: "defaultValueStructureMapAttachment",
+            dataType: r4:Attachment,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueTime": {
-            name: "defaultValueTime",
-            dataType: r4:time,
+        "defaultValueStructureMapOid": {
+            name: "defaultValueStructureMapOid",
+            dataType: r4:oid,
             min: 0,
             max: 1,
             isArray: false,
@@ -1116,27 +1095,18 @@ public enum StructureMapGroupTypeMode {
             description: "How to handle the list mode for this element.",
             path: "StructureMap.group.rule.source.listMode"
         },
-        "defaultValueRelatedArtifact": {
-            name: "defaultValueRelatedArtifact",
-            dataType: r4:RelatedArtifact,
+        "defaultValueStructureMapDuration": {
+            name: "defaultValueStructureMapDuration",
+            dataType: r4:Duration,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueTriggerDefinition": {
-            name: "defaultValueTriggerDefinition",
-            dataType: r4:TriggerDefinition,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueContactPoint": {
-            name: "defaultValueContactPoint",
-            dataType: r4:ContactPoint,
+        "defaultValueStructureMapContactDetail": {
+            name: "defaultValueStructureMapContactDetail",
+            dataType: r4:ContactDetail,
             min: 0,
             max: 1,
             isArray: false,
@@ -1152,26 +1122,26 @@ public enum StructureMapGroupTypeMode {
             description: "Specified minimum cardinality for the element. This is optional; if present, it acts an implicit check on the input content.",
             path: "StructureMap.group.rule.source.min"
         },
-        "defaultValueHumanName": {
-            name: "defaultValueHumanName",
-            dataType: r4:HumanName,
+        "defaultValueStructureMapCoding": {
+            name: "defaultValueStructureMapCoding",
+            dataType: r4:Coding,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueDateTime": {
-            name: "defaultValueDateTime",
-            dataType: r4:dateTime,
+        "defaultValueStructureMapRatio": {
+            name: "defaultValueStructureMapRatio",
+            dataType: r4:Ratio,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueDistance": {
-            name: "defaultValueDistance",
+        "defaultValueStructureMapDistance": {
+            name: "defaultValueStructureMapDistance",
             dataType: r4:Distance,
             min: 0,
             max: 1,
@@ -1179,72 +1149,9 @@ public enum StructureMapGroupTypeMode {
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueCodeableConcept": {
-            name: "defaultValueCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueDecimal": {
-            name: "defaultValueDecimal",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueUuid": {
-            name: "defaultValueUuid",
-            dataType: r4:uuid,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueAnnotation": {
-            name: "defaultValueAnnotation",
-            dataType: r4:Annotation,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueCount": {
-            name: "defaultValueCount",
-            dataType: r4:Count,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueCanonical": {
-            name: "defaultValueCanonical",
-            dataType: r4:canonical,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValuePeriod": {
-            name: "defaultValuePeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueContributor": {
-            name: "defaultValueContributor",
-            dataType: r4:Contributor,
+        "defaultValueStructureMapTiming": {
+            name: "defaultValueStructureMapTiming",
+            dataType: r4:Timing,
             min: 0,
             max: 1,
             isArray: false,
@@ -1260,45 +1167,90 @@ public enum StructureMapGroupTypeMode {
             description: "Specified maximum cardinality for the element - a number or a '*'. This is optional; if present, it acts an implicit check on the input content (* just serves as documentation; it's the default value).",
             path: "StructureMap.group.rule.source.max"
         },
-        "defaultValueTiming": {
-            name: "defaultValueTiming",
-            dataType: r4:Timing,
+        "defaultValueStructureMapContactPoint": {
+            name: "defaultValueStructureMapContactPoint",
+            dataType: r4:ContactPoint,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValuePositiveInt": {
-            name: "defaultValuePositiveInt",
-            dataType: r4:positiveInt,
+        "defaultValueStructureMapCanonical": {
+            name: "defaultValueStructureMapCanonical",
+            dataType: r4:canonical,
             min: 0,
             max: 1,
             isArray: false,
             description: "A value to use if there is no existing value in the source object.",
             path: "StructureMap.group.rule.source.defaultValue[x]"
         },
-        "defaultValueOid": {
-            name: "defaultValueOid",
-            dataType: r4:oid,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueCoding": {
-            name: "defaultValueCoding",
-            dataType: r4:Coding,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A value to use if there is no existing value in the source object.",
-            path: "StructureMap.group.rule.source.defaultValue[x]"
-        },
-        "defaultValueCode": {
-            name: "defaultValueCode",
+        "defaultValueStructureMapCode": {
+            name: "defaultValueStructureMapCode",
             dataType: r4:code,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapCount": {
+            name: "defaultValueStructureMapCount",
+            dataType: r4:Count,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapHumanName": {
+            name: "defaultValueStructureMapHumanName",
+            dataType: r4:HumanName,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapMeta": {
+            name: "defaultValueStructureMapMeta",
+            dataType: r4:Meta,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapId": {
+            name: "defaultValueStructureMapId",
+            dataType: r4:id,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapUri": {
+            name: "defaultValueStructureMapUri",
+            dataType: r4:uri,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapBase64Binary": {
+            name: "defaultValueStructureMapBase64Binary",
+            dataType: r4:base64Binary,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapUrl": {
+            name: "defaultValueStructureMapUrl",
+            dataType: r4:urlType,
             min: 0,
             max: 1,
             isArray: false,
@@ -1313,6 +1265,33 @@ public enum StructureMapGroupTypeMode {
             isArray: false,
             description: "Named context for field, if a field is specified.",
             path: "StructureMap.group.rule.source.variable"
+        },
+        "defaultValueStructureMapMarkdown": {
+            name: "defaultValueStructureMapMarkdown",
+            dataType: r4:markdown,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapPositiveInt": {
+            name: "defaultValueStructureMapPositiveInt",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
+        },
+        "defaultValueStructureMapContributor": {
+            name: "defaultValueStructureMapContributor",
+            dataType: r4:Contributor,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A value to use if there is no existing value in the source object.",
+            path: "StructureMap.group.rule.source.defaultValue[x]"
         }
     },
     serializers: {
@@ -1321,69 +1300,71 @@ public enum StructureMapGroupTypeMode {
     }
 }
 public type StructureMapGroupRuleSource record {|
-    r4:Dosage defaultValueDosage?;
-    string defaultValueString?;
+    *r4:BackboneElement;
+
+    r4:Range defaultValueStructureMapRange?;
+    r4:Annotation defaultValueStructureMapAnnotation?;
+    r4:Age defaultValueStructureMapAge?;
+    r4:Quantity defaultValueStructureMapQuantity?;
     r4:Extension[] modifierExtension?;
-    r4:Signature defaultValueSignature?;
+    r4:Signature defaultValueStructureMapSignature?;
     string 'type?;
-    r4:instant defaultValueInstant?;
-    boolean defaultValueBoolean?;
-    r4:Quantity defaultValueQuantity?;
-    r4:urlType defaultValueUrl?;
-    r4:Ratio defaultValueRatio?;
-    r4:uri defaultValueUri?;
+    r4:time defaultValueStructureMapTime?;
+    r4:DataRequirement defaultValueStructureMapDataRequirement?;
+    r4:unsignedInt defaultValueStructureMapUnsignedInt?;
     r4:id context;
-    r4:Meta defaultValueMeta?;
+    r4:TriggerDefinition defaultValueStructureMapTriggerDefinition?;
     string id?;
-    r4:Money defaultValueMoney?;
     string element?;
-    r4:base64Binary defaultValueBase64Binary?;
-    r4:Address defaultValueAddress?;
-    r4:Identifier defaultValueIdentifier?;
-    r4:markdown defaultValueMarkdown?;
-    r4:Age defaultValueAge?;
-    r4:Expression defaultValueExpression?;
-    r4:id defaultValueId?;
+    r4:dateTime defaultValueStructureMapDateTime?;
+    boolean defaultValueStructureMapBoolean?;
+    r4:integer defaultValueStructureMapInteger?;
+    r4:uuid defaultValueStructureMapUuid?;
+    r4:Period defaultValueStructureMapPeriod?;
+    r4:CodeableConcept defaultValueStructureMapCodeableConcept?;
     string 'check?;
+    r4:date defaultValueStructureMapDate?;
+    r4:SampledData defaultValueStructureMapSampledData?;
+    r4:UsageContext defaultValueStructureMapUsageContext?;
     string condition?;
-    r4:UsageContext defaultValueUsageContext?;
-    r4:DataRequirement defaultValueDataRequirement?;
-    r4:date defaultValueDate?;
-    r4:ParameterDefinition defaultValueParameterDefinition?;
-    r4:Attachment defaultValueAttachment?;
-    r4:Reference defaultValueReference?;
-    r4:ContactDetail defaultValueContactDetail?;
-    r4:Duration defaultValueDuration?;
+    r4:instant defaultValueStructureMapInstant?;
+    r4:RelatedArtifact defaultValueStructureMapRelatedArtifact?;
+    r4:ParameterDefinition defaultValueStructureMapParameterDefinition?;
+    r4:Address defaultValueStructureMapAddress?;
+    r4:Reference defaultValueStructureMapReference?;
+    r4:Dosage defaultValueStructureMapDosage?;
+    decimal defaultValueStructureMapDecimal?;
+    r4:Money defaultValueStructureMapMoney?;
     r4:Extension[] extension?;
-    r4:Range defaultValueRange?;
-    r4:SampledData defaultValueSampledData?;
+    string defaultValueStructureMapString?;
+    r4:Identifier defaultValueStructureMapIdentifier?;
     string logMessage?;
-    r4:unsignedInt defaultValueUnsignedInt?;
-    r4:integer defaultValueInteger?;
-    r4:time defaultValueTime?;
+    r4:Expression defaultValueStructureMapExpression?;
+    r4:Attachment defaultValueStructureMapAttachment?;
+    r4:oid defaultValueStructureMapOid?;
     StructureMapGroupRuleSourceListMode listMode?;
-    r4:RelatedArtifact defaultValueRelatedArtifact?;
-    r4:TriggerDefinition defaultValueTriggerDefinition?;
-    r4:ContactPoint defaultValueContactPoint?;
+    r4:Duration defaultValueStructureMapDuration?;
+    r4:ContactDetail defaultValueStructureMapContactDetail?;
     r4:integer min?;
-    r4:HumanName defaultValueHumanName?;
-    r4:dateTime defaultValueDateTime?;
-    r4:Distance defaultValueDistance?;
-    r4:CodeableConcept defaultValueCodeableConcept?;
-    decimal defaultValueDecimal?;
-    r4:uuid defaultValueUuid?;
-    r4:Annotation defaultValueAnnotation?;
-    r4:Count defaultValueCount?;
-    r4:canonical defaultValueCanonical?;
-    r4:Period defaultValuePeriod?;
-    r4:Contributor defaultValueContributor?;
+    r4:Coding defaultValueStructureMapCoding?;
+    r4:Ratio defaultValueStructureMapRatio?;
+    r4:Distance defaultValueStructureMapDistance?;
+    r4:Timing defaultValueStructureMapTiming?;
     string max?;
-    r4:Timing defaultValueTiming?;
-    r4:positiveInt defaultValuePositiveInt?;
-    r4:oid defaultValueOid?;
-    r4:Coding defaultValueCoding?;
-    r4:code defaultValueCode?;
+    r4:ContactPoint defaultValueStructureMapContactPoint?;
+    r4:canonical defaultValueStructureMapCanonical?;
+    r4:code defaultValueStructureMapCode?;
+    r4:Count defaultValueStructureMapCount?;
+    r4:HumanName defaultValueStructureMapHumanName?;
+    r4:Meta defaultValueStructureMapMeta?;
+    r4:id defaultValueStructureMapId?;
+    r4:uri defaultValueStructureMapUri?;
+    r4:base64Binary defaultValueStructureMapBase64Binary?;
+    r4:urlType defaultValueStructureMapUrl?;
     r4:id variable?;
+    r4:markdown defaultValueStructureMapMarkdown?;
+    r4:positiveInt defaultValueStructureMapPositiveInt?;
+    r4:Contributor defaultValueStructureMapContributor?;
 |};
 
 # StructureMapGroupRuleTargetListMode enum
@@ -1477,6 +1458,8 @@ public enum StructureMapGroupRuleTargetListMode {
     }
 }
 public type StructureMapStructure record {|
+    *r4:BackboneElement;
+
     StructureMapStructureMode mode;
     r4:Extension[] extension?;
     string documentation?;
@@ -1579,6 +1562,8 @@ public type StructureMapStructure record {|
     }
 }
 public type StructureMapGroupRule record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     string documentation?;
     r4:Extension[] modifierExtension?;
@@ -1721,6 +1706,8 @@ public enum StructureMapGroupRuleTargetContextType {
     }
 }
 public type StructureMapGroupRuleTarget record {|
+    *r4:BackboneElement;
+
     StructureMapGroupRuleTargetListMode[] listMode?;
     r4:Extension[] extension?;
     r4:id listRuleId?;
@@ -1817,6 +1804,8 @@ public type StructureMapGroupRuleTarget record {|
     }
 }
 public type StructureMapGroupInput record {|
+    *r4:BackboneElement;
+
     StructureMapGroupInputMode mode;
     r4:Extension[] extension?;
     string documentation?;

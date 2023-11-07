@@ -28,7 +28,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
 # + resourceType - The type of the resource describes
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - The test, panel, report, or note that was ordered.
-# + subject - The subject of the report. Usually, but not always, this is a patient. However diagnostic services also perform analyses on specimens collected from a variety of other sources.
+# + subject - The subject of the report. Usually, but not always, this is a patient. However, diagnostic services also perform analyses on specimens collected from a variety of other sources.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + presentedForm - Rich text representation of the entire result as issued by the diagnostic service. Multiple formats are allowed but they SHALL be semantically equivalent.
 # + language - The base language in which the resource is written.
@@ -42,15 +42,20 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
 # + basedOn - Details concerning a service requested.
 # + identifier - Identifiers assigned to this report by the performer or other systems.
 # + performer - The diagnostic service that is responsible for issuing the report.
-# + effectivePeriod - This is the Datetime or Period when the report or note was written.
+# + effectivePeriod - The time or time-period the observed values are related to. When the subject of the report is a patient, this is usually either the time of the procedure or of specimen collection(s), but very often the source of the date/time is not known, only the date/time itself.
 # + resultsInterpreter - The practitioner or organization that is responsible for the report's conclusions and interpretations.
 # + conclusionCode - One or more codes that represent the summary conclusion (interpretation/impression) of the diagnostic report.
 # + encounter - The healthcare event (e.g. a patient and healthcare provider interaction) which this DiagnosticReport is about.
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
-# + effectiveDateTime - This is the Datetime or Period when the report or note was written.
+# + effectiveDateTime - The time or time-period the observed values are related to. When the subject of the report is a patient, this is usually either the time of the procedure or of specimen collection(s), but very often the source of the date/time is not known, only the date/time itself.
 # + meta - The metadata about the resource. This is content that is maintained by the infrastructure. Changes to the content might not always be associated with version changes to the resource.
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes.
+# * category Slicings
+# 1) USCoreDiagnosticReportProfileNoteExchangeCategoryUscore: Service category
+#       - min = 0
+#       - max = *
+#
 # + imagingStudy - One or more links to full details of any imaging performed during the diagnostic investigation. Typically, this is imaging performed by DICOM enabled modalities, but this is not required. A fully enabled PACS viewer can use this information to provide views of the source images.
 # + status - The status of the diagnostic report.
 @r4:ResourceDefinition {
@@ -110,7 +115,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
         },
         "media" : {
             name: "media",
-            dataType: DiagnosticReportMedia,
+            dataType: USCoreDiagnosticReportProfileNoteExchangeMedia,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -191,7 +196,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
         "effectivePeriod" : {
             name: "effectivePeriod",
             dataType: r4:Period,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "DiagnosticReport.effective[x]"
@@ -232,7 +237,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
         "effectiveDateTime" : {
             name: "effectiveDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "DiagnosticReport.effective[x]"
@@ -260,7 +265,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
             max: int:MAX_VALUE,
             isArray: true,
             path: "DiagnosticReport.category",
-            valueSet: "http://hl7.org/fhir/us/core/ValueSet/us-core-diagnosticreport-category"
+            valueSet: "http://hl7.org/fhir/ValueSet/diagnostic-service-sections"
         },
         "imagingStudy" : {
             name: "imagingStudy",
@@ -272,7 +277,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
         },
         "status" : {
             name: "status",
-            dataType: DiagnosticReportStatus,
+            dataType: USCoreDiagnosticReportProfileNoteExchangeStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -290,16 +295,13 @@ public type USCoreDiagnosticReportProfileNoteExchange record {|
 
     RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE resourceType = RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE;
 
-    BaseUSCoreDiagnosticReportProfileNoteExchangeMeta meta = {
-        profile : [PROFILE_BASE_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE]
-    };
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Reference subject;
     r4:Extension[] modifierExtension?;
     r4:Attachment[] presentedForm?;
     r4:code language?;
-    DiagnosticReportMedia[] media?;
+    USCoreDiagnosticReportProfileNoteExchangeMedia[] media?;
     string conclusion?;
     r4:Reference[] result?;
     r4:Reference[] specimen?;
@@ -309,56 +311,32 @@ public type USCoreDiagnosticReportProfileNoteExchange record {|
     r4:Reference[] basedOn?;
     r4:Identifier[] identifier?;
     r4:Reference[] performer?;
-    r4:Period effectivePeriod;
+    r4:Period effectivePeriod?;
     r4:Reference[] resultsInterpreter?;
     r4:CodeableConcept[] conclusionCode?;
     r4:Reference encounter?;
     r4:Resource[] contained?;
-    r4:dateTime effectiveDateTime;
+    r4:dateTime effectiveDateTime?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     @constraint:Array {
        minLength: 1
     }
     r4:CodeableConcept[] category;
     r4:Reference[] imagingStudy?;
-    DiagnosticReportStatus status;
-    never...;
+    USCoreDiagnosticReportProfileNoteExchangeStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseDiagnosticReportMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseUSCoreDiagnosticReportProfileNoteExchangeMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-diagnosticreport-note"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# DiagnosticReportStatus enum
-public enum DiagnosticReportStatus {
+# USCoreDiagnosticReportProfileNoteExchangeStatus enum
+public enum USCoreDiagnosticReportProfileNoteExchangeStatus {
    CODE_STATUS_FINAL = "final",
    CODE_STATUS_REGISTERED = "registered",
    CODE_STATUS_PRELIMINARY = "preliminary",
    CODE_STATUS_PARTIAL = "partial"
 }
 
-# FHIR DiagnosticReportMedia datatype record.
+# FHIR USCoreDiagnosticReportProfileNoteExchangeMedia datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -366,7 +344,7 @@ public enum DiagnosticReportStatus {
 # + comment - A comment about the image. Typically, this is used to provide an explanation for why the image is included, or to draw the viewer's attention to important features.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "DiagnosticReportMedia",
+    name: "USCoreDiagnosticReportProfileNoteExchangeMedia",
     baseType: (),
     elements: {
         "extension": {
@@ -420,11 +398,30 @@ public enum DiagnosticReportStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DiagnosticReportMedia record {|
+public type USCoreDiagnosticReportProfileNoteExchangeMedia record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Reference link;
     string comment?;
     string id?;
+|};
+
+# FHIR USCoreDiagnosticReportProfileNoteExchangeCategoryUscore datatype record.
+#
+@r4:DataTypeDefinition {
+    name: "USCoreDiagnosticReportProfileNoteExchangeCategoryUscore",
+    baseType: (),
+    elements: {
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreDiagnosticReportProfileNoteExchangeCategoryUscore record {|
+    *r4:CodeableConcept;
+
 |};
 

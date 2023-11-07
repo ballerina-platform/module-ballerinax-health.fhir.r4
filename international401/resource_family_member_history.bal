@@ -353,9 +353,6 @@ public type FamilyMemberHistory record {|
 
     RESOURCE_NAME_FAMILYMEMBERHISTORY resourceType = RESOURCE_NAME_FAMILYMEMBERHISTORY;
 
-    BaseFamilyMemberHistoryMeta meta = {
-        profile : [PROFILE_BASE_FAMILYMEMBERHISTORY]
-    };
     r4:Range ageRange?;
     r4:dateTime date?;
     r4:CodeableConcept dataAbsentReason?;
@@ -384,37 +381,13 @@ public type FamilyMemberHistory record {|
     r4:Resource[] contained?;
     boolean deceasedBoolean?;
     string deceasedString?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
     r4:date deceasedDate?;
     r4:Age deceasedAge?;
     FamilyMemberHistoryStatus status;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseFamilyMemberHistoryMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseFamilyMemberHistoryMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/FamilyMemberHistory"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # FHIR FamilyMemberHistoryCondition datatype record.
@@ -540,6 +513,8 @@ public type BaseFamilyMemberHistoryMeta record {|
     }
 }
 public type FamilyMemberHistoryCondition record {|
+    *r4:BackboneElement;
+
     boolean contributedToDeath?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;

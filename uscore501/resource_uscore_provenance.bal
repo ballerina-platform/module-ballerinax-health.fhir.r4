@@ -28,6 +28,15 @@ public const RESOURCE_NAME_USCOREPROVENANCE = "Provenance";
 # + resourceType - The type of the resource describes
 # + reason - The reason that the activity was taking place.
 # + agent - An actor taking a role in an activity for which it can be assigned some degree of responsibility for the activity taking place.
+# * agent Slicings
+# 1) USCoreProvenanceAgentProvenanceAuthor: Actor involved
+#       - min = 0
+#       - max = *
+#
+# 2) USCoreProvenanceAgentProvenanceTransmitter: Actor involved
+#       - min = 0
+#       - max = *
+#
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + activity - An activity is something that occurs over a period of time and acts upon or with entities; it may include consuming, processing, transforming, modifying, relocating, using, or generating entities.
 # + signature - A digital signature on the target Reference(s). The signer should match a Provenance.agent. The purpose of the signature is indicated.
@@ -61,7 +70,7 @@ public const RESOURCE_NAME_USCOREPROVENANCE = "Provenance";
         },
         "agent" : {
             name: "agent",
-            dataType: ProvenanceAgent,
+            dataType: USCoreProvenanceAgent,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -127,7 +136,7 @@ public const RESOURCE_NAME_USCOREPROVENANCE = "Provenance";
         },
         "target" : {
             name: "target",
-            dataType: r4:Reference,
+            dataType: USCoreProvenanceTarget,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -183,7 +192,7 @@ public const RESOURCE_NAME_USCOREPROVENANCE = "Provenance";
         },
         "entity" : {
             name: "entity",
-            dataType: ProvenanceEntity,
+            dataType: USCoreProvenanceEntity,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -216,14 +225,11 @@ public type USCoreProvenance record {|
 
     RESOURCE_NAME_USCOREPROVENANCE resourceType = RESOURCE_NAME_USCOREPROVENANCE;
 
-    BaseUSCoreProvenanceMeta meta = {
-        profile : [PROFILE_BASE_USCOREPROVENANCE]
-    };
     r4:CodeableConcept[] reason?;
     @constraint:Array {
        minLength: 1
     }
-    ProvenanceAgent[] agent;
+    USCoreProvenanceAgent[] agent;
     r4:Extension[] extension?;
     r4:CodeableConcept activity?;
     r4:Signature[] signature?;
@@ -234,44 +240,210 @@ public type USCoreProvenance record {|
     @constraint:Array {
        minLength: 1
     }
-    r4:Reference[] target;
+    USCoreProvenanceTarget[] target;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:Reference location?;
     string id?;
     r4:Narrative text?;
-    ProvenanceEntity[] entity?;
+    USCoreProvenanceEntity[] entity?;
     r4:dateTime occurredDateTime?;
     r4:uri[] policy?;
-    never...;
+    r4:Element ...;
 |};
 
+# FHIR USCoreProvenanceAgentTypeCodingOne datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
 @r4:DataTypeDefinition {
-    name: "BaseProvenanceMeta",
-    baseType: r4:Meta,
-    elements: {},
+    name: "USCoreProvenanceAgentTypeCodingOne",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Provenance.agent.type.coding.system"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Provenance.agent.type.coding.code"
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type BaseUSCoreProvenanceMeta record {|
-    *r4:Meta;
+public type USCoreProvenanceAgentTypeCodingOne record {|
+    *r4:Coding;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-provenance"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:uri system = "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type";
+    r4:code code = "transmitter";
 |};
 
-# FHIR ProvenanceAgent datatype record.
+# FHIR USCoreProvenanceAgentTypeCoding datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+@r4:DataTypeDefinition {
+    name: "USCoreProvenanceAgentTypeCoding",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Provenance.agent.type.coding.system"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Provenance.agent.type.coding.code"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreProvenanceAgentTypeCoding record {|
+    *r4:Coding;
+
+    r4:uri system = "http://terminology.hl7.org/CodeSystem/provenance-participant-type";
+    r4:code code = "author";
+|};
+
+# USCoreProvenanceEntityRole enum
+public enum USCoreProvenanceEntityRole {
+   CODE_ROLE_REMOVAL = "removal",
+   CODE_ROLE_DERIVATION = "derivation",
+   CODE_ROLE_SOURCE = "source",
+   CODE_ROLE_QUOTATION = "quotation",
+   CODE_ROLE_REVISION = "revision"
+}
+
+# FHIR USCoreProvenanceEntity datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + role - How the entity was used during the activity.
+# + what - Identity of the Entity used. May be a logical or physical uri and maybe absolute or relative.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@r4:DataTypeDefinition {
+    name: "USCoreProvenanceEntity",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Provenance.entity.extension"
+        },
+        "role": {
+            name: "role",
+            dataType: USCoreProvenanceEntityRole,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "How the entity was used during the activity.",
+            path: "Provenance.entity.role"
+        },
+        "what": {
+            name: "what",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Identity of the Entity used. May be a logical or physical uri and maybe absolute or relative.",
+            path: "Provenance.entity.what"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Provenance.entity.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Provenance.entity.id"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreProvenanceEntity record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    USCoreProvenanceEntityRole role;
+    r4:Reference what;
+    r4:Extension[] modifierExtension?;
+    string id?;
+|};
+
+# FHIR USCoreProvenanceAgentType datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+@r4:DataTypeDefinition {
+    name: "USCoreProvenanceAgentType",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCoreProvenanceAgentTypeCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Provenance.agent.type.coding"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreProvenanceAgentType record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCoreProvenanceAgentTypeCoding[] coding;
+|};
+
+# FHIR USCoreProvenanceAgent datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + role - The function of the agent with respect to the activity. The security role enabling the agent with respect to the activity.
@@ -281,7 +453,7 @@ public type BaseUSCoreProvenanceMeta record {|
 # + 'type - The participation the agent had with respect to the activity.
 # + who - The individual, device or organization that participated in the event.
 @r4:DataTypeDefinition {
-    name: "ProvenanceAgent",
+    name: "USCoreProvenanceAgent",
     baseType: (),
     elements: {
         "extension": {
@@ -353,7 +525,9 @@ public type BaseUSCoreProvenanceMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ProvenanceAgent record {|
+public type USCoreProvenanceAgent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] role?;
     r4:Extension[] modifierExtension?;
@@ -363,24 +537,17 @@ public type ProvenanceAgent record {|
     r4:Reference who;
 |};
 
-# ProvenanceEntityRole enum
-public enum ProvenanceEntityRole {
-   CODE_ROLE_REMOVAL = "removal",
-   CODE_ROLE_DERIVATION = "derivation",
-   CODE_ROLE_SOURCE = "source",
-   CODE_ROLE_QUOTATION = "quotation",
-   CODE_ROLE_REVISION = "revision"
-}
-
-# FHIR ProvenanceEntity datatype record.
+# FHIR USCoreProvenanceAgentProvenanceAuthor datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + role - How the entity was used during the activity.
-# + what - Identity of the Entity used. May be a logical or physical uri and maybe absolute or relative.
+# + role - The function of the agent with respect to the activity. The security role enabling the agent with respect to the activity.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + onBehalfOf - The individual, device, or organization for whom the change was made.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - The participation the agent had with respect to the activity.
+# + who - The individual, device or organization that participated in the event.
 @r4:DataTypeDefinition {
-    name: "ProvenanceEntity",
+    name: "USCoreProvenanceAgentProvenanceAuthor",
     baseType: (),
     elements: {
         "extension": {
@@ -390,25 +557,16 @@ public enum ProvenanceEntityRole {
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Provenance.entity.extension"
+            path: "Provenance.agent.extension"
         },
         "role": {
             name: "role",
-            dataType: ProvenanceEntityRole,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "How the entity was used during the activity.",
-            path: "Provenance.entity.role"
-        },
-        "what": {
-            name: "what",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Identity of the Entity used. May be a logical or physical uri and maybe absolute or relative.",
-            path: "Provenance.entity.what"
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The function of the agent with respect to the activity. The security role enabling the agent with respect to the activity.",
+            path: "Provenance.agent.role"
         },
         "modifierExtension": {
             name: "modifierExtension",
@@ -417,7 +575,16 @@ public enum ProvenanceEntityRole {
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Provenance.entity.modifierExtension"
+            path: "Provenance.agent.modifierExtension"
+        },
+        "onBehalfOf": {
+            name: "onBehalfOf",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The individual, device, or organization for whom the change was made.",
+            path: "Provenance.agent.onBehalfOf"
         },
         "id": {
             name: "id",
@@ -426,7 +593,25 @@ public enum ProvenanceEntityRole {
             max: 1,
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Provenance.entity.id"
+            path: "Provenance.agent.id"
+        },
+        "type": {
+            name: "type",
+            dataType: USCoreProvenanceAgentType,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The participation the agent had with respect to the activity.",
+            path: "Provenance.agent.type"
+        },
+        "who": {
+            name: "who",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The individual, device or organization that participated in the event.",
+            path: "Provenance.agent.who"
         }
     },
     serializers: {
@@ -434,11 +619,223 @@ public enum ProvenanceEntityRole {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ProvenanceEntity record {|
+public type USCoreProvenanceAgentProvenanceAuthor record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
-    ProvenanceEntityRole role;
-    r4:Reference what;
+    r4:CodeableConcept[] role?;
     r4:Extension[] modifierExtension?;
+    r4:Reference onBehalfOf?;
     string id?;
+    USCoreProvenanceAgentType 'type;
+    r4:Reference who;
+|};
+
+# FHIR USCoreProvenanceTarget datatype record.
+#
+# + reference - A reference to a location at which the other resource is found. The reference may be a relative reference, in which case it is relative to the service base URL, or an absolute URL that resolves to the location where the resource is found. The reference may be version specific or not. If the reference is not to a FHIR RESTful server, then it should be assumed to be version specific. Internal fragment references (start with '#') refer to contained resources.
+# + identifier - An identifier for the target resource. This is used when there is no way to reference the other resource directly, either because the entity it represents is not available through a FHIR server, or because there is no way for the author of the resource to convert a known identifier to an actual location. There is no requirement that a Reference.identifier point to something that is actually exposed as a FHIR instance, but it SHALL point to a business concept that would be expected to be exposed as a FHIR instance, and that instance would need to be of a FHIR resource type allowed by the reference.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + display - Plain text narrative that identifies the resource in addition to the resource reference.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - The expected type of the target of the reference. If both Reference.type and Reference.reference are populated and Reference.reference is a FHIR URL, both SHALL be consistent. The type is the Canonical URL of Resource Definition that is the type this reference refers to. References are URLs that are relative to http://hl7.org/fhir/StructureDefinition/ e.g. 'Patient' is a reference to http://hl7.org/fhir/StructureDefinition/Patient. Absolute URLs are only allowed for logical models (and can only be used in references in logical models, not resources).
+@r4:DataTypeDefinition {
+    name: "USCoreProvenanceTarget",
+    baseType: (),
+    elements: {
+        "reference": {
+            name: "reference",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A reference to a location at which the other resource is found. The reference may be a relative reference, in which case it is relative to the service base URL, or an absolute URL that resolves to the location where the resource is found. The reference may be version specific or not. If the reference is not to a FHIR RESTful server, then it should be assumed to be version specific. Internal fragment references (start with '#') refer to contained resources.",
+            path: "Provenance.target.reference"
+        },
+        "identifier": {
+            name: "identifier",
+            dataType: r4:Identifier,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "An identifier for the target resource. This is used when there is no way to reference the other resource directly, either because the entity it represents is not available through a FHIR server, or because there is no way for the author of the resource to convert a known identifier to an actual location. There is no requirement that a Reference.identifier point to something that is actually exposed as a FHIR instance, but it SHALL point to a business concept that would be expected to be exposed as a FHIR instance, and that instance would need to be of a FHIR resource type allowed by the reference.",
+            path: "Provenance.target.identifier"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Provenance.target.extension"
+        },
+        "display": {
+            name: "display",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Plain text narrative that identifies the resource in addition to the resource reference.",
+            path: "Provenance.target.display"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Provenance.target.id"
+        },
+        "type": {
+            name: "type",
+            dataType: r4:uri,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The expected type of the target of the reference. If both Reference.type and Reference.reference are populated and Reference.reference is a FHIR URL, both SHALL be consistent. The type is the Canonical URL of Resource Definition that is the type this reference refers to. References are URLs that are relative to http://hl7.org/fhir/StructureDefinition/ e.g. 'Patient' is a reference to http://hl7.org/fhir/StructureDefinition/Patient. Absolute URLs are only allowed for logical models (and can only be used in references in logical models, not resources).",
+            path: "Provenance.target.type"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreProvenanceTarget record {|
+    *r4:Reference;
+
+    string reference?;
+    r4:Identifier identifier?;
+    r4:Extension[] extension?;
+    string display?;
+    string id?;
+    r4:uri 'type?;
+|};
+
+# FHIR USCoreProvenanceAgentTypeOne datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+@r4:DataTypeDefinition {
+    name: "USCoreProvenanceAgentTypeOne",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCoreProvenanceAgentTypeCodingOne,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Provenance.agent.type.coding"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreProvenanceAgentTypeOne record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCoreProvenanceAgentTypeCodingOne[] coding;
+|};
+
+# FHIR USCoreProvenanceAgentProvenanceTransmitter datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + role - The function of the agent with respect to the activity. The security role enabling the agent with respect to the activity.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + onBehalfOf - The individual, device, or organization for whom the change was made.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - The participation the agent had with respect to the activity.
+# + who - The individual, device or organization that participated in the event.
+@r4:DataTypeDefinition {
+    name: "USCoreProvenanceAgentProvenanceTransmitter",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Provenance.agent.extension"
+        },
+        "role": {
+            name: "role",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The function of the agent with respect to the activity. The security role enabling the agent with respect to the activity.",
+            path: "Provenance.agent.role"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Provenance.agent.modifierExtension"
+        },
+        "onBehalfOf": {
+            name: "onBehalfOf",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The individual, device, or organization for whom the change was made.",
+            path: "Provenance.agent.onBehalfOf"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Provenance.agent.id"
+        },
+        "type": {
+            name: "type",
+            dataType: USCoreProvenanceAgentTypeOne,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The participation the agent had with respect to the activity.",
+            path: "Provenance.agent.type"
+        },
+        "who": {
+            name: "who",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The individual, device or organization that participated in the event.",
+            path: "Provenance.agent.who"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreProvenanceAgentProvenanceTransmitter record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:CodeableConcept[] role?;
+    r4:Extension[] modifierExtension?;
+    r4:Reference onBehalfOf?;
+    string id?;
+    USCoreProvenanceAgentTypeOne 'type;
+    r4:Reference who;
 |};
 

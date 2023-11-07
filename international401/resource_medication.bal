@@ -189,9 +189,6 @@ public type Medication record {|
 
     RESOURCE_NAME_MEDICATION resourceType = RESOURCE_NAME_MEDICATION;
 
-    BaseMedicationMeta meta = {
-        profile : [PROFILE_BASE_MEDICATION]
-    };
     r4:Identifier[] identifier?;
     r4:Ratio amount?;
     r4:Extension[] extension?;
@@ -203,36 +200,12 @@ public type Medication record {|
     r4:Reference manufacturer?;
     r4:Resource[] contained?;
     r4:CodeableConcept form?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     MedicationStatus status?;
-    never...;
-|};
-
-@r4:DataTypeDefinition {
-    name: "BaseMedicationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseMedicationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org/fhir/StructureDefinition/Medication"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    r4:Element ...;
 |};
 
 # MedicationStatus enum
@@ -325,6 +298,8 @@ public enum MedicationStatus {
     }
 }
 public type MedicationIngredient record {|
+    *r4:BackboneElement;
+
     r4:Reference itemReference;
     r4:Extension[] extension?;
     r4:Ratio strength?;
@@ -397,6 +372,8 @@ public type MedicationIngredient record {|
     }
 }
 public type MedicationBatch record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
