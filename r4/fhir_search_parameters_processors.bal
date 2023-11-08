@@ -194,7 +194,7 @@ isolated function parseToken(FHIRSearchParameterDefinition|CommonSearchParameter
         FHIRSearchParameterModifier|string? modifier, anydata value)
         returns readonly & TokenSearchParameter|FHIRValidationError {
     if value is string {
-        string[] split = regexp:split(re `|`, value.trim());
+        string[] split = regexp:split(re `\|`, value.trim());
         string? system = ();
         string? code = ();
         int tokens = split.length();
@@ -350,7 +350,7 @@ isolated function parseQuantity(FHIRSearchParameterDefinition|CommonSearchParame
         returns (QuantitySearchParameter & readonly)|FHIRParseError {
     if value is string {
         var [tempPrefix, strippedValue] = decodePrefixedValue(value);
-        string[] valueComponents = regexp:split(re `|`, strippedValue);
+        string[] valueComponents = regexp:split(re `\|`, strippedValue);
 
         Prefix? prefix = tempPrefix;
         string number;

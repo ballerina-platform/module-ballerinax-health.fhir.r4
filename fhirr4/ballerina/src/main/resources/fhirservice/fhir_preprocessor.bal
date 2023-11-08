@@ -17,9 +17,9 @@
 import ballerina/http;
 import ballerina/jwt;
 import ballerina/log;
-import ballerina/regex;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.parser;
+import ballerina/lang.regexp;
 
 const SPACE_CHARACTER = " ";
 const SCOPES = "scope";
@@ -764,7 +764,7 @@ isolated function getJwtDetails(http:Request httpRequest) returns readonly & r4:
                                             errorType = r4:PROCESSING_ERROR, httpStatusCode = http:STATUS_UNAUTHORIZED);
                 }
                 // Split the scope string
-                string[] scopeslist = regex:split(<string>payload.get(SCOPES), SPACE_CHARACTER);
+                string[] scopeslist = regexp:split(re `${SPACE_CHARACTER}`, <string>payload.get(SCOPES));
                 json|error userName = idp_claims.username;
                 if userName is error {
                     string message = "Username is not available";

@@ -17,7 +17,6 @@
 import ballerina/lang.'int as langint;
 import ballerina/lang.regexp;
 import ballerina/log;
-import ballerina/regex;
 
 const BRACKET_END = "]";
 const BRACKET_START = "[";
@@ -248,7 +247,7 @@ public type arrayAccessToken record {
 isolated function getTokens(string fhirPathExpression) returns Token[]|error {
 
     Token[] tokenRecordArray = [];
-    string[] tokens = regex:split(fhirPathExpression, "\\.");
+    string[] tokens = regexp:split(re `\.`, fhirPathExpression);
     foreach int i in 1 ..< tokens.length() {
         if !(tokens[i].includes(BRACKET_START, 0) || tokens[i].includes(BRACKET_END, 0)) {
             Token st = {value: tokens[i]};
