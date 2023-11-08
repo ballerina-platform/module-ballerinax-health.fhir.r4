@@ -1,21 +1,17 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
 // You may obtain a copy of the License at
-
 // http://www.apache.org/licenses/LICENSE-2.0
-
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
+import ballerina/lang.regexp;
 import ballerina/log;
-import ballerina/regex;
 
 // internal record types
 type TargetAction record {
@@ -33,19 +29,19 @@ type RecordMapPair record {
 # + data - data to be serialized
 # + elementContextDefinition - element definition of the data
 # + return - XML representation of the data
-public isolated function complexDataTypeXMLSerializer (anydata data, 
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRWireFormat|FHIRSerializerError)? {
+public isolated function complexDataTypeXMLSerializer(anydata data,
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRWireFormat|FHIRSerializerError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         xml:Element resultElement = xml:createElement(elementContextDefinition.name, {});
         xml childElements = resultElement.getChildren();
         map<anydata> mapObj = {};
         do {
-	        mapObj = check data.ensureType();
+            mapObj = check data.ensureType();
         } on fail error e {
-        	string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
+            string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
             return <FHIRSerializerError>createInternalFHIRError(
-                        "Error occurred while casting data to map representation",FATAL, PROCESSING, 
+                        "Error occurred while casting data to map representation", FATAL, PROCESSING,
                             diagnostic = diagnosticMsg, cause = e);
         }
         string[] keys = mapObj.keys();
@@ -63,9 +59,9 @@ public isolated function complexDataTypeXMLSerializer (anydata data,
             if childElementDef != () {
                 processedElements[key] = childElementDef;
                 if childElementDef.isArray {
-                    anydata[] childDataArray = <anydata[]> mapObj.get(key);
+                    anydata[] childDataArray = <anydata[]>mapObj.get(key);
                     foreach anydata childData in childDataArray {
-                        DataTypeDefinitionRecord? dataTypeDefRecord = (typeof  childData).@DataTypeDefinition;
+                        DataTypeDefinitionRecord? dataTypeDefRecord = (typeof childData).@DataTypeDefinition;
                         if dataTypeDefRecord != () {
                             // Complex FHIR type
                             DataTypeSerializerFunction xmlSerializer = dataTypeDefRecord.serializers.'xml;
@@ -75,12 +71,12 @@ public isolated function complexDataTypeXMLSerializer (anydata data,
                             }
                         } else {
                             // Primitive FHIR type
-                            childElements += xml:createElement(childElementDef.name, {"value" : childData.toString()});
+                            childElements += xml:createElement(childElementDef.name, {"value": childData.toString()});
                         }
                     }
                 } else {
                     anydata childData = mapObj.get(key);
-                    DataTypeDefinitionRecord? dataTypeDefRecord = (typeof  childData).@DataTypeDefinition;
+                    DataTypeDefinitionRecord? dataTypeDefRecord = (typeof childData).@DataTypeDefinition;
                     if dataTypeDefRecord != () {
                         // FHIR defined complex data type
                         DataTypeSerializerFunction xmlSerializer = dataTypeDefRecord.serializers.'xml;
@@ -97,7 +93,7 @@ public isolated function complexDataTypeXMLSerializer (anydata data,
                             continue;
                         }
                         // Primitive FHIR type
-                        childElements += xml:createElement(childElementDef.name, {"value" : childData.toString()});
+                        childElements += xml:createElement(childElementDef.name, {"value": childData.toString()});
                     }
                 }
             }
@@ -113,7 +109,7 @@ public isolated function complexDataTypeXMLSerializer (anydata data,
 # + data - data to be serialized
 # + elementContextDefinition - element definition of the data
 # + return - JSON representation of the data
-public isolated function complexDataTypeJsonSerializer (anydata data, ElementAnnotationDefinition elementContextDefinition) returns (FHIRWireFormat|FHIRSerializerError)? {
+public isolated function complexDataTypeJsonSerializer(anydata data, ElementAnnotationDefinition elementContextDefinition) returns (FHIRWireFormat|FHIRSerializerError)? {
     return data.toJson();
 }
 
@@ -124,26 +120,26 @@ public isolated function complexDataTypeJsonSerializer (anydata data, ElementAnn
 public isolated function fhirResourceXMLSerializer(anydata data) returns (FHIRWireFormat|FHIRSerializerError)? {
     anydata transformedResource = {};
     do {
-	    transformedResource = check doInternalResourceRelocation(data);
+        transformedResource = check doInternalResourceRelocation(data);
     } on fail error e {
-    	string diagnosticMsg = "Error occurred while record relocation";
-        return <FHIRSerializerError>createInternalFHIRError(diagnosticMsg,FATAL, PROCESSING, 
+        string diagnosticMsg = "Error occurred while record relocation";
+        return <FHIRSerializerError>createInternalFHIRError(diagnosticMsg, FATAL, PROCESSING,
                                                                     diagnostic = diagnosticMsg, cause = e);
     }
     ResourceDefinitionRecord? resourceDefinition = (typeof transformedResource).@ResourceDefinition;
     if resourceDefinition != () {
-        
-        xml:Element resultElement = xml:createElement(resourceDefinition.resourceType, {"xmlns":FHIR_NAMESPACE});
+
+        xml:Element resultElement = xml:createElement(resourceDefinition.resourceType, {"xmlns": FHIR_NAMESPACE});
         xml childElements = resultElement.getChildren();
 
         map<anydata>|error mapObj = transformedResource.ensureType();
         if mapObj is error {
             //TODO Handle this situation
             string diagnosticMsg = string `Unable to transform resource data of type : ${(typeof data).toBalString()} into a map`;
-            return <FHIRSerializerError>createInternalFHIRError("Failed to transform data into map", 
+            return <FHIRSerializerError>createInternalFHIRError("Failed to transform data into map",
                                                                 FATAL, PROCESSING, diagnostic = diagnosticMsg);
         }
-        
+
         string[] keys = mapObj.keys();
         map<ElementAnnotationDefinition> elementDefinitions = resourceDefinition.elements;
 
@@ -157,9 +153,9 @@ public isolated function fhirResourceXMLSerializer(anydata data) returns (FHIRWi
             }
             if elementDef != () {
                 if elementDef.isArray {
-                    anydata[] childDataArray = <anydata[]> mapObj.get(key);
+                    anydata[] childDataArray = <anydata[]>mapObj.get(key);
                     foreach anydata childData in childDataArray {
-                        DataTypeDefinitionRecord? dataTypeDefRecord = (typeof  childData).@DataTypeDefinition;
+                        DataTypeDefinitionRecord? dataTypeDefRecord = (typeof childData).@DataTypeDefinition;
                         if dataTypeDefRecord != () {
                             // Complex FHIR type
                             DataTypeSerializerFunction xmlSerializer = dataTypeDefRecord.serializers.'xml;
@@ -169,12 +165,12 @@ public isolated function fhirResourceXMLSerializer(anydata data) returns (FHIRWi
                             }
                         } else {
                             // Primitive FHIR type
-                            childElements += xml:createElement(elementDef.name, {"value" : childData.toString()});
+                            childElements += xml:createElement(elementDef.name, {"value": childData.toString()});
                         }
                     }
                 } else {
                     anydata childData = mapObj.get(key);
-                    DataTypeDefinitionRecord? dataTypeDefRecord = (typeof  childData).@DataTypeDefinition;
+                    DataTypeDefinitionRecord? dataTypeDefRecord = (typeof childData).@DataTypeDefinition;
                     if dataTypeDefRecord != () {
                         // FHIR defined complex data type
                         DataTypeSerializerFunction xmlSerializer = dataTypeDefRecord.serializers.'xml;
@@ -184,13 +180,13 @@ public isolated function fhirResourceXMLSerializer(anydata data) returns (FHIRWi
                         }
                     } else {
                         // Primitive FHIR type
-                        childElements += xml:createElement(elementDef.name, {"value" : childData.toString()});
+                        childElements += xml:createElement(elementDef.name, {"value": childData.toString()});
                     }
                 }
             } else {
                 // Unable to find definition of the element
                 string diagnosticMsg = string `Unknown element with name : ${key} found under resource: ${resourceDefinition.resourceType}`;
-                return <FHIRSerializerError>createInternalFHIRError(diagnosticMsg,FATAL, PROCESSING, 
+                return <FHIRSerializerError>createInternalFHIRError(diagnosticMsg, FATAL, PROCESSING,
                                                                             diagnostic = diagnosticMsg);
             }
         }
@@ -199,7 +195,7 @@ public isolated function fhirResourceXMLSerializer(anydata data) returns (FHIRWi
 
     } else {
         string diagnosticMsg = "Provided data does not represent a FHIR resource";
-        return <FHIRSerializerError>createInternalFHIRError(diagnosticMsg,FATAL, PROCESSING, 
+        return <FHIRSerializerError>createInternalFHIRError(diagnosticMsg, FATAL, PROCESSING,
                                                                             diagnostic = diagnosticMsg);
     }
 }
@@ -214,12 +210,10 @@ public isolated function fhirResourceJsonSerializer(anydata data) returns (FHIRW
         return transformedResource.toJson();
     } on fail error e {
         string diagnosticMsg = "Error occurred while record relocation";
-        return <FHIRSerializerError>createInternalFHIRError(diagnosticMsg,FATAL, PROCESSING, 
+        return <FHIRSerializerError>createInternalFHIRError(diagnosticMsg, FATAL, PROCESSING,
                                                                     diagnostic = diagnosticMsg, cause = e);
     }
 }
-
-
 
 isolated function findInheritedPropertyDefinition(ResourceDefinitionRecord|DataTypeDefinitionRecord definition, string propertyName) returns ElementAnnotationDefinition? {
     typedesc? baseType = definition.baseType;
@@ -238,7 +232,7 @@ isolated function findInheritedPropertyDefinition(ResourceDefinitionRecord|DataT
         }
     }
     return ();
-    
+
 }
 
 # Serializes a FHIR Resource to a XML representation
@@ -255,12 +249,12 @@ public isolated function executeResourceXMLSerializer(anydata fhirResource) retu
             return xmlWireFormat;
         } else {
             string diagnosticMsg = string `XML Serializer did not return a XML result. It returned: ${(typeof xmlWireFormat).toBalString()}`;
-            return <FHIRSerializerError>createInternalFHIRError("Resource Serialization failed",FATAL, PROCESSING, 
+            return <FHIRSerializerError>createInternalFHIRError("Resource Serialization failed", FATAL, PROCESSING,
                                                                     diagnostic = diagnosticMsg);
         }
     } else {
         string diagnosticMsg = string `Resource definition not found of the record : ${(typeof fhirResource).toBalString()}`;
-        return <FHIRSerializerError>createInternalFHIRError("Resource definition not found",FATAL, PROCESSING, 
+        return <FHIRSerializerError>createInternalFHIRError("Resource definition not found", FATAL, PROCESSING,
                                                                     diagnostic = diagnosticMsg);
     }
 
@@ -271,7 +265,7 @@ public isolated function executeResourceXMLSerializer(anydata fhirResource) retu
 # + fhirResource - FHIR Resource to be serialized
 # + return - JSON representation of the data
 public isolated function executeResourceJsonSerializer(anydata fhirResource) returns (json|FHIRSerializerError) {
-    
+
     ResourceDefinitionRecord? resourceDefinition = (typeof fhirResource).@ResourceDefinition;
     if resourceDefinition is ResourceDefinitionRecord {
         ResourceSerializerFunction jsonResourceSerializer = resourceDefinition.serializers.'json;
@@ -280,16 +274,15 @@ public isolated function executeResourceJsonSerializer(anydata fhirResource) ret
             return wireFormat;
         } else {
             string diagnosticMsg = string `JSON Serializer did not return a JSON result. It returned: ${(typeof wireFormat).toBalString()}`;
-            return <FHIRSerializerError>createInternalFHIRError("Resource Serialization failed",FATAL, PROCESSING, 
+            return <FHIRSerializerError>createInternalFHIRError("Resource Serialization failed", FATAL, PROCESSING,
                                                                     diagnostic = diagnosticMsg);
         }
     } else {
         string diagnosticMsg = string `Resource definition not found of the record : ${(typeof fhirResource).toBalString()}`;
-        return <FHIRSerializerError>createInternalFHIRError("Resource definition not found",FATAL, PROCESSING, 
+        return <FHIRSerializerError>createInternalFHIRError("Resource definition not found", FATAL, PROCESSING,
                                                                     diagnostic = diagnosticMsg);
     }
 }
-
 
 isolated function doInternalResourceRelocation(anydata dataModel) returns anydata|FHIRProcessingError {
 
@@ -299,14 +292,14 @@ isolated function doInternalResourceRelocation(anydata dataModel) returns anydat
         DataTypeDefinitionRecord? dataTypeDefinition = (typeof dataModel).@DataTypeDefinition;
         if dataTypeDefinition is () {
             string diagMessage = string `Resource or Data type definition not found. Data model type found : ${(typeof dataModel).toBalString()}`;
-            return <FHIRProcessingError>createInternalFHIRError("Resource or Data type definition not found", ERROR, 
+            return <FHIRProcessingError>createInternalFHIRError("Resource or Data type definition not found", ERROR,
                             PROCESSING_NOT_FOUND, diagnostic = diagMessage);
         }
         processingMetaInfo = dataTypeDefinition.processingMetaInfo;
     } else {
         processingMetaInfo = resourceDefinition.processingMetaInfo;
     }
-    
+
     if processingMetaInfo is ProcessingMetaInfo {
 
         typedesc? targetModel = processingMetaInfo.targetModel;
@@ -317,26 +310,26 @@ isolated function doInternalResourceRelocation(anydata dataModel) returns anydat
             ResourceDefinitionRecord? targetResourceDef = targetModel.@ResourceDefinition;
             if targetResourceDef is () {
                 string diagMessage = string `Resource definition of target model not found. Data model type found : ${(typeof dataModel).toBalString()}`;
-                return <FHIRProcessingError>createInternalFHIRError("Resource definition of target model not found", ERROR, 
+                return <FHIRProcessingError>createInternalFHIRError("Resource definition of target model not found", ERROR,
                             PROCESSING_NOT_FOUND, diagnostic = diagMessage);
             }
 
-            map<json> dataMap = <map<json>> dataModel.toJson();
+            map<json> dataMap = <map<json>>dataModel.toJson();
             TargetAction[] targetActions = [];
             // Remove entries that need relocation
             foreach Mapping mapping in mappings {
                 log:printDebug(string `Relocating: ${mapping.toString()}`);
-                RecordMapPair? removedEntry = detachEntry({jsonModel:dataMap, recordModel:dataModel}, mapping.sourcePath);
+                RecordMapPair? removedEntry = detachEntry({jsonModel: dataMap, recordModel: dataModel}, mapping.sourcePath);
                 if removedEntry != () {
                     log:printDebug(string `Entry detached : ${removedEntry.jsonModel.toString()}`);
                     TargetAction targetAction;
-                    
+
                     if removedEntry.jsonModel is json[] {
                         // if the detached entry is an json array
                         json[] jModel = <json[]>removedEntry.jsonModel;
                         anydata[] recordModel = <anydata[]>removedEntry.recordModel;
                         json[] relocatedJsonArray = [];
-                        foreach int i in 0...(jModel.length() - 1) {
+                        foreach int i in 0 ... (jModel.length() - 1) {
                             if jModel[i] is boolean|int|float|decimal|string {
                                 relocatedJsonArray.push(jModel[i]);
                             } else {
@@ -362,9 +355,9 @@ isolated function doInternalResourceRelocation(anydata dataModel) returns anydat
                         }
                     }
                     targetActions.push(targetAction);
-                } 
+                }
             }
-            
+
             // perform relocation
             foreach TargetAction targetAction in targetActions {
                 check relocateEntry(dataMap, targetAction, targetResourceDef);
@@ -372,15 +365,14 @@ isolated function doInternalResourceRelocation(anydata dataModel) returns anydat
 
             // type cast
             do {
-	            anydata castedRecord = check dataMap.cloneWithType(<typedesc<anydata>>targetModel);
+                anydata castedRecord = check dataMap.cloneWithType(<typedesc<anydata>>targetModel);
                 return castedRecord;
             } on fail var e {
                 string diagMessage = string `Error occured while casting relocated data model : ${dataMap.toBalString()} 
                                                     to type: ${targetModel.toBalString()}`;
-                return <FHIRProcessingError>createInternalFHIRError("Error occured while casting relocated data model.", ERROR, 
+                return <FHIRProcessingError>createInternalFHIRError("Error occured while casting relocated data model.", ERROR,
                             PROCESSING_NOT_FOUND, diagnostic = diagMessage, cause = e);
             }
-            
 
         } else {
             // internal model mapping processing information not available, so nothing to process
@@ -390,7 +382,7 @@ isolated function doInternalResourceRelocation(anydata dataModel) returns anydat
         // nothing to process
         return dataModel;
     }
-    
+
 }
 
 isolated function doRelocateChildEntry(RecordMapPair childPair) returns json|FHIRProcessingError {
@@ -398,7 +390,7 @@ isolated function doRelocateChildEntry(RecordMapPair childPair) returns json|FHI
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof childPair.recordModel).@DataTypeDefinition;
     if dataTypeDefinition is () {
         string diagMessage = string `Unable to find Data type definition of : ${(childPair.recordModel).toString()}`;
-        return <FHIRProcessingError>createInternalFHIRError("Unable to find Data type definition", ERROR, 
+        return <FHIRProcessingError>createInternalFHIRError("Unable to find Data type definition", ERROR,
                             PROCESSING, diagnostic = diagMessage);
     }
 
@@ -412,7 +404,7 @@ isolated function doRelocateChildEntry(RecordMapPair childPair) returns json|FHI
             DataTypeDefinitionRecord? targetTypeDef = targetModel.@DataTypeDefinition;
             if targetTypeDef is () {
                 string diagMessage = string `Data type definition of target model: ${targetModel.toBalString()} not found`;
-                return <FHIRProcessingError>createInternalFHIRError("Data type definition of target model not found", ERROR, 
+                return <FHIRProcessingError>createInternalFHIRError("Data type definition of target model not found", ERROR,
                             PROCESSING_NOT_FOUND, diagnostic = diagMessage);
             }
 
@@ -420,14 +412,14 @@ isolated function doRelocateChildEntry(RecordMapPair childPair) returns json|FHI
             foreach Mapping relocation in relocations {
 
                 log:printDebug(string `Relocating: ${relocation.toString()}`);
-                RecordMapPair? removedEntry = detachEntry({jsonModel:dataMap, recordModel:childPair.recordModel}, relocation.sourcePath);
+                RecordMapPair? removedEntry = detachEntry({jsonModel: dataMap, recordModel: childPair.recordModel}, relocation.sourcePath);
                 if removedEntry != () {
                     if removedEntry.jsonModel is json[] {
                         // handle if the detached entry is an array
                         json[] jModel = <json[]>removedEntry.jsonModel;
                         anydata[] recordModel = <anydata[]>removedEntry.recordModel;
                         json[] relocatedJsonArray = [];
-                        foreach int i in 0..< jModel.length() {
+                        foreach int i in 0 ..< jModel.length() {
                             if jModel[i] is boolean|int|float|decimal|string {
                                 relocatedJsonArray.push(jModel[i]);
                             } else {
@@ -462,16 +454,14 @@ isolated function doRelocateChildEntry(RecordMapPair childPair) returns json|FHI
 
 }
 
-
-
 isolated function detachEntry(RecordMapPair recordMapPair, string path) returns RecordMapPair? {
     log:printDebug(string `Detaching entry : ${path}`);
-    string[] pathParts = regex:split(path, "\\.");
+    string[] pathParts = regexp:split(re `.`, path);
     map<json> tempMap = <map<json>>recordMapPair.jsonModel;
     map<anydata> tempRecord = <map<anydata>>recordMapPair.recordModel;
     int end = pathParts.length() - 1;
 
-    foreach int i in 0...end {
+    foreach int i in 0 ... end {
         string pathPart = pathParts[i];
         if tempMap.hasKey(pathPart) {
             // TODO : handle arrays as well
@@ -499,14 +489,14 @@ isolated function detachEntry(RecordMapPair recordMapPair, string path) returns 
 }
 
 // Relocate give given target object in mapObj model map
-isolated function relocateEntry(map<json> mapObj, TargetAction targetAction, 
-                            ResourceDefinitionRecord|DataTypeDefinitionRecord targetResourceDef) returns FHIRProcessingError? {
-                                
-    string[] pathParts = regex:split(targetAction.targetPath, "\\.");
+isolated function relocateEntry(map<json> mapObj, TargetAction targetAction,
+        ResourceDefinitionRecord|DataTypeDefinitionRecord targetResourceDef) returns FHIRProcessingError? {
+
+    string[] pathParts = regexp:split(re `.`, targetAction.targetPath);
     map<json> tempMapObj = mapObj;
     int end = pathParts.length() - 1;
 
-    foreach int i in 0...end {
+    foreach int i in 0 ... end {
         string currentTarget = pathParts[i];
         if tempMapObj.hasKey(currentTarget) {
             json entry = tempMapObj.get(currentTarget);
@@ -536,9 +526,9 @@ isolated function relocateEntry(map<json> mapObj, TargetAction targetAction,
             if elementDef is () {
                 // Definition not found
                 string diagMessage = string `Unknown target element to relocate : ${currentTarget} in target path : ${targetAction.targetPath}`;
-                return <FHIRProcessingError>createInternalFHIRError("Unknown target element found to relocate", ERROR, 
+                return <FHIRProcessingError>createInternalFHIRError("Unknown target element found to relocate", ERROR,
                             PROCESSING_NOT_FOUND, diagnostic = diagMessage);
-            } 
+            }
             if i != end {
                 // entry with path not available, hence create new empty one
                 if elementDef.isArray {
