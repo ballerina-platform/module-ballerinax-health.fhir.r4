@@ -456,7 +456,7 @@ isolated function doRelocateChildEntry(RecordMapPair childPair) returns json|FHI
 
 isolated function detachEntry(RecordMapPair recordMapPair, string path) returns RecordMapPair? {
     log:printDebug(string `Detaching entry : ${path}`);
-    string[] pathParts = regexp:split(re `.`, path);
+    string[] pathParts = regexp:split(re `\.`, path);
     map<json> tempMap = <map<json>>recordMapPair.jsonModel;
     map<anydata> tempRecord = <map<anydata>>recordMapPair.recordModel;
     int end = pathParts.length() - 1;
@@ -492,7 +492,7 @@ isolated function detachEntry(RecordMapPair recordMapPair, string path) returns 
 isolated function relocateEntry(map<json> mapObj, TargetAction targetAction,
         ResourceDefinitionRecord|DataTypeDefinitionRecord targetResourceDef) returns FHIRProcessingError? {
 
-    string[] pathParts = regexp:split(re `.`, targetAction.targetPath);
+    string[] pathParts = regexp:split(re `\.`, targetAction.targetPath);
     map<json> tempMapObj = mapObj;
     int end = pathParts.length() - 1;
 

@@ -17,11 +17,11 @@
 import ballerina/http;
 import ballerina/lang.'int as langint;
 import ballerina/log;
-import ballerina/regex;
 import ballerina/time;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401 as i4;
 import ballerinax/health.fhir.r4.validator;
+import ballerina/lang.regexp;
 
 //It is a custom record to hold system URLs and a related concept.  
 type CodeConceptDetails record {
@@ -1087,8 +1087,8 @@ public isolated class TerminologyProcessor {
                     if searchParameters.hasKey(FILTER) {
                         string filter = searchParameters.get(FILTER)[0].value;
                         r4:ValueSetComposeIncludeConcept[] result = from r4:ValueSetComposeIncludeConcept entry in concepts
-                            where entry[DISPLAY] is string && regex:matches((<string>entry[DISPLAY]).toUpperAscii(),
-                        string `.*${filter.toUpperAscii()}.*`)
+                            where entry[DISPLAY] is string && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, 
+                            (<string>entry[DISPLAY]).toUpperAscii())
                             select entry;
                         concepts = result;
                     }
@@ -1114,9 +1114,9 @@ public isolated class TerminologyProcessor {
                         string filter = searchParameters.get(FILTER)[0].value;
                         r4:CodeSystemConcept[] result = from r4:CodeSystemConcept entry in concepts
                             where entry[DISPLAY] is string
-                            && regex:matches((<string>entry[DISPLAY]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
+                            && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, (<string>entry[DISPLAY]).toUpperAscii())
                         || entry[DEFINITION] is string
-                            && regex:matches((<string>entry[DEFINITION]).toUpperAscii(), string `.*${filter.toUpperAscii()}.*`)
+                            && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, (<string>entry[DEFINITION]).toUpperAscii())
                             select entry;
                         concepts = result;
                     }
@@ -1216,9 +1216,9 @@ public isolated class TerminologyProcessor {
             boolean isIdExistInRegistry = false;
             if version is string {
                 foreach var item in self.codeSystems.keys() {
-                    if regex:matches(item, string `${url}\|${version}$`) && self.codeSystems[item] is r4:CodeSystem {
+                    if regexp:isFullMatch(re `${url}\|${version}$`, item) && self.codeSystems[item] is r4:CodeSystem {
                         return <r4:CodeSystem>self.codeSystems[item].clone();
-                    } else if regex:matches(item, string `${url}\|.*`) {
+                    } else if regexp:isFullMatch(re `${url}\|.*`, item) {
                         isIdExistInRegistry = true;
                     }
                 }
@@ -1236,7 +1236,7 @@ public isolated class TerminologyProcessor {
                 r4:CodeSystem codeSystem = {content: "example", status: "unknown"};
                 string latestVersion = DEFAULT_VERSION;
                 foreach var item in self.codeSystems.keys() {
-                    if regex:matches(item, string `${url}\|.*`)
+                    if regexp:isFullMatch(re `${url}\|.*`, item)
                 && self.codeSystems[item] is r4:CodeSystem
                 && (<r4:CodeSystem>self.codeSystems[item]).version > latestVersion {
                         codeSystem = <r4:CodeSystem>self.codeSystems[item];
@@ -1281,9 +1281,9 @@ public isolated class TerminologyProcessor {
             boolean isIdExistInRegistry = false;
             if version is string {
                 foreach var item in self.valueSets.keys() {
-                    if regex:matches(item, string `${url}\|${version}$`) && self.valueSets[item] is r4:ValueSet {
+                    if regexp:isFullMatch(re `${url}\|${version}$`, item) && self.valueSets[item] is r4:ValueSet {
                         return <r4:ValueSet>self.valueSets[item].clone();
-                    } else if regex:matches(item, string `${url}\|.*`) {
+                    } else if regexp:isFullMatch(re `${url}\|.*`, item) {
                         isIdExistInRegistry = true;
                     }
                 }
@@ -1301,7 +1301,7 @@ public isolated class TerminologyProcessor {
                 r4:ValueSet valueSet = {status: "unknown"};
                 string latestVersion = DEFAULT_VERSION;
                 foreach var item in self.valueSets.keys() {
-                    if regex:matches(item, string `${url}\|.*`)
+                    if regexp:isFullMatch(re `${url}\|.*`, item)
                         && self.valueSets[item] is r4:ValueSet
                         && (<r4:ValueSet>self.valueSets[item]).version > latestVersion {
 
