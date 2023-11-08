@@ -27,12 +27,12 @@ jobs:
       - name: Set Up Ballerina
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: 2201.7.0
+          version: 2201.8.1
 
       - name: Setup Java and Maven
         uses: actions/setup-java@v2
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
 
       - name: Create settings.xml
