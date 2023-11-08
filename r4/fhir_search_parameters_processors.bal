@@ -15,8 +15,8 @@
 // under the License.
 
 import ballerina/http;
+import ballerina/lang.regexp;
 import ballerina/log;
-import ballerina/regex;
 import ballerina/time;
 
 # Function type to be implemented to override the search parameter pre-processing
@@ -194,7 +194,7 @@ isolated function parseToken(FHIRSearchParameterDefinition|CommonSearchParameter
         FHIRSearchParameterModifier|string? modifier, anydata value)
         returns readonly & TokenSearchParameter|FHIRValidationError {
     if value is string {
-        string[] split = regex:split(value.trim(), "\\|");
+        string[] split = regexp:split(re `|`, value.trim());
         string? system = ();
         string? code = ();
         int tokens = split.length();
@@ -293,7 +293,7 @@ isolated function parseRefernce(FHIRSearchParameterDefinition|CommonSearchParame
             };
             return refParam;
         } else {
-            string[] splitValues = regex:split(value, "/");
+            string[] splitValues = regexp:split(re `/`, value);
             if splitValues.length() == 2 {
                 if fhirRegistry.isSupportedResource(splitValues[0]) {
                     //format : [parameter]=[type]/[id]
@@ -318,9 +318,9 @@ isolated function parseRefernce(FHIRSearchParameterDefinition|CommonSearchParame
                                                                     httpStatusCode = http:STATUS_BAD_REQUEST);
                 }
             } else {
-                // format : [parameter]=[url]
+                // format : [parameter]=[url] z
                 // Validate URL format
-                boolean matches = regex:matches(value, CANONICAL_REGEX);
+                boolean matches = regexp:isFullMatch(re `${CANONICAL_REGEX}`, value);
                 log:printDebug(string `REGEX MATCH : ${matches.toBalString()}`);
                 if modifier != () {
                     check validateModifier(modifier, <FHIRSearchParameterDefinition>definition);
@@ -350,7 +350,7 @@ isolated function parseQuantity(FHIRSearchParameterDefinition|CommonSearchParame
         returns (QuantitySearchParameter & readonly)|FHIRParseError {
     if value is string {
         var [tempPrefix, strippedValue] = decodePrefixedValue(value);
-        string[] valueComponents = regex:split(strippedValue, "\\|");
+        string[] valueComponents = regexp:split(re `|`, strippedValue);
 
         Prefix? prefix = tempPrefix;
         string number;
@@ -578,7 +578,7 @@ isolated function _profileSearchParamPreProcessor(CommonSearchParameterDefinitio
 
 // Function to decode search parameter key and return the name and modifier
 public isolated function decodeSearchParameterKey(string paramName, string[] values) returns RequestQueryParameter|FHIRError {
-    string[] paramSplitResult = regex:split(paramName, ":");
+    string[] paramSplitResult = regexp:split(re `:`, paramName);
     string qParamName = paramSplitResult[0];
     FHIRSearchParameterModifier|string? modifier = ();
     if paramSplitResult.length() > 1 {
