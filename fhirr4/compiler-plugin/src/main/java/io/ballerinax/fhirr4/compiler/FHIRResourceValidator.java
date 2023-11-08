@@ -60,10 +60,11 @@ class FHIRResourceValidator {
             return;
         }
         TypeSymbol firstParamType = parametersOptional.get().get(0).typeDescriptor();
-        if (!(firstParamType.getName().get().equals(Constants.FHIR_CONTEXT)
-                && firstParamType.getModule().get().getName().get().equals(Constants.HEALTHCARE_PKG))) {
-            updateDiagnostic(ctx, paramLocation, FHIRDiagnosticCodes.FHIR_103,
-                             firstParamType.getName().get());
+        String firstParamSignature = firstParamType.signature();
+        String firstParamName = firstParamType.getName().orElse("");
+        String firstParamModuleName = firstParamType.getModule().flatMap(Symbol::getName).orElse("");
+        if (!(firstParamName.equals(Constants.FHIR_CONTEXT) && firstParamModuleName.equals(Constants.HEALTHCARE_PKG))) {
+            updateDiagnostic(ctx, paramLocation, FHIRDiagnosticCodes.FHIR_103, firstParamSignature);
             return;
         }
         if (parametersOptional.get().size() > 1) {
