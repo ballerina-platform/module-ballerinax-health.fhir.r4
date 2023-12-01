@@ -47,16 +47,15 @@ import ballerinax/health.fhir.r4;
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreDirectEmailExtension record {|
-
+public type UsCoreDirect record {|
     *r4:BooleanExtension;
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     boolean valueBoolean;
     string url;
-    
 |};
 
 
@@ -106,18 +105,16 @@ public type USCoreDirectEmailExtension record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreEthnicityExtension record {|
-
+public type UsCoreEthnicity record {|
     *r4:Base64BinaryExtension;
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Coding valueCoding;
-    r4:base64Binary valueBase64Binary?;
     string valueString;
     r4:uri url;
-    
 |};
 
 
@@ -149,16 +146,15 @@ public type USCoreEthnicityExtension record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreBirthSexExtension record {|
-
+public type UsCoreBirthsex record {|
     *r4:CodeExtension;
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:code valueCode;
     string url;
-    
 |};
 
 
@@ -208,18 +204,16 @@ public type USCoreBirthSexExtension record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreRaceExtension record {|
-
+public type UsCoreRace record {|
     *r4:Base64BinaryExtension;
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Coding valueCoding;
-    r4:base64Binary valueBase64Binary?;
     string valueString;
     r4:uri url;
-    
 |};
 
 
@@ -251,16 +245,15 @@ public type USCoreRaceExtension record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreExtensionQuestionnaireUri record {|
-
+public type UsCoreExtensionQuestionnaireUri record {|
     *r4:UriExtension;
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:uri valueUri?;
     r4:uri url;
-    
 |};
 
 
@@ -292,16 +285,15 @@ public type USCoreExtensionQuestionnaireUri record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreGenderIdentityExtension record {|
-
+public type UsCoreGenderIdentity record {|
     *r4:CodeableConceptExtension;
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:CodeableConcept valueCodeableConcept;
     string url;
-    
 |};
 
 

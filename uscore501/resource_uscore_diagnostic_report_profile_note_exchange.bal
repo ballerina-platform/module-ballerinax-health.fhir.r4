@@ -52,7 +52,7 @@ public const RESOURCE_NAME_USCOREDIAGNOSTICREPORTPROFILENOTEEXCHANGE = "Diagnost
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - A code that classifies the clinical discipline, department or diagnostic service that created the report (e.g. cardiology, biochemistry, hematology, MRI). This is used for searching, sorting and display purposes.
 # * category Slicings
-# 1) USCoreDiagnosticReportProfileNoteExchangeCategoryUscore: Service category
+# 1) USCoreDiagnosticReportProfileNoteExchangeCategoryUs_core: Service category
 #       - min = 0
 #       - max = *
 #
@@ -408,10 +408,10 @@ public type USCoreDiagnosticReportProfileNoteExchangeMedia record {|
     string id?;
 |};
 
-# FHIR USCoreDiagnosticReportProfileNoteExchangeCategoryUscore datatype record.
+# FHIR USCoreDiagnosticReportProfileNoteExchangeCategoryUs_core datatype record.
 #
 @r4:DataTypeDefinition {
-    name: "USCoreDiagnosticReportProfileNoteExchangeCategoryUscore",
+    name: "USCoreDiagnosticReportProfileNoteExchangeCategoryUs_core",
     baseType: (),
     elements: {
     },
@@ -420,7 +420,7 @@ public type USCoreDiagnosticReportProfileNoteExchangeMedia record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreDiagnosticReportProfileNoteExchangeCategoryUscore record {|
+public type USCoreDiagnosticReportProfileNoteExchangeCategoryUs_core record {|
     *r4:CodeableConcept;
 
 |};

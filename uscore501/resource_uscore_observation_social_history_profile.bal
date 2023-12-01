@@ -73,7 +73,7 @@ public const RESOURCE_NAME_USCOREOBSERVATIONSOCIALHISTORYPROFILE = "Observation"
 #       - min = 0
 #       - max = 1
 #
-# 2) USCoreObservationSocialHistoryProfileCategoryUscoresocialhistory: Classification of type of observation
+# 2) USCoreObservationSocialHistoryProfileCategoryUs_coresocial_history: Classification of type of observation
 #       - min = 1
 #       - max = 1
 #
@@ -523,6 +523,37 @@ public enum USCoreObservationSocialHistoryProfileStatus {
    CODE_STATUS_PRELIMINARY = "preliminary"
 }
 
+# FHIR USCoreObservationSocialHistoryProfileCategoryUs_coresocial_history datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+@r4:DataTypeDefinition {
+    name: "USCoreObservationSocialHistoryProfileCategoryUs_coresocial_history",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCoreObservationSocialHistoryProfileCategoryCodingOne,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Observation.category.coding"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreObservationSocialHistoryProfileCategoryUs_coresocial_history record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCoreObservationSocialHistoryProfileCategoryCodingOne[] coding;
+|};
+
 # FHIR USCoreObservationSocialHistoryProfileCategoryCoding datatype record.
 #
 # + system - The identification of the code system that defines the meaning of the symbol in the code.
@@ -560,37 +591,6 @@ public type USCoreObservationSocialHistoryProfileCategoryCoding record {|
 
     r4:uri system = "http://hl7.org/fhir/us/core/CodeSystem/us-core-tags";
     r4:code code = "sdoh";
-|};
-
-# FHIR USCoreObservationSocialHistoryProfileCategoryUscoresocialhistory datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "USCoreObservationSocialHistoryProfileCategoryUscoresocialhistory",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: USCoreObservationSocialHistoryProfileCategoryCodingOne,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "Observation.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type USCoreObservationSocialHistoryProfileCategoryUscoresocialhistory record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-       minLength: 1
-    }
-    USCoreObservationSocialHistoryProfileCategoryCodingOne[] coding;
 |};
 
 # FHIR USCoreObservationSocialHistoryProfileComponent datatype record.

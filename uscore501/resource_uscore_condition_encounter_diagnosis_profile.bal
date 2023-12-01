@@ -64,7 +64,7 @@ public const RESOURCE_NAME_USCORECONDITIONENCOUNTERDIAGNOSISPROFILE = "Condition
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - A category assigned to the condition.
 # * category Slicings
-# 1) USCoreConditionEncounterDiagnosisProfileCategoryUscore: encounter-diagnosis
+# 1) USCoreConditionEncounterDiagnosisProfileCategoryUs_core: encounter-diagnosis
 #       - min = 1
 #       - max = 1
 #
@@ -395,11 +395,11 @@ public type USCoreConditionEncounterDiagnosisProfile record {|
     r4:Element ...;
 |};
 
-# FHIR USCoreConditionEncounterDiagnosisProfileCategoryUscore datatype record.
+# FHIR USCoreConditionEncounterDiagnosisProfileCategoryUs_core datatype record.
 #
 # + coding - A reference to a code defined by a terminology system.
 @r4:DataTypeDefinition {
-    name: "USCoreConditionEncounterDiagnosisProfileCategoryUscore",
+    name: "USCoreConditionEncounterDiagnosisProfileCategoryUs_core",
     baseType: (),
     elements: {
         "coding": {
@@ -417,7 +417,7 @@ public type USCoreConditionEncounterDiagnosisProfile record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreConditionEncounterDiagnosisProfileCategoryUscore record {|
+public type USCoreConditionEncounterDiagnosisProfileCategoryUs_core record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
