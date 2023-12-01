@@ -26,7 +26,7 @@ public function main() {
             ]
         },
         "active":true,
-        "name":[
+        "name": [
             {
                 "use":"official",
                 "family":"Chalmers",
@@ -37,8 +37,10 @@ public function main() {
             }
         ],
         "gender":"male",
-        "birthDate":"1974-12-25",
-        "managingOrganization":{
+        "birthDate": {
+          "value" : "1974-12-25"
+        },
+        "managingOrganization": {
             "reference":"Organization/1"
         }
     };

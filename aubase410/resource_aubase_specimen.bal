@@ -53,7 +53,7 @@ public const RESOURCE_NAME_AUBASESPECIMEN = "Specimen";
     elements: {
         "container" : {
             name: "container",
-            dataType: SpecimenContainer,
+            dataType: AUBaseSpecimenContainer,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -134,7 +134,7 @@ public const RESOURCE_NAME_AUBASESPECIMEN = "Specimen";
         },
         "collection" : {
             name: "collection",
-            dataType: SpecimenCollection,
+            dataType: AUBaseSpecimenCollection,
             min: 0,
             max: 1,
             isArray: false,
@@ -192,7 +192,7 @@ public const RESOURCE_NAME_AUBASESPECIMEN = "Specimen";
         },
         "processing" : {
             name: "processing",
-            dataType: SpecimenProcessing,
+            dataType: AUBaseSpecimenProcessing,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -216,7 +216,7 @@ public const RESOURCE_NAME_AUBASESPECIMEN = "Specimen";
         },
         "status" : {
             name: "status",
-            dataType: SpecimenStatus,
+            dataType: AUBaseSpecimenStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -234,10 +234,7 @@ public type AUBaseSpecimen record {|
 
     RESOURCE_NAME_AUBASESPECIMEN resourceType = RESOURCE_NAME_AUBASESPECIMEN;
 
-    BaseAUBaseSpecimenMeta meta = {
-        profile : [PROFILE_BASE_AUBASESPECIMEN]
-    };
-    SpecimenContainer[] container?;
+    AUBaseSpecimenContainer[] container?;
     r4:Identifier accessionIdentifier?;
     r4:Identifier[] identifier?;
     r4:Annotation[] note?;
@@ -247,156 +244,21 @@ public type AUBaseSpecimen record {|
     r4:Reference subject?;
     r4:Extension[] modifierExtension?;
     r4:code language?;
-    SpecimenCollection collection?;
+    AUBaseSpecimenCollection collection?;
     r4:CodeableConcept 'type?;
     r4:CodeableConcept[] condition?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:dateTime receivedTime?;
     r4:uri implicitRules?;
-    SpecimenProcessing[] processing?;
+    AUBaseSpecimenProcessing[] processing?;
     string id?;
     r4:Narrative text?;
-    SpecimenStatus status?;
-    never...;
+    AUBaseSpecimenStatus status?;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseSpecimenMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseSpecimenMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-specimen"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# SpecimenStatus enum
-public enum SpecimenStatus {
-   CODE_STATUS_UNAVAILABLE = "unavailable",
-   CODE_STATUS_AVAILABLE = "available",
-   CODE_STATUS_UNSATISFACTORY = "unsatisfactory",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
-}
-
-# FHIR SpecimenProcessing datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + timePeriod - A record of the time or period when the specimen processing occurred. For example the time of sample fixation or the period of time the sample was in formalin.
-# + description - Textual description of procedure.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + procedure - A coded value specifying the procedure used to process the specimen.
-# + timeDateTime - A record of the time or period when the specimen processing occurred. For example the time of sample fixation or the period of time the sample was in formalin.
-# + additive - Material used in the processing step.
-@r4:DataTypeDefinition {
-    name: "SpecimenProcessing",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Specimen.processing.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Specimen.processing.modifierExtension"
-        },
-        "timePeriod": {
-            name: "timePeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A record of the time or period when the specimen processing occurred. For example the time of sample fixation or the period of time the sample was in formalin.",
-            path: "Specimen.processing.time[x]"
-        },
-        "description": {
-            name: "description",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Textual description of procedure.",
-            path: "Specimen.processing.description"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Specimen.processing.id"
-        },
-        "procedure": {
-            name: "procedure",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A coded value specifying the procedure used to process the specimen.",
-            path: "Specimen.processing.procedure"
-        },
-        "timeDateTime": {
-            name: "timeDateTime",
-            dataType: r4:dateTime,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A record of the time or period when the specimen processing occurred. For example the time of sample fixation or the period of time the sample was in formalin.",
-            path: "Specimen.processing.time[x]"
-        },
-        "additive": {
-            name: "additive",
-            dataType: r4:Reference,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Material used in the processing step.",
-            path: "Specimen.processing.additive"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type SpecimenProcessing record {|
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:Period timePeriod?;
-    string description?;
-    string id?;
-    r4:CodeableConcept procedure?;
-    r4:dateTime timeDateTime?;
-    r4:Reference[] additive?;
-|};
-
-# FHIR SpecimenContainer datatype record.
+# FHIR AUBaseSpecimenContainer datatype record.
 #
 # + identifier - Id for container. There may be multiple; a manufacturer's bar code, lab assigned identifier, etc. The container ID may differ from the specimen id in some circumstances.
 # + specimenQuantity - The quantity of specimen in the container; may be volume, dimensions, or other appropriate measurements, depending on the specimen type.
@@ -409,7 +271,7 @@ public type SpecimenProcessing record {|
 # + additiveCodeableConcept - Introduced substance to preserve, maintain or enhance the specimen. Examples: Formalin, Citrate, EDTA.
 # + capacity - The capacity (volume or other measure) the container may contain.
 @r4:DataTypeDefinition {
-    name: "SpecimenContainer",
+    name: "AUBaseSpecimenContainer",
     baseType: (),
     elements: {
         "identifier": {
@@ -508,7 +370,9 @@ public type SpecimenProcessing record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type SpecimenContainer record {|
+public type AUBaseSpecimenContainer record {|
+    *r4:BackboneElement;
+
     r4:Identifier[] identifier?;
     r4:Quantity specimenQuantity?;
     r4:Extension[] extension?;
@@ -521,7 +385,120 @@ public type SpecimenContainer record {|
     r4:Quantity capacity?;
 |};
 
-# FHIR SpecimenCollection datatype record.
+# FHIR AUBaseSpecimenProcessing datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + timePeriod - A record of the time or period when the specimen processing occurred. For example the time of sample fixation or the period of time the sample was in formalin.
+# + description - Textual description of procedure.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + procedure - A coded value specifying the procedure used to process the specimen.
+# + timeDateTime - A record of the time or period when the specimen processing occurred. For example the time of sample fixation or the period of time the sample was in formalin.
+# + additive - Material used in the processing step.
+@r4:DataTypeDefinition {
+    name: "AUBaseSpecimenProcessing",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Specimen.processing.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Specimen.processing.modifierExtension"
+        },
+        "timePeriod": {
+            name: "timePeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A record of the time or period when the specimen processing occurred. For example the time of sample fixation or the period of time the sample was in formalin.",
+            path: "Specimen.processing.time[x]"
+        },
+        "description": {
+            name: "description",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Textual description of procedure.",
+            path: "Specimen.processing.description"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Specimen.processing.id"
+        },
+        "procedure": {
+            name: "procedure",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A coded value specifying the procedure used to process the specimen.",
+            path: "Specimen.processing.procedure"
+        },
+        "timeDateTime": {
+            name: "timeDateTime",
+            dataType: r4:dateTime,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A record of the time or period when the specimen processing occurred. For example the time of sample fixation or the period of time the sample was in formalin.",
+            path: "Specimen.processing.time[x]"
+        },
+        "additive": {
+            name: "additive",
+            dataType: r4:Reference,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Material used in the processing step.",
+            path: "Specimen.processing.additive"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseSpecimenProcessing record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:Period timePeriod?;
+    string description?;
+    string id?;
+    r4:CodeableConcept procedure?;
+    r4:dateTime timeDateTime?;
+    r4:Reference[] additive?;
+|};
+
+# AUBaseSpecimenStatus enum
+public enum AUBaseSpecimenStatus {
+   CODE_STATUS_UNAVAILABLE = "unavailable",
+   CODE_STATUS_AVAILABLE = "available",
+   CODE_STATUS_UNSATISFACTORY = "unsatisfactory",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
+}
+
+# FHIR AUBaseSpecimenCollection datatype record.
 #
 # + duration - The span of time over which the collection of a specimen occurred.
 # + bodySite - Anatomical location from which the specimen was collected (if subject is a patient). This is the target site. This element is not used for environmental specimens.
@@ -536,7 +513,7 @@ public type SpecimenContainer record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + collector - Person who collected the specimen.
 @r4:DataTypeDefinition {
-    name: "SpecimenCollection",
+    name: "AUBaseSpecimenCollection",
     baseType: (),
     elements: {
         "duration": {
@@ -653,7 +630,9 @@ public type SpecimenContainer record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type SpecimenCollection record {|
+public type AUBaseSpecimenCollection record {|
+    *r4:BackboneElement;
+
     r4:Duration duration?;
     r4:CodeableConcept bodySite?;
     r4:Extension[] extension?;

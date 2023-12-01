@@ -110,7 +110,7 @@ public const RESOURCE_NAME_AUBASEPATHOLOGYREPORT = "DiagnosticReport";
         },
         "media" : {
             name: "media",
-            dataType: DiagnosticReportMedia,
+            dataType: AUBasePathologyReportMedia,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -272,7 +272,7 @@ public const RESOURCE_NAME_AUBASEPATHOLOGYREPORT = "DiagnosticReport";
         },
         "status" : {
             name: "status",
-            dataType: DiagnosticReportStatus,
+            dataType: AUBasePathologyReportStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -290,16 +290,13 @@ public type AUBasePathologyReport record {|
 
     RESOURCE_NAME_AUBASEPATHOLOGYREPORT resourceType = RESOURCE_NAME_AUBASEPATHOLOGYREPORT;
 
-    BaseAUBasePathologyReportMeta meta = {
-        profile : [PROFILE_BASE_AUBASEPATHOLOGYREPORT]
-    };
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Reference subject;
     r4:Extension[] modifierExtension?;
     r4:Attachment[] presentedForm?;
     r4:code language?;
-    DiagnosticReportMedia[] media?;
+    AUBasePathologyReportMedia[] media?;
     string conclusion?;
     r4:Reference[] result?;
     r4:Reference[] specimen?;
@@ -307,7 +304,7 @@ public type AUBasePathologyReport record {|
     r4:Narrative text?;
     r4:instant issued?;
     r4:Reference[] basedOn?;
-    r4:Identifier[] identifier?;
+    r4:Identifier[]|AuLocalreportidentifier[]|AuLocalorderidentifier[]|AuAccessionnumber[] identifier?;
     r4:Reference[] performer?;
     r4:Period effectivePeriod;
     r4:Reference[] resultsInterpreter?;
@@ -315,50 +312,26 @@ public type AUBasePathologyReport record {|
     r4:Reference encounter?;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     @constraint:Array {
        minLength: 1
     }
     r4:CodeableConcept[] category;
     r4:Reference[] imagingStudy?;
-    DiagnosticReportStatus status;
-    never...;
+    AUBasePathologyReportStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseDiagnosticReportMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBasePathologyReportMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-pathologyreport"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# DiagnosticReportStatus enum
-public enum DiagnosticReportStatus {
+# AUBasePathologyReportStatus enum
+public enum AUBasePathologyReportStatus {
    CODE_STATUS_FINAL = "final",
    CODE_STATUS_REGISTERED = "registered",
    CODE_STATUS_PRELIMINARY = "preliminary",
    CODE_STATUS_PARTIAL = "partial"
 }
 
-# FHIR DiagnosticReportMedia datatype record.
+# FHIR AUBasePathologyReportMedia datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -366,7 +339,7 @@ public enum DiagnosticReportStatus {
 # + comment - A comment about the image. Typically, this is used to provide an explanation for why the image is included, or to draw the viewer's attention to important features.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "DiagnosticReportMedia",
+    name: "AUBasePathologyReportMedia",
     baseType: (),
     elements: {
         "extension": {
@@ -420,7 +393,9 @@ public enum DiagnosticReportStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DiagnosticReportMedia record {|
+public type AUBasePathologyReportMedia record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Reference link;

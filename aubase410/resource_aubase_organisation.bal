@@ -140,7 +140,7 @@ public const RESOURCE_NAME_AUBASEORGANISATION = "Organization";
         },
         "contact" : {
             name: "contact",
-            dataType: OrganizationContact,
+            dataType: AUBaseOrganisationContact,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -205,55 +205,28 @@ public type AUBaseOrganisation record {|
 
     RESOURCE_NAME_AUBASEORGANISATION resourceType = RESOURCE_NAME_AUBASEORGANISATION;
 
-    BaseAUBaseOrganisationMeta meta = {
-        profile : [PROFILE_BASE_AUBASEORGANISATION]
-    };
-    r4:Identifier[] identifier?;
+    AuPharmacyapprovalnumber[]|AuAustralianregistredbodynumber[]|r4:Identifier[]|AuPaioidentifier[]|AuAustraliancompanynumber[]|AuNataaccreditationnumber[]|AuCspregistrationnumber[]|AuAustralianbusinessnumber[]|AuHpio[] identifier?;
     r4:Reference partOf?;
     r4:Extension[] extension?;
-    r4:Address[] address?;
+    AuAddress[]|r4:Address[] address?;
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:code language?;
     r4:CodeableConcept[] 'type?;
     r4:Resource[] contained?;
     r4:Reference[] endpoint?;
-    OrganizationContact[] contact?;
+    r4:Meta meta?;
+    AUBaseOrganisationContact[] contact?;
     string name?;
     string[] alias?;
     r4:uri implicitRules?;
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    never...;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseOrganizationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseOrganisationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-organization"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# FHIR OrganizationContact datatype record.
+# FHIR AUBaseOrganisationContact datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - Visiting or postal addresses for the contact.
@@ -263,7 +236,7 @@ public type BaseAUBaseOrganisationMeta record {|
 # + telecom - A contact detail (e.g. a telephone number or an email address) by which the party may be contacted.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "OrganizationContact",
+    name: "AUBaseOrganisationContact",
     baseType: (),
     elements: {
         "extension": {
@@ -335,7 +308,9 @@ public type BaseAUBaseOrganisationMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type OrganizationContact record {|
+public type AUBaseOrganisationContact record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Address address?;
     r4:CodeableConcept purpose?;

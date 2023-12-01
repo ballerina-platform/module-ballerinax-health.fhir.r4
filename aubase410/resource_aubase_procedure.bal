@@ -29,6 +29,11 @@ public const RESOURCE_NAME_AUBASEPROCEDURE = "Procedure";
 # + partOf - A larger event of which this particular procedure is a component or step.
 # + complication - Any complications that occurred during the procedure, or in the immediate post-performance period. These are generally tracked separately from the notes, which will typically describe the procedure itself rather than any 'post procedure' issues.
 # + extension - An Extension
+# * extension Slicings
+# 1) Extension: The target point for this procedure
+#       - min = 0
+#       - max = *
+#
 # + code - The specific procedure that is performed. Use text if the exact nature of the procedure cannot be coded (e.g. 'Laparoscopic Appendectomy').
 # + subject - The person, animal or group on which the procedure was performed.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -288,7 +293,7 @@ public const RESOURCE_NAME_AUBASEPROCEDURE = "Procedure";
         },
         "performer" : {
             name: "performer",
-            dataType: ProcedurePerformer,
+            dataType: AUBaseProcedurePerformer,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -304,7 +309,7 @@ public const RESOURCE_NAME_AUBASEPROCEDURE = "Procedure";
         },
         "focalDevice" : {
             name: "focalDevice",
-            dataType: ProcedureFocalDevice,
+            dataType: AUBaseProcedureFocalDevice,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -394,7 +399,7 @@ public const RESOURCE_NAME_AUBASEPROCEDURE = "Procedure";
         },
         "status" : {
             name: "status",
-            dataType: ProcedureStatus,
+            dataType: AUBaseProcedureStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -412,9 +417,6 @@ public type AUBaseProcedure record {|
 
     RESOURCE_NAME_AUBASEPROCEDURE resourceType = RESOURCE_NAME_AUBASEPROCEDURE;
 
-    BaseAUBaseProcedureMeta meta = {
-        profile : [PROFILE_BASE_AUBASEPROCEDURE]
-    };
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
     r4:CodeableConcept[] complication?;
@@ -441,49 +443,25 @@ public type AUBaseProcedure record {|
     r4:Identifier[] identifier?;
     r4:Reference recorder?;
     r4:Reference[] complicationDetail?;
-    ProcedurePerformer[] performer?;
+    AUBaseProcedurePerformer[] performer?;
     r4:Reference[] usedReference?;
-    ProcedureFocalDevice[] focalDevice?;
+    AUBaseProcedureFocalDevice[] focalDevice?;
     r4:Reference encounter?;
     r4:canonical[] instantiatesCanonical?;
     r4:CodeableConcept[] bodySite?;
     r4:Resource[] contained?;
     r4:Reference asserter?;
+    r4:Meta meta?;
     r4:Reference[] report?;
     r4:uri implicitRules?;
     r4:Reference location?;
     r4:CodeableConcept category?;
-    ProcedureStatus status;
-    never...;
+    AUBaseProcedureStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseProcedureMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseProcedureMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-procedure"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# ProcedureStatus enum
-public enum ProcedureStatus {
+# AUBaseProcedureStatus enum
+public enum AUBaseProcedureStatus {
    CODE_STATUS_STOPPED = "stopped",
    CODE_STATUS_COMPLETED = "completed",
    CODE_STATUS_NOT_DONE = "not-done",
@@ -494,77 +472,7 @@ public enum ProcedureStatus {
    CODE_STATUS_UNKNOWN = "unknown"
 }
 
-# FHIR ProcedureFocalDevice datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + action - The kind of change that happened to the device during the procedure.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + manipulated - The device that was manipulated (changed) during the procedure.
-@r4:DataTypeDefinition {
-    name: "ProcedureFocalDevice",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Procedure.focalDevice.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Procedure.focalDevice.modifierExtension"
-        },
-        "action": {
-            name: "action",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The kind of change that happened to the device during the procedure.",
-            path: "Procedure.focalDevice.action"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Procedure.focalDevice.id"
-        },
-        "manipulated": {
-            name: "manipulated",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The device that was manipulated (changed) during the procedure.",
-            path: "Procedure.focalDevice.manipulated"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type ProcedureFocalDevice record {|
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:CodeableConcept action?;
-    string id?;
-    r4:Reference manipulated;
-|};
-
-# FHIR ProcedurePerformer datatype record.
+# FHIR AUBaseProcedurePerformer datatype record.
 #
 # + actor - The practitioner who was involved in the procedure.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -573,7 +481,7 @@ public type ProcedureFocalDevice record {|
 # + onBehalfOf - The organization the device or practitioner was acting on behalf of.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "ProcedurePerformer",
+    name: "AUBaseProcedurePerformer",
     baseType: (),
     elements: {
         "actor": {
@@ -636,12 +544,86 @@ public type ProcedureFocalDevice record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ProcedurePerformer record {|
+public type AUBaseProcedurePerformer record {|
+    *r4:BackboneElement;
+
     r4:Reference actor;
     r4:Extension[] extension?;
     r4:CodeableConcept 'function?;
     r4:Extension[] modifierExtension?;
     r4:Reference onBehalfOf?;
     string id?;
+|};
+
+# FHIR AUBaseProcedureFocalDevice datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + action - The kind of change that happened to the device during the procedure.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + manipulated - The device that was manipulated (changed) during the procedure.
+@r4:DataTypeDefinition {
+    name: "AUBaseProcedureFocalDevice",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Procedure.focalDevice.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Procedure.focalDevice.modifierExtension"
+        },
+        "action": {
+            name: "action",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The kind of change that happened to the device during the procedure.",
+            path: "Procedure.focalDevice.action"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Procedure.focalDevice.id"
+        },
+        "manipulated": {
+            name: "manipulated",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The device that was manipulated (changed) during the procedure.",
+            path: "Procedure.focalDevice.manipulated"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseProcedureFocalDevice record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:CodeableConcept action?;
+    string id?;
+    r4:Reference manipulated;
 |};
 

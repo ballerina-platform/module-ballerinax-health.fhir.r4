@@ -74,7 +74,7 @@ public const RESOURCE_NAME_AUBASEPRACTITIONER = "Practitioner";
         },
         "gender" : {
             name: "gender",
-            dataType: PractitionerGender,
+            dataType: AUBasePractitionerGender,
             min: 0,
             max: 1,
             isArray: false,
@@ -124,7 +124,7 @@ public const RESOURCE_NAME_AUBASEPRACTITIONER = "Practitioner";
         },
         "qualification" : {
             name: "qualification",
-            dataType: PractitionerQualification,
+            dataType: AUBasePractitionerQualification,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -206,63 +206,28 @@ public type AUBasePractitioner record {|
 
     RESOURCE_NAME_AUBASEPRACTITIONER resourceType = RESOURCE_NAME_AUBASEPRACTITIONER;
 
-    BaseAUBasePractitionerMeta meta = {
-        profile : [PROFILE_BASE_AUBASEPRACTITIONER]
-    };
-    r4:Identifier[] identifier?;
+    r4:Identifier[]|AuPbsprescribernumber[]|AuAhpraregistrationnumber[]|AuCareagencyemployeeidentifier[]|AuHpii[] identifier?;
     r4:Extension[] extension?;
-    r4:Address[] address?;
-    PractitionerGender gender?;
+    AuAddress[]|r4:Address[] address?;
+    AUBasePractitionerGender gender?;
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:Attachment[] photo?;
     r4:code language?;
     r4:date birthDate?;
-    PractitionerQualification[] qualification?;
+    AUBasePractitionerQualification[] qualification?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:HumanName[] name?;
     r4:uri implicitRules?;
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept[] communication?;
-    never...;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BasePractitionerMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBasePractitionerMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-practitioner"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# PractitionerGender enum
-public enum PractitionerGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
-}
-
-# FHIR PractitionerQualification datatype record.
+# FHIR AUBasePractitionerQualification datatype record.
 #
 # + identifier - An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.
 # + extension - An Extension
@@ -272,7 +237,7 @@ public enum PractitionerGender {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + issuer - Organization that regulates and issues the qualification.
 @r4:DataTypeDefinition {
-    name: "PractitionerQualification",
+    name: "AUBasePractitionerQualification",
     baseType: (),
     elements: {
         "identifier": {
@@ -344,7 +309,9 @@ public enum PractitionerGender {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type PractitionerQualification record {|
+public type AUBasePractitionerQualification record {|
+    *r4:BackboneElement;
+
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Period period?;
@@ -353,4 +320,12 @@ public type PractitionerQualification record {|
     string id?;
     r4:Reference issuer?;
 |};
+
+# AUBasePractitionerGender enum
+public enum AUBasePractitionerGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
 

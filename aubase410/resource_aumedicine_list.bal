@@ -29,6 +29,11 @@ public const RESOURCE_NAME_AUMEDICINELIST = "List";
 # + identifier - Identifier for the List assigned for business purposes outside the context of FHIR.
 # + note - Comments that apply to the overall list.
 # + extension - An Extension
+# * extension Slicings
+# 1) Extension: Related person that defined the list contents (aka Author)
+#       - min = 0
+#       - max = 1
+#
 # + code - This code defines the purpose of the list - why it was created.
 # + emptyReason - If the list is empty, why the list is empty.
 # + subject - The common subject (or patient) of the resources that are in the list if there is one.
@@ -152,7 +157,7 @@ public const RESOURCE_NAME_AUMEDICINELIST = "List";
         },
         "mode" : {
             name: "mode",
-            dataType: ListMode,
+            dataType: AUMedicineListMode,
             min: 1,
             max: 1,
             isArray: false,
@@ -161,7 +166,7 @@ public const RESOURCE_NAME_AUMEDICINELIST = "List";
         },
         "entry" : {
             name: "entry",
-            dataType: ListEntry,
+            dataType: AUMedicineListEntry,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -218,7 +223,7 @@ public const RESOURCE_NAME_AUMEDICINELIST = "List";
         },
         "status" : {
             name: "status",
-            dataType: ListStatus,
+            dataType: AUMedicineListStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -236,9 +241,6 @@ public type AUMedicineList record {|
 
     RESOURCE_NAME_AUMEDICINELIST resourceType = RESOURCE_NAME_AUMEDICINELIST;
 
-    BaseAUMedicineListMeta meta = {
-        profile : [PROFILE_BASE_AUMEDICINELIST]
-    };
     r4:dateTime date?;
     r4:Identifier[] identifier?;
     r4:Annotation[] note?;
@@ -251,57 +253,19 @@ public type AUMedicineList record {|
     r4:Reference encounter?;
     r4:Reference 'source?;
     string title?;
-    ListMode mode;
-    ListEntry[] entry?;
+    AUMedicineListMode mode;
+    AUMedicineListEntry[] entry?;
     r4:Resource[] contained?;
     r4:CodeableConcept orderedBy?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
-    ListStatus status;
-    never...;
+    AUMedicineListStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseListMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUMedicineListMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-medlist"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# ListStatus enum
-public enum ListStatus {
-   CODE_STATUS_CURRENT = "current",
-   CODE_STATUS_RETIRED = "retired",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
-}
-
-# ListMode enum
-public enum ListMode {
-   CODE_MODE_CHANGES = "changes",
-   CODE_MODE_WORKING = "working",
-   CODE_MODE_SNAPSHOT = "snapshot"
-}
-
-# FHIR ListEntry datatype record.
+# FHIR AUMedicineListEntry datatype record.
 #
 # + date - When this item was added to the list.
 # + extension - An Extension
@@ -311,7 +275,7 @@ public enum ListMode {
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "ListEntry",
+    name: "AUMedicineListEntry",
     baseType: (),
     elements: {
         "date": {
@@ -383,7 +347,9 @@ public enum ListMode {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ListEntry record {|
+public type AUMedicineListEntry record {|
+    *r4:BackboneElement;
+
     r4:dateTime date?;
     r4:Extension[] extension?;
     r4:Reference item;
@@ -392,4 +358,18 @@ public type ListEntry record {|
     r4:Extension[] modifierExtension?;
     string id?;
 |};
+
+# AUMedicineListMode enum
+public enum AUMedicineListMode {
+   CODE_MODE_CHANGES = "changes",
+   CODE_MODE_WORKING = "working",
+   CODE_MODE_SNAPSHOT = "snapshot"
+}
+
+# AUMedicineListStatus enum
+public enum AUMedicineListStatus {
+   CODE_STATUS_CURRENT = "current",
+   CODE_STATUS_RETIRED = "retired",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
+}
 

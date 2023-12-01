@@ -98,7 +98,7 @@ public const RESOURCE_NAME_AUBASEHEALTHCARESERVICE = "HealthcareService";
         },
         "eligibility" : {
             name: "eligibility",
-            dataType: HealthcareServiceEligibility,
+            dataType: AUBaseHealthcareServiceEligibility,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -141,7 +141,7 @@ public const RESOURCE_NAME_AUBASEHEALTHCARESERVICE = "HealthcareService";
         },
         "notAvailable" : {
             name: "notAvailable",
-            dataType: HealthcareServiceNotAvailable,
+            dataType: AUBaseHealthcareServiceNotAvailable,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -149,7 +149,7 @@ public const RESOURCE_NAME_AUBASEHEALTHCARESERVICE = "HealthcareService";
         },
         "availableTime" : {
             name: "availableTime",
-            dataType: HealthcareServiceAvailableTime,
+            dataType: AUBaseHealthcareServiceAvailableTime,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -337,20 +337,17 @@ public type AUBaseHealthcareService record {|
 
     RESOURCE_NAME_AUBASEHEALTHCARESERVICE resourceType = RESOURCE_NAME_AUBASEHEALTHCARESERVICE;
 
-    BaseAUBaseHealthcareServiceMeta meta = {
-        profile : [PROFILE_BASE_AUBASEHEALTHCARESERVICE]
-    };
     r4:CodeableConcept[] serviceProvisionCode?;
     r4:Extension[] extension?;
     r4:CodeableConcept[] specialty?;
     r4:Extension[] modifierExtension?;
-    HealthcareServiceEligibility[] eligibility?;
+    AUBaseHealthcareServiceEligibility[] eligibility?;
     r4:code language?;
     r4:CodeableConcept[] program?;
     r4:CodeableConcept[] 'type?;
     r4:CodeableConcept[] characteristic?;
-    HealthcareServiceNotAvailable[] notAvailable?;
-    HealthcareServiceAvailableTime[] availableTime?;
+    AUBaseHealthcareServiceNotAvailable[] notAvailable?;
+    AUBaseHealthcareServiceAvailableTime[] availableTime?;
     r4:Reference[] endpoint?;
     r4:ContactPoint[] telecom?;
     string id?;
@@ -358,11 +355,12 @@ public type AUBaseHealthcareService record {|
     r4:CodeableConcept[] communication?;
     r4:CodeableConcept[] referralMethod?;
     r4:Reference providedBy?;
-    r4:Identifier[] identifier?;
+    r4:Identifier[]|AuHpio[]|AuResidentialagedcareserviceidentifier[] identifier?;
     boolean appointmentRequired?;
     boolean active?;
     r4:Attachment photo?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
     string comment?;
@@ -371,35 +369,21 @@ public type AUBaseHealthcareService record {|
     r4:markdown extraDetails?;
     string availabilityExceptions?;
     r4:Reference[] coverageArea?;
-    never...;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseHealthcareServiceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
+# AUBaseHealthcareServiceAvailableTimeDaysOfWeek enum
+public enum AUBaseHealthcareServiceAvailableTimeDaysOfWeek {
+   CODE_DAYSOFWEEK_THU = "thu",
+   CODE_DAYSOFWEEK_TUE = "tue",
+   CODE_DAYSOFWEEK_WED = "wed",
+   CODE_DAYSOFWEEK_SAT = "sat",
+   CODE_DAYSOFWEEK_FRI = "fri",
+   CODE_DAYSOFWEEK_MON = "mon",
+   CODE_DAYSOFWEEK_SUN = "sun"
 }
-public type BaseAUBaseHealthcareServiceMeta record {|
-    *r4:Meta;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-healthcareservice"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# FHIR HealthcareServiceEligibility datatype record.
+# FHIR AUBaseHealthcareServiceEligibility datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - Coded value for the eligibility.
@@ -407,7 +391,7 @@ public type BaseAUBaseHealthcareServiceMeta record {|
 # + comment - Describes the eligibility conditions for the service.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "HealthcareServiceEligibility",
+    name: "AUBaseHealthcareServiceEligibility",
     baseType: (),
     elements: {
         "extension": {
@@ -461,7 +445,9 @@ public type BaseAUBaseHealthcareServiceMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type HealthcareServiceEligibility record {|
+public type AUBaseHealthcareServiceEligibility record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Extension[] modifierExtension?;
@@ -469,110 +455,7 @@ public type HealthcareServiceEligibility record {|
     string id?;
 |};
 
-# HealthcareServiceAvailableTimeDaysOfWeek enum
-public enum HealthcareServiceAvailableTimeDaysOfWeek {
-   CODE_DAYSOFWEEK_THU = "thu",
-   CODE_DAYSOFWEEK_TUE = "tue",
-   CODE_DAYSOFWEEK_WED = "wed",
-   CODE_DAYSOFWEEK_SAT = "sat",
-   CODE_DAYSOFWEEK_FRI = "fri",
-   CODE_DAYSOFWEEK_MON = "mon",
-   CODE_DAYSOFWEEK_SUN = "sun"
-}
-
-# FHIR HealthcareServiceAvailableTime datatype record.
-#
-# + allDay - Is this always available? (hence times are irrelevant) e.g. 24 hour service.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + availableEndTime - The closing time of day. Note: If the AllDay flag is set, then this time is ignored.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + daysOfWeek - Indicates which days of the week are available between the start and end Times.
-# + availableStartTime - The opening time of day. Note: If the AllDay flag is set, then this time is ignored.
-@r4:DataTypeDefinition {
-    name: "HealthcareServiceAvailableTime",
-    baseType: (),
-    elements: {
-        "allDay": {
-            name: "allDay",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Is this always available? (hence times are irrelevant) e.g. 24 hour service.",
-            path: "HealthcareService.availableTime.allDay"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "HealthcareService.availableTime.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "HealthcareService.availableTime.modifierExtension"
-        },
-        "availableEndTime": {
-            name: "availableEndTime",
-            dataType: r4:time,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The closing time of day. Note: If the AllDay flag is set, then this time is ignored.",
-            path: "HealthcareService.availableTime.availableEndTime"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "HealthcareService.availableTime.id"
-        },
-        "daysOfWeek": {
-            name: "daysOfWeek",
-            dataType: HealthcareServiceAvailableTimeDaysOfWeek,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Indicates which days of the week are available between the start and end Times.",
-            path: "HealthcareService.availableTime.daysOfWeek"
-        },
-        "availableStartTime": {
-            name: "availableStartTime",
-            dataType: r4:time,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The opening time of day. Note: If the AllDay flag is set, then this time is ignored.",
-            path: "HealthcareService.availableTime.availableStartTime"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type HealthcareServiceAvailableTime record {|
-    boolean allDay?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:time availableEndTime?;
-    string id?;
-    HealthcareServiceAvailableTimeDaysOfWeek[] daysOfWeek?;
-    r4:time availableStartTime?;
-|};
-
-# FHIR HealthcareServiceNotAvailable datatype record.
+# FHIR AUBaseHealthcareServiceNotAvailable datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -580,7 +463,7 @@ public type HealthcareServiceAvailableTime record {|
 # + during - Service is not available (seasonally or for a public holiday) from this date.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "HealthcareServiceNotAvailable",
+    name: "AUBaseHealthcareServiceNotAvailable",
     baseType: (),
     elements: {
         "extension": {
@@ -634,11 +517,107 @@ public type HealthcareServiceAvailableTime record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type HealthcareServiceNotAvailable record {|
+public type AUBaseHealthcareServiceNotAvailable record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description;
     r4:Period during?;
     string id?;
+|};
+
+# FHIR AUBaseHealthcareServiceAvailableTime datatype record.
+#
+# + allDay - Is this always available? (hence times are irrelevant) e.g. 24 hour service.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + availableEndTime - The closing time of day. Note: If the AllDay flag is set, then this time is ignored.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + daysOfWeek - Indicates which days of the week are available between the start and end Times.
+# + availableStartTime - The opening time of day. Note: If the AllDay flag is set, then this time is ignored.
+@r4:DataTypeDefinition {
+    name: "AUBaseHealthcareServiceAvailableTime",
+    baseType: (),
+    elements: {
+        "allDay": {
+            name: "allDay",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Is this always available? (hence times are irrelevant) e.g. 24 hour service.",
+            path: "HealthcareService.availableTime.allDay"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "HealthcareService.availableTime.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "HealthcareService.availableTime.modifierExtension"
+        },
+        "availableEndTime": {
+            name: "availableEndTime",
+            dataType: r4:time,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The closing time of day. Note: If the AllDay flag is set, then this time is ignored.",
+            path: "HealthcareService.availableTime.availableEndTime"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "HealthcareService.availableTime.id"
+        },
+        "daysOfWeek": {
+            name: "daysOfWeek",
+            dataType: AUBaseHealthcareServiceAvailableTimeDaysOfWeek,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Indicates which days of the week are available between the start and end Times.",
+            path: "HealthcareService.availableTime.daysOfWeek"
+        },
+        "availableStartTime": {
+            name: "availableStartTime",
+            dataType: r4:time,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The opening time of day. Note: If the AllDay flag is set, then this time is ignored.",
+            path: "HealthcareService.availableTime.availableStartTime"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseHealthcareServiceAvailableTime record {|
+    *r4:BackboneElement;
+
+    boolean allDay?;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:time availableEndTime?;
+    string id?;
+    AUBaseHealthcareServiceAvailableTimeDaysOfWeek[] daysOfWeek?;
+    r4:time availableStartTime?;
 |};
 

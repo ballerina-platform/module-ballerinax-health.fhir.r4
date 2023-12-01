@@ -90,7 +90,7 @@ public const RESOURCE_NAME_AUBASECONDITION = "Condition";
         },
         "evidence" : {
             name: "evidence",
-            dataType: ConditionEvidence,
+            dataType: AUBaseConditionEvidence,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -295,7 +295,7 @@ public const RESOURCE_NAME_AUBASECONDITION = "Condition";
         },
         "stage" : {
             name: "stage",
-            dataType: ConditionStage,
+            dataType: AUBaseConditionStage,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -345,13 +345,10 @@ public type AUBaseCondition record {|
 
     RESOURCE_NAME_AUBASECONDITION resourceType = RESOURCE_NAME_AUBASECONDITION;
 
-    BaseAUBaseConditionMeta meta = {
-        profile : [PROFILE_BASE_AUBASECONDITION]
-    };
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
-    ConditionEvidence[] evidence?;
+    AUBaseConditionEvidence[] evidence?;
     r4:Range onsetRange?;
     r4:dateTime abatementDateTime?;
     r4:Reference subject;
@@ -376,39 +373,15 @@ public type AUBaseCondition record {|
     r4:CodeableConcept[] bodySite?;
     r4:Resource[] contained?;
     r4:Reference asserter?;
-    ConditionStage[] stage?;
+    AUBaseConditionStage[] stage?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Age abatementAge?;
-    never...;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseConditionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseConditionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-condition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# FHIR ConditionEvidence datatype record.
+# FHIR AUBaseConditionEvidence datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - A manifestation or symptom that led to the recording of this condition.
@@ -416,7 +389,7 @@ public type BaseAUBaseConditionMeta record {|
 # + detail - Links to other relevant information, including pathology reports.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "ConditionEvidence",
+    name: "AUBaseConditionEvidence",
     baseType: (),
     elements: {
         "extension": {
@@ -470,7 +443,9 @@ public type BaseAUBaseConditionMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ConditionEvidence record {|
+public type AUBaseConditionEvidence record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] code?;
     r4:Extension[] modifierExtension?;
@@ -478,7 +453,7 @@ public type ConditionEvidence record {|
     string id?;
 |};
 
-# FHIR ConditionStage datatype record.
+# FHIR AUBaseConditionStage datatype record.
 #
 # + summary - A simple summary of the stage such as 'Stage 3'. The determination of the stage is disease-specific.
 # + assessment - Reference to a formal record of the evidence on which the staging assessment is based.
@@ -487,7 +462,7 @@ public type ConditionEvidence record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'type - The kind of staging, such as pathological or clinical staging.
 @r4:DataTypeDefinition {
-    name: "ConditionStage",
+    name: "AUBaseConditionStage",
     baseType: (),
     elements: {
         "summary": {
@@ -550,7 +525,9 @@ public type ConditionEvidence record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ConditionStage record {|
+public type AUBaseConditionStage record {|
+    *r4:BackboneElement;
+
     r4:CodeableConcept summary?;
     r4:Reference[] assessment?;
     r4:Extension[] extension?;

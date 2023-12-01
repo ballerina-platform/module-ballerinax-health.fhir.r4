@@ -1,3 +1,5 @@
+Ballerina package containing FHIR resource data models
+compliant with http://hl7.org.au/fhir/ implementation guide.
 
 # FHIR R4 AUBase package
 
