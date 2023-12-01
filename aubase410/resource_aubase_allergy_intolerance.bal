@@ -102,7 +102,7 @@ public const RESOURCE_NAME_AUBASEALLERGYINTOLERANCE = "AllergyIntolerance";
         },
         "criticality" : {
             name: "criticality",
-            dataType: AllergyIntoleranceCriticality,
+            dataType: AUBaseAllergyIntoleranceCriticality,
             min: 0,
             max: 1,
             isArray: false,
@@ -137,7 +137,7 @@ public const RESOURCE_NAME_AUBASEALLERGYINTOLERANCE = "AllergyIntolerance";
         },
         "type" : {
             name: "type",
-            dataType: AllergyIntoleranceType,
+            dataType: AUBaseAllergyIntoleranceType,
             min: 0,
             max: 1,
             isArray: false,
@@ -218,7 +218,7 @@ public const RESOURCE_NAME_AUBASEALLERGYINTOLERANCE = "AllergyIntolerance";
         },
         "reaction" : {
             name: "reaction",
-            dataType: AllergyIntoleranceReaction,
+            dataType: AUBaseAllergyIntoleranceReaction,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -283,7 +283,7 @@ public const RESOURCE_NAME_AUBASEALLERGYINTOLERANCE = "AllergyIntolerance";
         },
         "category" : {
             name: "category",
-            dataType: AllergyIntoleranceCategory,
+            dataType: AUBaseAllergyIntoleranceCategory,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -301,19 +301,16 @@ public type AUBaseAllergyIntolerance record {|
 
     RESOURCE_NAME_AUBASEALLERGYINTOLERANCE resourceType = RESOURCE_NAME_AUBASEALLERGYINTOLERANCE;
 
-    BaseAUBaseAllergyIntoleranceMeta meta = {
-        profile : [PROFILE_BASE_AUBASEALLERGYINTOLERANCE]
-    };
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Range onsetRange?;
     r4:Extension[] modifierExtension?;
-    AllergyIntoleranceCriticality criticality?;
+    AUBaseAllergyIntoleranceCriticality criticality?;
     r4:code language?;
     r4:CodeableConcept clinicalStatus?;
     r4:dateTime onsetDateTime?;
-    AllergyIntoleranceType 'type?;
+    AUBaseAllergyIntoleranceType 'type?;
     string onsetString?;
     r4:Age onsetAge?;
     r4:dateTime lastOccurrence?;
@@ -323,50 +320,33 @@ public type AUBaseAllergyIntolerance record {|
     r4:Identifier[] identifier?;
     r4:Reference recorder?;
     r4:Period onsetPeriod?;
-    AllergyIntoleranceReaction[] reaction?;
+    AUBaseAllergyIntoleranceReaction[] reaction?;
     r4:CodeableConcept verificationStatus?;
     r4:dateTime recordedDate?;
     r4:Reference encounter?;
     r4:Resource[] contained?;
     r4:Reference asserter?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
-    AllergyIntoleranceCategory[] category?;
-    never...;
+    AUBaseAllergyIntoleranceCategory[] category?;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseAllergyIntoleranceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseAllergyIntoleranceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-allergyintolerance"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# AllergyIntoleranceCriticality enum
-public enum AllergyIntoleranceCriticality {
+# AUBaseAllergyIntoleranceCriticality enum
+public enum AUBaseAllergyIntoleranceCriticality {
    CODE_CRITICALITY_HIGH = "high",
    CODE_CRITICALITY_LOW = "low",
    CODE_CRITICALITY_UNABLE_TO_ASSESS = "unable-to-assess"
 }
 
-# FHIR AllergyIntoleranceReaction datatype record.
+# AUBaseAllergyIntoleranceReactionSeverity enum
+public enum AUBaseAllergyIntoleranceReactionSeverity {
+   CODE_SEVERITY_MILD = "mild",
+   CODE_SEVERITY_SEVERE = "severe",
+   CODE_SEVERITY_MODERATE = "moderate"
+}
+
+# FHIR AUBaseAllergyIntoleranceReaction datatype record.
 #
 # + severity - Clinical assessment of the severity of the reaction event as a whole, potentially considering multiple different manifestations.
 # + note - Additional text about the adverse reaction event not captured in other fields.
@@ -379,12 +359,12 @@ public enum AllergyIntoleranceCriticality {
 # + onset - Record of the date and/or time of the onset of the Reaction.
 # + exposureRoute - Identification of the route by which the subject was exposed to the substance.
 @r4:DataTypeDefinition {
-    name: "AllergyIntoleranceReaction",
+    name: "AUBaseAllergyIntoleranceReaction",
     baseType: (),
     elements: {
         "severity": {
             name: "severity",
-            dataType: AllergyIntoleranceReactionSeverity,
+            dataType: AUBaseAllergyIntoleranceReactionSeverity,
             min: 0,
             max: 1,
             isArray: false,
@@ -478,8 +458,10 @@ public enum AllergyIntoleranceCriticality {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type AllergyIntoleranceReaction record {|
-    AllergyIntoleranceReactionSeverity severity?;
+public type AUBaseAllergyIntoleranceReaction record {|
+    *r4:BackboneElement;
+
+    AUBaseAllergyIntoleranceReactionSeverity severity?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     @constraint:Array {
@@ -494,24 +476,17 @@ public type AllergyIntoleranceReaction record {|
     r4:CodeableConcept exposureRoute?;
 |};
 
-# AllergyIntoleranceType enum
-public enum AllergyIntoleranceType {
+# AUBaseAllergyIntoleranceType enum
+public enum AUBaseAllergyIntoleranceType {
    CODE_TYPE_INTOLERANCE = "intolerance",
    CODE_TYPE_ALLERGY = "allergy"
 }
 
-# AllergyIntoleranceCategory enum
-public enum AllergyIntoleranceCategory {
+# AUBaseAllergyIntoleranceCategory enum
+public enum AUBaseAllergyIntoleranceCategory {
    CODE_CATEGORY_ENVIRONMENT = "environment",
    CODE_CATEGORY_BIOLOGIC = "biologic",
    CODE_CATEGORY_MEDICATION = "medication",
    CODE_CATEGORY_FOOD = "food"
-}
-
-# AllergyIntoleranceReactionSeverity enum
-public enum AllergyIntoleranceReactionSeverity {
-   CODE_SEVERITY_MILD = "mild",
-   CODE_SEVERITY_SEVERE = "severe",
-   CODE_SEVERITY_MODERATE = "moderate"
 }
 

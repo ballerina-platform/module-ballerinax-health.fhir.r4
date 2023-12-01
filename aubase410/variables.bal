@@ -25,8 +25,8 @@ public final r4:TerminologyProcessor terminologyProcessor = r4:terminologyProces
 # FHIR registry instance
 public final r4:FHIRRegistry fhirRegistry = r4:fhirRegistry;
 
-//Number of search params in AUBASE_IG_SEARCH_PARAMS_1  = 0
-final readonly & map<r4:FHIRSearchParameterDefinition[]> AUBASE_IG_SEARCH_PARAMS_1 = {
+//Number of search params in AUBASEIMPLEMENTATIONGUIDE_IG_SEARCH_PARAMS_1  = 0
+final readonly & map<r4:FHIRSearchParameterDefinition[]> AUBASEIMPLEMENTATIONGUIDE_IG_SEARCH_PARAMS_1 = {
     
 };
 

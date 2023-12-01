@@ -29,6 +29,11 @@ public const RESOURCE_NAME_AUBASEMEDICATIONSTATEMENT = "MedicationStatement";
 # + note - Provides extra information about the medication statement that is not conveyed by the other attributes.
 # + partOf - A larger event of which this particular event is a component or step.
 # + extension - An Extension
+# * extension Slicings
+# 1) Extension: Medication Long Term Indicator
+#       - min = 0
+#       - max = 1
+#
 # + subject - The person, animal or group who is/was taking the medication.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + reasonReference - Condition or observation that supports why the medication is being/was taken.
@@ -125,11 +130,10 @@ public const RESOURCE_NAME_AUBASEMEDICATIONSTATEMENT = "MedicationStatement";
         "medicationReference" : {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
-            path: "MedicationStatement.medication[x]",
-            valueSet: "http://hl7.org/fhir/ValueSet/medication-codes"
+            path: "MedicationStatement.medication[x]"
         },
         "statusReason" : {
             name: "statusReason",
@@ -223,8 +227,8 @@ public const RESOURCE_NAME_AUBASEMEDICATIONSTATEMENT = "MedicationStatement";
         },
         "medicationCodeableConcept" : {
             name: "medicationCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 1,
+            dataType: AUBaseMedicationStatementMedication,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MedicationStatement.medication[x]",
@@ -273,7 +277,7 @@ public const RESOURCE_NAME_AUBASEMEDICATIONSTATEMENT = "MedicationStatement";
         },
         "status" : {
             name: "status",
-            dataType: MedicationStatementStatus,
+            dataType: AUBaseMedicationStatementStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -291,10 +295,7 @@ public type AUBaseMedicationStatement record {|
 
     RESOURCE_NAME_AUBASEMEDICATIONSTATEMENT resourceType = RESOURCE_NAME_AUBASEMEDICATIONSTATEMENT;
 
-    BaseAUBaseMedicationStatementMeta meta = {
-        profile : [PROFILE_BASE_AUBASEMEDICATIONSTATEMENT]
-    };
-    r4:Dosage[] dosage?;
+    AuDosage[] dosage?;
     r4:Annotation[] note?;
     r4:Reference[] partOf?;
     r4:Extension[] extension?;
@@ -302,7 +303,7 @@ public type AUBaseMedicationStatement record {|
     r4:Extension[] modifierExtension?;
     r4:Reference[] reasonReference?;
     r4:code language?;
-    r4:Reference medicationReference;
+    r4:Reference medicationReference?;
     r4:CodeableConcept[] statusReason?;
     r4:Reference informationSource?;
     r4:Reference context?;
@@ -314,42 +315,79 @@ public type AUBaseMedicationStatement record {|
     r4:Reference[] basedOn?;
     r4:Identifier[] identifier?;
     r4:Period effectivePeriod?;
-    r4:CodeableConcept medicationCodeableConcept;
+    AUBaseMedicationStatementMedication medicationCodeableConcept?;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:CodeableConcept category?;
-    MedicationStatementStatus status;
-    never...;
+    AUBaseMedicationStatementStatus status;
+    r4:Element ...;
 |};
 
+# FHIR AUBaseMedicationStatementMedication datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user. This may be a brand or generic name as suitable for the intent of the entry.
 @r4:DataTypeDefinition {
-    name: "BaseMedicationStatementMeta",
-    baseType: r4:Meta,
-    elements: {},
+    name: "AUBaseMedicationStatementMedication",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: r4:Coding,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "MedicationStatement.medication[x].coding"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MedicationStatement.medication[x].extension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MedicationStatement.medication[x].id"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user. This may be a brand or generic name as suitable for the intent of the entry.",
+            path: "MedicationStatement.medication[x].text"
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type BaseAUBaseMedicationStatementMeta record {|
-    *r4:Meta;
+public type AUBaseMedicationStatementMedication record {|
+    *r4:CodeableConcept;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
+    r4:Coding[] coding?;
     r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-medicationstatement"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    string id?;
+    string text?;
 |};
 
-# MedicationStatementStatus enum
-public enum MedicationStatementStatus {
+# AUBaseMedicationStatementStatus enum
+public enum AUBaseMedicationStatementStatus {
    CODE_STATUS_STOPPED = "stopped",
    CODE_STATUS_INTENDED = "intended",
    CODE_STATUS_ACTIVE = "active",
@@ -359,4 +397,391 @@ public enum MedicationStatementStatus {
    CODE_STATUS_ON_HOLD = "on-hold",
    CODE_STATUS_UNKNOWN = "unknown"
 }
+
+# FHIR AUBaseMedicationStatementMedicationCodingPbs datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + userSelected - Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).
+# + display - A representation of the meaning of the code in the system, following the rules of the system.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'version - The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.
+@r4:DataTypeDefinition {
+    name: "AUBaseMedicationStatementMedicationCodingPbs",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MedicationStatement.medication[x].coding.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "MedicationStatement.medication[x].coding.code"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "MedicationStatement.medication[x].coding.system"
+        },
+        "userSelected": {
+            name: "userSelected",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).",
+            path: "MedicationStatement.medication[x].coding.userSelected"
+        },
+        "display": {
+            name: "display",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A representation of the meaning of the code in the system, following the rules of the system.",
+            path: "MedicationStatement.medication[x].coding.display"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MedicationStatement.medication[x].coding.id"
+        },
+        "version": {
+            name: "version",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.",
+            path: "MedicationStatement.medication[x].coding.version"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseMedicationStatementMedicationCodingPbs record {|
+    *r4:Coding;
+
+    r4:Extension[] extension?;
+    r4:code code?;
+    r4:uri system = "http://pbs.gov.au/code/item";
+    boolean userSelected?;
+    string display?;
+    string id?;
+    string 'version?;
+|};
+
+# FHIR AUBaseMedicationStatementMedicationCodingGtin datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + userSelected - Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).
+# + display - A representation of the meaning of the code in the system, following the rules of the system.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'version - The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.
+@r4:DataTypeDefinition {
+    name: "AUBaseMedicationStatementMedicationCodingGtin",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MedicationStatement.medication[x].coding.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "MedicationStatement.medication[x].coding.code"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "MedicationStatement.medication[x].coding.system"
+        },
+        "userSelected": {
+            name: "userSelected",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).",
+            path: "MedicationStatement.medication[x].coding.userSelected"
+        },
+        "display": {
+            name: "display",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A representation of the meaning of the code in the system, following the rules of the system.",
+            path: "MedicationStatement.medication[x].coding.display"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MedicationStatement.medication[x].coding.id"
+        },
+        "version": {
+            name: "version",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.",
+            path: "MedicationStatement.medication[x].coding.version"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseMedicationStatementMedicationCodingGtin record {|
+    *r4:Coding;
+
+    r4:Extension[] extension?;
+    r4:code code?;
+    r4:uri system = "http://www.gs1.org/gtin";
+    boolean userSelected?;
+    string display?;
+    string id?;
+    string 'version?;
+|};
+
+# FHIR AUBaseMedicationStatementMedicationCodingMimsPackage datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + userSelected - Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).
+# + display - A representation of the meaning of the code in the system, following the rules of the system.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'version - The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.
+@r4:DataTypeDefinition {
+    name: "AUBaseMedicationStatementMedicationCodingMimsPackage",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "MedicationStatement.medication[x].coding.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "MedicationStatement.medication[x].coding.code"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "MedicationStatement.medication[x].coding.system"
+        },
+        "userSelected": {
+            name: "userSelected",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).",
+            path: "MedicationStatement.medication[x].coding.userSelected"
+        },
+        "display": {
+            name: "display",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A representation of the meaning of the code in the system, following the rules of the system.",
+            path: "MedicationStatement.medication[x].coding.display"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MedicationStatement.medication[x].coding.id"
+        },
+        "version": {
+            name: "version",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.",
+            path: "MedicationStatement.medication[x].coding.version"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseMedicationStatementMedicationCodingMimsPackage record {|
+    *r4:Coding;
+
+    r4:Extension[] extension?;
+    r4:code code?;
+    r4:uri system = "http://www.mims.com.au/codes";
+    boolean userSelected?;
+    string display?;
+    string id?;
+    string 'version?;
+|};
+
+# FHIR AUBaseMedicationStatementMedicationCodingAmt datatype record.
+#
+# + extension - An Extension
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + userSelected - Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).
+# + display - A representation of the meaning of the code in the system, following the rules of the system.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'version - The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.
+# + medicationClass - The type of information covered by the medication coding, e.g. branded product with no strength or form.
+@r4:DataTypeDefinition {
+    name: "AUBaseMedicationStatementMedicationCodingAmt",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "An Extension",
+            path: "MedicationStatement.medication[x].coding.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "MedicationStatement.medication[x].coding.code"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "MedicationStatement.medication[x].coding.system"
+        },
+        "userSelected": {
+            name: "userSelected",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).",
+            path: "MedicationStatement.medication[x].coding.userSelected"
+        },
+        "display": {
+            name: "display",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A representation of the meaning of the code in the system, following the rules of the system.",
+            path: "MedicationStatement.medication[x].coding.display"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "MedicationStatement.medication[x].coding.id"
+        },
+        "version": {
+            name: "version",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.",
+            path: "MedicationStatement.medication[x].coding.version"
+        },
+        "medicationClass": {
+            name: "medicationClass",
+            dataType: r4:Extension,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The type of information covered by the medication coding, e.g. branded product with no strength or form.",
+            path: "MedicationStatement.medication[x].coding.extension"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseMedicationStatementMedicationCodingAmt record {|
+    *r4:Coding;
+
+    r4:Extension[] extension?;
+    r4:code code?;
+    r4:uri system = "http://snomed.info/sct";
+    boolean userSelected?;
+    string display?;
+    string id?;
+    string 'version?;
+    r4:Extension medicationClass?;
+|};
 

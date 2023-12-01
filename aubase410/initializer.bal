@@ -193,7 +193,7 @@ function init() returns r4:FHIRError? {
                 modelType: AUBaseEncounter
             }
         },
-        searchParameters: [AUBASE_IG_SEARCH_PARAMS_1]
+        searchParameters: [AUBASEIMPLEMENTATIONGUIDE_IG_SEARCH_PARAMS_1]
     };
     r4:FHIRImplementationGuide baseImplementationGuide = new(baseIgRecord);
     check fhirRegistry.addImplementationGuide(baseImplementationGuide);

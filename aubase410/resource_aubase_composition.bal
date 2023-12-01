@@ -29,6 +29,11 @@ public const RESOURCE_NAME_AUBASECOMPOSITION = "Composition";
 # + date - The composition editing time, when the composition was last logically changed by the author.
 # + identifier - A version-independent identifier for the Composition. This identifier stays constant as the composition is changed over time.
 # + extension - An Extension
+# * extension Slicings
+# 1) Extension: Who and/or what should receive a copy of the composition
+#       - min = 0
+#       - max = *
+#
 # + custodian - Identifies the organization or group who is responsible for ongoing maintenance of and access to the composition/document information.
 # + author - Identifies who is responsible for the information in the composition, not necessarily who typed it in.
 # + subject - Who or what the composition is about. The composition can be about a person, (patient or healthcare practitioner), a device (e.g. a machine) or even a group of subjects (such as a document about a herd of livestock, or a set of patients that share a common exposure).
@@ -130,7 +135,7 @@ public const RESOURCE_NAME_AUBASECOMPOSITION = "Composition";
         },
         "section" : {
             name: "section",
-            dataType: CompositionSection,
+            dataType: AUBaseCompositionSection,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -163,7 +168,7 @@ public const RESOURCE_NAME_AUBASECOMPOSITION = "Composition";
         },
         "attester" : {
             name: "attester",
-            dataType: CompositionAttester,
+            dataType: AUBaseCompositionAttester,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -220,7 +225,7 @@ public const RESOURCE_NAME_AUBASECOMPOSITION = "Composition";
         },
         "event" : {
             name: "event",
-            dataType: CompositionEvent,
+            dataType: AUBaseCompositionEvent,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -228,7 +233,7 @@ public const RESOURCE_NAME_AUBASECOMPOSITION = "Composition";
         },
         "relatesTo" : {
             name: "relatesTo",
-            dataType: CompositionRelatesTo,
+            dataType: AUBaseCompositionRelatesTo,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -236,7 +241,7 @@ public const RESOURCE_NAME_AUBASECOMPOSITION = "Composition";
         },
         "status" : {
             name: "status",
-            dataType: CompositionStatus,
+            dataType: AUBaseCompositionStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -254,9 +259,6 @@ public type AUBaseComposition record {|
 
     RESOURCE_NAME_AUBASECOMPOSITION resourceType = RESOURCE_NAME_AUBASECOMPOSITION;
 
-    BaseAUBaseCompositionMeta meta = {
-        profile : [PROFILE_BASE_AUBASECOMPOSITION]
-    };
     r4:dateTime date;
     r4:Identifier identifier?;
     r4:Extension[] extension?;
@@ -269,56 +271,24 @@ public type AUBaseComposition record {|
     r4:code confidentiality?;
     r4:Extension[] modifierExtension?;
     r4:code language?;
-    CompositionSection[] section?;
+    AUBaseCompositionSection[] section?;
     r4:Reference encounter?;
     string title;
     r4:CodeableConcept 'type;
-    CompositionAttester[] attester?;
+    AUBaseCompositionAttester[] attester?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept[] category?;
-    CompositionEvent[] event?;
-    CompositionRelatesTo[] relatesTo?;
-    CompositionStatus status;
-    never...;
+    AUBaseCompositionEvent[] event?;
+    AUBaseCompositionRelatesTo[] relatesTo?;
+    AUBaseCompositionStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseCompositionMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseCompositionMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-composition"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# CompositionStatus enum
-public enum CompositionStatus {
-   CODE_STATUS_AMENDED = "amended",
-   CODE_STATUS_FINAL = "final",
-   CODE_STATUS_PRELIMINARY = "preliminary",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
-}
-
-# FHIR CompositionSection datatype record.
+# FHIR AUBaseCompositionSection datatype record.
 #
 # + mode - How the entry list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.
 # + entry - A reference to the actual resource from which the narrative in the section is derived.
@@ -333,12 +303,12 @@ public enum CompositionStatus {
 # + text - A human-readable narrative that contains the attested content of the section, used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative.
 # + title - The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.
 @r4:DataTypeDefinition {
-    name: "CompositionSection",
+    name: "AUBaseCompositionSection",
     baseType: (),
     elements: {
         "mode": {
             name: "mode",
-            dataType: CompositionSectionMode,
+            dataType: AUBaseCompositionSectionMode,
             min: 0,
             max: 1,
             isArray: false,
@@ -450,8 +420,10 @@ public enum CompositionStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type CompositionSection record {|
-    CompositionSectionMode mode?;
+public type AUBaseCompositionSection record {|
+    *r4:BackboneElement;
+
+    AUBaseCompositionSectionMode mode?;
     r4:Reference[] entry?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
@@ -465,192 +437,38 @@ public type CompositionSection record {|
     string title?;
 |};
 
-# CompositionSectionMode enum
-public enum CompositionSectionMode {
+# AUBaseCompositionStatus enum
+public enum AUBaseCompositionStatus {
+   CODE_STATUS_AMENDED = "amended",
+   CODE_STATUS_FINAL = "final",
+   CODE_STATUS_PRELIMINARY = "preliminary",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
+}
+
+# AUBaseCompositionSectionMode enum
+public enum AUBaseCompositionSectionMode {
    CODE_MODE_CHANGES = "changes",
    CODE_MODE_WORKING = "working",
    CODE_MODE_SNAPSHOT = "snapshot"
 }
 
-# CompositionAttesterMode enum
-public enum CompositionAttesterMode {
-   CODE_MODE_LEGAL = "legal",
-   CODE_MODE_OFFICIAL = "official",
-   CODE_MODE_PERSONAL = "personal",
-   CODE_MODE_PROFESSIONAL = "professional"
-}
-
-# FHIR CompositionRelatesTo datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + targetIdentifier - The target composition/document of this relationship.
-# + code - The type of relationship that this composition has with anther composition or document.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + targetReference - The target composition/document of this relationship.
-@r4:DataTypeDefinition {
-    name: "CompositionRelatesTo",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Composition.relatesTo.extension"
-        },
-        "targetIdentifier": {
-            name: "targetIdentifier",
-            dataType: r4:Identifier,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The target composition/document of this relationship.",
-            path: "Composition.relatesTo.target[x]"
-        },
-        "code": {
-            name: "code",
-            dataType: CompositionRelatesToCode,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The type of relationship that this composition has with anther composition or document.",
-            path: "Composition.relatesTo.code"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Composition.relatesTo.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Composition.relatesTo.id"
-        },
-        "targetReference": {
-            name: "targetReference",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The target composition/document of this relationship.",
-            path: "Composition.relatesTo.target[x]"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type CompositionRelatesTo record {|
-    r4:Extension[] extension?;
-    r4:Identifier targetIdentifier;
-    CompositionRelatesToCode code;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:Reference targetReference;
-|};
-
-# CompositionRelatesToCode enum
-public enum CompositionRelatesToCode {
+# AUBaseCompositionRelatesToCode enum
+public enum AUBaseCompositionRelatesToCode {
    CODE_CODE_SIGNS = "signs",
    CODE_CODE_REPLACES = "replaces",
    CODE_CODE_TRANSFORMS = "transforms",
    CODE_CODE_APPENDS = "appends"
 }
 
-# FHIR CompositionAttester datatype record.
-#
-# + mode - The type of attestation the authenticator offers.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + time - When the composition was attested by the party.
-# + party - Who attested the composition in the specified way.
-@r4:DataTypeDefinition {
-    name: "CompositionAttester",
-    baseType: (),
-    elements: {
-        "mode": {
-            name: "mode",
-            dataType: CompositionAttesterMode,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The type of attestation the authenticator offers.",
-            path: "Composition.attester.mode"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Composition.attester.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Composition.attester.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Composition.attester.id"
-        },
-        "time": {
-            name: "time",
-            dataType: r4:dateTime,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "When the composition was attested by the party.",
-            path: "Composition.attester.time"
-        },
-        "party": {
-            name: "party",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Who attested the composition in the specified way.",
-            path: "Composition.attester.party"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
+# AUBaseCompositionAttesterMode enum
+public enum AUBaseCompositionAttesterMode {
+   CODE_MODE_LEGAL = "legal",
+   CODE_MODE_OFFICIAL = "official",
+   CODE_MODE_PERSONAL = "personal",
+   CODE_MODE_PROFESSIONAL = "professional"
 }
-public type CompositionAttester record {|
-    CompositionAttesterMode mode;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:dateTime time?;
-    r4:Reference party?;
-|};
 
-# FHIR CompositionEvent datatype record.
+# FHIR AUBaseCompositionEvent datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + period - The period of time covered by the documentation. There is no assertion that the documentation is a complete representation for this period, only that it documents events during this time.
@@ -659,7 +477,7 @@ public type CompositionAttester record {|
 # + detail - The description and/or reference of the event(s) being documented. For example, this could be used to document such a colonoscopy or an appendectomy.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "CompositionEvent",
+    name: "AUBaseCompositionEvent",
     baseType: (),
     elements: {
         "extension": {
@@ -722,12 +540,180 @@ public type CompositionAttester record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type CompositionEvent record {|
+public type AUBaseCompositionEvent record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:CodeableConcept[] code?;
     r4:Extension[] modifierExtension?;
     r4:Reference[] detail?;
     string id?;
+|};
+
+# FHIR AUBaseCompositionRelatesTo datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + targetIdentifier - The target composition/document of this relationship.
+# + code - The type of relationship that this composition has with anther composition or document.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + targetReference - The target composition/document of this relationship.
+@r4:DataTypeDefinition {
+    name: "AUBaseCompositionRelatesTo",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Composition.relatesTo.extension"
+        },
+        "targetIdentifier": {
+            name: "targetIdentifier",
+            dataType: r4:Identifier,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The target composition/document of this relationship.",
+            path: "Composition.relatesTo.target[x]"
+        },
+        "code": {
+            name: "code",
+            dataType: AUBaseCompositionRelatesToCode,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The type of relationship that this composition has with anther composition or document.",
+            path: "Composition.relatesTo.code"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Composition.relatesTo.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Composition.relatesTo.id"
+        },
+        "targetReference": {
+            name: "targetReference",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The target composition/document of this relationship.",
+            path: "Composition.relatesTo.target[x]"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseCompositionRelatesTo record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Identifier targetIdentifier;
+    AUBaseCompositionRelatesToCode code;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:Reference targetReference;
+|};
+
+# FHIR AUBaseCompositionAttester datatype record.
+#
+# + mode - The type of attestation the authenticator offers.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + time - When the composition was attested by the party.
+# + party - Who attested the composition in the specified way.
+@r4:DataTypeDefinition {
+    name: "AUBaseCompositionAttester",
+    baseType: (),
+    elements: {
+        "mode": {
+            name: "mode",
+            dataType: AUBaseCompositionAttesterMode,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The type of attestation the authenticator offers.",
+            path: "Composition.attester.mode"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Composition.attester.extension"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Composition.attester.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Composition.attester.id"
+        },
+        "time": {
+            name: "time",
+            dataType: r4:dateTime,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "When the composition was attested by the party.",
+            path: "Composition.attester.time"
+        },
+        "party": {
+            name: "party",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Who attested the composition in the specified way.",
+            path: "Composition.attester.party"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseCompositionAttester record {|
+    *r4:BackboneElement;
+
+    AUBaseCompositionAttesterMode mode;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:dateTime time?;
+    r4:Reference party?;
 |};
 

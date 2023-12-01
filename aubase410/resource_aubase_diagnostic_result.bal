@@ -31,6 +31,11 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICRESULT = "Observation";
 # + note - Comments about the observation or the results.
 # + partOf - A larger event of which this particular Observation is a component or step. For example, an observation as part of a procedure.
 # + extension - An Extension
+# * extension Slicings
+# 1) Extension: Target anatomic location or structure
+#       - min = 0
+#       - max = 1
+#
 # + valueTime - The information determined as a result of making the observation, if the information has a simple value.
 # + code - Describes what was observed. Sometimes this is called the observation 'name'.
 # + subject - The patient, or group of patients, location, or device this observation is about and into whose record the observation is placed. If the actual focus of the observation is different from the subject (or a sample of, part, or region of the subject), the `focus` element or the `code` itself specifies the actual focus of the observation.
@@ -55,7 +60,6 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICRESULT = "Observation";
 # + method - Indicates the mechanism used to perform the observation.
 # + hasMember - This observation is a group observation (e.g. a battery, a panel of tests, a set of vital sign measurements) that includes the target as a member of the group.
 # + encounter - The healthcare event (e.g. a patient and healthcare provider interaction) during which this observation is made.
-# + bodySite - Indicates the site on the subject's body where the observation was made (i.e. the target site).
 # + component - Some observations have multiple component observations. These component observations are expressed as separate code value pairs that share the same attributes. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations.
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
 # + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range. Multiple reference ranges are interpreted as an 'OR'. In other words, to represent two distinct target populations, two `referenceRange` elements would be used.
@@ -310,18 +314,9 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICRESULT = "Observation";
             isArray: false,
             path: "Observation.encounter"
         },
-        "bodySite" : {
-            name: "bodySite",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            path: "Observation.bodySite",
-            valueSet: "http://hl7.org/fhir/ValueSet/body-site"
-        },
         "component" : {
             name: "component",
-            dataType: ObservationComponent,
+            dataType: AUBaseDiagnosticResultComponent,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -337,7 +332,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICRESULT = "Observation";
         },
         "referenceRange" : {
             name: "referenceRange",
-            dataType: ObservationReferenceRange,
+            dataType: AUBaseDiagnosticResultReferenceRange,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -419,7 +414,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICRESULT = "Observation";
         },
         "status" : {
             name: "status",
-            dataType: ObservationStatus,
+            dataType: AUBaseDiagnosticResultStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -437,9 +432,6 @@ public type AUBaseDiagnosticResult record {|
 
     RESOURCE_NAME_AUBASEDIAGNOSTICRESULT resourceType = RESOURCE_NAME_AUBASEDIAGNOSTICRESULT;
 
-    BaseAUBaseDiagnosticResultMeta meta = {
-        profile : [PROFILE_BASE_AUBASEDIAGNOSTICRESULT]
-    };
     boolean valueBoolean?;
     r4:CodeableConcept dataAbsentReason?;
     r4:Annotation[] note?;
@@ -469,13 +461,13 @@ public type AUBaseDiagnosticResult record {|
     r4:CodeableConcept method?;
     r4:Reference[] hasMember?;
     r4:Reference encounter?;
-    r4:CodeableConcept bodySite?;
-    ObservationComponent[] component?;
+    AUBaseDiagnosticResultComponent[] component?;
     r4:Resource[] contained?;
-    ObservationReferenceRange[] referenceRange?;
+    AUBaseDiagnosticResultReferenceRange[] referenceRange?;
     string valueString?;
     r4:dateTime effectiveDateTime;
     r4:CodeableConcept[] interpretation?;
+    r4:Meta meta?;
     r4:SampledData valueSampledData?;
     r4:Period valuePeriod?;
     r4:uri implicitRules?;
@@ -484,36 +476,19 @@ public type AUBaseDiagnosticResult record {|
     }
     r4:CodeableConcept[] category;
     r4:Reference device?;
-    ObservationStatus status;
-    never...;
+    AUBaseDiagnosticResultStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseObservationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
+# AUBaseDiagnosticResultStatus enum
+public enum AUBaseDiagnosticResultStatus {
+   CODE_STATUS_AMENDED = "amended",
+   CODE_STATUS_FINAL = "final",
+   CODE_STATUS_REGISTERED = "registered",
+   CODE_STATUS_PRELIMINARY = "preliminary"
 }
-public type BaseAUBaseDiagnosticResultMeta record {|
-    *r4:Meta;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-diagnosticresult"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# FHIR ObservationReferenceRange datatype record.
+# FHIR AUBaseDiagnosticResultReferenceRange datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + high - The value of the high bound of the reference range. The high bound of the reference range endpoint is inclusive of the value (e.g. reference range is >=5 - <=9). If the high bound is omitted, it is assumed to be meaningless (e.g. reference range is >= 2.3).
@@ -525,7 +500,7 @@ public type BaseAUBaseDiagnosticResultMeta record {|
 # + 'type - Codes to indicate the what part of the targeted reference population it applies to. For example, the normal or therapeutic range.
 # + age - The age at which this reference range is applicable. This is a neonatal age (e.g. number of weeks at term) if the meaning says so.
 @r4:DataTypeDefinition {
-    name: "ObservationReferenceRange",
+    name: "AUBaseDiagnosticResultReferenceRange",
     baseType: (),
     elements: {
         "extension": {
@@ -615,7 +590,9 @@ public type BaseAUBaseDiagnosticResultMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ObservationReferenceRange record {|
+public type AUBaseDiagnosticResultReferenceRange record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Quantity high?;
     r4:Quantity low?;
@@ -627,15 +604,7 @@ public type ObservationReferenceRange record {|
     r4:Range age?;
 |};
 
-# ObservationStatus enum
-public enum ObservationStatus {
-   CODE_STATUS_AMENDED = "amended",
-   CODE_STATUS_FINAL = "final",
-   CODE_STATUS_REGISTERED = "registered",
-   CODE_STATUS_PRELIMINARY = "preliminary"
-}
-
-# FHIR ObservationComponent datatype record.
+# FHIR AUBaseDiagnosticResultComponent datatype record.
 #
 # + valueBoolean - The information determined as a result of making the observation, if the information has a simple value.
 # + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
@@ -655,7 +624,7 @@ public enum ObservationStatus {
 # + valueInteger - The information determined as a result of making the observation, if the information has a simple value.
 # + valueQuantity - The information determined as a result of making the observation, if the information has a simple value.
 @r4:DataTypeDefinition {
-    name: "ObservationComponent",
+    name: "AUBaseDiagnosticResultComponent",
     baseType: (),
     elements: {
         "valueBoolean": {
@@ -817,7 +786,9 @@ public enum ObservationStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ObservationComponent record {|
+public type AUBaseDiagnosticResultComponent record {|
+    *r4:BackboneElement;
+
     boolean valueBoolean?;
     r4:CodeableConcept dataAbsentReason?;
     r4:Extension[] extension?;

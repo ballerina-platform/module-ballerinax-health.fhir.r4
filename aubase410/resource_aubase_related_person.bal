@@ -84,7 +84,7 @@ public const RESOURCE_NAME_AUBASERELATEDPERSON = "RelatedPerson";
         },
         "gender" : {
             name: "gender",
-            dataType: RelatedPersonGender,
+            dataType: AUBaseRelatedPersonGender,
             min: 0,
             max: 1,
             isArray: false,
@@ -198,7 +198,7 @@ public const RESOURCE_NAME_AUBASERELATEDPERSON = "RelatedPerson";
         },
         "communication" : {
             name: "communication",
-            dataType: RelatedPersonCommunication,
+            dataType: AUBaseRelatedPersonCommunication,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -224,65 +224,30 @@ public type AUBaseRelatedPerson record {|
 
     RESOURCE_NAME_AUBASERELATEDPERSON resourceType = RESOURCE_NAME_AUBASERELATEDPERSON;
 
-    BaseAUBaseRelatedPersonMeta meta = {
-        profile : [PROFILE_BASE_AUBASERELATEDPERSON]
-    };
-    r4:Identifier[] identifier?;
+    AuDvanumber[]|AuMedicarecardnumber[]|r4:Identifier[]|AuIhi[]|AuMedicalrecordnumber[]|AuPensionerconcessioncardnumber[]|AuCwlthseniorshealthcardnumber[]|AuInsurancemembernumber[]|AuHealthcarecardnumber[] identifier?;
     r4:Extension[] extension?;
     r4:Period period?;
-    r4:Address[] address?;
-    RelatedPersonGender gender?;
+    AuAddress[]|r4:Address[] address?;
+    AUBaseRelatedPersonGender gender?;
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:Attachment[] photo?;
     r4:code language?;
     r4:date birthDate?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:Reference patient;
     r4:HumanName[] name?;
     r4:uri implicitRules?;
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    RelatedPersonCommunication[] communication?;
+    AUBaseRelatedPersonCommunication[] communication?;
     r4:CodeableConcept[] relationship?;
-    never...;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseRelatedPersonMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseRelatedPersonMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-relatedperson"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# RelatedPersonGender enum
-public enum RelatedPersonGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
-}
-
-# FHIR RelatedPersonCommunication datatype record.
+# FHIR AUBaseRelatedPersonCommunication datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -290,7 +255,7 @@ public enum RelatedPersonGender {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + preferred - Indicates whether or not the patient prefers this language (over other languages he masters up a certain level).
 @r4:DataTypeDefinition {
-    name: "RelatedPersonCommunication",
+    name: "AUBaseRelatedPersonCommunication",
     baseType: (),
     elements: {
         "extension": {
@@ -344,11 +309,21 @@ public enum RelatedPersonGender {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type RelatedPersonCommunication record {|
+public type AUBaseRelatedPersonCommunication record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept language;
     string id?;
     boolean preferred?;
 |};
+
+# AUBaseRelatedPersonGender enum
+public enum AUBaseRelatedPersonGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
 

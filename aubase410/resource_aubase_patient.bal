@@ -26,12 +26,41 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
 #
 # + resourceType - The type of the resource describes
 # + extension - An Extension
+# * extension Slicings
+# 1) Extension: Indigenous status
+#       - min = 0
+#       - max = 1
+#
+# 2) Extension: Mother's Maiden name
+#       - min = 0
+#       - max = 1
+#
+# 3) Extension: Place of Birth for patient
+#       - min = 0
+#       - max = 1
+#
+# 4) Extension: The patient's gender identity shall be a member of the Gender Identity Response value set if any of the codes within that value set can apply
+#       - min = 0
+#       - max = 1
+#
+# 5) Extension: Closing the Gap co-payment eligibility indicator
+#       - min = 0
+#       - max = 1
+#
+# 6) Extension: The date a person first arrived in Australia, from another country, with the intention of living in Australia for one year or more
+#       - min = 0
+#       - max = 1
+#
+# 7) Extension: Whether the patient needs an interpreter
+#       - min = 0
+#       - max = 1
+#
 # + gender - Administrative Gender - the gender that the patient is considered to have for administration and record keeping purposes.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + link - Link to a Patient or RelatedPerson resource that concerns the same actual person.
 # + language - The base language in which the resource is written.
 # + contact - A contact party (e.g. guardian, partner, friend) for the patient.
-# + deceasedDateTime - Indicates if the individual is deceased or not. Deceased date accuracy indicator is optional.
+# + deceasedDateTime - Individual deceased date-time with optional accuracy indicator.
 # + generalPractitioner - Patient's nominated care provider.
 # + telecom - A contact detail (e.g. a telephone number or an email address) by which the individual may be contacted.
 # + id - The logical id of the resource, as used in the URL for the resource. Once assigned, this value never changes.
@@ -44,7 +73,7 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
 # + photo - Image of the patient.
 # + birthDate - The date of birth for the individual.
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
-# + deceasedBoolean - Indicates if the individual is deceased or not. Deceased date accuracy indicator is optional.
+# + deceasedBoolean - Boolean indicator if the individual is deceased or not.
 # + managingOrganization - Organization that is the custodian of the patient record.
 # + meta - The metadata about the resource. This is content that is maintained by the infrastructure. Changes to the content might not always be associated with version changes to the resource.
 # + multipleBirthInteger - Indicates whether the patient is part of a multiple (boolean) or indicates the actual birth order (integer).
@@ -66,7 +95,7 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
         },
         "gender" : {
             name: "gender",
-            dataType: PatientGender,
+            dataType: AUBasePatientGender,
             min: 0,
             max: 1,
             isArray: false,
@@ -83,7 +112,7 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
         },
         "link" : {
             name: "link",
-            dataType: PatientLink,
+            dataType: AUBasePatientLink,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -100,7 +129,7 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
         },
         "contact" : {
             name: "contact",
-            dataType: PatientContact,
+            dataType: AUBasePatientContact,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -148,7 +177,7 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
         },
         "communication" : {
             name: "communication",
-            dataType: PatientCommunication,
+            dataType: AUBasePatientCommunication,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -196,7 +225,7 @@ public const RESOURCE_NAME_AUBASEPATIENT = "Patient";
         },
         "birthDate" : {
             name: "birthDate",
-            dataType: r4:date,
+            dataType: AUBasePatientBirthDate,
             min: 0,
             max: 1,
             isArray: false,
@@ -278,63 +307,93 @@ public type AUBasePatient record {|
 
     RESOURCE_NAME_AUBASEPATIENT resourceType = RESOURCE_NAME_AUBASEPATIENT;
 
-    BaseAUBasePatientMeta meta = {
-        profile : [PROFILE_BASE_AUBASEPATIENT]
-    };
     r4:Extension[] extension?;
-    PatientGender gender?;
+    AUBasePatientGender gender?;
     r4:Extension[] modifierExtension?;
-    PatientLink[] link?;
+    AUBasePatientLink[] link?;
     r4:code language?;
-    PatientContact[] contact?;
+    AUBasePatientContact[] contact?;
     r4:dateTime deceasedDateTime?;
     r4:Reference[] generalPractitioner?;
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    PatientCommunication[] communication?;
-    r4:Identifier[] identifier?;
-    r4:Address[] address?;
+    AUBasePatientCommunication[] communication?;
+    AuDvanumber[]|AuMedicarecardnumber[]|r4:Identifier[]|AuIhi[]|AuMedicalrecordnumber[]|AuPensionerconcessioncardnumber[]|AuCwlthseniorshealthcardnumber[]|AuInsurancemembernumber[]|AuHealthcarecardnumber[] identifier?;
+    AuAddress[]|r4:Address[] address?;
     boolean multipleBirthBoolean?;
     boolean active?;
     r4:Attachment[] photo?;
-    r4:date birthDate?;
+    AUBasePatientBirthDate birthDate?;
     r4:Resource[] contained?;
     boolean deceasedBoolean?;
     r4:Reference managingOrganization?;
+    r4:Meta meta?;
     r4:integer multipleBirthInteger?;
     r4:HumanName[] name?;
     r4:uri implicitRules?;
     r4:CodeableConcept maritalStatus?;
-    never...;
+    r4:Element ...;
 |};
 
+# FHIR AUBasePatientBirthDate datatype record.
+#
+# + extension - An Extension
+# + id - unique id for the element within a resource (for internal references)
+# + value - The actual value
 @r4:DataTypeDefinition {
-    name: "BasePatientMeta",
-    baseType: r4:Meta,
-    elements: {},
+    name: "AUBasePatientBirthDate",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "An Extension",
+            path: "Patient.birthDate.extension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "unique id for the element within a resource (for internal references)",
+            path: "Patient.birthDate.id"
+        },
+        "value": {
+            name: "value",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The actual value",
+            path: "Patient.birthDate.value"
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type BaseAUBasePatientMeta record {|
-    *r4:Meta;
+public type AUBasePatientBirthDate record {|
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
     r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-patient"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    string id?;
+    r4:date value?;
 |};
 
-# FHIR PatientContact datatype record.
+# AUBasePatientGender enum
+public enum AUBasePatientGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
+
+# FHIR AUBasePatientContact datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + period - The period during which this contact person or organization is valid to be contacted relating to this patient.
@@ -347,7 +406,7 @@ public type BaseAUBasePatientMeta record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + relationship - The nature of the relationship between the patient and the contact person.
 @r4:DataTypeDefinition {
-    name: "PatientContact",
+    name: "AUBasePatientContact",
     baseType: (),
     elements: {
         "extension": {
@@ -379,7 +438,7 @@ public type BaseAUBasePatientMeta record {|
         },
         "gender": {
             name: "gender",
-            dataType: PatientContactGender,
+            dataType: AUBasePatientContactGender,
             min: 0,
             max: 1,
             isArray: false,
@@ -446,11 +505,13 @@ public type BaseAUBasePatientMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type PatientContact record {|
+public type AUBasePatientContact record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Address address?;
-    PatientContactGender gender?;
+    AUBasePatientContactGender gender?;
     r4:Extension[] modifierExtension?;
     r4:Reference organization?;
     r4:HumanName name?;
@@ -459,15 +520,15 @@ public type PatientContact record {|
     r4:CodeableConcept[] relationship?;
 |};
 
-# PatientLinkType enum
-public enum PatientLinkType {
+# AUBasePatientLinkType enum
+public enum AUBasePatientLinkType {
    CODE_TYPE_REFER = "refer",
    CODE_TYPE_REPLACES = "replaces",
    CODE_TYPE_SEEALSO = "seealso",
    CODE_TYPE_REPLACED_BY = "replaced-by"
 }
 
-# FHIR PatientLink datatype record.
+# FHIR AUBasePatientLink datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + other - The other patient resource that the link refers to.
@@ -475,7 +536,7 @@ public enum PatientLinkType {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'type - The type of link between this patient resource and another patient resource.
 @r4:DataTypeDefinition {
-    name: "PatientLink",
+    name: "AUBasePatientLink",
     baseType: (),
     elements: {
         "extension": {
@@ -516,7 +577,7 @@ public enum PatientLinkType {
         },
         "type": {
             name: "type",
-            dataType: PatientLinkType,
+            dataType: AUBasePatientLinkType,
             min: 1,
             max: 1,
             isArray: false,
@@ -529,31 +590,17 @@ public enum PatientLinkType {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type PatientLink record {|
+public type AUBasePatientLink record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Reference other;
     r4:Extension[] modifierExtension?;
     string id?;
-    PatientLinkType 'type;
+    AUBasePatientLinkType 'type;
 |};
 
-# PatientContactGender enum
-public enum PatientContactGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
-}
-
-# PatientGender enum
-public enum PatientGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
-}
-
-# FHIR PatientCommunication datatype record.
+# FHIR AUBasePatientCommunication datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -561,7 +608,7 @@ public enum PatientGender {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + preferred - Indicates whether or not the patient prefers this language (over other languages he masters up a certain level).
 @r4:DataTypeDefinition {
-    name: "PatientCommunication",
+    name: "AUBasePatientCommunication",
     baseType: (),
     elements: {
         "extension": {
@@ -615,11 +662,21 @@ public enum PatientGender {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type PatientCommunication record {|
+public type AUBasePatientCommunication record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept language;
     string id?;
     boolean preferred?;
 |};
+
+# AUBasePatientContactGender enum
+public enum AUBasePatientContactGender {
+   CODE_GENDER_OTHER = "other",
+   CODE_GENDER_FEMALE = "female",
+   CODE_GENDER_MALE = "male",
+   CODE_GENDER_UNKNOWN = "unknown"
+}
 

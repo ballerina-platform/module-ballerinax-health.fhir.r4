@@ -28,6 +28,11 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICREQUEST = "ServiceRequest";
 # + insurance - Insurance plans, coverage extensions, pre-authorizations and/or pre-determinations that may be needed for delivering the requested service.
 # + note - Any other notes and comments made about the service request. For example, internal billing notes.
 # + extension - An Extension
+# * extension Slicings
+# 1) Extension: The target point for this procedure
+#       - min = 0
+#       - max = *
+#
 # + code - A code that identifies a particular service (i.e., procedure, diagnostic investigation, or panel of investigations) that have been requested.
 # + requisition - A shared identifier common to all service requests that were authorized more or less simultaneously by a single author, representing the composite or group identifier.
 # + subject - On whom or what the service is to be performed. This is usually a human patient, but can also be requested on animals, groups of humans or animals, devices such as dialysis machines, or even locations (typically for environmental scans).
@@ -339,7 +344,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICREQUEST = "ServiceRequest";
         },
         "priority" : {
             name: "priority",
-            dataType: ServiceRequestPriority,
+            dataType: AUBaseDiagnosticRequestPriority,
             min: 0,
             max: 1,
             isArray: false,
@@ -348,7 +353,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICREQUEST = "ServiceRequest";
         },
         "intent" : {
             name: "intent",
-            dataType: ServiceRequestIntent,
+            dataType: AUBaseDiagnosticRequestIntent,
             min: 1,
             max: 1,
             isArray: false,
@@ -450,7 +455,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICREQUEST = "ServiceRequest";
         },
         "status" : {
             name: "status",
-            dataType: ServiceRequestStatus,
+            dataType: AUBaseDiagnosticRequestStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -468,9 +473,6 @@ public type AUBaseDiagnosticRequest record {|
 
     RESOURCE_NAME_AUBASEDIAGNOSTICREQUEST resourceType = RESOURCE_NAME_AUBASEDIAGNOSTICREQUEST;
 
-    BaseAUBaseDiagnosticRequestMeta meta = {
-        profile : [PROFILE_BASE_AUBASEDIAGNOSTICREQUEST]
-    };
     r4:Reference[] insurance?;
     r4:Annotation[] note?;
     r4:Extension[] extension?;
@@ -495,7 +497,7 @@ public type AUBaseDiagnosticRequest record {|
     r4:Reference[] basedOn?;
     r4:CodeableConcept asNeededCodeableConcept?;
     r4:Reference requester?;
-    r4:Identifier[] identifier?;
+    r4:Identifier[]|AuLocalorderidentifier[] identifier?;
     r4:dateTime authoredOn?;
     r4:Reference[] performer?;
     r4:Reference[] replaces?;
@@ -503,57 +505,25 @@ public type AUBaseDiagnosticRequest record {|
     r4:Timing occurrenceTiming?;
     r4:Range quantityRange?;
     r4:canonical[] instantiatesCanonical?;
-    ServiceRequestPriority priority?;
-    ServiceRequestIntent intent;
+    AUBaseDiagnosticRequestPriority priority?;
+    AUBaseDiagnosticRequestIntent intent;
     r4:CodeableConcept performerType?;
     r4:CodeableConcept[] bodySite?;
     r4:Resource[] contained?;
     r4:Period occurrencePeriod?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     r4:dateTime occurrenceDateTime?;
     r4:CodeableConcept[] orderDetail?;
     r4:CodeableConcept[] category?;
     r4:CodeableConcept[] locationCode?;
     string patientInstruction?;
-    ServiceRequestStatus status;
-    never...;
+    AUBaseDiagnosticRequestStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseServiceRequestMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseDiagnosticRequestMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-diagnosticrequest"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# ServiceRequestPriority enum
-public enum ServiceRequestPriority {
-   CODE_PRIORITY_STAT = "stat",
-   CODE_PRIORITY_ROUTINE = "routine",
-   CODE_PRIORITY_URGENT = "urgent",
-   CODE_PRIORITY_ASAP = "asap"
-}
-
-# ServiceRequestIntent enum
-public enum ServiceRequestIntent {
+# AUBaseDiagnosticRequestIntent enum
+public enum AUBaseDiagnosticRequestIntent {
    CODE_INTENT_PROPOSAL = "proposal",
    CODE_INTENT_INSTANCE_ORDER = "instance-order",
    CODE_INTENT_FILLER_ORDER = "filler-order",
@@ -565,8 +535,16 @@ public enum ServiceRequestIntent {
    CODE_INTENT_OPTION = "option"
 }
 
-# ServiceRequestStatus enum
-public enum ServiceRequestStatus {
+# AUBaseDiagnosticRequestPriority enum
+public enum AUBaseDiagnosticRequestPriority {
+   CODE_PRIORITY_STAT = "stat",
+   CODE_PRIORITY_ROUTINE = "routine",
+   CODE_PRIORITY_URGENT = "urgent",
+   CODE_PRIORITY_ASAP = "asap"
+}
+
+# AUBaseDiagnosticRequestStatus enum
+public enum AUBaseDiagnosticRequestStatus {
    CODE_STATUS_DRAFT = "draft",
    CODE_STATUS_ACTIVE = "active",
    CODE_STATUS_COMPLETED = "completed",

@@ -110,7 +110,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGREPORT = "DiagnosticReport";
         },
         "media" : {
             name: "media",
-            dataType: DiagnosticReportMediaTwo,
+            dataType: AUBaseDiagnosticImagingReportMedia,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -255,7 +255,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGREPORT = "DiagnosticReport";
         },
         "category" : {
             name: "category",
-            dataType: r4:CodeableConcept,
+            dataType: AUBaseDiagnosticImagingReportCategory,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -272,7 +272,7 @@ public const RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGREPORT = "DiagnosticReport";
         },
         "status" : {
             name: "status",
-            dataType: DiagnosticReportStatusTwo,
+            dataType: AUBaseDiagnosticImagingReportStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -290,16 +290,13 @@ public type AUBaseDiagnosticImagingReport record {|
 
     RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGREPORT resourceType = RESOURCE_NAME_AUBASEDIAGNOSTICIMAGINGREPORT;
 
-    BaseAUBaseDiagnosticImagingReportMeta meta = {
-        profile : [PROFILE_BASE_AUBASEDIAGNOSTICIMAGINGREPORT]
-    };
     r4:Extension[] extension?;
     r4:CodeableConcept code;
     r4:Reference subject;
     r4:Extension[] modifierExtension?;
     r4:Attachment[] presentedForm?;
     r4:code language?;
-    DiagnosticReportMediaTwo[] media?;
+    AUBaseDiagnosticImagingReportMedia[] media?;
     string conclusion?;
     r4:Reference[] result?;
     r4:Reference[] specimen?;
@@ -307,7 +304,7 @@ public type AUBaseDiagnosticImagingReport record {|
     r4:Narrative text?;
     r4:instant issued?;
     r4:Reference[] basedOn?;
-    r4:Identifier[] identifier?;
+    r4:Identifier[]|AuLocalreportidentifier[]|AuLocalorderidentifier[]|AuAccessionnumber[] identifier?;
     r4:Reference[] performer?;
     r4:Period effectivePeriod;
     r4:Reference[] resultsInterpreter?;
@@ -315,50 +312,181 @@ public type AUBaseDiagnosticImagingReport record {|
     r4:Reference encounter?;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     @constraint:Array {
        minLength: 1
     }
-    r4:CodeableConcept[] category;
+    AUBaseDiagnosticImagingReportCategory[] category;
     r4:Reference[] imagingStudy?;
-    DiagnosticReportStatusTwo status;
-    never...;
+    AUBaseDiagnosticImagingReportStatus status;
+    r4:Element ...;
 |};
 
+# FHIR AUBaseDiagnosticImagingReportCategory datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.
 @r4:DataTypeDefinition {
-    name: "BaseDiagnosticReportMeta",
-    baseType: r4:Meta,
-    elements: {},
+    name: "AUBaseDiagnosticImagingReportCategory",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: r4:Coding,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "DiagnosticReport.category.coding"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "DiagnosticReport.category.extension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "DiagnosticReport.category.id"
+        },
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.",
+            path: "DiagnosticReport.category.text"
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type BaseAUBaseDiagnosticImagingReportMeta record {|
-    *r4:Meta;
+public type AUBaseDiagnosticImagingReportCategory record {|
+    *r4:CodeableConcept;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
+    r4:Coding[] coding?;
     r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-imagingreport"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
+    string id?;
+    string text?;
 |};
 
-# DiagnosticReportStatusTwo enum
-public enum DiagnosticReportStatusTwo {
+# FHIR AUBaseDiagnosticImagingReportCategoryCodingAnatomicRegionOfInterest datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + userSelected - Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).
+# + display - A representation of the meaning of the code in the system, following the rules of the system.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'version - The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.
+@r4:DataTypeDefinition {
+    name: "AUBaseDiagnosticImagingReportCategoryCodingAnatomicRegionOfInterest",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "DiagnosticReport.category.coding.extension"
+        },
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "DiagnosticReport.category.coding.code"
+        },
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "DiagnosticReport.category.coding.system"
+        },
+        "userSelected": {
+            name: "userSelected",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).",
+            path: "DiagnosticReport.category.coding.userSelected"
+        },
+        "display": {
+            name: "display",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A representation of the meaning of the code in the system, following the rules of the system.",
+            path: "DiagnosticReport.category.coding.display"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "DiagnosticReport.category.coding.id"
+        },
+        "version": {
+            name: "version",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.",
+            path: "DiagnosticReport.category.coding.version"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseDiagnosticImagingReportCategoryCodingAnatomicRegionOfInterest record {|
+    *r4:Coding;
+
+    r4:Extension[] extension?;
+    r4:code code?;
+    r4:uri system = "http://snomed.info/sct";
+    boolean userSelected?;
+    string display?;
+    string id?;
+    string 'version?;
+|};
+
+# AUBaseDiagnosticImagingReportStatus enum
+public enum AUBaseDiagnosticImagingReportStatus {
    CODE_STATUS_FINAL = "final",
    CODE_STATUS_REGISTERED = "registered",
    CODE_STATUS_PRELIMINARY = "preliminary",
    CODE_STATUS_PARTIAL = "partial"
 }
 
-# FHIR DiagnosticReportMediaTwo datatype record.
+# FHIR AUBaseDiagnosticImagingReportMedia datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -366,7 +494,7 @@ public enum DiagnosticReportStatusTwo {
 # + comment - A comment about the image. Typically, this is used to provide an explanation for why the image is included, or to draw the viewer's attention to important features.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "DiagnosticReportMediaTwo",
+    name: "AUBaseDiagnosticImagingReportMedia",
     baseType: (),
     elements: {
         "extension": {
@@ -420,7 +548,9 @@ public enum DiagnosticReportStatusTwo {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type DiagnosticReportMediaTwo record {|
+public type AUBaseDiagnosticImagingReportMedia record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:Reference link;

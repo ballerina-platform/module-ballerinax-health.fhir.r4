@@ -28,6 +28,15 @@ public const RESOURCE_NAME_AUBASEENCOUNTER = "Encounter";
 # + serviceType - Broad categorization of the service that is to be provided (e.g. cardiology).
 # + partOf - Another Encounter of which this encounter is a part of (administratively or in time).
 # + extension - An Extension
+# * extension Slicings
+# 1) Extension: Associated healthcare service
+#       - min = 0
+#       - max = *
+#
+# 2) Extension: Description, overview or summary of an encounter
+#       - min = 0
+#       - max = 1
+#
 # + subject - The patient or group present at the encounter.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + reasonReference - Reason the encounter takes place, expressed as a code. For admissions, this can be used for a coded admission diagnosis.
@@ -138,7 +147,7 @@ public const RESOURCE_NAME_AUBASEENCOUNTER = "Encounter";
         },
         "participant" : {
             name: "participant",
-            dataType: EncounterParticipant,
+            dataType: AUBaseEncounterParticipant,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -212,7 +221,7 @@ public const RESOURCE_NAME_AUBASEENCOUNTER = "Encounter";
         },
         "classHistory" : {
             name: "classHistory",
-            dataType: EncounterClassHistory,
+            dataType: AUBaseEncounterClassHistory,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -220,7 +229,7 @@ public const RESOURCE_NAME_AUBASEENCOUNTER = "Encounter";
         },
         "hospitalization" : {
             name: "hospitalization",
-            dataType: EncounterHospitalization,
+            dataType: AUBaseEncounterHospitalization,
             min: 0,
             max: 1,
             isArray: false,
@@ -236,7 +245,7 @@ public const RESOURCE_NAME_AUBASEENCOUNTER = "Encounter";
         },
         "diagnosis" : {
             name: "diagnosis",
-            dataType: EncounterDiagnosis,
+            dataType: AUBaseEncounterDiagnosis,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -261,7 +270,7 @@ public const RESOURCE_NAME_AUBASEENCOUNTER = "Encounter";
         },
         "statusHistory" : {
             name: "statusHistory",
-            dataType: EncounterStatusHistory,
+            dataType: AUBaseEncounterStatusHistory,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -293,7 +302,7 @@ public const RESOURCE_NAME_AUBASEENCOUNTER = "Encounter";
         },
         "location" : {
             name: "location",
-            dataType: EncounterLocation,
+            dataType: AUBaseEncounterLocation,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -309,7 +318,7 @@ public const RESOURCE_NAME_AUBASEENCOUNTER = "Encounter";
         },
         "status" : {
             name: "status",
-            dataType: EncounterStatus,
+            dataType: AUBaseEncounterStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -327,9 +336,6 @@ public type AUBaseEncounter record {|
 
     RESOURCE_NAME_AUBASEENCOUNTER resourceType = RESOURCE_NAME_AUBASEENCOUNTER;
 
-    BaseAUBaseEncounterMeta meta = {
-        profile : [PROFILE_BASE_AUBASEENCOUNTER]
-    };
     r4:CodeableConcept serviceType?;
     r4:Reference partOf?;
     r4:Extension[] extension?;
@@ -339,7 +345,7 @@ public type AUBaseEncounter record {|
     r4:Reference[] appointment?;
     r4:code language?;
     r4:CodeableConcept[] 'type?;
-    EncounterParticipant[] participant?;
+    AUBaseEncounterParticipant[] participant?;
     r4:Reference[] episodeOfCare?;
     string id?;
     r4:CodeableConcept[] reasonCode?;
@@ -348,47 +354,34 @@ public type AUBaseEncounter record {|
     r4:Reference[] basedOn?;
     r4:Identifier[] identifier?;
     r4:Period period?;
-    EncounterClassHistory[] classHistory?;
-    EncounterHospitalization hospitalization?;
+    AUBaseEncounterClassHistory[] classHistory?;
+    AUBaseEncounterHospitalization hospitalization?;
     r4:Duration length?;
-    EncounterDiagnosis[] diagnosis?;
+    AUBaseEncounterDiagnosis[] diagnosis?;
     r4:CodeableConcept priority?;
     r4:Resource[] contained?;
-    EncounterStatusHistory[] statusHistory?;
+    AUBaseEncounterStatusHistory[] statusHistory?;
+    r4:Meta meta?;
     r4:Reference serviceProvider?;
     r4:uri implicitRules?;
-    EncounterLocation[] location?;
+    AUBaseEncounterLocation[] location?;
     r4:Reference[] account?;
-    EncounterStatus status;
-    never...;
+    AUBaseEncounterStatus status;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseEncounterMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
+# AUBaseEncounterStatusHistoryStatus enum
+public enum AUBaseEncounterStatusHistoryStatus {
+   CODE_STATUS_TRIAGED = "triaged",
+   CODE_STATUS_ARRIVED = "arrived",
+   CODE_STATUS_ONLEAVE = "onleave",
+   CODE_STATUS_CANCELLED = "cancelled",
+   CODE_STATUS_FINISHED = "finished",
+   CODE_STATUS_PLANNED = "planned",
+   CODE_STATUS_IN_PROGRESS = "in-progress"
 }
-public type BaseAUBaseEncounterMeta record {|
-    *r4:Meta;
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-encounter"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# FHIR EncounterHospitalization datatype record.
+# FHIR AUBaseEncounterHospitalization datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + specialArrangement - Any special requests that have been made for this hospitalization encounter, such as the provision of specific equipment or other things.
@@ -403,7 +396,7 @@ public type BaseAUBaseEncounterMeta record {|
 # + dischargeDisposition - Category or kind of location after discharge.
 # + admitSource - From where patient was admitted (physician referral, transfer).
 @r4:DataTypeDefinition {
-    name: "EncounterHospitalization",
+    name: "AUBaseEncounterHospitalization",
     baseType: (),
     elements: {
         "extension": {
@@ -520,7 +513,9 @@ public type BaseAUBaseEncounterMeta record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type EncounterHospitalization record {|
+public type AUBaseEncounterHospitalization record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:CodeableConcept[] specialArrangement?;
     r4:CodeableConcept reAdmission?;
@@ -535,269 +530,7 @@ public type EncounterHospitalization record {|
     r4:CodeableConcept admitSource?;
 |};
 
-# FHIR EncounterDiagnosis datatype record.
-#
-# + condition - Reason the encounter takes place, as specified using information from another resource. For admissions, this is the admission diagnosis. The indication will typically be a Condition (with other resources referenced in the evidence.detail), or a Procedure.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + use - Role that this diagnosis has within the encounter (e.g. admission, billing, discharge …).
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + rank - Ranking of the diagnosis (for each role type).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-@r4:DataTypeDefinition {
-    name: "EncounterDiagnosis",
-    baseType: (),
-    elements: {
-        "condition": {
-            name: "condition",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Reason the encounter takes place, as specified using information from another resource. For admissions, this is the admission diagnosis. The indication will typically be a Condition (with other resources referenced in the evidence.detail), or a Procedure.",
-            path: "Encounter.diagnosis.condition"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Encounter.diagnosis.extension"
-        },
-        "use": {
-            name: "use",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Role that this diagnosis has within the encounter (e.g. admission, billing, discharge …).",
-            path: "Encounter.diagnosis.use"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Encounter.diagnosis.modifierExtension"
-        },
-        "rank": {
-            name: "rank",
-            dataType: r4:positiveInt,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Ranking of the diagnosis (for each role type).",
-            path: "Encounter.diagnosis.rank"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Encounter.diagnosis.id"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type EncounterDiagnosis record {|
-    r4:Reference condition;
-    r4:Extension[] extension?;
-    r4:CodeableConcept use?;
-    r4:Extension[] modifierExtension?;
-    r4:positiveInt rank?;
-    string id?;
-|};
-
-# FHIR EncounterClassHistory datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + period - The time that the episode was in the specified class.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'class - inpatient | outpatient | ambulatory | emergency +.
-@r4:DataTypeDefinition {
-    name: "EncounterClassHistory",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Encounter.classHistory.extension"
-        },
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The time that the episode was in the specified class.",
-            path: "Encounter.classHistory.period"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Encounter.classHistory.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Encounter.classHistory.id"
-        },
-        "class": {
-            name: "class",
-            dataType: r4:Coding,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "inpatient | outpatient | ambulatory | emergency +.",
-            path: "Encounter.classHistory.class"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type EncounterClassHistory record {|
-    r4:Extension[] extension?;
-    r4:Period period;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:Coding 'class;
-|};
-
-# EncounterLocationStatus enum
-public enum EncounterLocationStatus {
-   CODE_STATUS_RESERVED = "reserved",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_PLANNED = "planned",
-   CODE_STATUS_COMPLETED = "completed"
-}
-
-# FHIR EncounterLocation datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + period - Time period during which the patient was present at the location.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + physicalType - This will be used to specify the required levels (bed/ward/room/etc.) desired to be recorded to simplify either messaging or query.
-# + location - The location where the encounter takes place.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + status - The status of the participants' presence at the specified location during the period specified. If the participant is no longer at the location, then the period will have an end date/time.
-@r4:DataTypeDefinition {
-    name: "EncounterLocation",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Encounter.location.extension"
-        },
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which the patient was present at the location.",
-            path: "Encounter.location.period"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Encounter.location.modifierExtension"
-        },
-        "physicalType": {
-            name: "physicalType",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "This will be used to specify the required levels (bed/ward/room/etc.) desired to be recorded to simplify either messaging or query.",
-            path: "Encounter.location.physicalType"
-        },
-        "location": {
-            name: "location",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The location where the encounter takes place.",
-            path: "Encounter.location.location"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Encounter.location.id"
-        },
-        "status": {
-            name: "status",
-            dataType: EncounterLocationStatus,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The status of the participants' presence at the specified location during the period specified. If the participant is no longer at the location, then the period will have an end date/time.",
-            path: "Encounter.location.status"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type EncounterLocation record {|
-    r4:Extension[] extension?;
-    r4:Period period?;
-    r4:Extension[] modifierExtension?;
-    r4:CodeableConcept physicalType?;
-    r4:Reference location;
-    string id?;
-    EncounterLocationStatus status?;
-|};
-
-# EncounterStatusHistoryStatus enum
-public enum EncounterStatusHistoryStatus {
-   CODE_STATUS_TRIAGED = "triaged",
-   CODE_STATUS_ARRIVED = "arrived",
-   CODE_STATUS_ONLEAVE = "onleave",
-   CODE_STATUS_CANCELLED = "cancelled",
-   CODE_STATUS_FINISHED = "finished",
-   CODE_STATUS_PLANNED = "planned",
-   CODE_STATUS_IN_PROGRESS = "in-progress"
-}
-
-# FHIR EncounterParticipant datatype record.
+# FHIR AUBaseEncounterParticipant datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + period - The period of time that the specified participant participated in the encounter. These can overlap or be sub-sets of the overall encounter's period.
@@ -806,7 +539,7 @@ public enum EncounterStatusHistoryStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'type - Role of participant in encounter.
 @r4:DataTypeDefinition {
-    name: "EncounterParticipant",
+    name: "AUBaseEncounterParticipant",
     baseType: (),
     elements: {
         "extension": {
@@ -869,7 +602,9 @@ public enum EncounterStatusHistoryStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type EncounterParticipant record {|
+public type AUBaseEncounterParticipant record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period?;
     r4:Reference individual?;
@@ -878,8 +613,171 @@ public type EncounterParticipant record {|
     r4:CodeableConcept[] 'type?;
 |};
 
-# EncounterStatus enum
-public enum EncounterStatus {
+# FHIR AUBaseEncounterClassHistory datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - The time that the episode was in the specified class.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'class - inpatient | outpatient | ambulatory | emergency +.
+@r4:DataTypeDefinition {
+    name: "AUBaseEncounterClassHistory",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Encounter.classHistory.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The time that the episode was in the specified class.",
+            path: "Encounter.classHistory.period"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Encounter.classHistory.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Encounter.classHistory.id"
+        },
+        "class": {
+            name: "class",
+            dataType: r4:Coding,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "inpatient | outpatient | ambulatory | emergency +.",
+            path: "Encounter.classHistory.class"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseEncounterClassHistory record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Period period;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:Coding 'class;
+|};
+
+# FHIR AUBaseEncounterDiagnosis datatype record.
+#
+# + condition - Reason the encounter takes place, as specified using information from another resource. For admissions, this is the admission diagnosis. The indication will typically be a Condition (with other resources referenced in the evidence.detail), or a Procedure.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + use - Role that this diagnosis has within the encounter (e.g. admission, billing, discharge …).
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + rank - Ranking of the diagnosis (for each role type).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+@r4:DataTypeDefinition {
+    name: "AUBaseEncounterDiagnosis",
+    baseType: (),
+    elements: {
+        "condition": {
+            name: "condition",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Reason the encounter takes place, as specified using information from another resource. For admissions, this is the admission diagnosis. The indication will typically be a Condition (with other resources referenced in the evidence.detail), or a Procedure.",
+            path: "Encounter.diagnosis.condition"
+        },
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Encounter.diagnosis.extension"
+        },
+        "use": {
+            name: "use",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Role that this diagnosis has within the encounter (e.g. admission, billing, discharge …).",
+            path: "Encounter.diagnosis.use"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Encounter.diagnosis.modifierExtension"
+        },
+        "rank": {
+            name: "rank",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Ranking of the diagnosis (for each role type).",
+            path: "Encounter.diagnosis.rank"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Encounter.diagnosis.id"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseEncounterDiagnosis record {|
+    *r4:BackboneElement;
+
+    r4:Reference condition;
+    r4:Extension[] extension?;
+    r4:CodeableConcept use?;
+    r4:Extension[] modifierExtension?;
+    r4:positiveInt rank?;
+    string id?;
+|};
+
+# AUBaseEncounterLocationStatus enum
+public enum AUBaseEncounterLocationStatus {
+   CODE_STATUS_RESERVED = "reserved",
+   CODE_STATUS_ACTIVE = "active",
+   CODE_STATUS_PLANNED = "planned",
+   CODE_STATUS_COMPLETED = "completed"
+}
+
+# AUBaseEncounterStatus enum
+public enum AUBaseEncounterStatus {
    CODE_STATUS_TRIAGED = "triaged",
    CODE_STATUS_ARRIVED = "arrived",
    CODE_STATUS_ONLEAVE = "onleave",
@@ -889,7 +787,101 @@ public enum EncounterStatus {
    CODE_STATUS_IN_PROGRESS = "in-progress"
 }
 
-# FHIR EncounterStatusHistory datatype record.
+# FHIR AUBaseEncounterLocation datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - Time period during which the patient was present at the location.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + physicalType - This will be used to specify the required levels (bed/ward/room/etc.) desired to be recorded to simplify either messaging or query.
+# + location - The location where the encounter takes place.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + status - The status of the participants' presence at the specified location during the period specified. If the participant is no longer at the location, then the period will have an end date/time.
+@r4:DataTypeDefinition {
+    name: "AUBaseEncounterLocation",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Encounter.location.extension"
+        },
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which the patient was present at the location.",
+            path: "Encounter.location.period"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Encounter.location.modifierExtension"
+        },
+        "physicalType": {
+            name: "physicalType",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "This will be used to specify the required levels (bed/ward/room/etc.) desired to be recorded to simplify either messaging or query.",
+            path: "Encounter.location.physicalType"
+        },
+        "location": {
+            name: "location",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The location where the encounter takes place.",
+            path: "Encounter.location.location"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Encounter.location.id"
+        },
+        "status": {
+            name: "status",
+            dataType: AUBaseEncounterLocationStatus,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The status of the participants' presence at the specified location during the period specified. If the participant is no longer at the location, then the period will have an end date/time.",
+            path: "Encounter.location.status"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseEncounterLocation record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Period period?;
+    r4:Extension[] modifierExtension?;
+    r4:CodeableConcept physicalType?;
+    r4:Reference location;
+    string id?;
+    AUBaseEncounterLocationStatus status?;
+|};
+
+# FHIR AUBaseEncounterStatusHistory datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + period - The time that the episode was in the specified status.
@@ -897,7 +889,7 @@ public enum EncounterStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + status - planned | arrived | triaged | in-progress | onleave | finished | cancelled +.
 @r4:DataTypeDefinition {
-    name: "EncounterStatusHistory",
+    name: "AUBaseEncounterStatusHistory",
     baseType: (),
     elements: {
         "extension": {
@@ -938,7 +930,7 @@ public enum EncounterStatus {
         },
         "status": {
             name: "status",
-            dataType: EncounterStatusHistoryStatus,
+            dataType: AUBaseEncounterStatusHistoryStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -951,11 +943,13 @@ public enum EncounterStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type EncounterStatusHistory record {|
+public type AUBaseEncounterStatusHistory record {|
+    *r4:BackboneElement;
+
     r4:Extension[] extension?;
     r4:Period period;
     r4:Extension[] modifierExtension?;
     string id?;
-    EncounterStatusHistoryStatus status;
+    AUBaseEncounterStatusHistoryStatus status;
 |};
 

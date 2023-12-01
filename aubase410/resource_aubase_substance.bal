@@ -72,7 +72,7 @@ public const RESOURCE_NAME_AUBASESUBSTANCE = "Substance";
         },
         "ingredient" : {
             name: "ingredient",
-            dataType: SubstanceIngredient,
+            dataType: AUBaseSubstanceIngredient,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -80,7 +80,7 @@ public const RESOURCE_NAME_AUBASESUBSTANCE = "Substance";
         },
         "instance" : {
             name: "instance",
-            dataType: SubstanceInstance,
+            dataType: AUBaseSubstanceInstance,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -162,7 +162,7 @@ public const RESOURCE_NAME_AUBASESUBSTANCE = "Substance";
         },
         "status" : {
             name: "status",
-            dataType: SubstanceStatus,
+            dataType: AUBaseSubstanceStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -180,133 +180,25 @@ public type AUBaseSubstance record {|
 
     RESOURCE_NAME_AUBASESUBSTANCE resourceType = RESOURCE_NAME_AUBASESUBSTANCE;
 
-    BaseAUBaseSubstanceMeta meta = {
-        profile : [PROFILE_BASE_AUBASESUBSTANCE]
-    };
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:CodeableConcept code;
-    SubstanceIngredient[] ingredient?;
-    SubstanceInstance[] instance?;
+    AUBaseSubstanceIngredient[] ingredient?;
+    AUBaseSubstanceInstance[] instance?;
     r4:Extension[] modifierExtension?;
     string description?;
     r4:code language?;
     r4:Resource[] contained?;
+    r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept[] category?;
-    SubstanceStatus status?;
-    never...;
+    AUBaseSubstanceStatus status?;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseSubstanceMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseSubstanceMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-substance"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# FHIR SubstanceIngredient datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + quantity - The amount of the ingredient in the substance - a concentration ratio.
-# + substanceCodeableConcept - Another substance that is a component of this substance.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + substanceReference - Another substance that is a component of this substance.
-@r4:DataTypeDefinition {
-    name: "SubstanceIngredient",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Substance.ingredient.extension"
-        },
-        "quantity": {
-            name: "quantity",
-            dataType: r4:Ratio,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The amount of the ingredient in the substance - a concentration ratio.",
-            path: "Substance.ingredient.quantity"
-        },
-        "substanceCodeableConcept": {
-            name: "substanceCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Another substance that is a component of this substance.",
-            path: "Substance.ingredient.substance[x]"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Substance.ingredient.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Substance.ingredient.id"
-        },
-        "substanceReference": {
-            name: "substanceReference",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Another substance that is a component of this substance.",
-            path: "Substance.ingredient.substance[x]"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type SubstanceIngredient record {|
-    r4:Extension[] extension?;
-    r4:Ratio quantity?;
-    r4:CodeableConcept substanceCodeableConcept;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:Reference substanceReference;
-|};
-
-# FHIR SubstanceInstance datatype record.
+# FHIR AUBaseSubstanceInstance datatype record.
 #
 # + identifier - Identifier associated with the package/container (usually a label affixed directly).
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -315,7 +207,7 @@ public type SubstanceIngredient record {|
 # + expiry - When the substance is no longer valid to use. For some substances, a single arbitrary date is used for expiry.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "SubstanceInstance",
+    name: "AUBaseSubstanceInstance",
     baseType: (),
     elements: {
         "identifier": {
@@ -378,7 +270,9 @@ public type SubstanceIngredient record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type SubstanceInstance record {|
+public type AUBaseSubstanceInstance record {|
+    *r4:BackboneElement;
+
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -387,8 +281,91 @@ public type SubstanceInstance record {|
     string id?;
 |};
 
-# SubstanceStatus enum
-public enum SubstanceStatus {
+# FHIR AUBaseSubstanceIngredient datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + quantity - The amount of the ingredient in the substance - a concentration ratio.
+# + substanceCodeableConcept - Another substance that is a component of this substance.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + substanceReference - Another substance that is a component of this substance.
+@r4:DataTypeDefinition {
+    name: "AUBaseSubstanceIngredient",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Substance.ingredient.extension"
+        },
+        "quantity": {
+            name: "quantity",
+            dataType: r4:Ratio,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The amount of the ingredient in the substance - a concentration ratio.",
+            path: "Substance.ingredient.quantity"
+        },
+        "substanceCodeableConcept": {
+            name: "substanceCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Another substance that is a component of this substance.",
+            path: "Substance.ingredient.substance[x]"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Substance.ingredient.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Substance.ingredient.id"
+        },
+        "substanceReference": {
+            name: "substanceReference",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Another substance that is a component of this substance.",
+            path: "Substance.ingredient.substance[x]"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AUBaseSubstanceIngredient record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Ratio quantity?;
+    r4:CodeableConcept substanceCodeableConcept;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:Reference substanceReference;
+|};
+
+# AUBaseSubstanceStatus enum
+public enum AUBaseSubstanceStatus {
    CODE_STATUS_INACTIVE = "inactive",
    CODE_STATUS_ACTIVE = "active",
    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"

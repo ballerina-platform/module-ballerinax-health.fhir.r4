@@ -98,7 +98,7 @@ public const RESOURCE_NAME_AUBASELOCATION = "Location";
         },
         "hoursOfOperation" : {
             name: "hoursOfOperation",
-            dataType: LocationHoursOfOperation,
+            dataType: AUBaseLocationHoursOfOperation,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -124,7 +124,7 @@ public const RESOURCE_NAME_AUBASELOCATION = "Location";
         },
         "mode" : {
             name: "mode",
-            dataType: LocationMode,
+            dataType: AUBaseLocationMode,
             min: 0,
             max: 1,
             isArray: false,
@@ -238,7 +238,7 @@ public const RESOURCE_NAME_AUBASELOCATION = "Location";
         },
         "position" : {
             name: "position",
-            dataType: LocationPosition,
+            dataType: AUBaseLocationPosition,
             min: 0,
             max: 1,
             isArray: false,
@@ -254,7 +254,7 @@ public const RESOURCE_NAME_AUBASELOCATION = "Location";
         },
         "status" : {
             name: "status",
-            dataType: LocationStatus,
+            dataType: AUBaseLocationStatus,
             min: 0,
             max: 1,
             isArray: false,
@@ -272,79 +272,35 @@ public type AUBaseLocation record {|
 
     RESOURCE_NAME_AUBASELOCATION resourceType = RESOURCE_NAME_AUBASELOCATION;
 
-    BaseAUBaseLocationMeta meta = {
-        profile : [PROFILE_BASE_AUBASELOCATION]
-    };
     r4:Coding operationalStatus?;
     r4:Reference partOf?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description?;
-    LocationHoursOfOperation[] hoursOfOperation?;
+    AUBaseLocationHoursOfOperation[] hoursOfOperation?;
     r4:code language?;
     r4:CodeableConcept[] 'type?;
-    LocationMode mode?;
+    AUBaseLocationMode mode?;
     r4:Reference[] endpoint?;
     string[] alias?;
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    r4:Identifier[] identifier?;
-    r4:Address address?;
+    AuLocationspecificpracticenumber[]|r4:Identifier[]|AuNatasitenumber[] identifier?;
+    AuAddress|r4:Address address?;
     r4:CodeableConcept physicalType?;
     r4:Resource[] contained?;
     r4:Reference managingOrganization?;
+    r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
-    LocationPosition position?;
+    AUBaseLocationPosition position?;
     string availabilityExceptions?;
-    LocationStatus status?;
-    never...;
+    AUBaseLocationStatus status?;
+    r4:Element ...;
 |};
 
-@r4:DataTypeDefinition {
-    name: "BaseLocationMeta",
-    baseType: r4:Meta,
-    elements: {},
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type BaseAUBaseLocationMeta record {|
-    *r4:Meta;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-
-    r4:id versionId?;
-    r4:instant lastUpdated?;
-    r4:uri 'source?;
-    r4:canonical[] profile = ["http://hl7.org.au/fhir/StructureDefinition/au-location"];
-    r4:Coding[] security?;
-    r4:Coding[] tag?;
-|};
-
-# LocationHoursOfOperationDaysOfWeek enum
-public enum LocationHoursOfOperationDaysOfWeek {
-   CODE_DAYSOFWEEK_THU = "thu",
-   CODE_DAYSOFWEEK_TUE = "tue",
-   CODE_DAYSOFWEEK_WED = "wed",
-   CODE_DAYSOFWEEK_SAT = "sat",
-   CODE_DAYSOFWEEK_FRI = "fri",
-   CODE_DAYSOFWEEK_MON = "mon",
-   CODE_DAYSOFWEEK_SUN = "sun"
-}
-
-# LocationMode enum
-public enum LocationMode {
-   CODE_MODE_INSTANCE = "instance",
-   CODE_MODE_KIND = "kind"
-}
-
-# FHIR LocationPosition datatype record.
+# FHIR AUBaseLocationPosition datatype record.
 #
 # + altitude - Altitude. The value domain and the interpretation are the same as for the text of the altitude element in KML (see notes below).
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -353,7 +309,7 @@ public enum LocationMode {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + longitude - Longitude. The value domain and the interpretation are the same as for the text of the longitude element in KML (see notes below).
 @r4:DataTypeDefinition {
-    name: "LocationPosition",
+    name: "AUBaseLocationPosition",
     baseType: (),
     elements: {
         "altitude": {
@@ -416,7 +372,9 @@ public enum LocationMode {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type LocationPosition record {|
+public type AUBaseLocationPosition record {|
+    *r4:BackboneElement;
+
     decimal altitude?;
     r4:Extension[] extension?;
     decimal latitude;
@@ -425,14 +383,25 @@ public type LocationPosition record {|
     decimal longitude;
 |};
 
-# LocationStatus enum
-public enum LocationStatus {
+# AUBaseLocationStatus enum
+public enum AUBaseLocationStatus {
    CODE_STATUS_INACTIVE = "inactive",
    CODE_STATUS_ACTIVE = "active",
    CODE_STATUS_SUSPENDED = "suspended"
 }
 
-# FHIR LocationHoursOfOperation datatype record.
+# AUBaseLocationHoursOfOperationDaysOfWeek enum
+public enum AUBaseLocationHoursOfOperationDaysOfWeek {
+   CODE_DAYSOFWEEK_THU = "thu",
+   CODE_DAYSOFWEEK_TUE = "tue",
+   CODE_DAYSOFWEEK_WED = "wed",
+   CODE_DAYSOFWEEK_SAT = "sat",
+   CODE_DAYSOFWEEK_FRI = "fri",
+   CODE_DAYSOFWEEK_MON = "mon",
+   CODE_DAYSOFWEEK_SUN = "sun"
+}
+
+# FHIR AUBaseLocationHoursOfOperation datatype record.
 #
 # + allDay - The Location is open all day.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -442,7 +411,7 @@ public enum LocationStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + daysOfWeek - Indicates which days of the week are available between the start and end Times.
 @r4:DataTypeDefinition {
-    name: "LocationHoursOfOperation",
+    name: "AUBaseLocationHoursOfOperation",
     baseType: (),
     elements: {
         "allDay": {
@@ -501,7 +470,7 @@ public enum LocationStatus {
         },
         "daysOfWeek": {
             name: "daysOfWeek",
-            dataType: LocationHoursOfOperationDaysOfWeek,
+            dataType: AUBaseLocationHoursOfOperationDaysOfWeek,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -514,13 +483,21 @@ public enum LocationStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type LocationHoursOfOperation record {|
+public type AUBaseLocationHoursOfOperation record {|
+    *r4:BackboneElement;
+
     boolean allDay?;
     r4:Extension[] extension?;
     r4:time closingTime?;
     r4:Extension[] modifierExtension?;
     r4:time openingTime?;
     string id?;
-    LocationHoursOfOperationDaysOfWeek[] daysOfWeek?;
+    AUBaseLocationHoursOfOperationDaysOfWeek[] daysOfWeek?;
 |};
+
+# AUBaseLocationMode enum
+public enum AUBaseLocationMode {
+   CODE_MODE_INSTANCE = "instance",
+   CODE_MODE_KIND = "kind"
+}
 
