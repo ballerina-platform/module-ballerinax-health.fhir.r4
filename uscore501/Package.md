@@ -1,3 +1,5 @@
+Ballerina package containing FHIR resource data models
+compliant with http://hl7.org/fhir/us/core/ implementation guide.
 
 # FHIR R4 USCore package
 

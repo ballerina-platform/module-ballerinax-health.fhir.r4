@@ -49,7 +49,7 @@ public const RESOURCE_NAME_USCOREDOCUMENTREFERENCEPROFILE = "DocumentReference";
 # + relatesTo - Relationships that this document has with other document references that already exist.
 # + category - A categorization for the type of document referenced - helps for indexing and searching. This may be implied by or derived from the code specified in the DocumentReference.type.
 # * category Slicings
-# 1) USCoreDocumentReferenceProfileCategoryUscore: Categorization of document
+# 1) USCoreDocumentReferenceProfileCategoryUs_core: Categorization of document
 #       - min = 0
 #       - max = *
 #
@@ -397,10 +397,10 @@ public enum USCoreDocumentReferenceProfileRelatesToCode {
    CODE_CODE_APPENDS = "appends"
 }
 
-# FHIR USCoreDocumentReferenceProfileCategoryUscore datatype record.
+# FHIR USCoreDocumentReferenceProfileCategoryUs_core datatype record.
 #
 @r4:DataTypeDefinition {
-    name: "USCoreDocumentReferenceProfileCategoryUscore",
+    name: "USCoreDocumentReferenceProfileCategoryUs_core",
     baseType: (),
     elements: {
     },
@@ -409,7 +409,7 @@ public enum USCoreDocumentReferenceProfileRelatesToCode {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreDocumentReferenceProfileCategoryUscore record {|
+public type USCoreDocumentReferenceProfileCategoryUs_core record {|
     *r4:CodeableConcept;
 
 |};

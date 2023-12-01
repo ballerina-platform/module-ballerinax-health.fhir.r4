@@ -70,7 +70,7 @@ public const RESOURCE_NAME_USCORESERVICEREQUESTPROFILE = "ServiceRequest";
 # + orderDetail - Additional details and instructions about the how the services are to be delivered. For example, and order for a urinary catheter may have an order detail for an external or indwelling catheter, or an order for a bandage may require additional instructions specifying how the bandage should be applied.
 # + category - A code that classifies the service for searching, sorting and display purposes (e.g. 'Surgical Procedure').
 # * category Slicings
-# 1) USCoreServiceRequestProfileCategoryUscore: Classification of service
+# 1) USCoreServiceRequestProfileCategoryUs_core: Classification of service
 #       - min = 0
 #       - max = *
 #
@@ -539,10 +539,10 @@ public enum USCoreServiceRequestProfileIntent {
    CODE_INTENT_OPTION = "option"
 }
 
-# FHIR USCoreServiceRequestProfileCategoryUscore datatype record.
+# FHIR USCoreServiceRequestProfileCategoryUs_core datatype record.
 #
 @r4:DataTypeDefinition {
-    name: "USCoreServiceRequestProfileCategoryUscore",
+    name: "USCoreServiceRequestProfileCategoryUs_core",
     baseType: (),
     elements: {
     },
@@ -551,7 +551,7 @@ public enum USCoreServiceRequestProfileIntent {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type USCoreServiceRequestProfileCategoryUscore record {|
+public type USCoreServiceRequestProfileCategoryUs_core record {|
     *r4:CodeableConcept;
 
 |};

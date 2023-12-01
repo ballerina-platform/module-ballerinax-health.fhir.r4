@@ -69,7 +69,7 @@ public const RESOURCE_NAME_USCOREOBSERVATIONCLINICALTESTRESULTPROFILE = "Observa
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - A code that classifies the general type of observation being made.
 # * category Slicings
-# 1) USCoreObservationClinicalTestResultProfileCategoryClinicaltest: Classification of type of observation
+# 1) USCoreObservationClinicalTestResultProfileCategoryClinical_test: Classification of type of observation
 #       - min = 1
 #       - max = 1
 #
@@ -511,6 +511,37 @@ public type USCoreObservationClinicalTestResultProfile record {|
     r4:Element ...;
 |};
 
+# FHIR USCoreObservationClinicalTestResultProfileCategoryClinical_test datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+@r4:DataTypeDefinition {
+    name: "USCoreObservationClinicalTestResultProfileCategoryClinical_test",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: USCoreObservationClinicalTestResultProfileCategoryCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Observation.category.coding"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreObservationClinicalTestResultProfileCategoryClinical_test record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+       minLength: 1
+    }
+    USCoreObservationClinicalTestResultProfileCategoryCoding[] coding;
+|};
+
 # FHIR USCoreObservationClinicalTestResultProfileCategoryCoding datatype record.
 #
 # + system - The identification of the code system that defines the meaning of the symbol in the code.
@@ -548,37 +579,6 @@ public type USCoreObservationClinicalTestResultProfileCategoryCoding record {|
 
     r4:uri system = "http://hl7.org/fhir/us/core/CodeSystem/us-core-observation-category";
     r4:code code = "clinical-test";
-|};
-
-# FHIR USCoreObservationClinicalTestResultProfileCategoryClinicaltest datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "USCoreObservationClinicalTestResultProfileCategoryClinicaltest",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: USCoreObservationClinicalTestResultProfileCategoryCoding,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "Observation.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type USCoreObservationClinicalTestResultProfileCategoryClinicaltest record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-       minLength: 1
-    }
-    USCoreObservationClinicalTestResultProfileCategoryCoding[] coding;
 |};
 
 # FHIR USCoreObservationClinicalTestResultProfileComponent datatype record.

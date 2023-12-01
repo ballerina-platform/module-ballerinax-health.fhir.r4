@@ -268,7 +268,7 @@ function init() returns r4:FHIRError? {
     r4:FHIRImplementationGuide baseImplementationGuide = new(baseIgRecord);
     check fhirRegistry.addImplementationGuide(baseImplementationGuide);
 
-    log:printDebug("FHIR R4 healthcare_fhir Module initialized.");
+    log:printDebug("FHIR R4 USCore Module initialized.");
 }
 
 # This empty function is used to initialize the module by other modules/packages.

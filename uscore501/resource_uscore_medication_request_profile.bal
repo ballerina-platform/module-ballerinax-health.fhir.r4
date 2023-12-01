@@ -66,7 +66,7 @@ public const RESOURCE_NAME_USCOREMEDICATIONREQUESTPROFILE = "MedicationRequest";
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + category - Indicates the type of medication request (for example, where the medication is expected to be consumed or administered (i.e. inpatient or outpatient)).
 # * category Slicings
-# 1) USCoreMedicationRequestProfileCategoryUscore: Type of medication usage
+# 1) USCoreMedicationRequestProfileCategoryUs_core: Type of medication usage
 #       - min = 0
 #       - max = *
 #
@@ -480,23 +480,6 @@ public type USCoreMedicationRequestProfile record {|
     r4:Element ...;
 |};
 
-# FHIR USCoreMedicationRequestProfileCategoryUscore datatype record.
-#
-@r4:DataTypeDefinition {
-    name: "USCoreMedicationRequestProfileCategoryUscore",
-    baseType: (),
-    elements: {
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type USCoreMedicationRequestProfileCategoryUscore record {|
-    *r4:CodeableConcept;
-
-|};
-
 # USCoreMedicationRequestProfileIntent enum
 public enum USCoreMedicationRequestProfileIntent {
    CODE_INTENT_PROPOSAL = "proposal",
@@ -755,7 +738,7 @@ public type USCoreMedicationRequestProfileDispenseRequestInitialFill record {|
         },
         "doseAndRate": {
             name: "doseAndRate",
-            dataType: r4:Element,
+            dataType: r4:ElementDoseAndRate,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -887,6 +870,23 @@ public enum USCoreMedicationRequestProfilePriority {
    CODE_PRIORITY_URGENT = "urgent",
    CODE_PRIORITY_ASAP = "asap"
 }
+
+# FHIR USCoreMedicationRequestProfileCategoryUs_core datatype record.
+#
+@r4:DataTypeDefinition {
+    name: "USCoreMedicationRequestProfileCategoryUs_core",
+    baseType: (),
+    elements: {
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreMedicationRequestProfileCategoryUs_core record {|
+    *r4:CodeableConcept;
+
+|};
 
 # FHIR USCoreMedicationRequestProfileDispenseRequest datatype record.
 #

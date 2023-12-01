@@ -68,7 +68,7 @@ public const RESOURCE_NAME_USCORECONDITIONPROBLEMSHEALTHCONCERNSPROFILE = "Condi
 #       - min = 0
 #       - max = 1
 #
-# 2) USCoreConditionProblemsHealthConcernsProfileCategoryUscore: problem-list-item | health-concern
+# 2) USCoreConditionProblemsHealthConcernsProfileCategoryUs_core: problem-list-item | health-concern
 #       - min = 1
 #       - max = *
 #
@@ -593,23 +593,6 @@ public type USCoreConditionProblemsHealthConcernsProfileCategoryCoding record {|
     r4:code code = "sdoh";
 |};
 
-# FHIR USCoreConditionProblemsHealthConcernsProfileCategoryUscore datatype record.
-#
-@r4:DataTypeDefinition {
-    name: "USCoreConditionProblemsHealthConcernsProfileCategoryUscore",
-    baseType: (),
-    elements: {
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type USCoreConditionProblemsHealthConcernsProfileCategoryUscore record {|
-    *r4:CodeableConcept;
-
-|};
-
 # FHIR USCoreConditionProblemsHealthConcernsProfileCategorySdoh datatype record.
 #
 # + coding - A reference to a code defined by a terminology system.
@@ -639,5 +622,22 @@ public type USCoreConditionProblemsHealthConcernsProfileCategorySdoh record {|
        minLength: 1
     }
     USCoreConditionProblemsHealthConcernsProfileCategoryCoding[] coding;
+|};
+
+# FHIR USCoreConditionProblemsHealthConcernsProfileCategoryUs_core datatype record.
+#
+@r4:DataTypeDefinition {
+    name: "USCoreConditionProblemsHealthConcernsProfileCategoryUs_core",
+    baseType: (),
+    elements: {
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type USCoreConditionProblemsHealthConcernsProfileCategoryUs_core record {|
+    *r4:CodeableConcept;
+
 |};
 
