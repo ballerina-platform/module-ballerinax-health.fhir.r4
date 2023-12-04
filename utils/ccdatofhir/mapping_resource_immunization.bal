@@ -106,7 +106,7 @@ public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationEl
 
         string|error? assignedEntityId = assignedEntityIdElement.root;
         if assignedEntityId is string {
-            uscore501:ImmunizationPerformer performer = {
+            uscore501:USCoreImmunizationProfilePerformer performer = {
                 actor: {
                     identifier: {
                         id: assignedEntityId
@@ -137,7 +137,7 @@ public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationEl
             xml reference = entryRelationshipObservationElement/<v3:text|text>/<v3:reference|reference>;
             string|error? referenceValue = reference.value;
             if referenceValue is string {
-                uscore501:ImmunizationReaction immunizationReaction = {
+                uscore501:USCoreImmunizationProfileReaction immunizationReaction = {
                     detail: {
                         reference: referenceValue
                     }
@@ -164,7 +164,7 @@ public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationEl
 isolated function mapCcdaRefusalReasonToFhirStatusReason(xml codingElement) returns r4:CodeableConcept? {
     if isXMLElementNotNull(codingElement) {
         r4:CodeableConcept mapCcdaCodingtoFhirCodeableConceptResult = {};
-        string|error? codeVal = codingElement.code;
+        string|error? codeVal = codingElement.value;
         if codeVal is string {
             string? code;
             match codeVal {
@@ -207,8 +207,13 @@ isolated function mapCcdaRefusalReasonToFhirStatusReason(xml codingElement) retu
     return ();
 }
 
-isolated function mapCcdaStatusCodeToFhirImmunizationStatus(xml codingElement) returns uscore501:ImmunizationStatus {
-    string codeVal = codingElement.data();
+isolated function mapCcdaStatusCodeToFhirImmunizationStatus(xml codingElement) returns uscore501:USCoreImmunizationProfileStatus {
+    string|error? codeVal = codingElement.code;
+
+    if codeVal !is string {
+        return uscore501:CODE_STATUS_NOT_DONE;
+    }
+
     match codeVal {
         "aborted" => {
             return uscore501:CODE_STATUS_NOT_DONE;

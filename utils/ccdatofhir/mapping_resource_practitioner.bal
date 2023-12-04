@@ -24,6 +24,7 @@
 
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
+import ballerina/log;
 
 # Map CCDA Practitioner to FHIR Practitioner.
 #
@@ -40,24 +41,42 @@ public isolated function mapCcdaPractitionerToFhir(xml authorElement) returns us
 
         r4:CodeableConcept? qualificationCode = mapCcdaCodingtoFhirCodeableConcept(assignedAuthorCodeElement);
         if qualificationCode is r4:CodeableConcept {
-            uscore501:PractitionerQualification qualification = {
+            uscore501:USCorePractitionerProfileQualification qualification = {
                 code: qualificationCode
             };
             practitioner.qualification = [qualification];
         }
 
         xml assignedPersonNameElement = assignedPersonElement/<v3:name|name>;
-        r4:HumanName? name = mapCcdaNametoFhirName(assignedPersonNameElement);
+        uscore501:USCorePractitionerProfileName? name = mapCcdaNametoFhirPractitionerName(assignedPersonNameElement);
         if name is r4:HumanName {
             practitioner.name = [name];
         }
 
-        r4:Address?|error mapCcdaAddressToFhirAddressResult = mapCcdaAddressToFhirAddress(assignedAuthorAddressElement);
-        if mapCcdaAddressToFhirAddressResult is r4:Address {
-            practitioner.address = [mapCcdaAddressToFhirAddressResult];
+        r4:Address[]?|error mapCcdaAddressToFhirAddressResult = mapCcdaAddressToFhirAddress(assignedAuthorAddressElement);
+        if mapCcdaAddressToFhirAddressResult is r4:Address[] {
+            practitioner.address = mapCcdaAddressToFhirAddressResult;
         }
 
         return practitioner;
     }
+    return ();
+}
+
+# Map C-CDA name to FHIR Practitioner HumanName.
+#
+# + nameElement - C-CDA name element
+# + return - Return FHIR HumanName
+public isolated function mapCcdaNametoFhirPractitionerName(xml nameElement) returns uscore501:USCorePractitionerProfileName? {
+    xml familyElement = nameElement/<v3:family|family>;
+    xml givenElement = nameElement/<v3:given|given>;
+
+    string given = givenElement.data().trim();
+    string family = familyElement.data().trim();
+
+    if given != "" || family != "" {
+        return {given: [given], family};
+    }
+    log:printDebug("name fields not available");
     return ();
 }

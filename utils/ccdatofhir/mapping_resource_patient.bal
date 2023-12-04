@@ -41,19 +41,19 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
         xml languageCommunicationElement = patientElement/<v3:languageCommunication|languageCommunication>;
         xml providerOrganizationElement = xmlContent/<v3:providerOrganization|providerOrganization>;
 
-        r4:Identifier?|error mapCcdaIdToFhirIdentifierResult = mapCcdaIdToFhirIdentifier(idElement);
+        uscore501:USCorePatientProfileIdentifier?|error mapCcdaIdToFhirIdentifierResult = mapCcdaIdToFhirIdentifier(idElement);
         if mapCcdaIdToFhirIdentifierResult is r4:Identifier {
             patient.identifier = [mapCcdaIdToFhirIdentifierResult];
         }
 
-        r4:Address?|error mapCcdaAddressToFhirAddressResult = mapCcdaAddressToFhirAddress(addrElement);
-        if mapCcdaAddressToFhirAddressResult is r4:Address {
-            patient.address = [mapCcdaAddressToFhirAddressResult];
+        r4:Address[]?|error mapCcdaAddressToFhirAddressResult = mapCcdaAddressToFhirAddress(addrElement);
+        if mapCcdaAddressToFhirAddressResult is r4:Address[] {
+            patient.address = mapCcdaAddressToFhirAddressResult;
         }
 
-        r4:ContactPoint[] telecoms = [];
+        uscore501:USCorePatientProfileTelecom[] telecoms = [];
         foreach xml telecomInstance in telecomElement {
-            r4:ContactPoint?|error mapCcdaTelecomToFhirTelecomResult = mapCcdaTelecomToFhirTelecom(telecomInstance);
+            uscore501:USCorePatientProfileTelecom?|error mapCcdaTelecomToFhirTelecomResult = mapCcdaTelecomToFhirPatientTelecom(telecomInstance);
             if mapCcdaTelecomToFhirTelecomResult is r4:ContactPoint {
                 telecoms.push(mapCcdaTelecomToFhirTelecomResult);
             }
@@ -66,12 +66,12 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
         patient.telecom = telecoms;
 
         xml nameElement = patientElement/<v3:name|name>;
-        r4:HumanName?|error mapCcdaNametoFhirNameResult = mapCcdaNametoFhirName(nameElement);
-        if mapCcdaNametoFhirNameResult is r4:HumanName {
-            patient.name = [mapCcdaNametoFhirNameResult];
+        r4:HumanName[]?|error mapCcdaNametoFhirNameResult = mapCcdaNametoFhirName(nameElement);
+        if mapCcdaNametoFhirNameResult is r4:HumanName[] {
+            patient.name = mapCcdaNametoFhirNameResult;
         }
 
-        uscore501:PatientGender mapCcdaGenderCodetoFhirGenderResult = mapCcdaGenderCodetoFhirGender(genderCodeElement);
+        uscore501:USCorePatientProfileGender mapCcdaGenderCodetoFhirGenderResult = mapCcdaGenderCodetoFhirGender(genderCodeElement);
         patient.gender = mapCcdaGenderCodetoFhirGenderResult;
 
         r4:dateTime? mapCCDABirthTimetoFHIRBirthDateResult = mapCcdaDateTimeToFhirDateTime(birthTimeElement);
@@ -89,7 +89,7 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
 
         r4:Coding?|error mapCCDALanguageCodetoFHIRCommunicationLanguageResult = mapCcdaCodingtoFhirCoding(languageCodeElement);
         if mapCCDALanguageCodetoFHIRCommunicationLanguageResult is r4:Coding {
-            uscore501:PatientCommunication patientCommunication = {language: {}};
+            uscore501:USCorePatientProfileCommunication patientCommunication = {language: {}};
             patientCommunication.language.coding = [mapCCDALanguageCodetoFHIRCommunicationLanguageResult];
             string|error? preferenceIdVal = preferenceIndElement.value;
             if preferenceIdVal is string {
@@ -113,6 +113,7 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
         string|error? referenceRoot = organizationIdElement.root;
         if referenceId is string {
             organizationReference.identifier = {value: referenceId};
+            organizationReference.reference = "Organization/" + referenceId;
         }
         if referenceRoot is string {
             organizationReference.identifier = {system: referenceRoot};
@@ -157,7 +158,7 @@ public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespac
     return ();
 }
 
-isolated function mapCcdaGenderCodetoFhirGender(xml codingElement) returns uscore501:PatientGender {
+isolated function mapCcdaGenderCodetoFhirGender(xml codingElement) returns uscore501:USCorePatientProfileGender {
     string|error? codeVal = codingElement.code;
     if codeVal is string {
         match codeVal {
@@ -177,4 +178,76 @@ isolated function mapCcdaGenderCodetoFhirGender(xml codingElement) returns uscor
     }
     log:printDebug("code is not available", codeVal);
     return uscore501:CODE_GENDER_UNKNOWN;
+}
+
+# Map C-CDA telecom to FHIR Patient ContactPoint.
+#
+# + telecomElement - C-CDA telecom element
+# + return - Return FHIR ContactPoint
+public isolated function mapCcdaTelecomToFhirPatientTelecom(xml telecomElement) returns uscore501:USCorePatientProfileTelecom? {
+    string|error? telecomUse = telecomElement.use;
+    string|error? telecomValue = telecomElement.value;
+
+    string? systemVal = ();
+    string? valueVal = ();
+    if telecomValue is string {
+        systemVal = re `:`.split(telecomValue)[0];
+        valueVal = re `:`.split(telecomValue)[1];
+
+        match (systemVal) {
+            "tel" => {
+                systemVal = r4:phone;
+            }
+            "mailto" => {
+                systemVal = r4:email;
+            }
+            "fax" => {
+                systemVal = r4:fax;
+            }
+            "http" => {
+                systemVal = r4:url;
+            }
+            "x-text-fax" => {
+                systemVal = r4:sms;
+            }
+            _ => {
+                systemVal = r4:other;
+            }
+        }
+    } else {
+        log:printDebug("Telecom value not available", telecomValue);
+    }
+
+    r4:ContactPointUse? useVal = ();
+    if telecomUse is string {
+        match telecomUse {
+            "HP" => {
+                useVal = "home";
+            }
+            "WP" => {
+                useVal = "work";
+            }
+            "MC" => {
+                useVal = "mobile";
+            }
+            "OP" => {
+                useVal = "old";
+            }
+            "TP" => {
+                useVal = "temp";
+            }
+        }
+    } else {
+        log:printDebug("Telecom use not available", telecomUse);
+    }
+
+    if systemVal is string && valueVal is string {
+        return {
+            system: <uscore501:USCorePatientProfileTelecomSystem> systemVal,
+            value: valueVal,
+            use: useVal
+        };
+    }
+    log:printDebug("telecom fields not available");
+    return ();
 }

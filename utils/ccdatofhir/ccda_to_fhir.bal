@@ -75,7 +75,7 @@ isolated function transformToFhir(xml xmlDocument) returns r4:Bundle {
                         }
                     }
                     CCDA_CONDITION_CODE => {
-                        mapCCDAToFHIRResult = mapCcdaConditionToFhir(actElement);
+                        mapCCDAToFHIRResult = mapCcdaConditionToFhir(sectionElement, actElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreCondition {
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
@@ -88,7 +88,7 @@ isolated function transformToFhir(xml xmlDocument) returns r4:Bundle {
                     }
                     CCDA_MEDICATION_CODE => {
                         mapCCDAToFHIRResult = mapCcdaMedicationToFhir(substanceAdministrationElement);
-                        if mapCCDAToFHIRResult is uscore501:USCoreMedicationProfile {
+                        if mapCCDAToFHIRResult is uscore501:USCoreMedicationRequestProfile {
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }

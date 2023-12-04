@@ -24,21 +24,23 @@ import ballerinax/health.fhir.r4.uscore501;
 
 # Map CCDA Procedure Activity to FHIR Procedure
 #
-# + actElement - CCDA Procedure Activity Element
+# + procedureElement - CCDA Procedure Activity Element
 # + return - FHIR Procedure Resource
-public isolated function mapCcdaProcedureToFhir(xml actElement) returns uscore501:USCoreProcedureProfile? {
-    if isXMLElementNotNull(actElement) {
+public isolated function mapCcdaProcedureToFhir(xml procedureElement) returns uscore501:USCoreProcedureProfile? {
+    if isXMLElementNotNull(procedureElement) {
         uscore501:USCoreProcedureProfile procedure = {subject: {}, status: "unknown",code: {}, performedDateTime: "", performedPeriod: {}};
 
-        xml idElement = actElement/<v3:id|id>;
-        xml codeElement = actElement/<v3:code|code>;
-        xml statusCodeElement = actElement/<v3:statusCode|statusCode>;
-        xml effectiveTimeLowElement = actElement/<v3:effectiveTime|effectiveTime>/<v3:low|low>;
-        xml effectiveTimeHighElement = actElement/<v3:effectiveTime|effectiveTime>/<v3:high|high>;
-        xml targetSiteCodeElement = actElement/<v3:targetSiteCode|targetSiteCode>;
-        xml performerElement = actElement/<v3:performer|performer>;
-        xml participantElement = actElement/<v3:participant|participant>;
-        xml entryRelationshipElements = actElement/<v3:entryRelationship|entryRelationship>;
+        string|error? negationInd = procedureElement.negationInd;
+        xml idElement = procedureElement/<v3:id|id>;
+        xml codeElement = procedureElement/<v3:code|code>;
+        xml statusCodeElement = procedureElement/<v3:statusCode|statusCode>;
+        xml effectiveTimeElement = procedureElement/<v3:effectiveTime|effectiveTime>;
+        xml effectiveTimeLowElement = procedureElement/<v3:effectiveTime|effectiveTime>/<v3:low|low>;
+        xml effectiveTimeHighElement = procedureElement/<v3:effectiveTime|effectiveTime>/<v3:high|high>;
+        xml targetSiteCodeElement = procedureElement/<v3:targetSiteCode|targetSiteCode>;
+        xml performerElement = procedureElement/<v3:performer|performer>;
+        xml participantElement = procedureElement/<v3:participant|participant>;
+        xml entryRelationshipElements = procedureElement/<v3:entryRelationship|entryRelationship>;
 
         int index = 0;
         foreach xml idElem in idElement {
@@ -53,7 +55,15 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns uscore50
         if mapCcdaCodeCodingtoFhirCodeCodeableConceptResult is r4:CodeableConcept {
             procedure.code = mapCcdaCodeCodingtoFhirCodeCodeableConceptResult;
         }
-        procedure.status = mapCcdatoFhirProcedureStatus(statusCodeElement);
+
+        if negationInd == "true" {
+            procedure.status = "not-done";
+        } else {
+            procedure.status = mapCcdatoFhirProcedureStatus(statusCodeElement);
+        }
+
+        r4:dateTime? mapCCDAEffectiveTimetoFHIRDateTimeResult = mapCcdaDateTimeToFhirDateTime(effectiveTimeElement);
+        procedure.performedDateTime = mapCCDAEffectiveTimetoFHIRDateTimeResult;
 
         r4:dateTime? mapCCDAEffectiveLowTimetoFHIRDateTimeResult = mapCcdaDateTimeToFhirDateTime(effectiveTimeLowElement);
         procedure.performedPeriod.'start = mapCCDAEffectiveLowTimetoFHIRDateTimeResult;
@@ -68,7 +78,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns uscore50
 
         xml assignedEntityElements = performerElement/<v3:assignedEntity|assignedEntity>;
 
-        uscore501:ProcedurePerformer[] performers = [];
+        uscore501:USCoreProcedureProfilePerformer[] performers = [];
         foreach xml assignedEntityElement in assignedEntityElements {
             xml representedOrganizationElement = assignedEntityElement/<v3:representedOrganization|representedOrganization>;
             xml organizationIdElement = representedOrganizationElement/<v3:id|id>;
@@ -81,7 +91,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns uscore50
                     reference: string `Organization/${id}`
                 };
 
-                uscore501:ProcedurePerformer performer = {
+                uscore501:USCoreProcedureProfilePerformer performer = {
                     actor: {},
                     onBehalfOf: representedOrganizationReference
                 };
@@ -122,7 +132,7 @@ public isolated function mapCcdaProcedureToFhir(xml actElement) returns uscore50
     return ();
 }
 
-isolated function mapCcdatoFhirProcedureStatus(xml codingElement) returns uscore501:ProcedureStatus {
+isolated function mapCcdatoFhirProcedureStatus(xml codingElement) returns uscore501:USCoreProcedureProfileStatus {
     string|error? codeVal = codingElement.code;
     if codeVal !is string {
         log:printDebug("code is not available in the code element", codeVal);

@@ -50,7 +50,7 @@ public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElem
 
         medication.status = mapCcdatoFhirMedicationRequestStatus(statusCodeElement);
 
-        r4:Dosage dosageInstruction = {};
+        uscore501:USCoreMedicationRequestProfileDosageInstruction dosageInstruction = {};
         string|error? effectiveTimeValue = effectiveTimeElement.value;
         if effectiveTimeValue is string {
             dosageInstruction.timing.event = [effectiveTimeValue];
@@ -140,7 +140,7 @@ public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElem
     return ();
 }
 
-isolated function mapCcdatoFhirMedicationRequestStatus(xml codingElement) returns uscore501:MedicationRequestStatus {
+isolated function mapCcdatoFhirMedicationRequestStatus(xml codingElement) returns uscore501:USCoreMedicationRequestProfileStatus {
     string|error? codeVal = codingElement.code;
     if codeVal is string {
         match codeVal {
