@@ -23,18 +23,22 @@ import ballerinax/health.fhir.r4.uscore501;
 
 # Map CCDA Problem Observation to FHIR Condition.
 #
+# + sectionElement - sectionElement for CCDA Problem Observation
 # + actElement - actElement for CCDA Problem Observation
 # + return - FHIR Condition
-public isolated function mapCcdaConditionToFhir(xml actElement) returns uscore501:USCoreCondition? {
+public isolated function mapCcdaConditionToFhir(xml sectionElement, xml actElement) returns uscore501:USCoreCondition? {
     if isXMLElementNotNull(actElement) {
         uscore501:USCoreCondition condition = {subject: {}, code: {}, category: []};
 
-        xml idElement = actElement/<v3:id|id>;
-        xml effectiveTimeLowElement = actElement/<v3:effectiveTime|effectiveTime>/<v3:low|low>;
-        xml effectiveTimeHighElement = actElement/<v3:effectiveTime|effectiveTime>/<v3:high|high>;
-        xml valueElement = actElement/<v3:value|value>;
-        xml authorElement = actElement/<v3:author|author>;
-        xml observationValueElement = actElement/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>/<v3:value|value>;
+        xml sectionCodeElement = sectionElement/<v3:code|code>;
+        xml observationElement = actElement/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>;
+        xml effectiveTimeLowElement = observationElement/<v3:effectiveTime|effectiveTime>/<v3:low|low>;
+        xml effectiveTimeHighElement = observationElement/<v3:effectiveTime|effectiveTime>/<v3:high|high>;
+        xml valueElement = observationElement/<v3:value|value>;
+        xml authorElement = observationElement/<v3:author|author>;
+        xml idElement = observationElement/<v3:id|id>;
+        xml observationValueElement = observationElement/<v3:value|value>;
+        string|error? negationIndVal = observationElement.negationInd;
 
         int index = 0;
         foreach xml idElem in idElement {
@@ -44,6 +48,25 @@ public isolated function mapCcdaConditionToFhir(xml actElement) returns uscore50
                 index = index + 1;
             }
         }
+
+        string|error? sectionCodeVal = sectionCodeElement.code;
+
+        r4:CodeableConcept[] category = [];
+        match sectionCodeVal {
+            "11450-4" => {
+                category = [{coding: [{code: "problem-list-item"}]}];
+            }
+            "46240-8" => {
+                category = [{coding: [{code: "encounter-diagnosis"}]}];
+            }
+            "75310-3" => {
+                category = [{coding: [{code: "health-concern"}]}];
+            }
+            _ => {
+                category = [{coding: [{code: ""}]}];
+            }
+        }
+        condition.category = category;
 
         r4:dateTime? mapCCDALowEffectiveTimetoFHIRDateTimeResult = mapCcdaDateTimeToFhirDateTime(effectiveTimeLowElement);
         if mapCCDALowEffectiveTimetoFHIRDateTimeResult is r4:dateTime {
@@ -73,6 +96,15 @@ public isolated function mapCcdaConditionToFhir(xml actElement) returns uscore50
             r4:CodeableConcept observationCodeableConcept = {coding: [{code: mapCcdatoFhirProblemStatusResult}]};
             condition.clinicalStatus = observationCodeableConcept;
         }
+
+        if negationIndVal is string && negationIndVal.trim() == "true" {
+            condition.verificationStatus = {
+                coding: [{
+                    code: "refuted"
+                }]
+            };
+        }
+
         return condition;
     } else {
         return ();

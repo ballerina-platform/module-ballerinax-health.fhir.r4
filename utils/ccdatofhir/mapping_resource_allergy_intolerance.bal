@@ -30,13 +30,14 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns uscore501:
     uscore501:USCoreAllergyIntolerance allergyIntolerance = {patient: {}, code: {}};
 
     if isXMLElementNotNull(actElement) {
+        string|error? negationInd = actElement.negationInd;
         xml statusCodeElements = actElement/<v3:statusCode|statusCode>;
         xml idElement = actElement/<v3:id|id>;
-        xml effectiveTimeElement = actElement/<v3:effectiveTime|effectiveTime>;
         xml valueElement = actElement/<v3:value|value>;
-        xml authorElement = actElement/<v3:author|author>;
-        xml participantElement = actElement/<v3:participant|participant>;
         xml entryRelationshipElement = actElement/<v3:entryRelationship|entryRelationship>;
+        xml authorElement = entryRelationshipElement/<v3:observation|observation>/<v3:author|author>;
+        xml participantElement = entryRelationshipElement/<v3:observation|observation>/<v3:participant|participant>;
+        xml effectiveTimeElement = entryRelationshipElement/<v3:observation|observation>/<v3:effectiveTime|effectiveTime>;
 
         foreach xml statusCodeElement in statusCodeElements {
             string|error? statusCode = statusCodeElement.code;
@@ -62,13 +63,13 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns uscore501:
             allergyIntolerance.onsetDateTime = mapCCDALowEffectiveTimetoFHIRDateTimeResult;
         }
 
-        uscore501:AllergyIntoleranceCategory? mapCCDAValueToFHIRCategoryResult = mapCcdaValueToFhirAllergyIntoleranceCategory(valueElement);
-        if mapCCDAValueToFHIRCategoryResult is uscore501:AllergyIntoleranceCategory {
+        uscore501:USCoreAllergyIntoleranceCategory? mapCCDAValueToFHIRCategoryResult = mapCcdaValueToFhirAllergyIntoleranceCategory(valueElement);
+        if mapCCDAValueToFHIRCategoryResult is uscore501:USCoreAllergyIntoleranceCategory {
             allergyIntolerance.category = [mapCCDAValueToFHIRCategoryResult];
         }
 
-        uscore501:AllergyIntoleranceType? mapCCDAValueToFHIRTypeResult = mapCcdaValueToFhirAllergyIntoleranceType(valueElement);
-        if mapCCDAValueToFHIRTypeResult is uscore501:AllergyIntoleranceType {
+        uscore501:USCoreAllergyIntoleranceType? mapCCDAValueToFHIRTypeResult = mapCcdaValueToFhirAllergyIntoleranceType(valueElement);
+        if mapCCDAValueToFHIRTypeResult is uscore501:USCoreAllergyIntoleranceType {
             allergyIntolerance.'type = mapCCDAValueToFHIRTypeResult;
         }
 
@@ -85,24 +86,43 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns uscore501:
 
         xml participantRoleElement = participantElement/<v3:participantRole|participantRole>;
         xml playingEntityElement = participantRoleElement/<v3:playingEntity|playingEntity>;
+        xml playingEntityCodeElement = playingEntityElement/<v3:code|code>;
 
-        r4:CodeableConcept? playingEntityCodeableConcept = mapCcdaCodingtoFhirCodeableConcept(playingEntityElement);
+        string|error? playingEntityCodeNullFlavor = playingEntityCodeElement.nullFlavor;
+        r4:CodeableConcept? playingEntityCodeableConcept = mapCcdaCodingtoFhirCodeableConcept(playingEntityCodeElement);
+
+        if (negationInd is string && negationInd == "true") && playingEntityCodeNullFlavor is string {
+            string? code = ();
+            match code {
+                "414285001" => {
+                    code = "429625007";
+                }
+                "416098002" => {
+                    code = "416098002";
+                }
+                "419199007" => {
+                    code = "716186003";
+                }
+            }
+            playingEntityCodeableConcept = {coding: [{code: code}]};
+        }
         if playingEntityCodeableConcept is r4:CodeableConcept {
             allergyIntolerance.code = playingEntityCodeableConcept;
+        }
+
+
+        r4:CodeableConcept? clinicalStatus = mapCcdaCodingtoFhirCodeableConcept(statusCodeElements);
+        if clinicalStatus is r4:CodeableConcept {
+            allergyIntolerance.clinicalStatus = clinicalStatus;
         }
 
         xml observationElement = entryRelationshipElement/<v3:observation|observation>;
         xml observationValueElement = observationElement/<v3:value|value>;
         xml observationIdElement = observationElement/<v3:id|id>;
 
-        r4:CodeableConcept? clinicalStatus = mapCcdaCodingtoFhirCodeableConcept(observationValueElement);
-        if clinicalStatus is r4:CodeableConcept {
-            allergyIntolerance.clinicalStatus = clinicalStatus;
-        }
-
         r4:CodeableConcept? manifestation = mapCcdaCodingtoFhirCodeableConcept(observationValueElement);
         if manifestation is r4:CodeableConcept {
-            uscore501:AllergyIntoleranceReaction reaction = {
+            uscore501:USCoreAllergyIntoleranceReaction reaction = {
                 manifestation: [manifestation]
             };
 
@@ -128,7 +148,7 @@ public isolated function mapCcdaAllergyToFhir(xml actElement) returns uscore501:
     }
 }
 
-isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement) returns uscore501:AllergyIntoleranceCategory? {
+isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement) returns uscore501:USCoreAllergyIntoleranceCategory? {
     string|error? codeVal = valueElement.code;
     if codeVal !is string {
         log:printDebug("code value not available", codeVal);
@@ -160,7 +180,7 @@ isolated function mapCcdaValueToFhirAllergyIntoleranceCategory(xml valueElement)
     }
 }
 
-isolated function mapCcdaValueToFhirAllergyIntoleranceType(xml valueElement) returns uscore501:AllergyIntoleranceType? {
+isolated function mapCcdaValueToFhirAllergyIntoleranceType(xml valueElement) returns uscore501:USCoreAllergyIntoleranceType? {
     string|error? codeVal = valueElement.code;
     if codeVal !is string {
         log:printDebug("code value is not available", codeVal);
