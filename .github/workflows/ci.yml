@@ -25,11 +25,23 @@ jobs:
 
       - name: Extract Unique Ballerina Project Paths from Changed Files
         id: unique-project-paths
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Get changed files of PR from github API
-          PR_DETAILS=$(curl -sSL \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files")
-          CHANGED_FILES=$(echo "$PR_DETAILS" | jq -r '.[].filename')
+          CHANGED_FILES=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $pr: Int!, $endCursor: String) {
+              repository(owner: $owner, name: $repo) {
+                pullRequest(number: $pr) {
+                  files(first: 100, after: $endCursor) {
+                    pageInfo{ hasNextPage, endCursor }
+                    nodes {
+                      path
+                    }
+                  }
+                }
+              }
+            }' -F owner='ballerina-platform' -F repo='module-ballerinax-health.fhir.r4' -F pr=${{ github.event.pull_request.number }} --paginate --jq '.data.repository.pullRequest.files.nodes.[].path')
           echo "Changed Files: "
           echo "${CHANGED_FILES}"
 
