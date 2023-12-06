@@ -106,6 +106,14 @@ public type FHIRIssueDetail record {
     string[]? expression = ();
 };
 
+# Description.
+#
+# + detailedErrors - User friendly error messages
+public type FHIRValidationIssueDetail record {
+    *FHIRIssueDetail;
+    string[]? detailedErrors =();
+};
+
 # FHIR error details record.
 #
 # + issues - FHIR issues
@@ -131,13 +139,15 @@ public type FHIRErrorDetail record {
 # + errorType - (optional) type of the error
 # + httpStatusCode - (optional) [default: 500] HTTP status code to return to the client
 # + return - Return Value Description
+# + parsedErrors - (optional) usefriendly error messages parsed from original error message
 public isolated function createFHIRError(string message, Severity errServerity, IssueType code,
         string? diagnostic = (), string[]? expression = (), error? cause = (),
-        FHIRErrorTypes? errorType = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR)
+        FHIRErrorTypes? errorType = (), string[]? parsedErrors = (),  int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR)
         returns FHIRError {
     string diagnosticMessage = diagnostic != () ? string `${message} due to ${diagnostic}` : message;
+    string[] detailedErrors = parsedErrors != () ? parsedErrors : [diagnosticMessage];
     return createTypedError(diagnosticMessage, errServerity, code, diagnostic, expression, cause, errorType,
-                                internal = false, httpStatusCode = httpStatusCode);
+                                internal = false, httpStatusCode = httpStatusCode, detailedErrors = detailedErrors );
 }
 
 # Utility function to create internal FHIRError.
@@ -159,10 +169,10 @@ public isolated function createInternalFHIRError(string message, Severity errSer
 
 isolated function createTypedError(string message, Severity errServerity, IssueType code,
         string? diagnostic = (), string[]? expression = (), error? cause = (),
-        FHIRErrorTypes? errorType = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR,
+        FHIRErrorTypes? errorType = (), string[]? detailedErrors = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR,
         boolean internal = false)
                                 returns FHIRError {
-    FHIRIssueDetail issue = {
+    FHIRValidationIssueDetail issue = {
         severity: errServerity,
         code: code,
         diagnostic: diagnostic,
@@ -175,7 +185,8 @@ isolated function createTypedError(string message, Severity errServerity, IssueT
                 }
             ],
             text: message
-        }
+        },
+        detailedErrors: detailedErrors
     };
     match errorType {
         VALIDATION_ERROR => {

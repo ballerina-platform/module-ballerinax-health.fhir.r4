@@ -11,9 +11,9 @@ export = ["health.fhir.r4.validator"]
 [[dependency]]
 org = "ballerinax"
 name = "health.fhir.r4"
-version = "4.2.0"
+version = "4.2.1"
 
 [[dependency]]
 org = "ballerinax"
 name = "health.fhir.r4.parser"
-version = "4.1.0"
+version = "4.0.1"
