@@ -30,7 +30,7 @@ import ballerina/log;
 #
 # + authorElement - CCDA Author Element
 # + return - Return FHIR Practitioner resource
-public isolated function mapCcdaPractitionerToFhir(xml authorElement) returns uscore501:USCorePractitionerProfile? {
+isolated function ccdaToPractitioner(xml authorElement) returns uscore501:USCorePractitionerProfile? {
     if isXMLElementNotNull(authorElement) {
         uscore501:USCorePractitionerProfile practitioner = {identifier: [], name: []};
 

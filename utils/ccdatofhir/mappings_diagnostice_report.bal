@@ -25,7 +25,7 @@ import ballerinax/health.fhir.r4.uscore501;
 #
 # + organizerElement - organizer element of the CCDA Diagnostic Report
 # + return - FHIR Diagnostic Report
-public isolated function mapCcdaDiagnosticReportToFhir(xml organizerElement) returns uscore501:USCoreDiagnosticReportProfileLaboratoryReporting? {
+isolated function ccdaToDiagnosticReport(xml organizerElement) returns uscore501:USCoreDiagnosticReportProfileLaboratoryReporting? {
     if isXMLElementNotNull(organizerElement) {
         uscore501:USCoreDiagnosticReportProfileLaboratoryReporting diagnosticReport = {code: {}, status: "partial", effectivePeriod: {}, 
         effectiveDateTime: "", subject: {}, issued: "", category: []};

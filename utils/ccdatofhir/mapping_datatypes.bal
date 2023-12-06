@@ -266,9 +266,13 @@ public isolated function mapCcdaNametoFhirName(xml nameElements) returns r4:Huma
             suffix.push(suffixElement.data().trim());
         }
 
-
-        if family != "" || given.length() > 0 || prefix.length() > 0 || suffix.length() > 0 {
-            r4:HumanName name = {given: given, family, prefix, suffix};
+        r4:HumanName name = {
+            given: given.length() > 0 ? given:(), 
+            family: family != "" ? family:(), 
+            prefix: prefix.length() > 0 ? prefix:(), 
+            suffix: suffix.length() > 0 ? suffix:()
+        };
+        if name != {} {
             humanNames.push(name);
         }
     }
