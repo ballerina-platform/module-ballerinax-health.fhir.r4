@@ -51,14 +51,6 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "DocumentReference.context.practiceSetting"
         }
     ],
-    "_list": [
-        {
-            name: "_list",
-            'type: r4:STRING,
-            base: ["Resource"],
-            expression: "$searchParam.getExpression()"
-        }
-    ],
     "path": [
         {
             name: "path",
@@ -143,8 +135,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "version",
             'type: r4:TOKEN,
-            base: ["ResearchDefinition","PlanDefinition","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","Evidence","Library","ChargeItemDefinition","Questionnaire","Measure","ExampleScenario","ActivityDefinition","TestScript","ResearchElementDefinition","EventDefinition","EvidenceVariable"],
-            expression: "EvidenceVariable.version | EventDefinition.version | ResearchElementDefinition.version | TestScript.version | ActivityDefinition.version | ExampleScenario.version | Measure.version | Questionnaire.version | ChargeItemDefinition.version | Library.version | Evidence.version | CapabilityStatement.version | CodeSystem.version | CompartmentDefinition.version | ConceptMap.version | GraphDefinition.version | ImplementationGuide.version | MessageDefinition.version | OperationDefinition.version | SearchParameter.version | StructureDefinition.version | StructureMap.version | TerminologyCapabilities.version | ValueSet.version | PlanDefinition.version | ResearchDefinition.version"
+            base: ["ResearchDefinition","PlanDefinition","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","Evidence","Library","ChargeItemDefinition","Questionnaire","EffectEvidenceSynthesis","Measure","ExampleScenario","ActivityDefinition","TestScript","ResearchElementDefinition","RiskEvidenceSynthesis","EventDefinition","EvidenceVariable"],
+            expression: "EvidenceVariable.version | EventDefinition.version | RiskEvidenceSynthesis.version | ResearchElementDefinition.version | TestScript.version | ActivityDefinition.version | ExampleScenario.version | Measure.version | EffectEvidenceSynthesis.version | Questionnaire.version | ChargeItemDefinition.version | Library.version | Evidence.version | CapabilityStatement.version | CodeSystem.version | CompartmentDefinition.version | ConceptMap.version | GraphDefinition.version | ImplementationGuide.version | MessageDefinition.version | OperationDefinition.version | SearchParameter.version | StructureDefinition.version | StructureMap.version | TerminologyCapabilities.version | ValueSet.version | PlanDefinition.version | ResearchDefinition.version"
         }
     ],
     "address-postalcode": [
@@ -159,8 +151,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "route",
             'type: r4:TOKEN,
-            base: ["AllergyIntolerance"],
-            expression: "AllergyIntolerance.reaction.exposureRoute"
+            base: ["MedicinalProductPharmaceutical","AllergyIntolerance"],
+            expression: "AllergyIntolerance.reaction.exposureRoute | MedicinalProductPharmaceutical.routeOfAdministration.code"
         }
     ],
     "chromosome-variant-coordinate": [
@@ -423,6 +415,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "List.note.text"
         }
     ],
+    "amino-acid-change": [
+        {
+            name: "amino-acid-change",
+            'type: r4:STRING,
+            base: ["Observation"],
+            expression: "Observation.extension('http://hl7.org/fhir/StructureDefinition/observation-geneticsAminoAcidChangeName')"
+        }
+    ],
     "service-category": [
         {
             name: "service-category",
@@ -439,6 +439,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "Condition.evidence.code"
         }
     ],
+    "din": [
+        {
+            name: "din",
+            'type: r4:TOKEN,
+            base: ["Device"],
+            expression: "Device.extension('http://hl7.org/fhir/SearchParameter/device-extensions-Device-din')"
+        }
+    ],
     "criticality": [
         {
             name: "criticality",
@@ -453,6 +461,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             'type: r4:TOKEN,
             base: ["DocumentReference","Patient"],
             expression: "Patient.communication.language | DocumentReference.content.attachment.language"
+        }
+    ],
+    "name-language": [
+        {
+            name: "name-language",
+            'type: r4:TOKEN,
+            base: ["MedicinalProduct"],
+            expression: "MedicinalProduct.name.countryLanguage.language"
         }
     ],
     "payment-date": [
@@ -541,6 +557,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "AllergyIntolerance.reaction.manifestation"
         }
     ],
+    "gene-dnavariant": [
+        {
+            name: "gene-dnavariant",
+            'type: r4:STRING,
+            base: ["Observation"],
+            expression: "Observation.extension('http://hl7.org/fhir/StructureDefinition/observation-geneticsDnaVariant')"
+        }
+    ],
     "part-status": [
         {
             name: "part-status",
@@ -573,6 +597,22 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "ImmunizationEvaluation.doseStatus"
         }
     ],
+    "item-subject": [
+        {
+            name: "item-subject",
+            'type: r4:REFERENCE,
+            base: ["QuestionnaireResponse"],
+            expression: "QuestionnaireResponse.item.where(hasExtension('http://hl7.org/fhir/StructureDefinition/questionnaireresponse-isSubject')).answer.value.ofType(Reference)"
+        }
+    ],
+    "Example Search Parameter": [
+        {
+            name: "Example Search Parameter",
+            'type: r4:REFERENCE,
+            base: ["Condition"],
+            expression: "Condition.subject"
+        }
+    ],
     "beneficiary": [
         {
             name: "beneficiary",
@@ -595,6 +635,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             'type: r4:REFERENCE,
             base: ["ExplanationOfBenefit","Claim"],
             expression: "Claim.item.detail.subDetail.udi | ExplanationOfBenefit.item.detail.subDetail.udi"
+        }
+    ],
+    "Example Search Parameter on an extension": [
+        {
+            name: "Example Search Parameter on an extension",
+            'type: r4:REFERENCE,
+            base: ["Patient"],
+            expression: "DocumentReference.extension('http://example.org/fhir/StructureDefinition/participation-agreement')"
         }
     ],
     "policy-holder": [
@@ -631,8 +679,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "context-type-value",
             'type: r4:COMPOSITE,
-            base: ["EvidenceVariable","Measure","TestScript","ExampleScenario","EventDefinition","Library","ActivityDefinition","ResearchDefinition","ResearchElementDefinition","ChargeItemDefinition","Questionnaire","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","PlanDefinition","Evidence"],
-            expression: "Evidence.useContext | PlanDefinition.useContext | CapabilityStatement.useContext | CodeSystem.useContext | CompartmentDefinition.useContext | ConceptMap.useContext | GraphDefinition.useContext | ImplementationGuide.useContext | MessageDefinition.useContext | NamingSystem.useContext | OperationDefinition.useContext | SearchParameter.useContext | StructureDefinition.useContext | StructureMap.useContext | TerminologyCapabilities.useContext | ValueSet.useContext | Questionnaire.useContext | ChargeItemDefinition.useContext | ResearchElementDefinition.useContext | ResearchDefinition.useContext | ActivityDefinition.useContext | Library.useContext | EventDefinition.useContext | ExampleScenario.useContext | TestScript.useContext | Measure.useContext | EvidenceVariable.useContext"
+            base: ["EvidenceVariable","Measure","TestScript","ExampleScenario","EventDefinition","Library","ActivityDefinition","ResearchDefinition","RiskEvidenceSynthesis","ResearchElementDefinition","ChargeItemDefinition","Questionnaire","EffectEvidenceSynthesis","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","PlanDefinition","Evidence"],
+            expression: "Evidence.useContext | PlanDefinition.useContext | CapabilityStatement.useContext | CodeSystem.useContext | CompartmentDefinition.useContext | ConceptMap.useContext | GraphDefinition.useContext | ImplementationGuide.useContext | MessageDefinition.useContext | NamingSystem.useContext | OperationDefinition.useContext | SearchParameter.useContext | StructureDefinition.useContext | StructureMap.useContext | TerminologyCapabilities.useContext | ValueSet.useContext | EffectEvidenceSynthesis.useContext | Questionnaire.useContext | ChargeItemDefinition.useContext | ResearchElementDefinition.useContext | RiskEvidenceSynthesis.useContext | ResearchDefinition.useContext | ActivityDefinition.useContext | Library.useContext | EventDefinition.useContext | ExampleScenario.useContext | TestScript.useContext | Measure.useContext | EvidenceVariable.useContext"
         }
     ],
     "component-data-absent-reason": [
@@ -655,8 +703,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "title",
             'type: r4:STRING,
-            base: ["Questionnaire","ActivityDefinition","List","TestScript","PlanDefinition","CapabilityStatement","ConceptMap","ImplementationGuide","MessageDefinition","OperationDefinition","StructureDefinition","StructureMap","TerminologyCapabilities","EvidenceVariable","Library","ResearchDefinition","Evidence","Measure","ChargeItemDefinition","ResearchElementDefinition","Composition","EventDefinition","ResearchStudy"],
-            expression: "ResearchStudy.title | EventDefinition.title | Composition.title | ResearchElementDefinition.title | ChargeItemDefinition.title | Measure.title | Evidence.title | ResearchDefinition.title | Library.title | EvidenceVariable.title | CapabilityStatement.title | CodeSystem.title | ConceptMap.title | ImplementationGuide.title | MessageDefinition.title | OperationDefinition.title | StructureDefinition.title | StructureMap.title | TerminologyCapabilities.title | ValueSet.title | PlanDefinition.title | TestScript.title | List.title | ActivityDefinition.title | Questionnaire.title"
+            base: ["Questionnaire","ActivityDefinition","List","TestScript","RiskEvidenceSynthesis","PlanDefinition","CapabilityStatement","ConceptMap","ImplementationGuide","MessageDefinition","OperationDefinition","StructureDefinition","StructureMap","TerminologyCapabilities","EvidenceVariable","Library","ResearchDefinition","Evidence","EffectEvidenceSynthesis","Measure","ChargeItemDefinition","ResearchElementDefinition","Composition","EventDefinition","ResearchStudy"],
+            expression: "ResearchStudy.title | EventDefinition.title | Composition.title | ResearchElementDefinition.title | ChargeItemDefinition.title | Measure.title | EffectEvidenceSynthesis.title | Evidence.title | ResearchDefinition.title | Library.title | EvidenceVariable.title | CapabilityStatement.title | CodeSystem.title | ConceptMap.title | ImplementationGuide.title | MessageDefinition.title | OperationDefinition.title | StructureDefinition.title | StructureMap.title | TerminologyCapabilities.title | ValueSet.title | PlanDefinition.title | RiskEvidenceSynthesis.title | TestScript.title | List.title | ActivityDefinition.title | Questionnaire.title"
         }
     ],
     "collector": [
@@ -808,6 +856,17 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             base: ["MedicationDispense"],
             expression: "MedicationDispense.whenHandedOver"
         }
+    ]    
+};
+//Number of search params in INTERNATIONAL_IG_SEARCH_PARAMS_2  = 100
+final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH_PARAMS_2 = {
+    "FilterSearchParameter": [
+        {
+            name: "FilterSearchParameter",
+            'type: r4:SPECIAL,
+            base: ["Resource"],
+            expression: "$searchParam.getExpression()"
+        }
     ],
     "schedule": [
         {
@@ -856,10 +915,7 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             base: ["Condition"],
             expression: "Condition.onset.as(Age) | Condition.onset.as(Range)"
         }
-    ]    
-};
-//Number of search params in INTERNATIONAL_IG_SEARCH_PARAMS_2  = 100
-final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH_PARAMS_2 = {
+    ],
     "agent-role": [
         {
             name: "agent-role",
@@ -882,6 +938,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             'type: r4:REFERENCE,
             base: ["DeviceRequest"],
             expression: "DeviceRequest.priorRequest"
+        }
+    ],
+    "age": [
+        {
+            name: "age",
+            'type: r4:NUMBER,
+            base: ["Patient"],
+            expression: "$searchParam.getExpression()"
         }
     ],
     "results-interpreter": [
@@ -1002,8 +1066,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "context",
             'type: r4:TOKEN,
-            base: ["Measure","ExampleScenario","PlanDefinition","EvidenceVariable","ResearchElementDefinition","ActivityDefinition","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","Questionnaire","ResearchDefinition","EventDefinition","ChargeItemDefinition","Composition","Library","TestScript","Evidence"],
-            expression: "(Evidence.useContext.value as CodeableConcept) | (TestScript.useContext.value as CodeableConcept) | (Library.useContext.value as CodeableConcept) | Composition.event.code | (ChargeItemDefinition.useContext.value as CodeableConcept) | (EventDefinition.useContext.value as CodeableConcept) | (ResearchDefinition.useContext.value as CodeableConcept) | (Questionnaire.useContext.value as CodeableConcept) | (CapabilityStatement.useContext.value as CodeableConcept) | (CodeSystem.useContext.value as CodeableConcept) | (CompartmentDefinition.useContext.value as CodeableConcept) | (ConceptMap.useContext.value as CodeableConcept) | (GraphDefinition.useContext.value as CodeableConcept) | (ImplementationGuide.useContext.value as CodeableConcept) | (MessageDefinition.useContext.value as CodeableConcept) | (NamingSystem.useContext.value as CodeableConcept) | (OperationDefinition.useContext.value as CodeableConcept) | (SearchParameter.useContext.value as CodeableConcept) | (StructureDefinition.useContext.value as CodeableConcept) | (StructureMap.useContext.value as CodeableConcept) | (TerminologyCapabilities.useContext.value as CodeableConcept) | (ValueSet.useContext.value as CodeableConcept) | (ActivityDefinition.useContext.value as CodeableConcept) | (ResearchElementDefinition.useContext.value as CodeableConcept) | (EvidenceVariable.useContext.value as CodeableConcept) | (PlanDefinition.useContext.value as CodeableConcept) | (ExampleScenario.useContext.value as CodeableConcept) | (Measure.useContext.value as CodeableConcept)"
+            base: ["Measure","ExampleScenario","RiskEvidenceSynthesis","PlanDefinition","EvidenceVariable","ResearchElementDefinition","ActivityDefinition","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","Questionnaire","ResearchDefinition","EventDefinition","ChargeItemDefinition","Composition","Library","TestScript","EffectEvidenceSynthesis","Evidence"],
+            expression: "(Evidence.useContext.value as CodeableConcept) | (EffectEvidenceSynthesis.useContext.value as CodeableConcept) | (TestScript.useContext.value as CodeableConcept) | (Library.useContext.value as CodeableConcept) | Composition.event.code | (ChargeItemDefinition.useContext.value as CodeableConcept) | (EventDefinition.useContext.value as CodeableConcept) | (ResearchDefinition.useContext.value as CodeableConcept) | (Questionnaire.useContext.value as CodeableConcept) | (CapabilityStatement.useContext.value as CodeableConcept) | (CodeSystem.useContext.value as CodeableConcept) | (CompartmentDefinition.useContext.value as CodeableConcept) | (ConceptMap.useContext.value as CodeableConcept) | (GraphDefinition.useContext.value as CodeableConcept) | (ImplementationGuide.useContext.value as CodeableConcept) | (MessageDefinition.useContext.value as CodeableConcept) | (NamingSystem.useContext.value as CodeableConcept) | (OperationDefinition.useContext.value as CodeableConcept) | (SearchParameter.useContext.value as CodeableConcept) | (StructureDefinition.useContext.value as CodeableConcept) | (StructureMap.useContext.value as CodeableConcept) | (TerminologyCapabilities.useContext.value as CodeableConcept) | (ValueSet.useContext.value as CodeableConcept) | (ActivityDefinition.useContext.value as CodeableConcept) | (ResearchElementDefinition.useContext.value as CodeableConcept) | (EvidenceVariable.useContext.value as CodeableConcept) | (PlanDefinition.useContext.value as CodeableConcept) | (RiskEvidenceSynthesis.useContext.value as CodeableConcept) | (ExampleScenario.useContext.value as CodeableConcept) | (Measure.useContext.value as CodeableConcept)"
         }
     ],
     "code-value-quantity": [
@@ -1036,6 +1100,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             'type: r4:STRING,
             base: ["Device"],
             expression: "Device.modelNumber"
+        }
+    ],
+    "target-species": [
+        {
+            name: "target-species",
+            'type: r4:TOKEN,
+            base: ["MedicinalProductPharmaceutical"],
+            expression: "MedicinalProductPharmaceutical.routeOfAdministration.targetSpecies.code"
         }
     ],
     "signer": [
@@ -1130,8 +1202,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "status",
             'type: r4:TOKEN,
-            base: ["ImmunizationEvaluation","MedicationAdministration","MedicationDispense","MedicationRequest","MedicationStatement","Appointment","Task","EpisodeOfCare","Procedure","ActivityDefinition","MedicationKnowledge","ResearchElementDefinition","Medication","CarePlan","Location","DeviceRequest","SupplyDelivery","QuestionnaireResponse","Claim","DiagnosticReport","DocumentReference","EventDefinition","Endpoint","EnrollmentResponse","EvidenceVariable","Library","SupplyRequest","ResearchSubject","FamilyMemberHistory","List","Composition","Questionnaire","PlanDefinition","Communication","ExampleScenario","ServiceRequest","DocumentManifest","Encounter","MeasureReport","TestScript","Media","InsurancePlan","Contract","Specimen","Substance","CoverageEligibilityRequest","ImagingStudy","Immunization","VisionPrescription","ImmunizationRecommendation","CareTeam","Measure","Subscription","ClaimResponse","PaymentNotice","EnrollmentRequest","ExplanationOfBenefit","RequestGroup","NutritionOrder","Account","Consent","PaymentReconciliation","Evidence","ResearchDefinition","ClinicalImpression","Observation","ChargeItemDefinition","ResearchStudy","Device","Coverage","Invoice","Slot","CoverageEligibilityResponse","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","CommunicationRequest"],
-            expression: "CommunicationRequest.status | CapabilityStatement.status | CodeSystem.status | CompartmentDefinition.status | ConceptMap.status | GraphDefinition.status | ImplementationGuide.status | MessageDefinition.status | NamingSystem.status | OperationDefinition.status | SearchParameter.status | StructureDefinition.status | StructureMap.status | TerminologyCapabilities.status | ValueSet.status | CoverageEligibilityResponse.status | Slot.status | Invoice.status | Coverage.status | Device.status | ResearchStudy.status | ChargeItemDefinition.status | Observation.status | ClinicalImpression.status | ResearchDefinition.status | Evidence.status | PaymentReconciliation.status | Consent.status | Account.status | NutritionOrder.status | RequestGroup.status | ExplanationOfBenefit.status | EnrollmentRequest.status | PaymentNotice.status | ClaimResponse.status | Subscription.status | Measure.status | CareTeam.status | ImmunizationRecommendation.recommendation.forecastStatus | VisionPrescription.status | Immunization.status | ImagingStudy.status | CoverageEligibilityRequest.status | Substance.status | Specimen.status | Contract.status | InsurancePlan.status | Media.status | TestScript.status | MeasureReport.status | Encounter.status | DocumentManifest.status | ServiceRequest.status | ExampleScenario.status | Communication.status | PlanDefinition.status | Questionnaire.status | Composition.status | List.status | FamilyMemberHistory.status | ResearchSubject.status | SupplyRequest.status | Library.status | EvidenceVariable.status | EnrollmentResponse.status | Endpoint.status | EventDefinition.status | DocumentReference.status | DiagnosticReport.status | Claim.status | QuestionnaireResponse.status | SupplyDelivery.status | DeviceRequest.status | Location.status | CarePlan.status | Medication.status | ResearchElementDefinition.status | MedicationKnowledge.status | ActivityDefinition.status | Procedure.status | EpisodeOfCare.status | Task.status | Appointment.status | MedicationAdministration.status | MedicationDispense.status | MedicationRequest.status | MedicationStatement.status | ImmunizationEvaluation.status"
+            base: ["RiskEvidenceSynthesis","ImmunizationEvaluation","MedicationAdministration","MedicationDispense","MedicationRequest","MedicationStatement","Appointment","EffectEvidenceSynthesis","Task","EpisodeOfCare","Procedure","ActivityDefinition","MedicationKnowledge","ResearchElementDefinition","Medication","CarePlan","Location","DeviceRequest","QuestionnaireResponse","SupplyDelivery","Claim","DiagnosticReport","DocumentReference","EventDefinition","Endpoint","EnrollmentResponse","EvidenceVariable","Library","SupplyRequest","ResearchSubject","FamilyMemberHistory","List","Composition","Questionnaire","PlanDefinition","Communication","ExampleScenario","ServiceRequest","DocumentManifest","Encounter","MeasureReport","TestScript","Media","InsurancePlan","Contract","Specimen","Substance","CoverageEligibilityRequest","MedicinalProductAuthorization","ImagingStudy","Immunization","VisionPrescription","ImmunizationRecommendation","CareTeam","Measure","Subscription","ClaimResponse","PaymentNotice","EnrollmentRequest","ExplanationOfBenefit","RequestGroup","NutritionOrder","Account","Consent","PaymentReconciliation","Evidence","ResearchDefinition","ClinicalImpression","Observation","ChargeItemDefinition","ResearchStudy","Device","Coverage","Invoice","Slot","CoverageEligibilityResponse","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","CommunicationRequest"],
+            expression: "CommunicationRequest.status | CapabilityStatement.status | CodeSystem.status | CompartmentDefinition.status | ConceptMap.status | GraphDefinition.status | ImplementationGuide.status | MessageDefinition.status | NamingSystem.status | OperationDefinition.status | SearchParameter.status | StructureDefinition.status | StructureMap.status | TerminologyCapabilities.status | ValueSet.status | CoverageEligibilityResponse.status | Slot.status | Invoice.status | Coverage.status | Device.status | ResearchStudy.status | ChargeItemDefinition.status | Observation.status | ClinicalImpression.status | ResearchDefinition.status | Evidence.status | PaymentReconciliation.status | Consent.status | Account.status | NutritionOrder.status | RequestGroup.status | ExplanationOfBenefit.status | EnrollmentRequest.status | PaymentNotice.status | ClaimResponse.status | Subscription.status | Measure.status | CareTeam.status | ImmunizationRecommendation.recommendation.forecastStatus | VisionPrescription.status | Immunization.status | ImagingStudy.status | MedicinalProductAuthorization.status | CoverageEligibilityRequest.status | Substance.status | Specimen.status | Contract.status | InsurancePlan.status | Media.status | TestScript.status | MeasureReport.status | Encounter.status | DocumentManifest.status | ServiceRequest.status | ExampleScenario.status | Communication.status | PlanDefinition.status | Questionnaire.status | Composition.status | List.status | FamilyMemberHistory.status | ResearchSubject.status | SupplyRequest.status | Library.status | EvidenceVariable.status | EnrollmentResponse.status | Endpoint.status | EventDefinition.status | DocumentReference.status | DiagnosticReport.status | Claim.status | SupplyDelivery.status | QuestionnaireResponse.status | DeviceRequest.status | Location.status | CarePlan.status | Medication.status | ResearchElementDefinition.status | MedicationKnowledge.status | ActivityDefinition.status | Procedure.status | EpisodeOfCare.status | Task.status | EffectEvidenceSynthesis.status | Appointment.status | MedicationAdministration.status | MedicationDispense.status | MedicationRequest.status | MedicationStatement.status | ImmunizationEvaluation.status | RiskEvidenceSynthesis.status"
         }
     ],
     "other": [
@@ -1146,8 +1218,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "successor",
             'type: r4:REFERENCE,
-            base: ["Library","ResearchDefinition","PlanDefinition","ActivityDefinition","ResearchElementDefinition","Measure","EventDefinition"],
-            expression: "EventDefinition.relatedArtifact.where(type='successor').resource | Measure.relatedArtifact.where(type='successor').resource | ResearchElementDefinition.relatedArtifact.where(type='successor').resource | ActivityDefinition.relatedArtifact.where(type='successor').resource | PlanDefinition.relatedArtifact.where(type='successor').resource | ResearchDefinition.relatedArtifact.where(type='successor').resource | Library.relatedArtifact.where(type='successor').resource"
+            base: ["Library","ResearchDefinition","PlanDefinition","Evidence","EvidenceVariable","ActivityDefinition","ResearchElementDefinition","Measure","EventDefinition"],
+            expression: "EventDefinition.relatedArtifact.where(type='successor').resource | Measure.relatedArtifact.where(type='successor').resource | ResearchElementDefinition.relatedArtifact.where(type='successor').resource | ActivityDefinition.relatedArtifact.where(type='successor').resource | EvidenceVariable.relatedArtifact.where(type='successor').resource | Evidence.relatedArtifact.where(type='successor').resource | PlanDefinition.relatedArtifact.where(type='successor').resource | ResearchDefinition.relatedArtifact.where(type='successor').resource | Library.relatedArtifact.where(type='successor').resource"
         }
     ],
     "combo-code-value-quantity": [
@@ -1268,20 +1340,12 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "Resource.meta.security"
         }
     ],
-    "_type": [
-        {
-            name: "_type",
-            'type: r4:TOKEN,
-            base: ["Resource"],
-            expression: "$searchParam.getExpression()"
-        }
-    ],
     "url": [
         {
             name: "url",
             'type: r4:URI,
-            base: ["ResearchElementDefinition","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","EventDefinition","Subscription","ActivityDefinition","Library","PlanDefinition","Contract","ResearchDefinition","Device","Measure","ExampleScenario","EvidenceVariable","ChargeItemDefinition","Questionnaire","Evidence","TestScript"],
-            expression: "TestScript.url | Evidence.url | Questionnaire.url | ChargeItemDefinition.url | EvidenceVariable.url | ExampleScenario.url | Measure.url | Device.url | ResearchDefinition.url | Contract.url | PlanDefinition.url | Library.url | ActivityDefinition.url | Subscription.channel.endpoint | EventDefinition.url | CapabilityStatement.url | CodeSystem.url | CompartmentDefinition.url | ConceptMap.url | GraphDefinition.url | ImplementationGuide.url | MessageDefinition.url | OperationDefinition.url | SearchParameter.url | StructureDefinition.url | StructureMap.url | TerminologyCapabilities.url | ValueSet.url | ResearchElementDefinition.url"
+            base: ["ResearchElementDefinition","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","EventDefinition","Subscription","RiskEvidenceSynthesis","ActivityDefinition","Library","PlanDefinition","Contract","ResearchDefinition","Device","Measure","ExampleScenario","EvidenceVariable","EffectEvidenceSynthesis","ChargeItemDefinition","Questionnaire","Evidence","TestScript"],
+            expression: "TestScript.url | Evidence.url | Questionnaire.url | ChargeItemDefinition.url | EffectEvidenceSynthesis.url | EvidenceVariable.url | ExampleScenario.url | Measure.url | Device.url | ResearchDefinition.url | Contract.url | PlanDefinition.url | Library.url | ActivityDefinition.url | RiskEvidenceSynthesis.url | Subscription.channel.endpoint | EventDefinition.url | CapabilityStatement.url | CodeSystem.url | CompartmentDefinition.url | ConceptMap.url | GraphDefinition.url | ImplementationGuide.url | MessageDefinition.url | OperationDefinition.url | SearchParameter.url | StructureDefinition.url | StructureMap.url | TerminologyCapabilities.url | ValueSet.url | ResearchElementDefinition.url"
         }
     ],
     "disposition": [
@@ -1376,8 +1440,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "subject",
             'type: r4:REFERENCE,
-            base: ["RiskAssessment","Observation","ServiceRequest","Contract","List","MedicationDispense","QuestionnaireResponse","DocumentReference","CommunicationRequest","DiagnosticReport","CareTeam","Communication","Condition","Media","Goal","Encounter","Invoice","MedicationStatement","ChargeItem","DocumentManifest","Specimen","Procedure","RequestGroup","SupplyRequest","EnrollmentRequest","ClinicalImpression","Basic","AdverseEvent","Task","CarePlan","MeasureReport","MedicationAdministration","DeviceUseStatement","ImagingStudy","Composition","DeviceRequest","Flag","MedicationRequest","Account","GuidanceResponse"],
-            expression: "GuidanceResponse.subject | Account.subject | MedicationRequest.subject | Flag.subject | DeviceRequest.subject | Composition.subject | ImagingStudy.subject | DeviceUseStatement.subject | MedicationAdministration.subject | MeasureReport.subject | CarePlan.subject | Task.for | AdverseEvent.subject | Basic.subject | ClinicalImpression.subject | EnrollmentRequest.candidate | SupplyRequest.deliverTo | RequestGroup.subject | Procedure.subject | Specimen.subject | DocumentManifest.subject | ChargeItem.subject | MedicationStatement.subject | Invoice.subject | Encounter.subject | Goal.subject | Media.subject | Condition.subject | Communication.subject | CareTeam.subject | DiagnosticReport.subject | CommunicationRequest.subject | DocumentReference.subject | QuestionnaireResponse.subject | MedicationDispense.subject | List.subject | Contract.subject | ServiceRequest.subject | Observation.subject | RiskAssessment.subject"
+            base: ["RiskAssessment","Observation","ServiceRequest","Contract","List","MedicationDispense","QuestionnaireResponse","DocumentReference","CommunicationRequest","DiagnosticReport","CareTeam","Communication","Condition","Media","MedicinalProductIndication","Goal","Encounter","Invoice","MedicinalProductContraindication","MedicationStatement","ChargeItem","DocumentManifest","Specimen","Procedure","RequestGroup","SupplyRequest","EnrollmentRequest","MedicinalProductInteraction","ClinicalImpression","MedicinalProductUndesirableEffect","Basic","AdverseEvent","Task","CarePlan","MeasureReport","MedicationAdministration","MedicinalProductPackaged","MedicinalProductAuthorization","DeviceUseStatement","ImagingStudy","Composition","DeviceRequest","Flag","MedicationRequest","Account","GuidanceResponse"],
+            expression: "GuidanceResponse.subject | Account.subject | MedicationRequest.subject | Flag.subject | DeviceRequest.subject | Composition.subject | ImagingStudy.subject | DeviceUseStatement.subject | MedicinalProductAuthorization.subject | MedicinalProductPackaged.subject | MedicationAdministration.subject | MeasureReport.subject | CarePlan.subject | Task.for | AdverseEvent.subject | Basic.subject | MedicinalProductUndesirableEffect.subject | ClinicalImpression.subject | MedicinalProductInteraction.subject | EnrollmentRequest.candidate | SupplyRequest.deliverTo | RequestGroup.subject | Procedure.subject | Specimen.subject | DocumentManifest.subject | ChargeItem.subject | MedicationStatement.subject | MedicinalProductContraindication.subject | Invoice.subject | Encounter.subject | Goal.subject | MedicinalProductIndication.subject | Media.subject | Condition.subject | Communication.subject | CareTeam.subject | DiagnosticReport.subject | CommunicationRequest.subject | DocumentReference.subject | QuestionnaireResponse.subject | MedicationDispense.subject | List.subject | Contract.subject | ServiceRequest.subject | Observation.subject | RiskAssessment.subject"
         }
     ],
     "assessor": [
@@ -1576,8 +1640,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "code",
             'type: r4:TOKEN,
-            base: ["OperationDefinition","Substance","MedicationKnowledge","ChargeItem","SearchParameter","CompartmentDefinition","RequestGroup","Task","DetectedIssue","MessageHeader","Basic","AllergyIntolerance","Condition","DeviceRequest","DiagnosticReport","FamilyMemberHistory","List","Medication","MedicationAdministration","MedicationDispense","MedicationRequest","MedicationStatement","Observation","Procedure","ServiceRequest","Group","Questionnaire"],
-            expression: "Questionnaire.item.code | Group.code | AllergyIntolerance.code | AllergyIntolerance.reaction.substance | Condition.code | (DeviceRequest.code as CodeableConcept) | DiagnosticReport.code | FamilyMemberHistory.condition.code | List.code | Medication.code | (MedicationAdministration.medication as CodeableConcept) | (MedicationDispense.medication as CodeableConcept) | (MedicationRequest.medication as CodeableConcept) | (MedicationStatement.medication as CodeableConcept) | Observation.code | Procedure.code | ServiceRequest.code | Basic.code | MessageHeader.response.code | DetectedIssue.code | Task.code | RequestGroup.code | CompartmentDefinition.code | SearchParameter.code | ChargeItem.code | MedicationKnowledge.code | Substance.code | (Substance.ingredient.substance as CodeableConcept) | OperationDefinition.code"
+            base: ["OperationDefinition","Substance","MedicationKnowledge","ChargeItem","SearchParameter","CompartmentDefinition","RequestGroup","Task","SubstanceSpecification","DetectedIssue","MessageHeader","Basic","AllergyIntolerance","Condition","DeviceRequest","DiagnosticReport","FamilyMemberHistory","List","Medication","MedicationAdministration","MedicationDispense","MedicationRequest","MedicationStatement","Observation","Procedure","ServiceRequest","Group","Questionnaire"],
+            expression: "Questionnaire.item.code | Group.code | AllergyIntolerance.code | AllergyIntolerance.reaction.substance | Condition.code | (DeviceRequest.code as CodeableConcept) | DiagnosticReport.code | FamilyMemberHistory.condition.code | List.code | Medication.code | (MedicationAdministration.medication as CodeableConcept) | (MedicationDispense.medication as CodeableConcept) | (MedicationRequest.medication as CodeableConcept) | (MedicationStatement.medication as CodeableConcept) | Observation.code | Procedure.code | ServiceRequest.code | Basic.code | MessageHeader.response.code | DetectedIssue.code | SubstanceSpecification.code.code | Task.code | RequestGroup.code | CompartmentDefinition.code | SearchParameter.code | ChargeItem.code | MedicationKnowledge.code | Substance.code | (Substance.ingredient.substance as CodeableConcept) | OperationDefinition.code"
         }
     ],
     "participant-type": [
@@ -1616,24 +1680,27 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "composed-of",
             'type: r4:REFERENCE,
-            base: ["PlanDefinition","ResearchElementDefinition","EventDefinition","Library","Measure","ResearchDefinition","ActivityDefinition"],
-            expression: "ActivityDefinition.relatedArtifact.where(type='composed-of').resource | ResearchDefinition.relatedArtifact.where(type='composed-of').resource | Measure.relatedArtifact.where(type='composed-of').resource | Library.relatedArtifact.where(type='composed-of').resource | EventDefinition.relatedArtifact.where(type='composed-of').resource | ResearchElementDefinition.relatedArtifact.where(type='composed-of').resource | PlanDefinition.relatedArtifact.where(type='composed-of').resource"
+            base: ["EvidenceVariable","PlanDefinition","ResearchElementDefinition","EventDefinition","Library","Measure","Evidence","ResearchDefinition","ActivityDefinition"],
+            expression: "ActivityDefinition.relatedArtifact.where(type='composed-of').resource | ResearchDefinition.relatedArtifact.where(type='composed-of').resource | Evidence.relatedArtifact.where(type='composed-of').resource | Measure.relatedArtifact.where(type='composed-of').resource | Library.relatedArtifact.where(type='composed-of').resource | EventDefinition.relatedArtifact.where(type='composed-of').resource | ResearchElementDefinition.relatedArtifact.where(type='composed-of').resource | PlanDefinition.relatedArtifact.where(type='composed-of').resource | EvidenceVariable.relatedArtifact.where(type='composed-of').resource"
         }
-    ],
+    ]    
+};
+//Number of search params in INTERNATIONAL_IG_SEARCH_PARAMS_3  = 100
+final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH_PARAMS_3 = {
     "context-quantity": [
         {
             name: "context-quantity",
             'type: r4:QUANTITY,
-            base: ["TestScript","Questionnaire","Evidence","EventDefinition","EvidenceVariable","Measure","PlanDefinition","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","Library","ActivityDefinition","ResearchElementDefinition","ChargeItemDefinition","ResearchDefinition","ExampleScenario"],
-            expression: "(ExampleScenario.useContext.value as Quantity) | (ExampleScenario.useContext.value as Range) | (ResearchDefinition.useContext.value as Quantity) | (ResearchDefinition.useContext.value as Range) | (ChargeItemDefinition.useContext.value as Quantity) | (ChargeItemDefinition.useContext.value as Range) | (ResearchElementDefinition.useContext.value as Quantity) | (ResearchElementDefinition.useContext.value as Range) | (ActivityDefinition.useContext.value as Quantity) | (ActivityDefinition.useContext.value as Range) | (Library.useContext.value as Quantity) | (Library.useContext.value as Range) | (CapabilityStatement.useContext.value as Quantity) | (CapabilityStatement.useContext.value as Range) | (CodeSystem.useContext.value as Quantity) | (CodeSystem.useContext.value as Range) | (CompartmentDefinition.useContext.value as Quantity) | (CompartmentDefinition.useContext.value as Range) | (ConceptMap.useContext.value as Quantity) | (ConceptMap.useContext.value as Range) | (GraphDefinition.useContext.value as Quantity) | (GraphDefinition.useContext.value as Range) | (ImplementationGuide.useContext.value as Quantity) | (ImplementationGuide.useContext.value as Range) | (MessageDefinition.useContext.value as Quantity) | (MessageDefinition.useContext.value as Range) | (NamingSystem.useContext.value as Quantity) | (NamingSystem.useContext.value as Range) | (OperationDefinition.useContext.value as Quantity) | (OperationDefinition.useContext.value as Range) | (SearchParameter.useContext.value as Quantity) | (SearchParameter.useContext.value as Range) | (StructureDefinition.useContext.value as Quantity) | (StructureDefinition.useContext.value as Range) | (StructureMap.useContext.value as Quantity) | (StructureMap.useContext.value as Range) | (TerminologyCapabilities.useContext.value as Quantity) | (TerminologyCapabilities.useContext.value as Range) | (ValueSet.useContext.value as Quantity) | (ValueSet.useContext.value as Range) | (PlanDefinition.useContext.value as Quantity) | (PlanDefinition.useContext.value as Range) | (Measure.useContext.value as Quantity) | (Measure.useContext.value as Range) | (EvidenceVariable.useContext.value as Quantity) | (EvidenceVariable.useContext.value as Range) | (EventDefinition.useContext.value as Quantity) | (EventDefinition.useContext.value as Range) | (Evidence.useContext.value as Quantity) | (Evidence.useContext.value as Range) | (Questionnaire.useContext.value as Quantity) | (Questionnaire.useContext.value as Range) | (TestScript.useContext.value as Quantity) | (TestScript.useContext.value as Range)"
+            base: ["RiskEvidenceSynthesis","TestScript","Questionnaire","Evidence","EventDefinition","EvidenceVariable","Measure","PlanDefinition","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","Library","ActivityDefinition","ResearchElementDefinition","ChargeItemDefinition","ResearchDefinition","EffectEvidenceSynthesis","ExampleScenario"],
+            expression: "(ExampleScenario.useContext.value as Quantity) | (ExampleScenario.useContext.value as Range) | (EffectEvidenceSynthesis.useContext.value as Quantity) | (EffectEvidenceSynthesis.useContext.value as Range) | (ResearchDefinition.useContext.value as Quantity) | (ResearchDefinition.useContext.value as Range) | (ChargeItemDefinition.useContext.value as Quantity) | (ChargeItemDefinition.useContext.value as Range) | (ResearchElementDefinition.useContext.value as Quantity) | (ResearchElementDefinition.useContext.value as Range) | (ActivityDefinition.useContext.value as Quantity) | (ActivityDefinition.useContext.value as Range) | (Library.useContext.value as Quantity) | (Library.useContext.value as Range) | (CapabilityStatement.useContext.value as Quantity) | (CapabilityStatement.useContext.value as Range) | (CodeSystem.useContext.value as Quantity) | (CodeSystem.useContext.value as Range) | (CompartmentDefinition.useContext.value as Quantity) | (CompartmentDefinition.useContext.value as Range) | (ConceptMap.useContext.value as Quantity) | (ConceptMap.useContext.value as Range) | (GraphDefinition.useContext.value as Quantity) | (GraphDefinition.useContext.value as Range) | (ImplementationGuide.useContext.value as Quantity) | (ImplementationGuide.useContext.value as Range) | (MessageDefinition.useContext.value as Quantity) | (MessageDefinition.useContext.value as Range) | (NamingSystem.useContext.value as Quantity) | (NamingSystem.useContext.value as Range) | (OperationDefinition.useContext.value as Quantity) | (OperationDefinition.useContext.value as Range) | (SearchParameter.useContext.value as Quantity) | (SearchParameter.useContext.value as Range) | (StructureDefinition.useContext.value as Quantity) | (StructureDefinition.useContext.value as Range) | (StructureMap.useContext.value as Quantity) | (StructureMap.useContext.value as Range) | (TerminologyCapabilities.useContext.value as Quantity) | (TerminologyCapabilities.useContext.value as Range) | (ValueSet.useContext.value as Quantity) | (ValueSet.useContext.value as Range) | (PlanDefinition.useContext.value as Quantity) | (PlanDefinition.useContext.value as Range) | (Measure.useContext.value as Quantity) | (Measure.useContext.value as Range) | (EvidenceVariable.useContext.value as Quantity) | (EvidenceVariable.useContext.value as Range) | (EventDefinition.useContext.value as Quantity) | (EventDefinition.useContext.value as Range) | (Evidence.useContext.value as Quantity) | (Evidence.useContext.value as Range) | (Questionnaire.useContext.value as Quantity) | (Questionnaire.useContext.value as Range) | (TestScript.useContext.value as Quantity) | (TestScript.useContext.value as Range) | (RiskEvidenceSynthesis.useContext.value as Quantity) | (RiskEvidenceSynthesis.useContext.value as Range)"
         }
     ],
     "effective": [
         {
             name: "effective",
             'type: r4:DATE,
-            base: ["ResearchElementDefinition","Library","MedicationStatement","ResearchDefinition","Measure","EventDefinition","ActivityDefinition","Questionnaire","ChargeItemDefinition","PlanDefinition"],
-            expression: "PlanDefinition.effectivePeriod | ChargeItemDefinition.effectivePeriod | Questionnaire.effectivePeriod | ActivityDefinition.effectivePeriod | EventDefinition.effectivePeriod | Measure.effectivePeriod | ResearchDefinition.effectivePeriod | MedicationStatement.effective | Library.effectivePeriod | ResearchElementDefinition.effectivePeriod"
+            base: ["ResearchElementDefinition","Library","EffectEvidenceSynthesis","MedicationStatement","ResearchDefinition","Evidence","Measure","EventDefinition","RiskEvidenceSynthesis","ActivityDefinition","Questionnaire","ChargeItemDefinition","PlanDefinition","EvidenceVariable"],
+            expression: "EvidenceVariable.effectivePeriod | PlanDefinition.effectivePeriod | ChargeItemDefinition.effectivePeriod | Questionnaire.effectivePeriod | ActivityDefinition.effectivePeriod | RiskEvidenceSynthesis.effectivePeriod | EventDefinition.effectivePeriod | Measure.effectivePeriod | Evidence.effectivePeriod | ResearchDefinition.effectivePeriod | MedicationStatement.effective | EffectEvidenceSynthesis.effectivePeriod | Library.effectivePeriod | ResearchElementDefinition.effectivePeriod"
         }
     ],
     "subtype": [
@@ -1683,10 +1750,7 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             base: ["DeviceRequest","Task"],
             expression: "Task.authoredOn | DeviceRequest.authoredOn"
         }
-    ]    
-};
-//Number of search params in INTERNATIONAL_IG_SEARCH_PARAMS_3  = 100
-final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH_PARAMS_3 = {
+    ],
     "performer-type": [
         {
             name: "performer-type",
@@ -1703,28 +1767,12 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "PaymentReconciliation.requestor | ClaimResponse.requestor | CoverageEligibilityResponse.requestor"
         }
     ],
-    "_filter": [
-        {
-            name: "_filter",
-            'type: r4:TOKEN,
-            base: ["Resource"],
-            expression: "$searchParam.getExpression()"
-        }
-    ],
     "destination-uri": [
         {
             name: "destination-uri",
             'type: r4:URI,
             base: ["MessageHeader"],
             expression: "MessageHeader.destination.endpoint"
-        }
-    ],
-    "_has": [
-        {
-            name: "_has",
-            'type: r4:STRING,
-            base: ["Resource"],
-            expression: "$searchParam.getExpression()"
         }
     ],
     "address-use": [
@@ -1741,6 +1789,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             'type: r4:REFERENCE,
             base: ["DetectedIssue"],
             expression: "DetectedIssue.implicated"
+        }
+    ],
+    "assessed-condition": [
+        {
+            name: "assessed-condition",
+            'type: r4:REFERENCE,
+            base: ["DiagnosticReport"],
+            expression: "DiagnosticReport.extension('http://hl7.org/fhir/StructureDefinition/DiagnosticReport-geneticsAssessedCondition')"
         }
     ],
     "participating-organization": [
@@ -1789,6 +1845,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             'type: r4:TOKEN,
             base: ["AllergyIntolerance","Condition"],
             expression: "Condition.clinicalStatus | AllergyIntolerance.clinicalStatus"
+        }
+    ],
+    "mothersMaidenName": [
+        {
+            name: "mothersMaidenName",
+            'type: r4:STRING,
+            base: ["Patient"],
+            expression: "Patient.extension('http://hl7.org/fhir/StructureDefinition/patient-extensions-Patient-mothersMaidenName')"
         }
     ],
     "address-country": [
@@ -1927,6 +1991,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "ImmunizationEvaluation.targetDisease | ImmunizationRecommendation.recommendation.targetDisease | Immunization.protocolApplied.targetDisease"
         }
     ],
+    "gene-amino-acid-change": [
+        {
+            name: "gene-amino-acid-change",
+            'type: r4:STRING,
+            base: ["Observation"],
+            expression: "Observation.extension('http://hl7.org/fhir/StructureDefinition/observation-geneticsAminoAcidChangeName')"
+        }
+    ],
     "device": [
         {
             name: "device",
@@ -1971,8 +2043,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "jurisdiction",
             'type: r4:TOKEN,
-            base: ["Library","ResearchElementDefinition","EventDefinition","ActivityDefinition","PlanDefinition","TestScript","CapabilityStatement","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ChargeItemDefinition","Questionnaire","ResearchDefinition","Measure","ExampleScenario"],
-            expression: "ExampleScenario.jurisdiction | Measure.jurisdiction | ResearchDefinition.jurisdiction | Questionnaire.jurisdiction | ChargeItemDefinition.jurisdiction | CapabilityStatement.jurisdiction | CodeSystem.jurisdiction | ConceptMap.jurisdiction | GraphDefinition.jurisdiction | ImplementationGuide.jurisdiction | MessageDefinition.jurisdiction | NamingSystem.jurisdiction | OperationDefinition.jurisdiction | SearchParameter.jurisdiction | StructureDefinition.jurisdiction | StructureMap.jurisdiction | TerminologyCapabilities.jurisdiction | ValueSet.jurisdiction | TestScript.jurisdiction | PlanDefinition.jurisdiction | ActivityDefinition.jurisdiction | EventDefinition.jurisdiction | ResearchElementDefinition.jurisdiction | Library.jurisdiction"
+            base: ["RiskEvidenceSynthesis","EffectEvidenceSynthesis","EvidenceVariable","Library","ResearchElementDefinition","EventDefinition","ActivityDefinition","Evidence","PlanDefinition","TestScript","CapabilityStatement","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ChargeItemDefinition","Questionnaire","ResearchDefinition","Measure","ExampleScenario"],
+            expression: "ExampleScenario.jurisdiction | Measure.jurisdiction | ResearchDefinition.jurisdiction | Questionnaire.jurisdiction | ChargeItemDefinition.jurisdiction | CapabilityStatement.jurisdiction | CodeSystem.jurisdiction | ConceptMap.jurisdiction | GraphDefinition.jurisdiction | ImplementationGuide.jurisdiction | MessageDefinition.jurisdiction | NamingSystem.jurisdiction | OperationDefinition.jurisdiction | SearchParameter.jurisdiction | StructureDefinition.jurisdiction | StructureMap.jurisdiction | TerminologyCapabilities.jurisdiction | ValueSet.jurisdiction | TestScript.jurisdiction | PlanDefinition.jurisdiction | Evidence.jurisdiction | ActivityDefinition.jurisdiction | EventDefinition.jurisdiction | ResearchElementDefinition.jurisdiction | Library.jurisdiction | EvidenceVariable.jurisdiction | EffectEvidenceSynthesis.jurisdiction | RiskEvidenceSynthesis.jurisdiction"
         }
     ],
     "global": [
@@ -1987,8 +2059,16 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "predecessor",
             'type: r4:REFERENCE,
-            base: ["ResearchDefinition","PlanDefinition","EventDefinition","Measure","ActivityDefinition","Library","ResearchElementDefinition"],
-            expression: "ResearchElementDefinition.relatedArtifact.where(type='predecessor').resource | Library.relatedArtifact.where(type='predecessor').resource | ActivityDefinition.relatedArtifact.where(type='predecessor').resource | Measure.relatedArtifact.where(type='predecessor').resource | EventDefinition.relatedArtifact.where(type='predecessor').resource | PlanDefinition.relatedArtifact.where(type='predecessor').resource | ResearchDefinition.relatedArtifact.where(type='predecessor').resource"
+            base: ["ResearchDefinition","PlanDefinition","EventDefinition","Measure","Evidence","ActivityDefinition","EvidenceVariable","Library","ResearchElementDefinition"],
+            expression: "ResearchElementDefinition.relatedArtifact.where(type='predecessor').resource | Library.relatedArtifact.where(type='predecessor').resource | EvidenceVariable.relatedArtifact.where(type='predecessor').resource | ActivityDefinition.relatedArtifact.where(type='predecessor').resource | Evidence.relatedArtifact.where(type='predecessor').resource | Measure.relatedArtifact.where(type='predecessor').resource | EventDefinition.relatedArtifact.where(type='predecessor').resource | PlanDefinition.relatedArtifact.where(type='predecessor').resource | ResearchDefinition.relatedArtifact.where(type='predecessor').resource"
+        }
+    ],
+    "dna-variant": [
+        {
+            name: "dna-variant",
+            'type: r4:STRING,
+            base: ["Observation"],
+            expression: "Observation.extension('http://hl7.org/fhir/StructureDefinition/observation-geneticsDnaVariant')"
         }
     ],
     "endpoint": [
@@ -2101,6 +2181,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "MeasureReport.reporter"
         }
     ],
+    "holder": [
+        {
+            name: "holder",
+            'type: r4:REFERENCE,
+            base: ["MedicinalProductAuthorization"],
+            expression: "MedicinalProductAuthorization.holder"
+        }
+    ],
     "started": [
         {
             name: "started",
@@ -2157,12 +2245,28 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "DeviceRequest.insurance"
         }
     ],
+    "country": [
+        {
+            name: "country",
+            'type: r4:TOKEN,
+            base: ["MedicinalProductAuthorization"],
+            expression: "MedicinalProductAuthorization.country"
+        }
+    ],
     "agent": [
         {
             name: "agent",
             'type: r4:REFERENCE,
             base: ["Provenance","AuditEvent"],
             expression: "AuditEvent.agent.who | Provenance.agent.who"
+        }
+    ],
+    "gene-identifier": [
+        {
+            name: "gene-identifier",
+            'type: r4:TOKEN,
+            base: ["Observation"],
+            expression: "Observation.extension('http://hl7.org/fhir/StructureDefinition/observation-geneticsGene')"
         }
     ],
     "participant-role": [
@@ -2319,6 +2423,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "StructureDefinition.snapshot.element.binding.valueSet"
         }
     ],
+    "birthOrderBoolean": [
+        {
+            name: "birthOrderBoolean",
+            'type: r4:TOKEN,
+            base: ["Patient"],
+            expression: "$searchParam.getExpression()"
+        }
+    ],
     "value-quantity": [
         {
             name: "value-quantity",
@@ -2355,8 +2467,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "name",
             'type: r4:STRING,
-            base: ["EventDefinition","PlanDefinition","Organization","InsurancePlan","Location","Measure","RelatedPerson","ResearchDefinition","Questionnaire","Patient","Library","TestScript","Endpoint","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ResearchElementDefinition","HealthcareService","Account","ExampleScenario","ActivityDefinition","EvidenceVariable","Practitioner","Person"],
-            expression: "Person.name | Practitioner.name | EvidenceVariable.name | ActivityDefinition.name | ExampleScenario.name | Account.name | HealthcareService.name | ResearchElementDefinition.name | CapabilityStatement.name | CodeSystem.name | CompartmentDefinition.name | ConceptMap.name | GraphDefinition.name | ImplementationGuide.name | MessageDefinition.name | NamingSystem.name | OperationDefinition.name | SearchParameter.name | StructureDefinition.name | StructureMap.name | TerminologyCapabilities.name | ValueSet.name | Endpoint.name | TestScript.name | Library.name | Patient.name | Questionnaire.name | ResearchDefinition.name | RelatedPerson.name | Measure.name | Location.name | Location.alias | name | alias | Organization.name | Organization.alias | PlanDefinition.name | EventDefinition.name"
+            base: ["EventDefinition","PlanDefinition","Organization","InsurancePlan","Location","Measure","RelatedPerson","ResearchDefinition","Questionnaire","Patient","Evidence","Library","MedicinalProduct","TestScript","Endpoint","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","RiskEvidenceSynthesis","ResearchElementDefinition","EffectEvidenceSynthesis","HealthcareService","Account","ExampleScenario","ActivityDefinition","EvidenceVariable","Practitioner","Person"],
+            expression: "Person.name | Practitioner.name | EvidenceVariable.name | ActivityDefinition.name | ExampleScenario.name | Account.name | HealthcareService.name | EffectEvidenceSynthesis.name | ResearchElementDefinition.name | RiskEvidenceSynthesis.name | CapabilityStatement.name | CodeSystem.name | CompartmentDefinition.name | ConceptMap.name | GraphDefinition.name | ImplementationGuide.name | MessageDefinition.name | NamingSystem.name | OperationDefinition.name | SearchParameter.name | StructureDefinition.name | StructureMap.name | TerminologyCapabilities.name | ValueSet.name | Endpoint.name | TestScript.name | MedicinalProduct.name.productName | Library.name | Evidence.name | Patient.name | Questionnaire.name | ResearchDefinition.name | RelatedPerson.name | Measure.name | Location.name | Location.alias | name | alias | Organization.name | Organization.alias | PlanDefinition.name | EventDefinition.name"
         }
     ],
     "class-value": [
@@ -2404,13 +2516,16 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             base: ["MessageHeader"],
             expression: "MessageHeader.destination.name"
         }
-    ],
+    ]    
+};
+//Number of search params in INTERNATIONAL_IG_SEARCH_PARAMS_4  = 100
+final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH_PARAMS_4 = {
     "description": [
         {
             name: "description",
             'type: r4:STRING,
-            base: ["EventDefinition","Evidence","Measure","ChargeItemDefinition","ActivityDefinition","PlanDefinition","ResearchDefinition","Library","DocumentReference","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","Questionnaire","ResearchElementDefinition","DocumentManifest","EvidenceVariable","TestScript"],
-            expression: "TestScript.description | EvidenceVariable.description | DocumentManifest.description | ResearchElementDefinition.description | Questionnaire.description | CapabilityStatement.description | CodeSystem.description | CompartmentDefinition.description | ConceptMap.description | GraphDefinition.description | ImplementationGuide.description | MessageDefinition.description | NamingSystem.description | OperationDefinition.description | SearchParameter.description | StructureDefinition.description | StructureMap.description | TerminologyCapabilities.description | ValueSet.description | DocumentReference.description | Library.description | ResearchDefinition.description | PlanDefinition.description | ActivityDefinition.description | ChargeItemDefinition.description | Measure.description | Evidence.description | EventDefinition.description"
+            base: ["EventDefinition","Evidence","Measure","ChargeItemDefinition","ActivityDefinition","PlanDefinition","ResearchDefinition","Library","DocumentReference","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","Questionnaire","ResearchElementDefinition","DocumentManifest","EffectEvidenceSynthesis","EvidenceVariable","TestScript","RiskEvidenceSynthesis"],
+            expression: "RiskEvidenceSynthesis.description | TestScript.description | EvidenceVariable.description | EffectEvidenceSynthesis.description | DocumentManifest.description | ResearchElementDefinition.description | Questionnaire.description | CapabilityStatement.description | CodeSystem.description | CompartmentDefinition.description | ConceptMap.description | GraphDefinition.description | ImplementationGuide.description | MessageDefinition.description | NamingSystem.description | OperationDefinition.description | SearchParameter.description | StructureDefinition.description | StructureMap.description | TerminologyCapabilities.description | ValueSet.description | DocumentReference.description | Library.description | ResearchDefinition.description | PlanDefinition.description | ActivityDefinition.description | ChargeItemDefinition.description | Measure.description | Evidence.description | EventDefinition.description"
         }
     ],
     "reason-code": [
@@ -2522,10 +2637,7 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             base: ["Device"],
             expression: "Device.deviceName.name | Device.type.coding.display | Device.type.text"
         }
-    ]    
-};
-//Number of search params in INTERNATIONAL_IG_SEARCH_PARAMS_4  = 100
-final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH_PARAMS_4 = {
+    ],
     "substance": [
         {
             name: "substance",
@@ -2728,8 +2840,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "derived-from",
             'type: r4:REFERENCE,
-            base: ["Measure","Library","ResearchDefinition","Observation","ActivityDefinition","EventDefinition","PlanDefinition","ResearchElementDefinition","SearchParameter"],
-            expression: "SearchParameter.derivedFrom | ResearchElementDefinition.relatedArtifact.where(type='derived-from').resource | PlanDefinition.relatedArtifact.where(type='derived-from').resource | EventDefinition.relatedArtifact.where(type='derived-from').resource | ActivityDefinition.relatedArtifact.where(type='derived-from').resource | Observation.derivedFrom | ResearchDefinition.relatedArtifact.where(type='derived-from').resource | Library.relatedArtifact.where(type='derived-from').resource | Measure.relatedArtifact.where(type='derived-from').resource"
+            base: ["EvidenceVariable","Measure","Library","ResearchDefinition","Observation","ActivityDefinition","Evidence","EventDefinition","PlanDefinition","ResearchElementDefinition","SearchParameter"],
+            expression: "SearchParameter.derivedFrom | ResearchElementDefinition.relatedArtifact.where(type='derived-from').resource | PlanDefinition.relatedArtifact.where(type='derived-from').resource | EventDefinition.relatedArtifact.where(type='derived-from').resource | Evidence.relatedArtifact.where(type='derived-from').resource | ActivityDefinition.relatedArtifact.where(type='derived-from').resource | Observation.derivedFrom | ResearchDefinition.relatedArtifact.where(type='derived-from').resource | Library.relatedArtifact.where(type='derived-from').resource | Measure.relatedArtifact.where(type='derived-from').resource | EvidenceVariable.relatedArtifact.where(type='derived-from').resource"
         }
     ],
     "experimental": [
@@ -2862,8 +2974,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "context-type-quantity",
             'type: r4:COMPOSITE,
-            base: ["PlanDefinition","ActivityDefinition","ChargeItemDefinition","ExampleScenario","TestScript","Evidence","Library","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ResearchElementDefinition","Measure","EventDefinition","Questionnaire","ResearchDefinition","EvidenceVariable"],
-            expression: "EvidenceVariable.useContext | ResearchDefinition.useContext | Questionnaire.useContext | EventDefinition.useContext | Measure.useContext | ResearchElementDefinition.useContext | CapabilityStatement.useContext | CodeSystem.useContext | CompartmentDefinition.useContext | ConceptMap.useContext | GraphDefinition.useContext | ImplementationGuide.useContext | MessageDefinition.useContext | NamingSystem.useContext | OperationDefinition.useContext | SearchParameter.useContext | StructureDefinition.useContext | StructureMap.useContext | TerminologyCapabilities.useContext | ValueSet.useContext | Library.useContext | Evidence.useContext | TestScript.useContext | ExampleScenario.useContext | ChargeItemDefinition.useContext | ActivityDefinition.useContext | PlanDefinition.useContext"
+            base: ["EffectEvidenceSynthesis","PlanDefinition","ActivityDefinition","ChargeItemDefinition","ExampleScenario","TestScript","Evidence","RiskEvidenceSynthesis","Library","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ResearchElementDefinition","Measure","EventDefinition","Questionnaire","ResearchDefinition","EvidenceVariable"],
+            expression: "EvidenceVariable.useContext | ResearchDefinition.useContext | Questionnaire.useContext | EventDefinition.useContext | Measure.useContext | ResearchElementDefinition.useContext | CapabilityStatement.useContext | CodeSystem.useContext | CompartmentDefinition.useContext | ConceptMap.useContext | GraphDefinition.useContext | ImplementationGuide.useContext | MessageDefinition.useContext | NamingSystem.useContext | OperationDefinition.useContext | SearchParameter.useContext | StructureDefinition.useContext | StructureMap.useContext | TerminologyCapabilities.useContext | ValueSet.useContext | Library.useContext | RiskEvidenceSynthesis.useContext | Evidence.useContext | TestScript.useContext | ExampleScenario.useContext | ChargeItemDefinition.useContext | ActivityDefinition.useContext | PlanDefinition.useContext | EffectEvidenceSynthesis.useContext"
         }
     ],
     "guide": [
@@ -2878,8 +2990,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "identifier",
             'type: r4:TOKEN,
-            base: ["PractitionerRole","ExplanationOfBenefit","ActivityDefinition","Patient","ResearchDefinition","Group","Task","TestScript","Device","Location","ConceptMap","MessageDefinition","StructureDefinition","StructureMap","Coverage","ResearchStudy","Media","ResearchSubject","Medication","Appointment","OrganizationAffiliation","Communication","SpecimenDefinition","Questionnaire","Invoice","ResearchElementDefinition","Specimen","Measure","Organization","Claim","InsurancePlan","HealthcareService","ClinicalImpression","ClaimResponse","CoverageEligibilityResponse","RelatedPerson","Schedule","DeviceUseStatement","EnrollmentRequest","PlanDefinition","Flag","Account","PaymentNotice","CommunicationRequest","Evidence","Person","ImmunizationEvaluation","CoverageEligibilityRequest","EventDefinition","EnrollmentResponse","Practitioner","DeviceMetric","ImmunizationRecommendation","Basic","Slot","AppointmentResponse","EvidenceVariable","AllergyIntolerance","CarePlan","CareTeam","Composition","Condition","Consent","DetectedIssue","DeviceRequest","DiagnosticReport","DocumentManifest","DocumentReference","Encounter","EpisodeOfCare","FamilyMemberHistory","Goal","ImagingStudy","Immunization","List","MedicationAdministration","MedicationDispense","MedicationRequest","MedicationStatement","NutritionOrder","Observation","Procedure","RiskAssessment","ServiceRequest","SupplyDelivery","SupplyRequest","VisionPrescription","ExampleScenario","Contract","BodyStructure","RequestGroup","QuestionnaireResponse","ChargeItem","MolecularSequence","Substance","Endpoint","DeviceDefinition","GuidanceResponse","ChargeItemDefinition","Library","MeasureReport","TestReport","PaymentReconciliation"],
-            expression: "PaymentReconciliation.identifier | TestReport.identifier | MeasureReport.identifier | Library.identifier | ChargeItemDefinition.identifier | GuidanceResponse.identifier | DeviceDefinition.identifier | Endpoint.identifier | Substance.identifier | MolecularSequence.identifier | ChargeItem.identifier | QuestionnaireResponse.identifier | RequestGroup.identifier | BodyStructure.identifier | Contract.identifier | ExampleScenario.identifier | AllergyIntolerance.identifier | CarePlan.identifier | CareTeam.identifier | Composition.identifier | Condition.identifier | Consent.identifier | DetectedIssue.identifier | DeviceRequest.identifier | DiagnosticReport.identifier | DocumentManifest.masterIdentifier | DocumentManifest.identifier | DocumentReference.masterIdentifier | DocumentReference.identifier | Encounter.identifier | EpisodeOfCare.identifier | FamilyMemberHistory.identifier | Goal.identifier | ImagingStudy.identifier | Immunization.identifier | List.identifier | MedicationAdministration.identifier | MedicationDispense.identifier | MedicationRequest.identifier | MedicationStatement.identifier | NutritionOrder.identifier | Observation.identifier | Procedure.identifier | RiskAssessment.identifier | ServiceRequest.identifier | SupplyDelivery.identifier | SupplyRequest.identifier | VisionPrescription.identifier | EvidenceVariable.identifier | AppointmentResponse.identifier | Slot.identifier | Basic.identifier | ImmunizationRecommendation.identifier | DeviceMetric.identifier | Practitioner.identifier | EnrollmentResponse.identifier | EventDefinition.identifier | CoverageEligibilityRequest.identifier | ImmunizationEvaluation.identifier | Person.identifier | Evidence.identifier | CommunicationRequest.identifier | PaymentNotice.identifier | Account.identifier | Flag.identifier | PlanDefinition.identifier | EnrollmentRequest.identifier | DeviceUseStatement.identifier | Schedule.identifier | RelatedPerson.identifier | CoverageEligibilityResponse.identifier | ClaimResponse.identifier | ClinicalImpression.identifier | HealthcareService.identifier | InsurancePlan.identifier | Claim.identifier | Organization.identifier | Measure.identifier | Specimen.identifier | ResearchElementDefinition.identifier | Invoice.identifier | Questionnaire.identifier | SpecimenDefinition.identifier | Communication.identifier | OrganizationAffiliation.identifier | Appointment.identifier | Medication.identifier | ResearchSubject.identifier | Media.identifier | ResearchStudy.identifier | Coverage.identifier | CodeSystem.identifier | ConceptMap.identifier | MessageDefinition.identifier | StructureDefinition.identifier | StructureMap.identifier | ValueSet.identifier | Location.identifier | Device.identifier | TestScript.identifier | Task.identifier | Group.identifier | ResearchDefinition.identifier | Patient.identifier | ActivityDefinition.identifier | ExplanationOfBenefit.identifier | PractitionerRole.identifier"
+            base: ["PractitionerRole","ExplanationOfBenefit","ActivityDefinition","Patient","ResearchDefinition","Group","Task","TestScript","Device","Location","ConceptMap","MessageDefinition","StructureDefinition","StructureMap","Coverage","MedicinalProductPackaged","ResearchStudy","Media","ResearchSubject","Medication","Appointment","MedicinalProductAuthorization","OrganizationAffiliation","Communication","SpecimenDefinition","Questionnaire","Invoice","ResearchElementDefinition","Measure","Specimen","Organization","Claim","InsurancePlan","HealthcareService","ClinicalImpression","ClaimResponse","CoverageEligibilityResponse","RelatedPerson","Schedule","DeviceUseStatement","EffectEvidenceSynthesis","EnrollmentRequest","PlanDefinition","Flag","Account","PaymentNotice","CommunicationRequest","Evidence","Person","ImmunizationEvaluation","CoverageEligibilityRequest","EventDefinition","EnrollmentResponse","Practitioner","DeviceMetric","ImmunizationRecommendation","Basic","Slot","AppointmentResponse","RiskEvidenceSynthesis","EvidenceVariable","AllergyIntolerance","CarePlan","CareTeam","Composition","Condition","Consent","DetectedIssue","DeviceRequest","DiagnosticReport","DocumentManifest","DocumentReference","Encounter","EpisodeOfCare","FamilyMemberHistory","Goal","ImagingStudy","Immunization","List","MedicationAdministration","MedicationDispense","MedicationRequest","MedicationStatement","NutritionOrder","Observation","Procedure","RiskAssessment","ServiceRequest","SupplyDelivery","SupplyRequest","VisionPrescription","ExampleScenario","Contract","BodyStructure","MedicinalProduct","RequestGroup","QuestionnaireResponse","ChargeItem","MedicinalProductPharmaceutical","MolecularSequence","Substance","Endpoint","DeviceDefinition","GuidanceResponse","ChargeItemDefinition","Library","MeasureReport","TestReport","PaymentReconciliation"],
+            expression: "PaymentReconciliation.identifier | TestReport.identifier | MeasureReport.identifier | Library.identifier | ChargeItemDefinition.identifier | GuidanceResponse.identifier | DeviceDefinition.identifier | Endpoint.identifier | Substance.identifier | MolecularSequence.identifier | MedicinalProductPharmaceutical.identifier | ChargeItem.identifier | QuestionnaireResponse.identifier | RequestGroup.identifier | MedicinalProduct.identifier | BodyStructure.identifier | Contract.identifier | ExampleScenario.identifier | AllergyIntolerance.identifier | CarePlan.identifier | CareTeam.identifier | Composition.identifier | Condition.identifier | Consent.identifier | DetectedIssue.identifier | DeviceRequest.identifier | DiagnosticReport.identifier | DocumentManifest.masterIdentifier | DocumentManifest.identifier | DocumentReference.masterIdentifier | DocumentReference.identifier | Encounter.identifier | EpisodeOfCare.identifier | FamilyMemberHistory.identifier | Goal.identifier | ImagingStudy.identifier | Immunization.identifier | List.identifier | MedicationAdministration.identifier | MedicationDispense.identifier | MedicationRequest.identifier | MedicationStatement.identifier | NutritionOrder.identifier | Observation.identifier | Procedure.identifier | RiskAssessment.identifier | ServiceRequest.identifier | SupplyDelivery.identifier | SupplyRequest.identifier | VisionPrescription.identifier | EvidenceVariable.identifier | RiskEvidenceSynthesis.identifier | AppointmentResponse.identifier | Slot.identifier | Basic.identifier | ImmunizationRecommendation.identifier | DeviceMetric.identifier | Practitioner.identifier | EnrollmentResponse.identifier | EventDefinition.identifier | CoverageEligibilityRequest.identifier | ImmunizationEvaluation.identifier | Person.identifier | Evidence.identifier | CommunicationRequest.identifier | PaymentNotice.identifier | Account.identifier | Flag.identifier | PlanDefinition.identifier | EnrollmentRequest.identifier | EffectEvidenceSynthesis.identifier | DeviceUseStatement.identifier | Schedule.identifier | RelatedPerson.identifier | CoverageEligibilityResponse.identifier | ClaimResponse.identifier | ClinicalImpression.identifier | HealthcareService.identifier | InsurancePlan.identifier | Claim.identifier | Organization.identifier | Specimen.identifier | Measure.identifier | ResearchElementDefinition.identifier | Invoice.identifier | Questionnaire.identifier | SpecimenDefinition.identifier | Communication.identifier | OrganizationAffiliation.identifier | MedicinalProductAuthorization.identifier | Appointment.identifier | Medication.identifier | ResearchSubject.identifier | Media.identifier | ResearchStudy.identifier | MedicinalProductPackaged.identifier | Coverage.identifier | CodeSystem.identifier | ConceptMap.identifier | MessageDefinition.identifier | StructureDefinition.identifier | StructureMap.identifier | ValueSet.identifier | Location.identifier | Device.identifier | TestScript.identifier | Task.identifier | Group.identifier | ResearchDefinition.identifier | Patient.identifier | ActivityDefinition.identifier | ExplanationOfBenefit.identifier | PractitionerRole.identifier"
         }
     ],
     "item": [
@@ -2936,6 +3048,14 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             'type: r4:TOKEN,
             base: ["CommunicationRequest","Task","Claim","MedicationRequest","RequestGroup","ServiceRequest"],
             expression: "ServiceRequest.priority | RequestGroup.priority | MedicationRequest.priority | Claim.priority | Task.priority | CommunicationRequest.priority"
+        }
+    ],
+    "ID-SEARCH-PARAMETER": [
+        {
+            name: "ID-SEARCH-PARAMETER",
+            'type: r4:TOKEN,
+            base: ["Resource"],
+            expression: "id"
         }
     ],
     "payload-type": [
@@ -3022,8 +3142,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "context-type",
             'type: r4:TOKEN,
-            base: ["EventDefinition","Evidence","ResearchElementDefinition","Library","TestScript","ActivityDefinition","EvidenceVariable","Questionnaire","ResearchDefinition","Measure","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ExampleScenario","PlanDefinition","ChargeItemDefinition"],
-            expression: "ChargeItemDefinition.useContext.code | PlanDefinition.useContext.code | ExampleScenario.useContext.code | CapabilityStatement.useContext.code | CodeSystem.useContext.code | CompartmentDefinition.useContext.code | ConceptMap.useContext.code | GraphDefinition.useContext.code | ImplementationGuide.useContext.code | MessageDefinition.useContext.code | NamingSystem.useContext.code | OperationDefinition.useContext.code | SearchParameter.useContext.code | StructureDefinition.useContext.code | StructureMap.useContext.code | TerminologyCapabilities.useContext.code | ValueSet.useContext.code | Measure.useContext.code | ResearchDefinition.useContext.code | Questionnaire.useContext.code | EvidenceVariable.useContext.code | ActivityDefinition.useContext.code | TestScript.useContext.code | Library.useContext.code | ResearchElementDefinition.useContext.code | Evidence.useContext.code | EventDefinition.useContext.code"
+            base: ["EventDefinition","Evidence","RiskEvidenceSynthesis","EffectEvidenceSynthesis","ResearchElementDefinition","Library","TestScript","ActivityDefinition","EvidenceVariable","Questionnaire","ResearchDefinition","Measure","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ExampleScenario","PlanDefinition","ChargeItemDefinition"],
+            expression: "ChargeItemDefinition.useContext.code | PlanDefinition.useContext.code | ExampleScenario.useContext.code | CapabilityStatement.useContext.code | CodeSystem.useContext.code | CompartmentDefinition.useContext.code | ConceptMap.useContext.code | GraphDefinition.useContext.code | ImplementationGuide.useContext.code | MessageDefinition.useContext.code | NamingSystem.useContext.code | OperationDefinition.useContext.code | SearchParameter.useContext.code | StructureDefinition.useContext.code | StructureMap.useContext.code | TerminologyCapabilities.useContext.code | ValueSet.useContext.code | Measure.useContext.code | ResearchDefinition.useContext.code | Questionnaire.useContext.code | EvidenceVariable.useContext.code | ActivityDefinition.useContext.code | TestScript.useContext.code | Library.useContext.code | ResearchElementDefinition.useContext.code | EffectEvidenceSynthesis.useContext.code | RiskEvidenceSynthesis.useContext.code | Evidence.useContext.code | EventDefinition.useContext.code"
         }
     ],
     "group-identifier": [
@@ -3174,14 +3294,6 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "TestReport.testScript"
         }
     ],
-    "_text": [
-        {
-            name: "_text",
-            'type: r4:STRING,
-            base: ["Resource"],
-            expression: "$searchParam.getExpression()"
-        }
-    ],
     "body-site": [
         {
             name: "body-site",
@@ -3216,8 +3328,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "date",
             'type: r4:DATE,
-            base: ["ExampleScenario","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ImmunizationRecommendation","AuditEvent","Questionnaire","Library","EvidenceVariable","DocumentReference","ActivityDefinition","ResearchStudy","PlanDefinition","TestScript","Appointment","Invoice","ChargeItemDefinition","AllergyIntolerance","CarePlan","CareTeam","ClinicalImpression","Composition","Consent","DiagnosticReport","Encounter","EpisodeOfCare","FamilyMemberHistory","Flag","Immunization","List","Observation","Procedure","RiskAssessment","SupplyRequest","MeasureReport","MedicationRequest","Schedule","Evidence","ImmunizationEvaluation","ResearchSubject","Measure","PractitionerRole","ResearchDefinition","ResearchElementDefinition","OrganizationAffiliation","AdverseEvent","EventDefinition"],
-            expression: "EventDefinition.date | AdverseEvent.date | OrganizationAffiliation.period | ResearchElementDefinition.date | ResearchDefinition.date | PractitionerRole.period | Measure.date | ResearchSubject.period | ImmunizationEvaluation.date | Evidence.date | Schedule.planningHorizon | MedicationRequest.dosageInstruction.timing.event | MeasureReport.date | AllergyIntolerance.recordedDate | CarePlan.period | CareTeam.period | ClinicalImpression.date | Composition.date | Consent.dateTime | DiagnosticReport.effective | Encounter.period | EpisodeOfCare.period | FamilyMemberHistory.date | Flag.period | (Immunization.occurrence as dateTime) | List.date | Observation.effective | Procedure.performed | (RiskAssessment.occurrence as dateTime) | SupplyRequest.authoredOn | ChargeItemDefinition.date | Invoice.date | Appointment.start | TestScript.date | PlanDefinition.date | ResearchStudy.period | ActivityDefinition.date | DocumentReference.date | EvidenceVariable.date | Library.date | Questionnaire.date | AuditEvent.recorded | ImmunizationRecommendation.date | CapabilityStatement.date | CodeSystem.date | CompartmentDefinition.date | ConceptMap.date | GraphDefinition.date | ImplementationGuide.date | MessageDefinition.date | NamingSystem.date | OperationDefinition.date | SearchParameter.date | StructureDefinition.date | StructureMap.date | TerminologyCapabilities.date | ValueSet.date | ExampleScenario.date"
+            base: ["ExampleScenario","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ImmunizationRecommendation","RiskEvidenceSynthesis","AuditEvent","Questionnaire","Library","EvidenceVariable","DocumentReference","EffectEvidenceSynthesis","ActivityDefinition","ResearchStudy","PlanDefinition","TestScript","Appointment","Invoice","ChargeItemDefinition","AllergyIntolerance","CarePlan","CareTeam","ClinicalImpression","Composition","Consent","DiagnosticReport","Encounter","EpisodeOfCare","FamilyMemberHistory","Flag","Immunization","List","Observation","Procedure","RiskAssessment","SupplyRequest","MeasureReport","MedicationRequest","Schedule","Evidence","ImmunizationEvaluation","ResearchSubject","Measure","PractitionerRole","ResearchDefinition","ResearchElementDefinition","OrganizationAffiliation","AdverseEvent","EventDefinition"],
+            expression: "EventDefinition.date | AdverseEvent.date | OrganizationAffiliation.period | ResearchElementDefinition.date | ResearchDefinition.date | PractitionerRole.period | Measure.date | ResearchSubject.period | ImmunizationEvaluation.date | Evidence.date | Schedule.planningHorizon | MedicationRequest.dosageInstruction.timing.event | MeasureReport.date | AllergyIntolerance.recordedDate | CarePlan.period | CareTeam.period | ClinicalImpression.date | Composition.date | Consent.dateTime | DiagnosticReport.effective | Encounter.period | EpisodeOfCare.period | FamilyMemberHistory.date | Flag.period | Immunization.occurrence | List.date | Observation.effective | Procedure.performed | (RiskAssessment.occurrence as dateTime) | SupplyRequest.authoredOn | ChargeItemDefinition.date | Invoice.date | Appointment.start | TestScript.date | PlanDefinition.date | ResearchStudy.period | ActivityDefinition.date | EffectEvidenceSynthesis.date | DocumentReference.date | EvidenceVariable.date | Library.date | Questionnaire.date | AuditEvent.recorded | RiskEvidenceSynthesis.date | ImmunizationRecommendation.date | CapabilityStatement.date | CodeSystem.date | CompartmentDefinition.date | ConceptMap.date | GraphDefinition.date | ImplementationGuide.date | MessageDefinition.date | NamingSystem.date | OperationDefinition.date | SearchParameter.date | StructureDefinition.date | StructureMap.date | TerminologyCapabilities.date | ValueSet.date | ExampleScenario.date"
         }
     ],
     "instantiates": [
@@ -3267,7 +3379,10 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             base: ["Composition"],
             expression: "Composition.section.code"
         }
-    ],
+    ]    
+};
+//Number of search params in INTERNATIONAL_IG_SEARCH_PARAMS_5  = 55
+final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH_PARAMS_5 = {
     "monograph-type": [
         {
             name: "monograph-type",
@@ -3288,8 +3403,8 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
         {
             name: "depends-on",
             'type: r4:REFERENCE,
-            base: ["ActivityDefinition","ResearchDefinition","ImplementationGuide","Library","PlanDefinition","EventDefinition","ResearchElementDefinition","Measure"],
-            expression: "Measure.relatedArtifact.where(type='depends-on').resource | Measure.library | ResearchElementDefinition.relatedArtifact.where(type='depends-on').resource | ResearchElementDefinition.library | EventDefinition.relatedArtifact.where(type='depends-on').resource | PlanDefinition.relatedArtifact.where(type='depends-on').resource | PlanDefinition.library | Library.relatedArtifact.where(type='depends-on').resource | ImplementationGuide.dependsOn.uri | ResearchDefinition.relatedArtifact.where(type='depends-on').resource | ResearchDefinition.library | ActivityDefinition.relatedArtifact.where(type='depends-on').resource | ActivityDefinition.library"
+            base: ["ActivityDefinition","ResearchDefinition","ImplementationGuide","Library","PlanDefinition","Evidence","EvidenceVariable","EventDefinition","ResearchElementDefinition","Measure"],
+            expression: "Measure.relatedArtifact.where(type='depends-on').resource | Measure.library | ResearchElementDefinition.relatedArtifact.where(type='depends-on').resource | ResearchElementDefinition.library | EventDefinition.relatedArtifact.where(type='depends-on').resource | EvidenceVariable.relatedArtifact.where(type='depends-on').resource | Evidence.relatedArtifact.where(type='depends-on').resource | PlanDefinition.relatedArtifact.where(type='depends-on').resource | PlanDefinition.library | Library.relatedArtifact.where(type='depends-on').resource | ImplementationGuide.dependsOn.uri | ResearchDefinition.relatedArtifact.where(type='depends-on').resource | ResearchDefinition.library | ActivityDefinition.relatedArtifact.where(type='depends-on').resource | ActivityDefinition.library"
         }
     ],
     "protocol": [
@@ -3385,10 +3500,7 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             base: ["CapabilityStatement","DocumentReference"],
             expression: "DocumentReference.content.format | CapabilityStatement.format"
         }
-    ]    
-};
-//Number of search params in INTERNATIONAL_IG_SEARCH_PARAMS_5  = 41
-final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH_PARAMS_5 = {
+    ],
     "instantiates-canonical": [
         {
             name: "instantiates-canonical",
@@ -3429,20 +3541,20 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             expression: "Immunization.vaccineCode"
         }
     ],
-    "publisher": [
-        {
-            name: "publisher",
-            'type: r4:STRING,
-            base: ["ChargeItemDefinition","TestScript","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ResearchDefinition","ExampleScenario","ActivityDefinition","Measure","ResearchElementDefinition","EvidenceVariable","EventDefinition","Questionnaire","PlanDefinition","Library","Evidence"],
-            expression: "Evidence.publisher | Library.publisher | PlanDefinition.publisher | Questionnaire.publisher | EventDefinition.publisher | EvidenceVariable.publisher | ResearchElementDefinition.publisher | Measure.publisher | ActivityDefinition.publisher | ExampleScenario.publisher | ResearchDefinition.publisher | CapabilityStatement.publisher | CodeSystem.publisher | CompartmentDefinition.publisher | ConceptMap.publisher | GraphDefinition.publisher | ImplementationGuide.publisher | MessageDefinition.publisher | NamingSystem.publisher | OperationDefinition.publisher | SearchParameter.publisher | StructureDefinition.publisher | StructureMap.publisher | TerminologyCapabilities.publisher | ValueSet.publisher | TestScript.publisher | ChargeItemDefinition.publisher"
-        }
-    ],
     "topic": [
         {
             name: "topic",
             'type: r4:TOKEN,
-            base: ["EventDefinition","Library","PlanDefinition","ResearchElementDefinition","Measure","ActivityDefinition","ResearchDefinition"],
-            expression: "ResearchDefinition.topic | ActivityDefinition.topic | Measure.topic | ResearchElementDefinition.topic | PlanDefinition.topic | Library.topic | EventDefinition.topic"
+            base: ["EventDefinition","Library","PlanDefinition","ResearchElementDefinition","Evidence","Measure","ActivityDefinition","ResearchDefinition","EvidenceVariable"],
+            expression: "EvidenceVariable.topic | ResearchDefinition.topic | ActivityDefinition.topic | Measure.topic | Evidence.topic | ResearchElementDefinition.topic | PlanDefinition.topic | Library.topic | EventDefinition.topic"
+        }
+    ],
+    "publisher": [
+        {
+            name: "publisher",
+            'type: r4:STRING,
+            base: ["ChargeItemDefinition","TestScript","CapabilityStatement","CompartmentDefinition","ConceptMap","GraphDefinition","ImplementationGuide","MessageDefinition","NamingSystem","OperationDefinition","SearchParameter","StructureDefinition","StructureMap","TerminologyCapabilities","ResearchDefinition","ExampleScenario","RiskEvidenceSynthesis","ActivityDefinition","Measure","ResearchElementDefinition","EvidenceVariable","EventDefinition","Questionnaire","PlanDefinition","EffectEvidenceSynthesis","Library","Evidence"],
+            expression: "Evidence.publisher | Library.publisher | EffectEvidenceSynthesis.publisher | PlanDefinition.publisher | Questionnaire.publisher | EventDefinition.publisher | EvidenceVariable.publisher | ResearchElementDefinition.publisher | Measure.publisher | ActivityDefinition.publisher | RiskEvidenceSynthesis.publisher | ExampleScenario.publisher | ResearchDefinition.publisher | CapabilityStatement.publisher | CodeSystem.publisher | CompartmentDefinition.publisher | ConceptMap.publisher | GraphDefinition.publisher | ImplementationGuide.publisher | MessageDefinition.publisher | NamingSystem.publisher | OperationDefinition.publisher | SearchParameter.publisher | StructureDefinition.publisher | StructureMap.publisher | TerminologyCapabilities.publisher | ValueSet.publisher | TestScript.publisher | ChargeItemDefinition.publisher"
         }
     ],
     "relatesto": [
@@ -3536,7 +3648,7 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             name: "patient",
             'type: r4:REFERENCE,
             base: ["MeasureReport","ClaimResponse","Person","ImmunizationEvaluation","Account","AppointmentResponse","Device","ChargeItem","BodyStructure","ResearchSubject","RelatedPerson","CoverageEligibilityRequest","Provenance","Specimen","CommunicationRequest","Communication","Task","QuestionnaireResponse","Media","AllergyIntolerance","CarePlan","CareTeam","ClinicalImpression","Composition","Condition","Consent","DetectedIssue","DeviceRequest","DeviceUseStatement","DiagnosticReport","DocumentManifest","DocumentReference","Encounter","EpisodeOfCare","FamilyMemberHistory","Flag","Goal","ImagingStudy","Immunization","List","MedicationAdministration","MedicationDispense","MedicationRequest","MedicationStatement","NutritionOrder","Observation","Procedure","RiskAssessment","ServiceRequest","SupplyDelivery","VisionPrescription","Appointment","Invoice","GuidanceResponse","ImmunizationRecommendation","AuditEvent","RequestGroup","CoverageEligibilityResponse","EnrollmentRequest","Coverage","MolecularSequence","ExplanationOfBenefit","Basic","Contract","Claim"],
-            expression: "Claim.patient | Contract.subject.where(resolve() is Patient) | Basic.subject.where(resolve() is Patient) | ExplanationOfBenefit.patient | MolecularSequence.patient | Coverage.beneficiary | EnrollmentRequest.candidate | CoverageEligibilityResponse.patient | RequestGroup.subject.where(resolve() is Patient) | AuditEvent.agent.who.where(resolve() is Patient) | AuditEvent.entity.what.where(resolve() is Patient) | ImmunizationRecommendation.patient | GuidanceResponse.subject.where(resolve() is Patient) | Invoice.subject.where(resolve() is Patient) | Appointment.participant.actor.where(resolve() is Patient) | AllergyIntolerance.patient | CarePlan.subject.where(resolve() is Patient) | CareTeam.subject.where(resolve() is Patient) | ClinicalImpression.subject.where(resolve() is Patient) | Composition.subject.where(resolve() is Patient) | Condition.subject.where(resolve() is Patient) | Consent.patient | DetectedIssue.patient | DeviceRequest.subject.where(resolve() is Patient) | DeviceUseStatement.subject.where(resolve() is Patient) | DiagnosticReport.subject.where(resolve() is Patient) | DocumentManifest.subject.where(resolve() is Patient) | DocumentReference.subject.where(resolve() is Patient) | Encounter.subject.where(resolve() is Patient) | EpisodeOfCare.patient | FamilyMemberHistory.patient | Flag.subject.where(resolve() is Patient) | Goal.subject.where(resolve() is Patient) | ImagingStudy.subject.where(resolve() is Patient) | Immunization.patient | List.subject.where(resolve() is Patient) | MedicationAdministration.subject.where(resolve() is Patient) | MedicationDispense.subject.where(resolve() is Patient) | MedicationRequest.subject.where(resolve() is Patient) | MedicationStatement.subject.where(resolve() is Patient) | NutritionOrder.patient | Observation.subject.where(resolve() is Patient) | Procedure.subject.where(resolve() is Patient) | RiskAssessment.subject.where(resolve() is Patient) | ServiceRequest.subject.where(resolve() is Patient) | SupplyDelivery.patient | VisionPrescription.patient | Media.subject.where(resolve() is Patient) | QuestionnaireResponse.subject.where(resolve() is Patient) | Task.for.where(resolve() is Patient) | Communication.subject.where(resolve() is Patient) | CommunicationRequest.subject.where(resolve() is Patient) | Specimen.subject.where(resolve() is Patient) | Provenance.target.where(resolve() is Patient) | CoverageEligibilityRequest.patient | RelatedPerson.patient | ResearchSubject.individual | BodyStructure.patient | ChargeItem.subject.where(resolve() is Patient) | Device.patient | AppointmentResponse.actor.where(resolve() is Patient) | Account.subject.where(resolve() is Patient) | ImmunizationEvaluation.patient | Person.link.target.where(resolve() is Patient) | ClaimResponse.patient | MeasureReport.subject.where(resolve() is Patient)"
+            expression: "Claim.patient | Contract.subject.where(resolve() is Patient) | Basic.subject.where(resolve() is Patient) | ExplanationOfBenefit.patient | MolecularSequence.patient | Coverage.beneficiary | EnrollmentRequest.candidate | CoverageEligibilityResponse.patient | RequestGroup.subject.where(resolve() is Patient) | AuditEvent.agent.who.where(resolve() is Patient) | AuditEvent.entity.what.where(resolve() is Patient) | ImmunizationRecommendation.patient | GuidanceResponse.subject.where(resolve() is Patient) | Invoice.subject.where(resolve() is Patient) | Appointment.participant.actor.where(resolve() is Patient) | AllergyIntolerance.patient | CarePlan.subject.where(resolve() is Patient) | CareTeam.subject.where(resolve() is Patient) | ClinicalImpression.subject.where(resolve() is Patient) | Composition.subject.where(resolve() is Patient) | Condition.subject.where(resolve() is Patient) | Consent.patient | DetectedIssue.patient | DeviceRequest.subject.where(resolve() is Patient) | DeviceUseStatement.subject | DiagnosticReport.subject.where(resolve() is Patient) | DocumentManifest.subject.where(resolve() is Patient) | DocumentReference.subject.where(resolve() is Patient) | Encounter.subject.where(resolve() is Patient) | EpisodeOfCare.patient | FamilyMemberHistory.patient | Flag.subject.where(resolve() is Patient) | Goal.subject.where(resolve() is Patient) | ImagingStudy.subject.where(resolve() is Patient) | Immunization.patient | List.subject.where(resolve() is Patient) | MedicationAdministration.subject.where(resolve() is Patient) | MedicationDispense.subject.where(resolve() is Patient) | MedicationRequest.subject.where(resolve() is Patient) | MedicationStatement.subject.where(resolve() is Patient) | NutritionOrder.patient | Observation.subject.where(resolve() is Patient) | Procedure.subject.where(resolve() is Patient) | RiskAssessment.subject.where(resolve() is Patient) | ServiceRequest.subject.where(resolve() is Patient) | SupplyDelivery.patient | VisionPrescription.patient | Media.subject.where(resolve() is Patient) | QuestionnaireResponse.subject.where(resolve() is Patient) | Task.for.where(resolve() is Patient) | Communication.subject.where(resolve() is Patient) | CommunicationRequest.subject.where(resolve() is Patient) | Specimen.subject.where(resolve() is Patient) | Provenance.target.where(resolve() is Patient) | CoverageEligibilityRequest.patient | RelatedPerson.patient | ResearchSubject.individual | BodyStructure.patient | ChargeItem.subject.where(resolve() is Patient) | Device.patient | AppointmentResponse.actor.where(resolve() is Patient) | Account.subject.where(resolve() is Patient) | ImmunizationEvaluation.patient | Person.link.target.where(resolve() is Patient) | ClaimResponse.patient | MeasureReport.subject.where(resolve() is Patient)"
         }
     ],
     "specimen": [
@@ -3630,7 +3742,7 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONAL_IG_SEARCH
             name: "encounter",
             'type: r4:REFERENCE,
             base: ["Communication","Task","ClinicalImpression","ImagingStudy","MedicationRequest","Condition","Composition","DeviceRequest","DiagnosticReport","DocumentReference","Flag","List","NutritionOrder","Observation","Procedure","RiskAssessment","ServiceRequest","VisionPrescription","Media","ExplanationOfBenefit","CommunicationRequest","CarePlan","QuestionnaireResponse","CareTeam","RequestGroup","Claim"],
-            expression: "Claim.item.encounter | RequestGroup.encounter | CareTeam.encounter | QuestionnaireResponse.encounter | CarePlan.encounter | CommunicationRequest.encounter | ExplanationOfBenefit.item.encounter | Media.encounter | Composition.encounter | DeviceRequest.encounter | DiagnosticReport.encounter | DocumentReference.context.encounter.where(resolve() is Encounter) | Flag.encounter | List.encounter | NutritionOrder.encounter | Observation.encounter | Procedure.encounter | RiskAssessment.encounter | ServiceRequest.encounter | VisionPrescription.encounter | Condition.encounter | MedicationRequest.encounter | ImagingStudy.encounter | ClinicalImpression.encounter | Task.encounter | Communication.encounter"
+            expression: "Claim.item.encounter | RequestGroup.encounter | CareTeam.encounter | QuestionnaireResponse.encounter | CarePlan.encounter | CommunicationRequest.encounter | ExplanationOfBenefit.item.encounter | Media.encounter | Composition.encounter | DeviceRequest.encounter | DiagnosticReport.encounter | DocumentReference.context.encounter | Flag.encounter | List.encounter | NutritionOrder.encounter | Observation.encounter | Procedure.encounter | RiskAssessment.encounter | ServiceRequest.encounter | VisionPrescription.encounter | Condition.encounter | MedicationRequest.encounter | ImagingStudy.encounter | ClinicalImpression.encounter | Task.encounter | Communication.encounter"
         }
     ],
     "intent": [

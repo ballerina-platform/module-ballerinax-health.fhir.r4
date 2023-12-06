@@ -44,7 +44,7 @@ public function main() {
         }
     };
     do {
-        anydata parsedResult = check parser:parse(patientPayload, international401:Patient);
+        anydata parsedResult = check parser:parse(payload, international401:Patient);
         international401:Patient patientModel = check parsedResult.ensureType();
         log:printInfo(string `Patient name : ${patientModel.name.toString()}`);
     } on fail error parseError {
