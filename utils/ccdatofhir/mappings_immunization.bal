@@ -26,7 +26,7 @@ import ballerinax/health.fhir.r4.uscore501;
 #
 # + substanceAdministrationElement - CCDA Immunization Activity Element
 # + return - FHIR Immunization Resource
-public isolated function mapCcdaImmunizationToFhir(xml substanceAdministrationElement) returns uscore501:USCoreImmunizationProfile? {
+isolated function ccdaToImmunization(xml substanceAdministrationElement) returns uscore501:USCoreImmunizationProfile? {
     if isXMLElementNotNull(substanceAdministrationElement) {
         uscore501:USCoreImmunizationProfile immunization = {patient: {}, occurrenceDateTime: "", occurrenceString: "", vaccineCode: {}, 
         status: "not-done",primarySource: false};

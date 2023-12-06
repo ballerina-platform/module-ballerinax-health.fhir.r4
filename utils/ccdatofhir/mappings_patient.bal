@@ -25,9 +25,8 @@ import ballerinax/health.fhir.r4.uscore501;
 # Map CCDA Patient Role to FHIR Patient
 #
 # + xmlContent - xml content of the CCDA Patient Role
-# + isNamespaceAvailable - Is CCDA namespace available
 # + return - FHIR Patient
-public isolated function mapCcdaPatientToFhir(xml xmlContent, boolean isNamespaceAvailable = true) returns uscore501:USCorePatientProfile? {
+isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientProfile? {
     if isXMLElementNotNull(xmlContent) {
         uscore501:USCorePatientProfile patient = {identifier: [], gender: "unknown", name: []};
 

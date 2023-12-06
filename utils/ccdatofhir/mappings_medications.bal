@@ -25,7 +25,7 @@ import ballerinax/health.fhir.r4.uscore501;
 #
 # + substanceAdministrationElement - CCDA Medication Activity Element
 # + return - FHIR MedicationRequest
-public isolated function mapCcdaMedicationToFhir(xml substanceAdministrationElement) returns uscore501:USCoreMedicationRequestProfile? {
+isolated function ccdaToMedication(xml substanceAdministrationElement) returns uscore501:USCoreMedicationRequestProfile? {
     if isXMLElementNotNull(substanceAdministrationElement) {
         uscore501:USCoreMedicationRequestProfile medication = {medicationReference: {}, subject: {}, medicationCodeableConcept: {}, 
         intent: "option", status: "unknown",requester: {}, authoredOn: ""};

@@ -26,7 +26,7 @@ import ballerinax/health.fhir.r4.uscore501;
 # + sectionElement - sectionElement for CCDA Problem Observation
 # + actElement - actElement for CCDA Problem Observation
 # + return - FHIR Condition
-public isolated function mapCcdaConditionToFhir(xml sectionElement, xml actElement) returns uscore501:USCoreCondition? {
+isolated function ccdaToCondition(xml sectionElement, xml actElement) returns uscore501:USCoreCondition? {
     if isXMLElementNotNull(actElement) {
         uscore501:USCoreCondition condition = {subject: {}, code: {}, category: []};
 

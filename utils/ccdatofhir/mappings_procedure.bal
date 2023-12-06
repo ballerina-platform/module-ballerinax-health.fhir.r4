@@ -26,7 +26,7 @@ import ballerinax/health.fhir.r4.uscore501;
 #
 # + procedureElement - CCDA Procedure Activity Element
 # + return - FHIR Procedure Resource
-public isolated function mapCcdaProcedureToFhir(xml procedureElement) returns uscore501:USCoreProcedureProfile? {
+isolated function ccdaToProcedure(xml procedureElement) returns uscore501:USCoreProcedureProfile? {
     if isXMLElementNotNull(procedureElement) {
         uscore501:USCoreProcedureProfile procedure = {subject: {}, status: "unknown",code: {}, performedDateTime: "", performedPeriod: {}};
 

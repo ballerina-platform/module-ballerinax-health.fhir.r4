@@ -20,17 +20,33 @@
 
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
-import ballerinax/health.fhir.r4.international401;
 
 # Transform an C-CDA message to FHIR.
 #
 # + ccda - C-CDA message as a xml
+# + customMapper - Custom mapper to be used for the transformation
 # + return - FHIR Bundle
-public isolated function ccdaToFhir(xml? ccda) returns r4:Bundle|r4:FHIRError => ccda is xml ? transformToFhir(ccda) :
-    r4:createFHIRError("Failed to parse C-CDA payload to xml", r4:ERROR, r4:INVALID_STRUCTURE);
+public isolated function ccdaToFhir(xml? ccda, CcdaToFhirMapper? customMapper = ()) returns r4:Bundle|r4:FHIRError {
+    if ccda !is xml {
+        return r4:createFHIRError("Failed to parse C-CDA payload to xml", r4:ERROR, r4:INVALID_STRUCTURE);
+    }
+    if customMapper == () {
+        return transformToFhir(ccda, defaultMapper);
+    }
+    CcdaToFhirMapper mapper = {...defaultMapper};
+    foreach string key in customMapper.keys() {
+        mapper[key] = customMapper.get(key);
+    }
+    return transformToFhir(ccda, mapper);
+}
 
-isolated function transformToFhir(xml xmlDocument) returns r4:Bundle {
+isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMapper = ()) returns r4:Bundle {
     xmlns "urn:hl7-org:v3" as v3;
+    CcdaToFhirMapper mapper;
+
+    lock {
+        mapper = customMapper != () ? customMapper : defaultMapper;
+    }
 
     r4:BundleEntry[] entries = [];
     foreach var xmlPayload in xmlDocument {
@@ -38,15 +54,17 @@ isolated function transformToFhir(xml xmlDocument) returns r4:Bundle {
         if childElements.length() > 0 {
             xml xmlContent = childElements.get(0);
             xml patientRoleElement = xmlContent/<v3:patientRole|patientRole>;
-            international401:Patient? mapCCDAToFHIRPatientResult = mapCcdaPatientToFhir(patientRoleElement);
-            if mapCCDAToFHIRPatientResult is international401:Patient {
+            CcdaToPatient ccdaToPatient = mapper.ccdaToPatient;
+            uscore501:USCorePatientProfile? mapCCDAToFHIRPatientResult = ccdaToPatient(patientRoleElement);
+            if mapCCDAToFHIRPatientResult is uscore501:USCorePatientProfile {
                 entries.push({'resource: mapCCDAToFHIRPatientResult});
             }
         }
 
         xml authorElement = xmlPayload/<v3:author|author>;
-        international401:Practitioner? mapCCDAToFHIRPractitionerResult = mapCcdaPractitionerToFhir(authorElement);
-        if mapCCDAToFHIRPractitionerResult is international401:Practitioner {
+        CcdaToPractitioner ccdaToPractitioner = mapper.ccdaToPractitioner;
+        uscore501:USCorePractitionerProfile? mapCCDAToFHIRPractitionerResult = ccdaToPractitioner(authorElement);
+        if mapCCDAToFHIRPractitionerResult is uscore501:USCorePractitionerProfile {
             entries.push({'resource: mapCCDAToFHIRPractitionerResult});
         }
 
@@ -69,37 +87,43 @@ isolated function transformToFhir(xml xmlDocument) returns r4:Bundle {
                 anydata mapCCDAToFHIRResult;
                 match codeVal {
                     CCDA_ALLERGY_CODE => {
-                        mapCCDAToFHIRResult = mapCcdaAllergyToFhir(actElement);
+                        CcdaToAllergyIntolerance ccdaToAllergyIntolerance = mapper.ccdaToAllergyIntolerance;
+                        mapCCDAToFHIRResult = ccdaToAllergyIntolerance(actElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreAllergyIntolerance {
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
                     CCDA_CONDITION_CODE => {
-                        mapCCDAToFHIRResult = mapCcdaConditionToFhir(sectionElement, actElement);
+                        CcdaToCondition ccdaToCondition = mapper.ccdaToCondition;
+                        mapCCDAToFHIRResult = ccdaToCondition(sectionElement, actElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreCondition {
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
                     CCDA_IMMUNIZATION_CODE => {
-                        mapCCDAToFHIRResult = mapCcdaImmunizationToFhir(substanceAdministrationElement);
+                        CcdaToImmunization ccdaToImmunization = mapper.ccdaToImmunization;
+                        mapCCDAToFHIRResult = ccdaToImmunization(substanceAdministrationElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreImmunizationProfile {
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
                     CCDA_MEDICATION_CODE => {
-                        mapCCDAToFHIRResult = mapCcdaMedicationToFhir(substanceAdministrationElement);
+                        CcdaToMedication ccdaToMedication = mapper.ccdaToMedication;
+                        mapCCDAToFHIRResult = ccdaToMedication(substanceAdministrationElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreMedicationRequestProfile {
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
                     CCDA_PROCEDURE_CODE => {
-                        mapCCDAToFHIRResult = mapCcdaProcedureToFhir(procedureElement);
+                        CcdaToProcedure ccdaToProcedure = mapper.ccdaToProcedure;
+                        mapCCDAToFHIRResult = ccdaToProcedure(procedureElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreProcedureProfile {
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
                     CCDA_DIAGNOSTIC_REPORT_CODE => {
-                        mapCCDAToFHIRResult = mapCcdaDiagnosticReportToFhir(organizerElement);
+                        CcdaToDiagnosticReport ccdaToDiagnosticReport = mapper.ccdaToDiagnosticReport;
+                        mapCCDAToFHIRResult = ccdaToDiagnosticReport(organizerElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreDiagnosticReportProfileLaboratoryReporting {
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }

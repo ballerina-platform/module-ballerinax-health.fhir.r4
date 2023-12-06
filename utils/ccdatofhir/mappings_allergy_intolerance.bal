@@ -26,7 +26,7 @@ import ballerinax/health.fhir.r4.uscore501;
 #
 # + actElement - xml content of the CCDA Allergy Activity
 # + return - FHIR Allergy Intolerance
-public isolated function mapCcdaAllergyToFhir(xml actElement) returns uscore501:USCoreAllergyIntolerance? {
+isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USCoreAllergyIntolerance? {
     uscore501:USCoreAllergyIntolerance allergyIntolerance = {patient: {}, code: {}};
 
     if isXMLElementNotNull(actElement) {
