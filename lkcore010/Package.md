@@ -26,11 +26,11 @@ compliant with http://fhir.health.gov.lk/ implementation guide.
 | 4). LKCoreOrganization | [[Definition]][s4] [[Ballerina Record]][m4] |
 | 5). LKCorePractitioner | [[Definition]][s5] [[Ballerina Record]][m5] |
 
-[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.0.0#LKCoreAllergyIntolerance
-[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.0.0#LKCoreLocation
-[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.0.0#LKCorePatient
-[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.0.0#LKCoreOrganization
-[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.0.0#LKCorePractitioner
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.1.0#LKCoreAllergyIntolerance
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.1.0#LKCoreLocation
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.1.0#LKCorePatient
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.1.0#LKCoreOrganization
+[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.lkcore010/1.1.0#LKCorePractitioner
 
 [s1]: http://fhir.health.gov.lk/StructureDefinition/lk-core-allergy-intolerance
 [s2]: http://fhir.health.gov.lk/StructureDefinition/lk-core-location
