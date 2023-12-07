@@ -306,11 +306,11 @@ public type LKCoreAllergyIntolerance record {|
     r4:CodeableConcept code;
     r4:Range onsetRange?;
     r4:Extension[] modifierExtension?;
-    r4:code criticality?;
+    LKCoreAllergyIntoleranceCriticality criticality?;
     r4:code language?;
     r4:CodeableConcept clinicalStatus?;
     r4:dateTime onsetDateTime?;
-    r4:code 'type?;
+    LKCoreAllergyIntoleranceType 'type?;
     string onsetString?;
     r4:Age onsetAge?;
     r4:dateTime lastOccurrence?;
@@ -320,7 +320,7 @@ public type LKCoreAllergyIntolerance record {|
     r4:Identifier[] identifier?;
     r4:Reference recorder?;
     r4:Period onsetPeriod?;
-    r4:BackboneElement[] reaction?;
+    LKCoreAllergyIntoleranceReaction[] reaction?;
     r4:CodeableConcept verificationStatus?;
     r4:dateTime recordedDate?;
     r4:Reference encounter?;
@@ -328,7 +328,7 @@ public type LKCoreAllergyIntolerance record {|
     r4:Reference asserter?;
     r4:Meta meta?;
     r4:uri implicitRules?;
-    r4:code[] category?;
+    LKCoreAllergyIntoleranceCategory[] category?;
     r4:Element ...;
 |};
 

@@ -277,10 +277,10 @@ public type LKCoreLocation record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string description?;
-    r4:BackboneElement[] hoursOfOperation?;
+    LKCoreLocationHoursOfOperation[] hoursOfOperation?;
     r4:code language?;
     r4:CodeableConcept[] 'type?;
-    r4:code mode?;
+    LKCoreLocationMode mode?;
     r4:Reference[] endpoint?;
     string[] alias?;
     r4:ContactPoint[] telecom?;
@@ -294,9 +294,9 @@ public type LKCoreLocation record {|
     r4:Meta meta?;
     string name?;
     r4:uri implicitRules?;
-    r4:BackboneElement position?;
+    LKCoreLocationPosition position?;
     string availabilityExceptions?;
-    r4:code status?;
+    LKCoreLocationStatus status?;
     r4:Element ...;
 |};
 

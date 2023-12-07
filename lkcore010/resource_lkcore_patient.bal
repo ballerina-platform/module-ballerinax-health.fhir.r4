@@ -305,22 +305,22 @@ public type LKCorePatient record {|
     RESOURCE_NAME_LKCOREPATIENT resourceType = RESOURCE_NAME_LKCOREPATIENT;
 
     r4:Extension[] extension?;
-    r4:code gender;
+    LKCorePatientGender gender;
     r4:Extension[] modifierExtension?;
-    r4:BackboneElement[] link?;
+    LKCorePatientLink[] link?;
     r4:code language?;
-    r4:BackboneElement[] contact?;
+    LKCorePatientContact[] contact?;
     r4:dateTime deceasedDateTime?;
     r4:Reference[] generalPractitioner?;
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    r4:BackboneElement[] communication?;
+    LKCorePatientCommunication[] communication?;
     @constraint:Array {
        minLength: 1
     }
     r4:Identifier[] identifier;
-    LKCoreAddress[] address?;
+    LkCoreAddress[] address?;
     boolean multipleBirthBoolean?;
     boolean active?;
     r4:Attachment[] photo?;

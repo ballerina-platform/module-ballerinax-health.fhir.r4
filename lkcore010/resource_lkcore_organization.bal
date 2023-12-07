@@ -225,7 +225,7 @@ public type LKCoreOrganization record {|
     r4:Resource[] contained?;
     r4:Reference[] endpoint?;
     r4:Meta meta?;
-    r4:BackboneElement[] contact?;
+    LKCoreOrganizationContact[] contact?;
     string name?;
     string[] alias?;
     r4:uri implicitRules?;

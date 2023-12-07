@@ -209,13 +209,13 @@ public type LKCorePractitioner record {|
     r4:Identifier[] identifier?;
     r4:Extension[] extension?;
     r4:Address[] address?;
-    r4:code gender?;
+    LKCorePractitionerGender gender?;
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:Attachment[] photo?;
     r4:code language?;
     r4:date birthDate?;
-    r4:BackboneElement[] qualification?;
+    LKCorePractitionerQualification[] qualification?;
     r4:Resource[] contained?;
     r4:Meta meta?;
     r4:HumanName[] name?;
