@@ -33,15 +33,6 @@ import ballerinax/health.fhir.r4;
             description: "Country - a nation as commonly understood or generally accepted.",
             path: "Address.country"
         },    
-        "LKCoreAddressType": {
-            name: "LKCoreAddressType",
-            dataType: LKCoreAddressType,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
-            path: "Address.type"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -50,6 +41,15 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "Time period when address was/is in use.",
             path: "Address.period"
+        },    
+        "LkCoreAddressUse": {
+            name: "LkCoreAddressUse",
+            dataType: LkCoreAddressUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this address.",
+            path: "Address.use"
         },    
         "city": {
             name: "city",
@@ -87,15 +87,6 @@ import ballerinax/health.fhir.r4;
             description: "A postal code designating a region defined by the postal service.",
             path: "Address.postalCode"
         },    
-        "LKCoreAddressUse": {
-            name: "LKCoreAddressUse",
-            dataType: LKCoreAddressUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this address.",
-            path: "Address.use"
-        },    
         "text": {
             name: "text",
             dataType: string,
@@ -113,46 +104,52 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).",
             path: "Address.state"
+        },    
+        "LkCoreAddressType": {
+            name: "LkCoreAddressType",
+            dataType: LkCoreAddressType,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
+            path: "Address.type"
         }        },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type LKCoreAddress record {|
-
+public type LkCoreAddress record {|
     *r4:Address;
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     string country?;
-    LKCoreAddressType LKCoreAddressType?;
     r4:Period period?;
+    LkCoreAddressUse LkCoreAddressUse?;
     string city?;
     string[] line?;
     string district?;
     string postalCode?;
-    LKCoreAddressUse LKCoreAddressUse?;
     string text?;
     string state?;
-    
+    LkCoreAddressType LkCoreAddressType?;
 |};
 
-public enum LKCoreAddressType {
-            CODE_LKCOREADDRESSTYPE_POSTAL = "postal",
-            CODE_LKCOREADDRESSTYPE_PHYSICAL = "physical",
-            CODE_LKCOREADDRESSTYPE_BOTH = "both"
-    
+public enum LkCoreAddressUse {
+    CODE_LKCOREADDRESSUSE_TEMP = "temp",
+    CODE_LKCOREADDRESSUSE_WORK = "work",
+    CODE_LKCOREADDRESSUSE_OLD = "old",
+    CODE_LKCOREADDRESSUSE_HOME = "home",
+    CODE_LKCOREADDRESSUSE_BILLING = "billing"
 };
 
-public enum LKCoreAddressUse {
-            CODE_LKCOREADDRESSUSE_TEMP = "temp",
-            CODE_LKCOREADDRESSUSE_WORK = "work",
-            CODE_LKCOREADDRESSUSE_OLD = "old",
-            CODE_LKCOREADDRESSUSE_HOME = "home",
-            CODE_LKCOREADDRESSUSE_BILLING = "billing"
-    
+public enum LkCoreAddressType {
+    CODE_LKCOREADDRESSTYPE_POSTAL = "postal",
+    CODE_LKCOREADDRESSTYPE_PHYSICAL = "physical",
+    CODE_LKCOREADDRESSTYPE_BOTH = "both"
 };
 
 
@@ -184,16 +181,15 @@ public enum LKCoreAddressUse {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type LKCoreProvinceExt record {|
-
+public type LkCoreProvinceExt record {|
     *r4:CodeableConceptExtension;
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:CodeableConcept valueCodeableConcept?;
     string url;
-    
 |};
 
 
@@ -225,16 +221,15 @@ public type LKCoreProvinceExt record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type LKCoreMOHAreaExt record {|
-
+public type LkCoreMohAreaExt record {|
     *r4:CodeableConceptExtension;
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:CodeableConcept valueCodeableConcept?;
     string url;
-    
 |};
 
 

@@ -1,3 +1,5 @@
+Ballerina package containing FHIR resource data models
+compliant with http://fhir.health.gov.lk/ implementation guide.
 
 # FHIR R4 LKCore package
 
