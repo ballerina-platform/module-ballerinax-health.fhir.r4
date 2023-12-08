@@ -25,7 +25,7 @@
     <groupId>io.ballerinax</groupId>
     <artifactId>fhirr4</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.2</version>
+    <version>1.2.0</version>
     <modules>
         <module>compiler-plugin</module>
         <module>native</module>
@@ -35,11 +35,11 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <ballerina.version>2201.7.0</ballerina.version>
+        <ballerina.version>2201.8.1</ballerina.version>
         <gson.version>2.8.6</gson.version>
-        <r4.version>4.1.5</r4.version>
-        <parser.version>4.0.0</parser.version>
-        <international401.version>1.0.0</international401.version>
+        <r4.version>4.2.0</r4.version>
+        <parser.version>4.1.0</parser.version>
+        <international401.version>1.2.0</international401.version>
     </properties>
 
     <dependencyManagement>
