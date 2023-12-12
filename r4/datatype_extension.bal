@@ -81,6 +81,8 @@ public type ExtensionExtension record {|
     }
 }
 public type StringExtension record {|
+    *Element;
+
     uri url;
     string valueString;
 |};
@@ -112,6 +114,8 @@ public type StringExtension record {|
     }
 }
 public type CodingExtension record {|
+    *Element;
+
     uri url;
     Coding valueCoding;
 |};
@@ -143,6 +147,8 @@ public type CodingExtension record {|
     }
 }
 public type CodeExtension record {|
+    *Element;
+
     uri url;
     code valueCode;
 |};
@@ -174,6 +180,8 @@ public type CodeExtension record {|
     }
 }
 public type IntegerExtension record {|
+    *Element;
+
     uri url;
     integer valueInteger;
 |};
@@ -205,252 +213,352 @@ public type IntegerExtension record {|
     }
 }
 public type CodeableConceptExtension record {|
+    *Element;
+
     uri url;
     CodeableConcept valueCodeableConcept;
 |};
 
 public type Base64BinaryExtension record {|
+    *Element;
+
     uri url;
     base64Binary valueBase64Binary; 
 |};
 
 public type BooleanExtension record {|
+    *Element;
+
     uri url;
     boolean valueBoolean;
 |};
 
 public type CanonicalExtension record {|
+    *Element;
+
     uri url;
     canonical valueCanonical;
 |};
 
 public type DateExtension record {|
+    *Element;
+
     uri url;
     date valueDate;
 |};
 
 public type DateTimeExtension record {|
+    *Element;
+
     uri url;
     dateTime valueDateTime;
 |};
 
 public type DecimalExtension record {|
+    *Element;
+
     uri url;
     decimal valueDecimal;
 |};
 
 public type IdExtension record {|
+    *Element;
+
     uri url;
     id valueId;
 |};
 
 public type InstantExtension record {|
+    *Element;
+
     uri url;
     instant valueInstant;
 |};
 
 //generate extension record types for type valueInteger64
 public type Integer64Extension record {|
+    *Element;
+
     uri url;
     integer64 valueInteger64;
 |};
 
 public type MarkdownExtension record {|
+    *Element;
+
     uri url;
     markdown valueMarkdown;
 |};
 
 public type OidExtension record {|
+    *Element;
+
     uri url;
     oid valueOid;
 |};
 
 public type PositiveIntExtension record {|
+    *Element;
+
     uri url;
     positiveInt valuePositiveInt;
 |};
 
 public type TimeExtension record {|
+    *Element;
+
     uri url;
     time valueTime;
 |};
 
 public type UnsignedIntExtension record {|
+    *Element;
+
     uri url;
     unsignedInt valueUnsignedInt;
 |};
 
 public type UriExtension record {|
+    *Element;
+
     uri url;
     uri valueUri;
 |};
 
 public type UrlExtension record {|
+    *Element;
+
     uri url;
     urlType valueUrl;
 |};
 
 public type UuidExtension record {|
+    *Element;
+
     uri url;
     uuid valueUuid;
 |};
 
 public type AddressExtension record {|
+    *Element;
+
     uri url;
     Address valueAddress;
 |};
 
 public type AgeExtension record {|
+    *Element;
+
     uri url;
     Age valueAge;
 |};
 
 public type AnnotationExtension record {|
+    *Element;
+    
     uri url;
     Annotation valueAnnotation;
 |};
 
 public type AttachmentExtension record {|
+    *Element;
+
     uri url;
     Attachment valueAttachment;
 |};
 
 public type CodeableReferenceExtension record {|
+    *Element;
+
     uri url;
     CodeableReference valueCodeableReference;
 |};
 
 public type ContactPointExtension record {|
+    *Element;
+
     uri url;
     ContactPoint valueContactPoint;
 |};
 
 public type CountExtension record {|
+    *Element;
+
     uri url;
     Count valueCount;
 |};
 
 public type DistanceExtension record {|
+    *Element;
+
     uri url;
     Distance valueDistance;
 |};
 
 public type DurationExtension record {|
+    *Element;
+
     uri url;
     Duration valueDuration;
 |};
 
 public type HumanNameExtension record {|
+    *Element;
+
     uri url;
     HumanName valueHumanName;
 |};
 
 public type IdentifierExtension record {|
+    *Element;
+
     uri url;
     Identifier valueIdentifier;
 |};
 
 public type MoneyExtension record {|
+    *Element;
+
     uri url;
     Money valueMoney;
 |};
 
 public type PeriodExtension record {|
+    *Element;
+
     uri url;
     Period valuePeriod;
 |};
 
 public type QuantityExtension record {|
+    *Element;
+
     uri url;
     Quantity valueQuantity;
 |};
 
 public type RangeExtension record {|
+    *Element;
+
     uri url;
     Range valueRange;
 |};
 
 public type RatioExtension record {|
+    *Element;
+
     uri url;
     Ratio valueRatio;
 |};
 
 public type RatioRangeExtension record {|
+    *Element;
+
     uri url;
     RatioRange valueRatioRange;
 |};
 
 public type ReferenceExtension record {|
+    *Element;
+
     uri url;
     Reference valueReference;
 |};
 
 public type SampledDataExtension record {|
+    *Element;
+
     uri url;
     SampledData valueSampledData;
 |};
 
 public type SignatureExtension record {|
+    *Element;
+
     uri url;
     Signature valueSignature;
 |};
 
 public type TimingExtension record {|
+    *Element;
+
     uri url;
     Timing valueTiming;
 |};
 
 public type ContactDetailExtension record {|
+    *Element;
+
     uri url;
     ContactDetail valueContactDetail;
 |};
 
 public type DataRequirementExtension record {|
+    *Element;
+
     uri url;
     DataRequirement valueDataRequirement;
 |};
 
 public type ExpressionExtension record {|
+    *Element;
+
     uri url;
     Expression valueExpression;
 |};
 
 public type ParameterDefinitionExtension record {|
+    *Element;
+
     uri url;
     ParameterDefinition valueParameterDefinition;
 |};
 
 public type RelatedArtifactExtension record {|
+    *Element;
+
     uri url;
     RelatedArtifact valueRelatedArtifact;
 |};
 
 public type TriggerDefinitionExtension record {|
+    *Element;
+
     uri url;
     TriggerDefinition valueTriggerDefinition;
 |};
 
 public type UsageContextExtension record {|
+    *Element;
+
     uri url;
     UsageContext valueUsageContext;
 |};
 
 public type AvailabilityExtension record {|
+    *Element;
+
     uri url;
     Availability valueAvailability;
 |};
 
 public type ExtendedContactDetailExtension record {|
+    *Element;
+
     uri url;
     ExtendedContactDetail valueExtendedContactDetail;
 |};
 
 public type DosageExtension record {|
+    *Element;
+
     uri url;
     Dosage valueDosage;
 |};
 
 public type MetaExtension record {|
+    *Element;
+    
     uri url;
     Meta valueMeta;
 |};
