@@ -438,14 +438,15 @@ public enum CodeSystemContent {
 
 # FHIR CodeSystemConcept datatype record.
 #
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - A code - a text symbol - that uniquely identifies the concept within the code system.
-# + display - A human readable string that is the recommended default way to present this concept to a user.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + property - A property value for this concept.
-# + definition - The formal definition of the concept. The code system resource does not make formal definitions required, because of the prevalence of legacy systems. However, they are highly recommended, as without them there is no formal meaning associated with the concept.
-# + designation - Additional representations for the concept - other languages, aliases, specialized purposes, used for particular purposes, etc.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.  
+# + code - A code - a text symbol - that uniquely identifies the concept within the code system.  
+# + display - A human readable string that is the recommended default way to present this concept to a user.  
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).  
+# + property - A property value for this concept.  
+# + definition - The formal definition of the concept. The code system resource does not make formal definitions required, because of the prevalence of legacy systems. However, they are highly recommended, as without them there is no formal meaning associated with the concept.  
+# + designation - Additional representations for the concept - other languages, aliases, specialized purposes, used for particular purposes, etc.  
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.  
+# + concept - Children of a concept to produce a hierarchy of concepts.
 @DataTypeDefinition {
     name: "CodeSystemConcept",
     baseType: (),
@@ -521,6 +522,15 @@ public enum CodeSystemContent {
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "CodeSystem.concept.id"
+        },
+        "concept": {
+            name: "concept",
+            dataType: CodeSystemConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Children of a concept to produce a hierarchy of concepts.",
+            path: "CodeSystem.concept.concept"
         }
     },
     serializers: {
@@ -537,6 +547,7 @@ public type CodeSystemConcept record {|
     string definition?;
     CodeSystemConceptDesignation[] designation?;
     string id?;
+    CodeSystemConcept[] concept?;
 |};
 
 # FHIR CodeSystemFilter datatype record.
@@ -846,17 +857,17 @@ public enum CodeSystemStatus {
     }
 }
 public type CodeSystemConceptProperty record {|
-    Coding valueCoding;
-    boolean valueBoolean;
+    Coding valueCoding?;
+    boolean valueBoolean?;
     Extension[] extension?;
     code code;
-    string valueString;
+    string valueString?;
     Extension[] modifierExtension?;
-    decimal valueDecimal;
-    code valueCode;
-    dateTime valueDateTime;
+    decimal valueDecimal?;
+    code valueCode?;
+    dateTime valueDateTime?;
     string id?;
-    integer valueInteger;
+    integer valueInteger?;
 |};
 
 # FHIR CodeSystemProperty datatype record.
