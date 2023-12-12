@@ -114,7 +114,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.fhirpath"
-version = "1.2.0"
+version = "1.2.1"
 dependencies = [
 	{org = "ballerina", name = "lang.int"},
 	{org = "ballerina", name = "lang.regexp"},
