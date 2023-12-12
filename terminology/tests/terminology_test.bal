@@ -250,7 +250,7 @@ function searchCodeSystemTest3() {
 
     r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is r4:CodeSystem[] {
-        test:assertEquals(actualCS.length(), 256);
+        test:assertEquals(actualCS.length(), 268);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -268,7 +268,7 @@ function searchCodeSystemTest4() {
 
     r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is r4:CodeSystem[] {
-        test:assertEquals(actualCS.length(), 56);
+        test:assertEquals(actualCS.length(), 68);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -286,7 +286,7 @@ function searchCodeSystemTest5() {
 
     r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is r4:CodeSystem[] {
-        test:assertEquals(actualCS.length(), 42);
+        test:assertEquals(actualCS.length(), 50);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -304,7 +304,7 @@ function searchCodeSystemTest6() {
 
     r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is r4:CodeSystem[] {
-        test:assertEquals(actualCS.length(), 0);
+        test:assertEquals(actualCS.length(), 7);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -324,7 +324,7 @@ function searchCodeSystemTest7() {
 
     r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is r4:CodeSystem[] {
-        test:assertEquals(actualCS.length(), 257);
+        test:assertEquals(actualCS.length(), 300);
     } else {
         test:assertFail(actualCS.message());
     }
@@ -335,12 +335,13 @@ function searchCodeSystemTest7() {
 }
 function searchCodeSystemTest8() {
     map<r4:RequestSearchParameter[]> searchParameters = {
-        "_count": [{name: "_count", value: "300", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
+        "_count": [{name: "_count", value: "300", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}],
+        "_offset": [{name: "_offset", value: "250", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]
     };
 
     r4:CodeSystem[]|r4:FHIRError actualCS = terminologyProcessor.searchCodeSystems(searchParameters);
     if actualCS is r4:CodeSystem[] {
-        test:assertEquals(actualCS.length(), 257);
+        test:assertEquals(actualCS.length(), 253);
     } else {
         test:assertFail(actualCS.message());
     }

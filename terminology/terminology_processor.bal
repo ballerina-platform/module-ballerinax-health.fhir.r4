@@ -554,16 +554,7 @@ public isolated class TerminologyProcessor {
 
             int total = codeSystemArray.length();
 
-            if total > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
-                return r4:createFHIRError(
-                        "The response size is too large",
-                        r4:ERROR,
-                        r4:PROCESSING_TOO_COSTLY,
-                        diagnostic = "The response size is too large; therefore search with more specific parameter values",
-                        errorType = r4:PROCESSING_ERROR,
-                        httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
-                    );
-            } else if total >= offset + count {
+            if total >= offset + count {
                 return codeSystemArray.slice(offset, offset + count).clone();
             } else if total >= offset {
                 return codeSystemArray.slice(offset).clone();
@@ -646,16 +637,7 @@ public isolated class TerminologyProcessor {
             }
 
             int total = valueSetArray.length();
-            if total > TERMINOLOGY_SEARCH_MAXIMUM_COUNT {
-                return r4:createFHIRError(
-                        "The response size is too large",
-                        r4:ERROR,
-                        r4:PROCESSING_TOO_COSTLY,
-                        diagnostic = string `The response size is too large; therefore, search with more specific parameter values`,
-                        errorType = r4:PROCESSING_ERROR,
-                        httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
-                    );
-            } else if total >= offset + count {
+            if total >= offset + count {
                 return valueSetArray.slice(offset, offset + count).clone();
             } else if total >= offset {
                 return valueSetArray.slice(offset).clone();
