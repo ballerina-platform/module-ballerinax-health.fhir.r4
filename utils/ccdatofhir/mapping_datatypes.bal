@@ -57,18 +57,22 @@ public isolated function mapCcdaIdToFhirIdentifier(xml idElement) returns uscore
 
     if system is string && extensionVal is string {
         return {
-            system: system,
+            system,
             value: extensionVal
         };
-    } else if system is () && extensionVal is string {
+    } 
+    
+    if system is () && extensionVal is string {
         return {
             system: string `urn:oid:${rootVal}`,
             value: extensionVal
         };
-    } else if system is () && extensionVal is () {
+    } 
+    
+    if extensionVal is () {
         return {
             system: "urn:ietf:rfc:3986",
-            value: "urn:oid:2.16.840.1.123.4.50.123456789"	
+            value: string `urn:oid:${rootVal}`	
         };
     }
     return ();
@@ -242,12 +246,29 @@ public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns
 public isolated function mapCcdaNametoFhirName(xml nameElements) returns r4:HumanName[]? {
     r4:HumanName[] humanNames = [];
 
-    foreach xml nameElement in nameElements {    
+    foreach xml nameElement in nameElements { 
+        string|error? useVal = nameElement.use;   
         xml familyElement = nameElement/<v3:family|family>;
         xml givenElements = nameElement/<v3:given|given>;
         xml prefixlements = nameElement/<v3:prefix|prefix>;
         xml suffixElements = nameElement/<v3:suffix|suffix>;
 
+        r4:HumanNameUse? use = ();
+        if useVal is string {
+            match (useVal) {
+                "OR" => {
+                    use = r4:official;
+                }
+                "P" => {
+                    use = r4:nickname;
+                }
+                "L" => {
+                    // Since mapping relationship is narrower and has dual mappings, this implementation is not supported.
+                    // https://hl7.org/fhir/us/ccda/2023May/ConceptMap-CF-NameUse.html#:~:text=(not%20mapped)-,L,-Legal
+                    use = ();
+                }
+            }
+        }
 
         string family = familyElement.data().trim();
 
@@ -267,6 +288,7 @@ public isolated function mapCcdaNametoFhirName(xml nameElements) returns r4:Huma
         }
 
         r4:HumanName name = {
+            use,
             given: given.length() > 0 ? given:(), 
             family: family != "" ? family:(), 
             prefix: prefix.length() > 0 ? prefix:(), 
@@ -414,7 +436,7 @@ public isolated function mapCcdaDateTimeToFhirDateTime(xml dateTimeElement) retu
             return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}`;
         }
         17 => {
-            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(9, 11)}:${dateTimeVal.substring(11, 15)}:${dateTimeVal.substring(15, 17)}`;
+            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(8, 10)}:${dateTimeVal.substring(10, 15)}:${dateTimeVal.substring(15, 17)}`;
         }
         _ => {
             log:printDebug("Invalid dateTime length");
