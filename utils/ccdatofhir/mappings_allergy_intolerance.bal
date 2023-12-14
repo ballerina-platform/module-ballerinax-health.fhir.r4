@@ -113,7 +113,13 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
 
         r4:CodeableConcept? clinicalStatus = mapCcdaCodingtoFhirCodeableConcept(statusCodeElements);
         if clinicalStatus is r4:CodeableConcept {
-            allergyIntolerance.clinicalStatus = clinicalStatus;
+            r4:Coding[]? coding = clinicalStatus.coding;
+            if coding is r4:Coding[] {
+                foreach r4:Coding code in coding {
+                    code.system = "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical";
+                }
+                allergyIntolerance.clinicalStatus = clinicalStatus;
+            }
         }
 
         xml observationElement = entryRelationshipElement/<v3:observation|observation>;
