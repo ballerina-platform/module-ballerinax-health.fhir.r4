@@ -69,7 +69,7 @@ public isolated function mapCcdaIdToFhirIdentifier(xml idElement) returns uscore
         };
     } 
     
-    if extensionVal is () {
+    if extensionVal is () || extensionVal is error {
         return {
             system: "urn:ietf:rfc:3986",
             value: string `urn:oid:${rootVal}`	
