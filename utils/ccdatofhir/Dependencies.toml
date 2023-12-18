@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.8.4"
+distribution-version = "2201.8.1"
 
 [[package]]
 org = "ballerina"
@@ -84,10 +84,6 @@ dependencies = [
 	{org = "ballerina", name = "observe"},
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "url"}
-]
-modules = [
-	{org = "ballerina", packageName = "http", moduleName = "http"},
-	{org = "ballerina", packageName = "http", moduleName = "http.httpscerr"}
 ]
 
 [[package]]
@@ -333,9 +329,8 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.ccdatofhir"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
-	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerinax", name = "health.fhir.r4"},
 	{org = "ballerinax", name = "health.fhir.r4.uscore501"}
