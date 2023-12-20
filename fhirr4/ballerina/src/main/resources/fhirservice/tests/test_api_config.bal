@@ -238,3 +238,38 @@ final r4:ResourceAPIConfig apiConfig = {
     ],
     serverConfig: ()
 };
+
+final r4:ResourceAPIConfig apiConfigNoPagination = {
+    resourceType: "Patient",
+    authzConfig: (),
+    profiles: [
+        "http://hl7.org/fhir/StructureDefinition/Patient"
+    ],
+    defaultProfile: (),
+    searchParameters: [
+        {
+            name: "birthdate",
+            active: true,
+            information: {
+                description: "[Patient](patient.html): The patient's date of birth",
+                builtin: false,
+                documentation: "http://hl7.org/fhir/SearchParameter/individual-birthdate"
+            }
+        },
+        {
+            name: "given",
+            active: true,
+            information: {
+                description: "[Patient](patient.html): A portion of the given name of the patient",
+                builtin: false,
+                documentation: "http://hl7.org/fhir/SearchParameter/individual-given"
+            }
+        }
+    ],
+    operations: [
+
+    ],
+    serverConfig: (),
+    paginationConfig: {
+        enabled: false}
+};

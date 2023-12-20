@@ -50,6 +50,9 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithID(id, fhirContext, fhirService, resourceMethod);
+                        if executeResourceResult is r4:Bundle {
+                            executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
+                        }
                     } else if (paths.length() >= 2 && paths[paths.length() - 2] == HISTORY) {
                         // vread
                         string fhirResource = apiConfig.resourceType;
@@ -82,6 +85,9 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
+                        if executeResourceResult is r4:Bundle {
+                            executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
+                        }
                     } else if (paths.length() >= 1 && paths[paths.length() - 1] == METADATA) {
                         // metadata
                         r4:FHIRError? processCapability = self.preprocessor.processCapability(req, ctx);
@@ -99,6 +105,9 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
+                        if executeResourceResult is r4:Bundle {
+                            executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
+                        }
                     }
                 }
                 if (executeResourceResult is error) {
