@@ -68,6 +68,12 @@ public isolated service class FHIRResponseInterceptor {
             }
         }
 
+        // set the location header if available
+        anydata? location = fhirContext.getProperty(r4:LOCATION_HEADER_PROP_NAME);
+        if location is string {
+            res.setHeader(LOCATION_HEADER, location);
+        }
+
         if fhirContext.isInErrorState() {
             // set the proper response code
             res.statusCode = fhirContext.getErrorCode();

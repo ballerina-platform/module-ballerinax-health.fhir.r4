@@ -24,6 +24,7 @@ public isolated class FHIRContext {
     private boolean inErrorState = false;
     private int errorCode = 500;
     private string rawPath = "";
+    private map<anydata> properties = {};
 
     public isolated function init(FHIRRequest request, readonly & HTTPRequest httpRequest, readonly & FHIRSecurity security) {
         self.fhirRequest = request;
@@ -136,6 +137,29 @@ public isolated class FHIRContext {
     public isolated function getFHIRResponse() returns FHIRResponse|FHIRContainerResponse? {
         lock {
             return self.fhirResponse;
+        }
+    }
+
+    # Get a property from the fhir context.
+    #
+    # + key - property key
+    # + return - property value
+    public isolated function getProperty(string key) returns anydata? {
+        lock {
+            if self.properties.hasKey(key) {
+                return self.properties.get(key).cloneReadOnly();
+            }
+        }
+        return;
+    }
+
+    # Set a property to the fhir context.
+    #
+    # + key - property key  
+    # + value - property value
+    public isolated function setProperty(string key, anydata value) {
+        lock {
+            self.properties[key] = value.cloneReadOnly();
         }
     }
 
