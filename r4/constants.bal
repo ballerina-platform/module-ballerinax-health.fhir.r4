@@ -32,6 +32,9 @@ public const FHIR_SEARCH_PARAM_PROFILE = "_profile";
 # This is the FHIR base IG name
 public const FHIR_BASE_IG = "international";
 
+# Location header property name
+public const LOCATION_HEADER_PROP_NAME = "_OH_LOCATION_HEADER_";
+
 # This is the regex for validating canonical URLs
 const CANONICAL_REGEX = "^(https?|http)\\:\\/\\/[-a-zA-Z0-9+&@#\\/%~_!:,\\.;]*[-a-zA-Z0-9\\+&@#\\/%=~_](\\|[-a-zA-Z0-9]*)?";
 
