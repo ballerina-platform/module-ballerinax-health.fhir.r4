@@ -141,6 +141,13 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
                         return r4:handleErrorResponse(executeResourceResult);
                     }
+                    if executeResourceResult is r4:DomainResource {
+                        string? createdId = executeResourceResult.id;
+                        if createdId is string {
+                            string location = string `${fhirResource}/${createdId}`;
+                            fhirContext.setProperty(r4:LOCATION_HEADER_PROP_NAME, location);
+                        }
+                    }
                     return executeResourceResult;
                 } else {
                     return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
