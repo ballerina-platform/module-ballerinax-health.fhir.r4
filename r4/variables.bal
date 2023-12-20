@@ -169,26 +169,6 @@ public final readonly & map<CommonSearchParameterDefinition> CONTROL_SEARCH_PARA
         preProcessor: (),
         postProcessor:  ()
     },
-    "_count": {
-        name: "_count",
-        'type: NUMBER,
-        base: ["Resource"],
-        expression: (),
-        default: 10,
-        effectiveLevel: SEARCH_PARAM_CATEGORY_SEARCH_RESULT,
-        preProcessor: paginationSearchParamPreProcessor,
-        postProcessor: paginationSearchParamPostProcessor
-    },
-    "_offset": {
-        name: "_offset",
-        'type: NUMBER,
-        base: ["Resource"],
-        expression: (),
-        default: 0,
-        effectiveLevel: SEARCH_PARAM_CATEGORY_SEARCH_RESULT,
-        preProcessor: paginationSearchParamPreProcessor,
-        postProcessor: paginationSearchParamPostProcessor
-    },
     "_include": {
         name: "_include",
         'type: TOKEN,
@@ -248,6 +228,21 @@ public final readonly & map<CommonSearchParameterDefinition> CONTROL_SEARCH_PARA
         effectiveLevel: SEARCH_PARAM_CATEGORY_SEARCH_RESULT,
         preProcessor: (),
         postProcessor:  ()
+    }
+};
+
+public final readonly & map<FHIRSearchParameterDefinition> PAGINATION_SEARCH_PARAMS = {
+    "_count" : {
+        name: "_count",
+        'type: NUMBER,
+        base: ["Resource"],
+        expression: ()
+    },
+    "_offset" : {
+        name: "_offset",
+        'type: NUMBER,
+        base: ["Resource"],
+        expression: ()
     }
 };
 

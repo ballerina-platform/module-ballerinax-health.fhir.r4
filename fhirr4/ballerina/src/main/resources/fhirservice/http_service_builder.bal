@@ -31,6 +31,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
         isolated resource function get [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
 
             Service fhirService = self.holder.getFhirServiceFromHolder();
+            boolean paginationEnabled = apiConfig.paginationConfig.paginationEnabled;
             handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_GET);
             if resourceMethod is handle {
                 boolean hasPathParam = isHavingPathParam(resourceMethod);
@@ -80,6 +81,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
+                        if executeResourceResult is r4:Bundle && paginationEnabled {
+                            // casting directly since this is type-checked already
+                            int count = <int>apiConfig.paginationConfig.pageSize;
+                            executeResourceResult = addPagination(fhirContext, executeResourceResult, count, req.extraPathInfo);
+                        }
                     } else if paths[paths.length() - 1] == METADATA {
                         // metadata
                         r4:FHIRError? processCapability = self.preprocessor.processCapability(req, ctx);
@@ -97,6 +103,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
+                        if executeResourceResult is r4:Bundle && paginationEnabled {
+                            // casting directly since this is type-checked already
+                            int count = <int>apiConfig.paginationConfig.pageSize;
+                            executeResourceResult = addPagination(fhirContext, executeResourceResult, count, req.extraPathInfo);
+                        }
                     }
                 }
                 if (executeResourceResult is error) {

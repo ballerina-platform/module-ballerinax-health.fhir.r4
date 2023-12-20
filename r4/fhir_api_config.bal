@@ -33,6 +33,7 @@ public type ResourceAPIConfig readonly & ResourceAPIConfigType;
 # + serverConfig - Serevr configuration  
 # + authzConfig - Authorization service configuration
 # + auditConfig - Audit service configuration
+# + paginationConfig - Pagination configuration
 public type ResourceAPIConfigType record {|
     readonly string resourceType;
     readonly string[] profiles;
@@ -42,6 +43,9 @@ public type ResourceAPIConfigType record {|
     readonly ServerConfig? serverConfig;
     readonly AuthzConfig? authzConfig;
     readonly AuditConfig auditConfig?;
+    readonly PaginationConfig paginationConfig = {
+        paginationEnabled: true
+    };
 |};
 
 # Search parameter configuration.
@@ -99,4 +103,13 @@ public type ServerConfig record {|
 public type ApiInfo record {|
     readonly string resourceType;
     readonly string[] searchParameters;
+|};
+
+# Pagination configs.
+#
+# + paginationEnabled - Whether pagination is enabled or not  
+# + pageSize - Number of records per page
+public type PaginationConfig record {|
+    readonly boolean paginationEnabled;
+    readonly int pageSize = 10;
 |};
