@@ -37,30 +37,210 @@ function init() returns r4:FHIRError? {
         name: "LKCore",
         terminology: terminology,
         profiles: {
-            "http://fhir.health.gov.lk/StructureDefinition/lk-core-allergy-intolerance": {
-                url: "http://fhir.health.gov.lk/StructureDefinition/lk-core-allergy-intolerance",
-                resourceType: "AllergyIntolerance",
-                modelType: LKCoreAllergyIntolerance
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/generic-service-request": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/generic-service-request",
+                resourceType: "ServiceRequest",
+                modelType: GenericServiceRequest
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/notifiable-diseases-notified": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/notifiable-diseases-notified",
+                resourceType: "Communication",
+                modelType: NotifiableDiseasesNotified
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/blood-pressure": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/blood-pressure",
+                resourceType: "Observation",
+                modelType: BloodPressure
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/follow-up-at-hlc": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/follow-up-at-hlc",
+                resourceType: "CarePlan",
+                modelType: FollowUpAtHLC
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/medical-history": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/medical-history",
+                resourceType: "Condition",
+                modelType: MedicalHistory
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/procedure": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/procedure",
+                resourceType: "Procedure",
+                modelType: Procedures
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/hhims-patient": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/hhims-patient",
+                resourceType: "Patient",
+                modelType: HHIMSPatient
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/investigations-task": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/investigations-task",
+                resourceType: "Task",
+                modelType: InvestigationsTask
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/imaging-request": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/imaging-request",
+                resourceType: "ServiceRequest",
+                modelType: ImagingServiceRequest
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/drug-dispensation": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/drug-dispensation",
+                resourceType: "MedicationDispense",
+                modelType: DrugDispensation
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/target-facility-encounter": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/target-facility-encounter",
+                resourceType: "Encounter",
+                modelType: TargetFacilityEncounter
             },
             "http://fhir.health.gov.lk/StructureDefinition/lk-core-location": {
                 url: "http://fhir.health.gov.lk/StructureDefinition/lk-core-location",
                 resourceType: "Location",
                 modelType: LKCoreLocation
             },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/generic-observation": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/generic-observation",
+                resourceType: "Observation",
+                modelType: GenericObservation
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/imaging-study": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/imaging-study",
+                resourceType: "ImagingStudy",
+                modelType: Imaging
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/investigations-request": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/investigations-request",
+                resourceType: "ServiceRequest",
+                modelType: InvestigationsServiceRequest
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/height": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/height",
+                resourceType: "Observation",
+                modelType: Height
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/cvd-risk-category": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/cvd-risk-category",
+                resourceType: "RiskAssessment",
+                modelType: CVDRiskCategory
+            },
+            "http://fhir.health.gov.lk/StructureDefinition/lk-core-practitioner": {
+                url: "http://fhir.health.gov.lk/StructureDefinition/lk-core-practitioner",
+                resourceType: "Practitioner",
+                modelType: LKCorePractitioner
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/hims-composition": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/hims-composition",
+                resourceType: "Composition",
+                modelType: HIMSComposition
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/total-cholesterol": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/total-cholesterol",
+                resourceType: "Observation",
+                modelType: TotalCholesterol
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/medication-request": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/medication-request",
+                resourceType: "MedicationRequest",
+                modelType: Prescriptions
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/general-referral-request": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/general-referral-request",
+                resourceType: "ServiceRequest",
+                modelType: GeneralReferralServiceRequest
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/bmi": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/bmi",
+                resourceType: "Observation",
+                modelType: BMI
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/risk-behaviour-tobacco-smoker": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/risk-behaviour-tobacco-smoker",
+                resourceType: "Observation",
+                modelType: RiskBehaviourTobaccoSmoker
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/imaging-task": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/imaging-task",
+                resourceType: "Task",
+                modelType: ImagingTask
+            },
             "http://fhir.health.gov.lk/StructureDefinition/lk-core-patient-profile": {
                 url: "http://fhir.health.gov.lk/StructureDefinition/lk-core-patient-profile",
                 resourceType: "Patient",
                 modelType: LKCorePatient
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/practitioner": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/practitioner",
+                resourceType: "Practitioner",
+                modelType: GeneralPractitioner
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/fasting-blood-sugar": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/fasting-blood-sugar",
+                resourceType: "Observation",
+                modelType: FastingBloodSugar
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/allergy-intolerance": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/allergy-intolerance",
+                resourceType: "AllergyIntolerance",
+                modelType: Allergies
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/weight": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/weight",
+                resourceType: "Observation",
+                modelType: Weight
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/risk-behaviour-physical-activity": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/risk-behaviour-physical-activity",
+                resourceType: "Observation",
+                modelType: RiskBehaviourPhysicalActivity
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/generic-task": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/generic-task",
+                resourceType: "Task",
+                modelType: GenericTask
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/random-blood-sugar": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/random-blood-sugar",
+                resourceType: "Observation",
+                modelType: RandomBloodSugar
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/referral-task": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/referral-task",
+                resourceType: "Task",
+                modelType: ReferralTask
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/injection": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/injection",
+                resourceType: "MedicationAdministration",
+                modelType: Injections
+            },
+            "http://fhir.health.gov.lk/StructureDefinition/lk-core-allergy-intolerance": {
+                url: "http://fhir.health.gov.lk/StructureDefinition/lk-core-allergy-intolerance",
+                resourceType: "AllergyIntolerance",
+                modelType: LKCoreAllergyIntolerance
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/providers-location": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/providers-location",
+                resourceType: "Location",
+                modelType: ProvidersLocation
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/organization": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/organization",
+                resourceType: "Organization",
+                modelType: ServiceProvider
+            },
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/hims-patient": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/hims-patient",
+                resourceType: "Patient",
+                modelType: HIMSPatient
             },
             "http://fhir.health.gov.lk/StructureDefinition/lk-core-organization": {
                 url: "http://fhir.health.gov.lk/StructureDefinition/lk-core-organization",
                 resourceType: "Organization",
                 modelType: LKCoreOrganization
             },
-            "http://fhir.health.gov.lk/StructureDefinition/lk-core-practitioner": {
-                url: "http://fhir.health.gov.lk/StructureDefinition/lk-core-practitioner",
-                resourceType: "Practitioner",
-                modelType: LKCorePractitioner
+            "http://openhie.org/fhir/sri-lanka/StructureDefinition/follow-up-plan": {
+                url: "http://openhie.org/fhir/sri-lanka/StructureDefinition/follow-up-plan",
+                resourceType: "ServiceRequest",
+                modelType: FollowUpPlanServiceRequest
             }
         },
         searchParameters: [LKCORE_IG_SEARCH_PARAMS_1]
