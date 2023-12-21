@@ -194,6 +194,45 @@ public type LkCoreProvinceExt record {|
 
 
 @r4:DataTypeDefinition {
+    name: "LKCoreGNAreaExt",
+    baseType: (),
+    elements: {
+    
+        "valueCodeableConcept": {
+            name: "valueCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
+            path: "Extension.value[x]"
+        },    
+        "url": {
+            name: "url",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Source of the definition for the extension code - a logical name or a URL.",
+            path: "Extension.url"
+        }        },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type LkCoreGnAreaExt record {|
+    *r4:CodeableConceptExtension;
+
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
+    string id?;
+    r4:Extension[] extension?;
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+    r4:CodeableConcept valueCodeableConcept?;
+    string url;
+|};
+
+@r4:DataTypeDefinition {
     name: "LKCoreMOHAreaExt",
     baseType: (),
     elements: {
