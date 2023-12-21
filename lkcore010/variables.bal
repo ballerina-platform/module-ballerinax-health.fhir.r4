@@ -26,9 +26,7 @@ public final r4:TerminologyProcessor terminologyProcessor = r4:terminologyProces
 public final r4:FHIRRegistry fhirRegistry = r4:fhirRegistry;
 
 //Number of search params in HEALTHCARE_FHIR_IG_SEARCH_PARAMS_1  = 0
-final readonly & map<r4:FHIRSearchParameterDefinition[]> LKCORE_IG_SEARCH_PARAMS_1 = {
-    
-};
+final readonly & map<r4:FHIRSearchParameterDefinition[]> LKCORE_IG_SEARCH_PARAMS_1 = {};
 
 public json[] FHIR_VALUE_SETS = [];
 public json[] FHIR_CODE_SYSTEMS = [];
