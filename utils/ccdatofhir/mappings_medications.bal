@@ -28,16 +28,27 @@ import ballerinax/health.fhir.r4.uscore501;
 isolated function ccdaToMedication(xml substanceAdministrationElement) returns uscore501:USCoreMedicationRequestProfile? {
     if isXMLElementNotNull(substanceAdministrationElement) {
         uscore501:USCoreMedicationRequestProfile medication = {medicationReference: {}, subject: {}, medicationCodeableConcept: {}, 
-        intent: "option", status: "unknown",requester: {}, authoredOn: ""};
+        intent: "option", status: "unknown", requester: {}, authoredOn: ""};
 
+        string|error? negationId = substanceAdministrationElement.negationInd;
         xml idElement = substanceAdministrationElement/<v3:id|id>;
         xml statusCodeElement = substanceAdministrationElement/<v3:statusCode|statusCode>;
         xml effectiveTimeElement = substanceAdministrationElement/<v3:effectiveTime|effectiveTime>;
         xml routeCodeElement = substanceAdministrationElement/<v3:routeCode|routeCode>;
         xml doseQuantityElement = substanceAdministrationElement/<v3:doseQuantity|doseQuantity>;
         xml rateQuantityElement = substanceAdministrationElement/<v3:rateQuantity|rateQuantity>;
+        xml maxDoseQuantityElement = substanceAdministrationElement/<v3:maxDoseQuantity|maxDoseQuantity>;
         xml manufacturedMaterialElement = substanceAdministrationElement/<v3:consumable|consumable>/<v3:manufacturedProduct|manufacturedProduct>/<v3:manufacturedMaterial|manufacturedMaterial>;
         xml entryRelationshipElement = substanceAdministrationElement/<v3:entryRelationship|entryRelationship>;
+        xml codeElement = entryRelationshipElement/<v3:substanceAdministration|substanceAdministration>/<v3:code|code>;
+        xml substanceAdministrationTextElement = entryRelationshipElement/<v3:substanceAdministration|substanceAdministration>/<v3:text|text>;
+        xml actElement = entryRelationshipElement/<v3:act|act>;
+        xml actCodeElement = actElement/<v3:code|code>;
+        xml actTextElement = actElement/<v3:text|text>;
+
+        if negationId == "true" {
+            medication.doNotPerform = false;
+        }
 
         int index = 0;
         foreach xml idElem in idElement {
@@ -107,6 +118,16 @@ isolated function ccdaToMedication(xml substanceAdministrationElement) returns u
             ];
         }
 
+        string|error? maxDoseValue = maxDoseQuantityElement.value;
+        string|error? maxDoseUnit = maxDoseQuantityElement.unit;
+        if maxDoseValue is string {
+            decimal|error maxDoseDecimalVal = decimal:fromString(maxDoseValue);
+            medication.dosageInstruction[0].maxDosePerAdministration = {
+                value: maxDoseDecimalVal is decimal ? maxDoseDecimalVal : (),
+                unit: maxDoseUnit is string ? maxDoseUnit : ()
+            };
+        }
+
         xml manufacturedMaterialCodeElement = manufacturedMaterialElement/<v3:code|code>;
         r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingtoFhirCodeableConcept(manufacturedMaterialCodeElement);
         if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
@@ -132,9 +153,23 @@ isolated function ccdaToMedication(xml substanceAdministrationElement) returns u
                 dosageInstruction = {
                     addtionalInstruction: [additionalInstruction]
                 };
-                medication.dosageInstruction = [dosageInstruction];
             }
         }
+
+        string|error? codeCode = codeElement.code;
+        if codeCode == "76662-6" {
+            dosageInstruction.patientInstruction = substanceAdministrationTextElement.data();
+        }
+        medication.dosageInstruction = [dosageInstruction];
+
+        string|error? actCodeValue = actCodeElement.code;
+        if actCodeValue == "48767-8" {
+            r4:Annotation 'annotation = {
+                text: actTextElement.data()
+            };
+            medication.note = ['annotation];
+        }
+
         return medication;
     }
     return ();
