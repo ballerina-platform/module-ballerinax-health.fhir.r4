@@ -71,27 +71,31 @@ isolated function ccdaToImmunization(xml substanceAdministrationElement) returns
             log:printDebug("Repeat Number is not available");
         }
 
-        immunization.route = mapCcdaCodingtoFhirCodeableConcept(routeCodeElement);
-        immunization.site = mapCcdaCodingtoFhirCodeableConcept(approachSiteCodeElement);
+        immunization.route = mapCcdaCodingToFhirCodeableConcept(routeCodeElement);
+        immunization.site = mapCcdaCodingToFhirCodeableConcept(approachSiteCodeElement);
 
-        string|error? doseQuantity = doseQuantityElement.unit;
+        string|error? doseQuantityUnit = doseQuantityElement.unit;
         r4:Quantity immunizationDoseQuantity = {};
-        if doseQuantity is string {
-            immunizationDoseQuantity.unit = doseQuantity;
+        if doseQuantityUnit is string {
+            immunizationDoseQuantity.unit = doseQuantityUnit;
         } else {
-            log:printDebug("Dose Quantity Unit is not available", doseQuantity);
+            log:printDebug("Dose Quantity Unit is not available", doseQuantityUnit);
         }
 
-        decimal|error doseQuantityElementValue = decimal:fromString(doseQuantityElement.data());
-        if doseQuantityElementValue is decimal {
-            immunizationDoseQuantity.value = doseQuantityElementValue;
+        string|error? doseQuantityValue = doseQuantityElement.value;
+        if doseQuantityValue is string {
+            decimal|error doseQuantityDecimalValue = decimal:fromString(doseQuantityValue);
+            if doseQuantityDecimalValue is decimal {
+                immunizationDoseQuantity.value = doseQuantityDecimalValue;
+                immunization.doseQuantity = immunizationDoseQuantity;
+            } else {
+                log:printDebug("Dose Quantity Value is not available", doseQuantityDecimalValue);
+            }
         } else {
-            log:printDebug("Dose Quantity Value is not available", doseQuantityElementValue);
+            log:printDebug("Dose Quantity Value is not available", doseQuantityValue);
         }
 
-        immunization.doseQuantity = immunizationDoseQuantity;
-
-        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingtoFhirCodeableConcept(vaccineCodeElement);
+        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(vaccineCodeElement);
         if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
             immunization.vaccineCode = mapCcdaCodingtoFhirCodeableConceptResult;
         }

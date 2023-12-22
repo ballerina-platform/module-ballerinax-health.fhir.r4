@@ -89,29 +89,40 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
         xml playingEntityCodeElement = playingEntityElement/<v3:code|code>;
 
         string|error? playingEntityCodeNullFlavor = playingEntityCodeElement.nullFlavor;
-        r4:CodeableConcept? playingEntityCodeableConcept = mapCcdaCodingtoFhirCodeableConcept(playingEntityCodeElement);
+        r4:CodeableConcept? playingEntityCodeableConcept = mapCcdaCodingToFhirCodeableConcept(playingEntityCodeElement);
 
         if (negationInd is string && negationInd == "true") && playingEntityCodeNullFlavor is string {
-            string? code = ();
-            match code {
-                "414285001" => {
-                    code = "429625007";
-                }
-                "416098002" => {
-                    code = "416098002";
-                }
-                "419199007" => {
-                    code = "716186003";
+            if playingEntityCodeableConcept is r4:CodeableConcept {
+                r4:Coding[]? codings = playingEntityCodeableConcept?.coding;
+                if codings is r4:Coding[] {
+                    r4:Coding[] newCodings = [];
+                    string? code = ();
+                    foreach r4:Coding coding in codings {
+                        match coding.code {
+                            "414285001" => {
+                                code = "429625007";
+                            }
+                            "416098002" => {
+                                code = "416098002";
+                            }
+                            "419199007" => {
+                                code = "716186003";
+                            }
+                        }
+                        coding.code = code;
+                        newCodings.push(coding);
+                    }
+                    playingEntityCodeableConcept = {coding: newCodings};
                 }
             }
-            playingEntityCodeableConcept = {coding: [{code: code}]};
         }
+
         if playingEntityCodeableConcept is r4:CodeableConcept {
             allergyIntolerance.code = playingEntityCodeableConcept;
         }
 
 
-        r4:CodeableConcept? clinicalStatus = mapCcdaCodingtoFhirCodeableConcept(statusCodeElements);
+        r4:CodeableConcept? clinicalStatus = mapCcdaCodingToFhirCodeableConcept(statusCodeElements);
         if clinicalStatus is r4:CodeableConcept {
             r4:Coding[]? coding = clinicalStatus.coding;
             if coding is r4:Coding[] {
@@ -126,7 +137,7 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
         xml observationValueElement = observationElement/<v3:value|value>;
         xml observationIdElement = observationElement/<v3:id|id>;
 
-        r4:CodeableConcept? manifestation = mapCcdaCodingtoFhirCodeableConcept(observationValueElement);
+        r4:CodeableConcept? manifestation = mapCcdaCodingToFhirCodeableConcept(observationValueElement);
         if manifestation is r4:CodeableConcept {
             uscore501:USCoreAllergyIntoleranceReaction reaction = {
                 manifestation: [manifestation]

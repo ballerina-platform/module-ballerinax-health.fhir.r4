@@ -51,7 +51,7 @@ isolated function ccdaToProcedure(xml procedureElement) returns uscore501:USCore
             }
         }
 
-        r4:CodeableConcept? mapCcdaCodeCodingtoFhirCodeCodeableConceptResult = mapCcdaCodingtoFhirCodeableConcept(codeElement);
+        r4:CodeableConcept? mapCcdaCodeCodingtoFhirCodeCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(codeElement);
         if mapCcdaCodeCodingtoFhirCodeCodeableConceptResult is r4:CodeableConcept {
             procedure.code = mapCcdaCodeCodingtoFhirCodeCodeableConceptResult;
         }
@@ -71,7 +71,7 @@ isolated function ccdaToProcedure(xml procedureElement) returns uscore501:USCore
         r4:dateTime? mapCCDAEffectiveHighTimetoFHIRDateTimeResult = mapCcdaDateTimeToFhirDateTime(effectiveTimeHighElement);
         procedure.performedPeriod.end = mapCCDAEffectiveHighTimetoFHIRDateTimeResult;
 
-        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingtoFhirCodeableConcept(targetSiteCodeElement);
+        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(targetSiteCodeElement);
         if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
             procedure.bodySite = [mapCcdaCodingtoFhirCodeableConceptResult];
         }
@@ -121,7 +121,7 @@ isolated function ccdaToProcedure(xml procedureElement) returns uscore501:USCore
             xml obervationElement = entryRelationshipElement/<v3:observation|observation>;
             xml obervationCodeElement = obervationElement/<v3:code|code>;
 
-            r4:CodeableConcept? observationCode = mapCcdaCodingtoFhirCodeableConcept(obervationCodeElement);
+            r4:CodeableConcept? observationCode = mapCcdaCodingToFhirCodeableConcept(obervationCodeElement);
             if observationCode is r4:CodeableConcept {
                 observationCodes.push(observationCode);
             }

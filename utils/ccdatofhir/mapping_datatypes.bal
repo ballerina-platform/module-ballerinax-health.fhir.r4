@@ -85,6 +85,10 @@ public isolated function mapCcdaIdToFhirIdentifier(xml idElement) returns uscore
 public isolated function mapCcdaAddressToFhirAddress(xml addressElements) returns r4:Address[]? {
     r4:Address[] address = [];
     foreach xml addressElement in addressElements {
+        if addressElement.data().trim() == "" {
+            log:printDebug("Address fields not available");
+            continue;
+        }
         xml streetAddressLineElement = addressElement/<v3:streetAddressLine|streetAddressLine>;
         xml cityElement = addressElement/<v3:city|city>;
         xml stateElement = addressElement/<v3:state|state>;
@@ -169,81 +173,98 @@ public isolated function mapCcdaAddressToFhirAddress(xml addressElements) return
 
 # Map C-CDA telecom to FHIR ContactPoint.
 #
-# + telecomElement - C-CDA telecom element
+# + telecomElements - C-CDA telecom element
 # + return - Return FHIR ContactPoint
-public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElement) returns r4:ContactPoint? {
-    string|error? telecomUse = telecomElement.use;
-    string|error? telecomValue = telecomElement.value;
+public isolated function mapCcdaTelecomToFhirTelecom(xml telecomElements) returns r4:ContactPoint[]? {
+    r4:ContactPoint[] contactPoints = [];
+    foreach xml telecomElement in telecomElements {
+        if telecomElement.toString().trim() == "" {
+            log:printDebug("Telecom fields not available");
+            continue;
+        }
+        string|error? telecomUse = telecomElement.use;
+        string|error? telecomValue = telecomElement.value;
 
-    string? systemVal = ();
-    string? valueVal = ();
-    if telecomValue is string {
-        systemVal = re `:`.split(telecomValue)[0];
-        valueVal = re `:`.split(telecomValue)[1];
-
-        match (systemVal) {
-            "tel" => {
-                systemVal = r4:phone;
-            }
-            "mailto" => {
-                systemVal = r4:email;
-            }
-            "fax" => {
-                systemVal = r4:fax;
-            }
-            "http" => {
-                systemVal = r4:url;
-            }
-            "x-text-fax" => {
-                systemVal = r4:sms;
-            }
-            _ => {
+        string? systemVal = ();
+        string? valueVal = ();
+        if telecomValue is string {
+            string[] valTokens = re `:`.split(telecomValue);
+            if valTokens.length() == 1 {
                 systemVal = r4:other;
+                valueVal = telecomValue;
+            } else {
+                systemVal = valTokens[0];
+                valueVal = valTokens[1];
+                
+                match (systemVal) {
+                    "tel" => {
+                        systemVal = r4:phone;
+                    }
+                    "mailto" => {
+                        systemVal = r4:email;
+                    }
+                    "fax" => {
+                        systemVal = r4:fax;
+                    }
+                    "http" => {
+                        systemVal = r4:url;
+                    }
+                    "x-text-fax" => {
+                        systemVal = r4:sms;
+                    }
+                    _ => {
+                        systemVal = r4:other;
+                    }
+                }
             }
+        } else {
+            log:printDebug("Telecom value not available", telecomValue);
         }
-    } else {
-        log:printDebug("Telecom value not available", telecomValue);
-    }
 
-    r4:ContactPointUse? useVal = ();
-    if telecomUse is string {
-        match telecomUse {
-            "HP" => {
-                useVal = "home";
+        r4:ContactPointUse? useVal = ();
+        if telecomUse is string {
+            match telecomUse {
+                "HP" => {
+                    useVal = "home";
+                }
+                "WP" => {
+                    useVal = "work";
+                }
+                "MC" => {
+                    useVal = "mobile";
+                }
+                "OP" => {
+                    useVal = "old";
+                }
+                "TP" => {
+                    useVal = "temp";
+                }
             }
-            "WP" => {
-                useVal = "work";
-            }
-            "MC" => {
-                useVal = "mobile";
-            }
-            "OP" => {
-                useVal = "old";
-            }
-            "TP" => {
-                useVal = "temp";
-            }
+        } else {
+            log:printDebug("Telecom use not available", telecomUse);
         }
-    } else {
-        log:printDebug("Telecom use not available", telecomUse);
-    }
 
-    if systemVal is string && valueVal is string {
-        return {
-            system: <uscore501:USCorePatientProfileTelecomSystem> systemVal,
-            value: valueVal,
-            use: useVal
-        };
+        if systemVal is string && valueVal is string {
+            r4:ContactPoint contactPoint = {
+                system: <r4:ContactPointSystem> systemVal,
+                value: valueVal,
+                use: useVal
+            };
+            contactPoints.push(contactPoint);
+        }
     }
-    log:printDebug("telecom fields not available");
-    return ();
+    if contactPoints.length() == 0 {
+        log:printDebug("telecom fields not available");
+        return ();
+    }
+    return contactPoints;
 }
 
 # Map C-CDA name to FHIR HumanName.
 #
 # + nameElements - C-CDA name element
 # + return - Return FHIR HumanName
-public isolated function mapCcdaNametoFhirName(xml nameElements) returns r4:HumanName[]? {
+public isolated function mapCcdaNameToFhirName(xml nameElements) returns r4:HumanName[]? {
     r4:HumanName[] humanNames = [];
 
     foreach xml nameElement in nameElements { 
@@ -310,8 +331,8 @@ public isolated function mapCcdaNametoFhirName(xml nameElements) returns r4:Huma
 #
 # + codingElement - C-CDA code element
 # + return - Return FHIR CodeableConcept
-public isolated function mapCcdaCodingtoFhirCodeableConcept(xml codingElement) returns r4:CodeableConcept? {
-    r4:Coding[]? mapCcdaCodingtoFhirCodeResult = mapCcdaCodingstoFhirCodings(codingElement);
+public isolated function mapCcdaCodingToFhirCodeableConcept(xml codingElement) returns r4:CodeableConcept? {
+    r4:Coding[]? mapCcdaCodingtoFhirCodeResult = mapCcdaCodingsToFhirCodings(codingElement);
     string textVal = codingElement.data().trim();
     if mapCcdaCodingtoFhirCodeResult is r4:Coding[] {
         return {
@@ -327,7 +348,7 @@ public isolated function mapCcdaCodingtoFhirCodeableConcept(xml codingElement) r
 #
 # + codingElement - C-CDA code element
 # + return - Return FHIR Coding
-public isolated function mapCcdaCodingtoFhirCoding(xml codingElement) returns r4:Coding? {
+public isolated function mapCcdaCodingToFhirCoding(xml codingElement) returns r4:Coding? {
     string|error? codeVal = codingElement.code;
     string|error? systemVal = codingElement.codeSystem;
     string|error? displayNameVal = codingElement.displayName;
@@ -341,7 +362,7 @@ public isolated function mapCcdaCodingtoFhirCoding(xml codingElement) returns r4
 
     string? system = ();
     if systemVal is string {
-        system = mapOidtoUri(systemVal);
+        system = mapOidToUri(systemVal);
     } else {
         log:printDebug("systemVal is not available", systemVal);
     }
@@ -368,7 +389,7 @@ public isolated function mapCcdaCodingtoFhirCoding(xml codingElement) returns r4
 #
 # + codingElements - C-CDA code element
 # + return - Return FHIR Coding
-public isolated function mapCcdaCodingstoFhirCodings(xml codingElements) returns r4:Coding[]? {
+public isolated function mapCcdaCodingsToFhirCodings(xml codingElements) returns r4:Coding[]? {
     r4:Coding[] codings = [];
     foreach xml codingElement in codingElements {
         string|error? codeVal = codingElement.code;
@@ -384,7 +405,7 @@ public isolated function mapCcdaCodingstoFhirCodings(xml codingElements) returns
 
         string? system = ();
         if systemVal is string {
-            system = mapOidtoUri(systemVal);
+            system = mapOidToUri(systemVal);
         } else {
             log:printDebug("systemVal is not available", systemVal);
         }
@@ -449,7 +470,7 @@ public isolated function mapCcdaDateTimeToFhirDateTime(xml dateTimeElement) retu
 # 
 # + oid - C-CDA OID
 # + return - Return FHIR codesystems
-public isolated function mapOidtoUri(string oid) returns string {
+public isolated function mapOidToUri(string oid) returns string {
     match (oid) {
         "2.16.840.1.113883.6.1" => {
             return "http://loinc.org";

@@ -39,7 +39,7 @@ isolated function ccdaToPractitioner(xml authorElement) returns uscore501:USCore
         xml assignedPersonElement = assignedAuthorElement/<v3:assignedPerson|assignedPerson>;
         xml assignedAuthorAddressElement = assignedAuthorElement/<v3:addr|addr>;
 
-        r4:CodeableConcept? qualificationCode = mapCcdaCodingtoFhirCodeableConcept(assignedAuthorCodeElement);
+        r4:CodeableConcept? qualificationCode = mapCcdaCodingToFhirCodeableConcept(assignedAuthorCodeElement);
         if qualificationCode is r4:CodeableConcept {
             uscore501:USCorePractitionerProfileQualification qualification = {
                 code: qualificationCode
