@@ -47,7 +47,7 @@ isolated function ccdaToMedication(xml substanceAdministrationElement) returns u
         xml actTextElement = actElement/<v3:text|text>;
 
         if negationId == "true" {
-            medication.doNotPerform = false;
+            medication.doNotPerform = true;
         }
 
         int index = 0;
@@ -151,7 +151,7 @@ isolated function ccdaToMedication(xml substanceAdministrationElement) returns u
 
             if additionalInstruction is r4:CodeableConcept {
                 dosageInstruction = {
-                    addtionalInstruction: [additionalInstruction]
+                    additionalInstruction: [additionalInstruction]
                 };
             }
         }
