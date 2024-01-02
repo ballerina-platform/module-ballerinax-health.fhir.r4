@@ -18,18 +18,18 @@ import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.parser;
 import ballerina/http;
-import ballerina/io;
 import ballerina/lang.regexp;
+import ballerina/log;
 
-# Description.
+# Record used to store user friendly error messages.
 #
 # + detailedErrors - User friendly error messages
 public type FHIRValidationIssueDetail record {
     *r4:FHIRIssueDetail;
-    string[]? detailedErrors =();
+    string[]? detailedErrors = ();
 };
 
-# Utility function to create FHIRError.
+# Utility function to create FHIRError for validator.
 #
 # + message - Message to be added to the error
 # + errServerity - serverity of the error
@@ -43,18 +43,11 @@ public type FHIRValidationIssueDetail record {
 # + parsedErrors - (optional) usefriendly error messages parsed from original error message
 public isolated function createFHIRError(string message, r4:Severity errServerity, r4:IssueType code,
         string? diagnostic = (), string[]? expression = (), error? cause = (),
-        r4:FHIRErrorTypes? errorType = (), string[]? parsedErrors = (),  int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR)
+        r4:FHIRErrorTypes? errorType = (), string[]? parsedErrors = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR)
         returns r4:FHIRError {
     string diagnosticMessage = diagnostic != () ? string `${message} due to ${diagnostic}` : message;
     string[] detailedErrors = parsedErrors != () ? parsedErrors : [diagnosticMessage];
-    return createTypedError(diagnosticMessage, errServerity, code, diagnostic, expression, cause, errorType,
-                                internal = false, httpStatusCode = httpStatusCode, detailedErrors = detailedErrors );
-}
-isolated function createTypedError(string message, r4:Severity errServerity, r4:IssueType code,
-        string? diagnostic = (), string[]? expression = (), error? cause = (),
-        r4:FHIRErrorTypes? errorType = (), string[]? detailedErrors = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR,
-        boolean internal = false)
-                                returns r4:FHIRError {
+    boolean internal = false;
     FHIRValidationIssueDetail issue = {
         severity: errServerity,
         code: code,
@@ -74,17 +67,17 @@ isolated function createTypedError(string message, r4:Severity errServerity, r4:
     match errorType {
         r4:VALIDATION_ERROR => {
             r4:FHIRValidationError fError = error(message, cause, issues = [issue], httpStatusCode = httpStatusCode,
-                                                internalError = internal);
+                                                        internalError = internal);
             return fError;
         }
         r4:PARSE_ERROR => {
             r4:FHIRParseError fError = error(message, cause, issues = [issue], httpStatusCode = httpStatusCode,
-                                                internalError = internal);
+                                                        internalError = internal);
             return fError;
         }
         _ => {
             r4:FHIRError fError = error(message, cause, issues = [issue], httpStatusCode = httpStatusCode,
-                                                internalError = internal);
+                                                        internalError = internal);
             return fError;
         }
     }
@@ -104,7 +97,7 @@ public isolated function validate(json|anydata data, typedesc<anydata>? targetFH
         anydata|r4:FHIRParseError parsedResult = parser:parse(data, targetFHIRModelType);
 
         if parsedResult is r4:FHIRParseError {
-            io:println("----------FHIRPARSEERROR-----------");
+            log:printDebug("FHIRPARSEERROR");
             string[] errors = parseFHIRParserErrors(parsedResult.message());
             return <r4:FHIRValidationError>createFHIRError("FHIR resource validation failed", r4:ERROR, r4:INVALID, parsedResult.message(),
                                                 errorType = r4:VALIDATION_ERROR, cause = parsedResult, parsedErrors = errors);
@@ -121,9 +114,9 @@ public isolated function validate(json|anydata data, typedesc<anydata>? targetFH
     anydata|constraint:Error validationResult = constraint:validate(finalData, typeDescOfData);
 
     if validationResult is constraint:Error {
-        io:println("----------CONSTRAINTERROR-------");
+        log:printDebug("CONSTRAINTERROR");
         string[] errors = parseConstraintErrors(validationResult.message());
-        return <r4:FHIRValidationError>createFHIRError("FHIR resource validation failed",r4:ERROR, r4:INVALID, validationResult.message(),
+        return <r4:FHIRValidationError>createFHIRError("FHIR resource validation failed", r4:ERROR, r4:INVALID, validationResult.message(),
                                                 errorType = r4:VALIDATION_ERROR, cause = validationResult, parsedErrors = errors);
     }
 
@@ -138,49 +131,42 @@ public isolated function validate(json|anydata data, typedesc<anydata>? targetFH
 isolated function validateFhirResource(anydata data) returns r4:FHIRValidationError? {
     return validate(data);
 }
+
 isolated function parseConstraintErrors(string message) returns string[] {
 
-    string[] errors=[];
+    string[] errors = [];
 
     string:RegExp regex = re `\n`;
     string[] data = regex.split(message);
-  
+
     //Parsing for dateTime errors.
-    foreach var i in 0...data.length()-1 {
+    foreach var i in 0 ... data.length() - 1 {
         regexp:Groups[] invalidDates = re `\$\.(\w+):pattern`.findAllGroups(data[i]);
         foreach regexp:Groups result in invalidDates {
             if result is regexp:Groups {
                 regexp:Span? value = result[1];
                 if value !is () {
-                errors.push("Invalid pattern (constraint) for field '"+ value.substring()+"'");
+                    errors.push("Invalid pattern (constraint) for field '" + value.substring() + "'");
                 }
             }
         }
     }
-   return errors;
+    return errors;
 }
 
-isolated function parseFHIRParserErrors(string message) returns string[]{
+isolated function parseFHIRParserErrors(string message) returns string[] {
 
-    string[] errors=[];
+    string[] errors = [];
 
     //Removes related content if fhir multitype scenario is present so that it can be styled differently
     //The regex searches for a '{' enclosed within \n tags which signifies the start of multitype error.
     string:RegExp regex1 = re `\n\s*\{[\s\S]*`;
-    string editedMessage =  regex1.replace(message, "");
-    io:println("+++++++++++++++++++++++++++++++++++++");
-    io:println(editedMessage);
-
-
-
-
-   
+    string editedMessage = regex1.replace(message, "");
 
     string:RegExp regex2 = re `\n`;
     string[] data = regex2.split(editedMessage);
-  
-    foreach var i in 0...data.length()-1 {
-        
+
+    foreach var i in 0 ... data.length() - 1 {
 
         //Parsing for resource Type
         regexp:Groups? resourceType = re `Failed to find FHIR profile for the resource type`.findGroups(data[i]);
@@ -194,107 +180,99 @@ isolated function parseFHIRParserErrors(string message) returns string[]{
             regexp:Span? value = missingFieldsData[1];
             if value !is () {
                 errors.push("Missing required field '" + value.substring() + "'");
-    
+
             }
         }
-        
+
         //Parsing for missing elements(if resourcetype is msiisng)
         regexp:Groups? missingElementsData = re `missing required element: "([^""]+)"`.findGroups(data[i]);
         if missingElementsData is regexp:Groups {
             regexp:Span? value = missingElementsData[1];
             if value !is () {
-                errors.push("Missing required Element: '"+ value.substring()+ "'");
+                errors.push("Missing required Element: '" + value.substring() + "'");
             }
         }
 
         //Parsing for Invalid fields
         regexp:Groups? invalidFieldData = re `value of field '([^']+)'`.findGroups(data[i]);
         if invalidFieldData is regexp:Groups {
-            string fieldName="";
-            string fieldData="";
+            string fieldName = "";
+            string fieldData = "";
             regexp:Span? value = invalidFieldData[1];
             if value !is () {
-                fieldName = "Invalid field '"+ value.substring() + "'";
+                fieldName = "Invalid field '" + value.substring() + "'";
             }
             //To get the expected type from the error message
             regexp:Groups? expectedDataFormat = re `should be of type '([^']+)'`.findGroups(data[i]);
             if expectedDataFormat is regexp:Groups {
-                regexp:Span? dataType  = expectedDataFormat[1];
+                regexp:Span? dataType = expectedDataFormat[1];
                 if dataType !is () {
-                    fieldData = "Type of field should be '"+ dataType.substring()+"'";
+                    fieldData = "Type of field should be '" + dataType.substring() + "'";
                 }
             }
-            errors.push(fieldName + ". " + fieldData);  
+            errors.push(fieldName + ". " + fieldData);
         }
 
         //Parsing for invalid field values
         regexp:Groups? invalidValuesData = re `^\s*field '([^']+)'`.findGroups(data[i]);
         if invalidValuesData is regexp:Groups {
-            string valueName="";
-            string valueData="";
+            string valueName = "";
+            string valueData = "";
             regexp:Span? value = invalidValuesData[1];
             if value !is () {
-                valueName = "Invalid value of field '"+ value.substring()+"'";
+                valueName = "Invalid value of field '" + value.substring() + "'";
             }
             //To get the expected type from the error message
             regexp:Groups? expectedDataFormat = re `should be of type '([^']+)'`.findGroups(data[i]);
             if expectedDataFormat is regexp:Groups {
-                regexp:Span? dataType  = expectedDataFormat[1];
+                regexp:Span? dataType = expectedDataFormat[1];
                 if dataType !is () {
-                    valueData = "Type of value should be '"+ dataType.substring()+"'";
+                    valueData = "Type of value should be '" + dataType.substring() + "'";
                 }
             }
             errors.push(valueName + ". " + valueData);
         }
 
-
-    }  
+    }
 
     //Parsing for fhir multitype scenario
-    regexp:Groups? sss = re `\n\s*\{[\s\S]*`.findGroups(message);
-    if sss is regexp:Groups {
-        regexp:Span? value = sss[0];
-        if value !is () {  
+    //The regex captures a '{' enclosed within \n tags which signifies the start of multitype error.
+    regexp:Groups? multitypeMessage = re `\n\s*\{[\s\S]*`.findGroups(message);
+    if multitypeMessage is regexp:Groups {
+        regexp:Span? value = multitypeMessage[0];
+        if value !is () {
             string capturedString = value.substring();
             //Splits message into lines based on \n
             string[] capturedErrors = regex2.split(capturedString);
 
-            string valueName="";
+            string valueName = "";
             //To get the field name from the error message if error is with the value
-            foreach var i in 0...capturedErrors.length()-1 {
-            regexp:Groups? capturedData = re `^\s*field '([^']+)'`.findGroups(capturedErrors[i]);
+            foreach var i in 0 ... capturedErrors.length() - 1 {
+                regexp:Groups? capturedData = re `^\s*field '([^']+)'`.findGroups(capturedErrors[i]);
                 if capturedData is regexp:Groups {
+                    regexp:Span? fieldData = capturedData[1];
+                    if fieldData !is () {
+                        valueName = fieldData.substring();
+                        errors.push("The field '" + valueName + "' may be missing or invalid or it's value invalid");
+                        break;
+                    }
+                }
+            }
+            if (valueName === "") {
+                //To get the field name from the error message if error is with the field itself
+                foreach var i in 0 ... capturedErrors.length() - 1 {
+                    regexp:Groups? capturedData = re `^\s* value of field '([^']+)'`.findGroups(capturedErrors[i]);
+                    if capturedData is regexp:Groups {
                         regexp:Span? fieldData = capturedData[1];
                         if fieldData !is () {
                             valueName = fieldData.substring();
-                            errors.push("The field '"+ valueName +"' may be missing or invalid or it's value invalid" );
+                            errors.push("The field '" + valueName + "' may be missing or invalid or it's value invalid");
                             break;
                         }
-                }
-            }
-            if (valueName===""){
-                //To get the field name from the error message if error is with the field itself
-                foreach var i in 0...capturedErrors.length()-1 {
-                regexp:Groups? capturedData = re `^\s* value of field '([^']+)'`.findGroups(capturedErrors[i]);
-                    if capturedData is regexp:Groups {
-                            regexp:Span? fieldData = capturedData[1];
-                            if fieldData !is () {
-                                valueName = fieldData.substring();
-                                errors.push("The field '"+ valueName +"' may be missing or invalid or it's value invalid" );
-                                break;
-                            }
                     }
                 }
             }
         }
     }
-
-
-    // foreach string value in errors{
-    //     io:println("--------------------------------");
-    //     io:println(value);
-    // }
-
     return errors;
-    
 }
