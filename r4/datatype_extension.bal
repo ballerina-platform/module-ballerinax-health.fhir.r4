@@ -14,15 +14,15 @@
 // specific language governing permissions and limitations
 // under the License.
 
-public type Extension CodeableConceptExtension | ExtensionExtension | StringExtension | CodingExtension | CodeExtension | IntegerExtension
-| CodeableConceptExtension | Base64BinaryExtension | BooleanExtension | CanonicalExtension | DateExtension | DateTimeExtension | DecimalExtension
+public type Extension CodeableConceptExtension | StringExtension | CodingExtension | CodeExtension | IntegerExtension
+| Base64BinaryExtension | BooleanExtension | CanonicalExtension | DateExtension | DateTimeExtension | DecimalExtension
 | IdExtension | InstantExtension | Integer64Extension | MarkdownExtension | OidExtension | PositiveIntExtension | TimeExtension | UnsignedIntExtension
 | UriExtension | UrlExtension | UuidExtension | AddressExtension | AgeExtension | AnnotationExtension | AttachmentExtension | CodeableReferenceExtension
 | ContactPointExtension | CountExtension | DistanceExtension | DurationExtension | HumanNameExtension | IdentifierExtension | MoneyExtension
 | PeriodExtension | QuantityExtension | RangeExtension | RatioExtension | RatioRangeExtension | ReferenceExtension | SampledDataExtension | SignatureExtension
 | TimingExtension | ContactDetailExtension | DataRequirementExtension | ExpressionExtension | ParameterDefinitionExtension
 | RelatedArtifactExtension | TriggerDefinitionExtension | UsageContextExtension | AvailabilityExtension | ExtendedContactDetailExtension | DosageExtension 
-| MetaExtension;
+| MetaExtension | ExtensionExtension;
 
 # Every element in a resource or data type includes an optional "extension" child element that may be present
 #  any number of times. 
