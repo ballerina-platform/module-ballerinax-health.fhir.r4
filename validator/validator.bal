@@ -41,7 +41,7 @@ public type FHIRValidationIssueDetail record {
 # + httpStatusCode - (optional) [default: 500] HTTP status code to return to the client
 # + return - Return Value Description
 # + parsedErrors - (optional) usefriendly error messages parsed from original error message
-public isolated function createFHIRError(string message, r4:Severity errServerity, r4:IssueType code,
+public isolated function createValidationError(string message, r4:Severity errServerity, r4:IssueType code,
         string? diagnostic = (), string[]? expression = (), error? cause = (),
         r4:FHIRErrorTypes? errorType = (), string[]? parsedErrors = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR)
         returns r4:FHIRError {
@@ -97,9 +97,9 @@ public isolated function validate(json|anydata data, typedesc<anydata>? targetFH
         anydata|r4:FHIRParseError parsedResult = parser:parse(data, targetFHIRModelType);
 
         if parsedResult is r4:FHIRParseError {
-            log:printDebug("FHIRPARSEERROR");
-            string[] errors = parseFHIRParserErrors(parsedResult.message());
-            return <r4:FHIRValidationError>createFHIRError("FHIR resource validation failed", r4:ERROR, r4:INVALID, parsedResult.message(),
+            log:printDebug("Error is a FHIRParseError");
+            string[] errors = processFHIRParserErrors(parsedResult.message());
+            return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, parsedResult.message(),
                                                 errorType = r4:VALIDATION_ERROR, cause = parsedResult, parsedErrors = errors);
         } else {
             finalData = parsedResult;
@@ -114,9 +114,9 @@ public isolated function validate(json|anydata data, typedesc<anydata>? targetFH
     anydata|constraint:Error validationResult = constraint:validate(finalData, typeDescOfData);
 
     if validationResult is constraint:Error {
-        log:printDebug("CONSTRAINTERROR");
+        log:printDebug("Error is a constraint:Error");
         string[] errors = parseConstraintErrors(validationResult.message());
-        return <r4:FHIRValidationError>createFHIRError("FHIR resource validation failed", r4:ERROR, r4:INVALID, validationResult.message(),
+        return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, validationResult.message(),
                                                 errorType = r4:VALIDATION_ERROR, cause = validationResult, parsedErrors = errors);
     }
 
@@ -154,7 +154,7 @@ isolated function parseConstraintErrors(string message) returns string[] {
     return errors;
 }
 
-isolated function parseFHIRParserErrors(string message) returns string[] {
+isolated function processFHIRParserErrors(string message) returns string[] {
 
     string[] errors = [];
 
