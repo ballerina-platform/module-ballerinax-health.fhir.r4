@@ -271,7 +271,7 @@ public enum USCorePractitionerProfileIdentifierUse {
     }
 }
 public type USCorePractitionerProfileIdentifierNPI record {|
-    *r4:Identifier;
+    *USCorePractitionerProfileIdentifier;
 
     r4:uri system = "http://hl7.org/fhir/sid/us-npi";
 |};

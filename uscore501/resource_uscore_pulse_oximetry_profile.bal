@@ -870,7 +870,7 @@ public type USCorePulseOximetryProfileComponent record {|
     }
 }
 public type USCorePulseOximetryProfileComponentFlowRate record {|
-    *r4:BackboneElement;
+    *USCorePulseOximetryProfileComponent;
 
     r4:CodeableConcept dataAbsentReason?;
     r4:Extension[] extension?;
@@ -1455,7 +1455,7 @@ public type USCorePulseOximetryProfileCodeCodingO2Sat record {|
     }
 }
 public type USCorePulseOximetryProfileComponentConcentration record {|
-    *r4:BackboneElement;
+    *USCorePulseOximetryProfileComponent;
 
     r4:CodeableConcept dataAbsentReason?;
     r4:Extension[] extension?;

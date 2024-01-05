@@ -1130,7 +1130,7 @@ public type USCoreBloodPressureProfileComponentCodeCodingOne record {|
     }
 }
 public type USCoreBloodPressureProfileComponentDiastolic record {|
-    *r4:BackboneElement;
+    *USCoreBloodPressureProfileComponent;
 
     r4:CodeableConcept dataAbsentReason?;
     r4:Extension[] extension?;
@@ -1467,7 +1467,7 @@ public type USCoreBloodPressureProfileCodeCoding record {|
     }
 }
 public type USCoreBloodPressureProfileComponentSystolic record {|
-    *r4:BackboneElement;
+    *USCoreBloodPressureProfileComponent;
 
     r4:CodeableConcept dataAbsentReason?;
     r4:Extension[] extension?;
