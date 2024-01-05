@@ -389,7 +389,7 @@ public type USCoreImmunizationProfile record {|
     boolean primarySource;
     r4:Extension[] extension?;
     USCoreImmunizationProfileEducation[] education?;
-    r4:Quantity doseQuantity?;
+    r4:SimpleQuantity doseQuantity?;
     r4:Extension[] modifierExtension?;
     r4:Reference[] reasonReference?;
     r4:code language?;

@@ -567,7 +567,7 @@ public enum USCoreOrganizationProfileAddressType {
     }
 }
 public type USCoreOrganizationProfileIdentifierCLIA record {|
-    *r4:Identifier;
+    *USCoreOrganizationProfileIdentifier;
 
     r4:uri system = "urn:oid:2.16.840.1.113883.4.7";
 |};
@@ -773,7 +773,7 @@ public enum USCoreOrganizationProfileTelecomUse {
     }
 }
 public type USCoreOrganizationProfileIdentifierNPI record {|
-    *r4:Identifier;
+    *USCoreOrganizationProfileIdentifier;
 
     r4:uri system = "http://hl7.org/fhir/sid/us-npi";
 |};

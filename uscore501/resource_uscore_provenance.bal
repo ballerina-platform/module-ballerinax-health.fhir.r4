@@ -620,7 +620,7 @@ public type USCoreProvenanceAgent record {|
     }
 }
 public type USCoreProvenanceAgentProvenanceAuthor record {|
-    *r4:BackboneElement;
+    *USCoreProvenanceAgent;
 
     r4:Extension[] extension?;
     r4:CodeableConcept[] role?;
@@ -828,7 +828,7 @@ public type USCoreProvenanceAgentTypeOne record {|
     }
 }
 public type USCoreProvenanceAgentProvenanceTransmitter record {|
-    *r4:BackboneElement;
+    *USCoreProvenanceAgent;
 
     r4:Extension[] extension?;
     r4:CodeableConcept[] role?;
