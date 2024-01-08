@@ -32,27 +32,32 @@ function startPaginationService() returns error? {
 
 @test:Config {groups: ["Pagination"]}
 function testDefaultPageParams() returns error? {
-    map<r4:RequestSearchParameter[]> params = check fhirPaginationClient->/test1/Patient();
-    test:assertTrue(params.hasKey("_count"));
-    test:assertEquals(params.get("_count")[0].value, "10");
-    test:assertEquals(params.get("_offset")[0].value, "0");
+    [map<r4:RequestSearchParameter[]>, r4:PaginationContext] params = check fhirPaginationClient->/test1/Patient();
+    test:assertTrue(params[1].paginationEnabled);
+    test:assertEquals(params[1].page, 1);
+    test:assertEquals(params[1].pageSize, 10);
 }
 
 @test:Config {groups: ["Pagination"]}
-function testCustomPageParams() returns error? {
-    map<r4:RequestSearchParameter[]> params = check fhirPaginationClient->/test1/Patient(page=2);
-    test:assertTrue(params.hasKey("_count"));
-    test:assertEquals(params.get("_count")[0].value, "10");
-    test:assertEquals(params.get("_offset")[0].value, "10");
+function testCustomPageParam() returns error? {
+    [map<r4:RequestSearchParameter[]>, r4:PaginationContext] params = check fhirPaginationClient->/test1/Patient(page=2);
+    test:assertEquals(params[1].page, 2);
+    test:assertEquals(params[1].pageSize, 10);
+}
+
+@test:Config {groups: ["Pagination"]}
+function testCustomCountParam() returns error? {
+    [map<r4:RequestSearchParameter[]>, r4:PaginationContext] params = check fhirPaginationClient->/test1/Patient(_count=5);
+    test:assertEquals(params[1].page, 1);
+    test:assertEquals(params[1].pageSize, 5);
 }
 
 @test:Config {groups: ["Pagination"]}
 function testPageWithOtherQparams() returns error? {
-    map<r4:RequestSearchParameter[]> params = check fhirPaginationClient->/test1/Patient(page=2, given="Vijay");
-    test:assertTrue(params.hasKey("given"));
-    test:assertTrue(params.hasKey("_count"));
-    test:assertEquals(params.get("_count")[0].value, "10");
-    test:assertEquals(params.get("_offset")[0].value, "10");
+    [map<r4:RequestSearchParameter[]>, r4:PaginationContext] params = check fhirPaginationClient->/test1/Patient(page=2, given="Vijay");
+    test:assertTrue(params[0].hasKey("given"));
+    test:assertEquals(params[1].page, 2);
+    test:assertEquals(params[1].pageSize, 10);
 }
 
 @test:Config {groups: ["Pagination"]}
@@ -79,7 +84,69 @@ function testAllLinks() returns error? {
     }
     test:assertTrue(nextLink == "");
     test:assertTrue(prevLink.includes("page=1"));
+    test:assertTrue(prevLink.includes("_count=10"));
     test:assertTrue(selfLink.includes("page=2"));
+    test:assertTrue(selfLink.includes("_count=10"));
+
+}
+
+@test:Config {groups: ["Pagination"]}
+function testAllLinksWithCount() returns error? {
+    r4:Bundle patients = check fhirPaginationClient->/test2/Patient(page = 2, _count=5, given = "Vijay");
+    r4:BundleLink[]? allLinks = patients.link;
+    string nextLink = "";
+    string prevLink = "";
+    string selfLink = "";
+    if allLinks is r4:BundleLink[] {
+        foreach r4:BundleLink link in allLinks {
+            match link.relation {
+                "next" => {
+                    nextLink = link.url;
+                }
+                "prev" => {
+                    prevLink = link.url;
+                }
+                "self" => {
+                    selfLink = link.url;
+                }
+            }
+        }
+    }
+    test:assertTrue(nextLink == "");
+    test:assertTrue(prevLink.includes("page=1"));
+    test:assertTrue(prevLink.includes("_count=5"));
+    test:assertTrue(selfLink.includes("page=2"));
+    test:assertTrue(selfLink.includes("_count=5"));
+
+}
+
+@test:Config {groups: ["Pagination"]}
+function testAllLinksWithPage() returns error? {
+    r4:Bundle patients = check fhirPaginationClient->/test2/Patient(_count = 2, given = "Vijay");
+    r4:BundleLink[]? allLinks = patients.link;
+    string nextLink = "";
+    string prevLink = "";
+    string selfLink = "";
+    if allLinks is r4:BundleLink[] {
+        foreach r4:BundleLink link in allLinks {
+            match link.relation {
+                "next" => {
+                    nextLink = link.url;
+                }
+                "prev" => {
+                    prevLink = link.url;
+                }
+                "self" => {
+                    selfLink = link.url;
+                }
+            }
+        }
+    }
+    test:assertTrue(prevLink == "");
+    test:assertTrue(nextLink.includes("page=2"));
+    test:assertTrue(nextLink.includes("_count=2"));
+    test:assertTrue(selfLink.includes("page=1"));
+    test:assertTrue(selfLink.includes("_count=2"));
 
 }
 
@@ -169,6 +236,23 @@ function testNoPagination() returns error? {
             test:assertTrue(details.text == "Pagination not supported");
         }
     }
+}
+
+@test:Config {groups: ["NoPagination"]}
+function testTotal() returns error? {
+    http:Response response = check fhirNoPaginationClient->/test1/Patient();
+    anydata patients = check parser:parse(check response.getJsonPayload());
+    if patients is r4:Bundle {
+        test:assertTrue(patients.total == 2);
+    } else {
+        test:assertFail("Invalid response");
+    }
+}
+
+@test:Config {groups: ["NoPagination"]}
+function testNoPaginationWithCount() returns error? {
+    http:Response response = check fhirNoPaginationClient->/test1/Patient(_count = 1);
+    test:assertEquals(response.statusCode, http:STATUS_OK);
 }
 
 @test:AfterGroups { value:["NoPagination"] }

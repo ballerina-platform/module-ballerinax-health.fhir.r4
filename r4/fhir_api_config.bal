@@ -44,7 +44,7 @@ public type ResourceAPIConfigType record {|
     readonly AuthzConfig? authzConfig;
     readonly AuditConfig auditConfig?;
     readonly PaginationConfig paginationConfig = {
-        paginationEnabled: true
+        enabled: true
     };
 |};
 
@@ -107,9 +107,9 @@ public type ApiInfo record {|
 
 # Pagination configs.
 #
-# + paginationEnabled - Whether pagination is enabled or not  
+# + enabled - Whether pagination is enabled or not  
 # + pageSize - Number of records per page
 public type PaginationConfig record {|
-    readonly boolean paginationEnabled;
+    readonly boolean enabled;
     readonly int pageSize = 10;
 |};

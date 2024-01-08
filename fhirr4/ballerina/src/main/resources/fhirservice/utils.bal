@@ -16,16 +16,15 @@
 
 import ballerinax/health.fhir.r4;
 
-isolated function addPagination(r4:FHIRContext fhirContext, r4:Bundle bundle, int pageSize, string path) returns r4:Bundle {
-    r4:Bundle bundleWithPagination = bundle;
+isolated function addPagination(r4:PaginationContext paginationContext,  map<r4:RequestSearchParameter[]> requestSearchParameters,
+                                        r4:Bundle bundle, string path) returns r4:Bundle {
     r4:BundleLink[] allLinks = [];
 
     // construct query string from processed search params
     string qString = "";
-    map<r4:RequestSearchParameter[]> requestSearchParameters = fhirContext.getRequestSearchParameters();
     foreach r4:RequestSearchParameter[] params in requestSearchParameters {
         foreach r4:RequestSearchParameter param in params {
-            if param.name == OFFSET || param.name == COUNT {
+            if param.name == COUNT {
                 continue;
             }
             qString = qString + string `${param.name}=${param.value}&`;
@@ -35,25 +34,11 @@ isolated function addPagination(r4:FHIRContext fhirContext, r4:Bundle bundle, in
         qString = qString.substring(0, qString.length() - 1);
     }
 
-    // get current page
-    int currentpage = 1;
-    r4:RequestSearchParameter[]? pageParam = fhirContext.getRequestSearchParameter(OFFSET);
-    if pageParam is r4:RequestSearchParameter[] {
-        r4:RequestSearchParameter offsetParam = pageParam[0];
-        int|error offset = int:fromString(offsetParam.value);
-        if offset is int {
-            currentpage = (offset / pageSize) + 1;
-        } else {
-            // ignore error since we set the offset value to fhir context after validation
-        }
-    }
+    int currentpage = paginationContext.page;
+    int pageSize = paginationContext.pageSize;
 
     // populate self link
-    string selfUrl = qString.length() > 0 ? string `${path}?${qString}&${PAGE_QUERY_PARAM}=${currentpage}` : string `${path}?${PAGE_QUERY_PARAM}=${currentpage}`;
-    r4:BundleLink selfLink = {
-        relation: "self",
-        url: string `${selfUrl}`
-    };
+    r4:BundleLink selfLink = constructUrl(qString, "self", path, pageSize, currentpage);
 
     allLinks.push(selfLink);
 
@@ -62,26 +47,42 @@ isolated function addPagination(r4:FHIRContext fhirContext, r4:Bundle bundle, in
         // no next link
     } else {
         // populate next link
-        int nextPage = currentpage + 1;
-        string nextUrl = qString.length() > 0 ? string `${path}?${qString}&${PAGE_QUERY_PARAM}=${nextPage}` : string `${path}?${PAGE_QUERY_PARAM}=${nextPage}`;
-        r4:BundleLink nextLink = {
-            relation: "next",
-            url: string `${nextUrl}`
-        };
+        r4:BundleLink nextLink = constructUrl(qString, "next", path, pageSize, currentpage + 1);
         allLinks.push(nextLink);
     }
 
     if currentpage > 1 {
         // previous link exists
         // populate previous link
-        int prevPage = currentpage - 1;
-        string prevUrl = qString.length() > 0 ? string `${path}?${qString}&${PAGE_QUERY_PARAM}=${prevPage}` : string `${path}?${PAGE_QUERY_PARAM}=${prevPage}`;
-        r4:BundleLink prevLink = {
-            relation: "prev",
-            url: string `${prevUrl}`
-        };
+        r4:BundleLink prevLink = constructUrl(qString, "prev", path, pageSize, currentpage - 1);
         allLinks.push(prevLink);
     }
-    bundleWithPagination.link = allLinks;
-    return bundleWithPagination;
+    
+    bundle.link = allLinks;
+    return bundle;
+}
+
+isolated function constructUrl(string qString, string relation, string path, int count, int page) returns r4:BundleLink {
+    string url = qString.length() > 0 ? string `${path}?${qString}&${PAGE}=${page}&${COUNT}=${count}` : string `${path}?${PAGE}=${page}&${COUNT}=${count}`;
+    return {
+        relation: relation,
+        url: string `${url}`
+    };
+}
+
+isolated function handleBundleInfo(r4:Bundle bundle, r4:FHIRContext fhirCtx, string path) returns r4:Bundle {
+    r4:PaginationContext? paginationContext = fhirCtx.getPaginationContext();
+    if paginationContext is r4:PaginationContext {
+        if paginationContext.paginationEnabled {
+            return addPagination(paginationContext, fhirCtx.getRequestSearchParameters(), bundle, path);
+        } else {
+            // populate bundle total
+            r4:BundleEntry[]? entries = bundle.entry;
+            if entries is r4:BundleEntry[] {
+                bundle.total = entries.length();
+            }
+            return bundle;
+        }   
+    }
+    return bundle;
 }

@@ -271,5 +271,5 @@ final r4:ResourceAPIConfig apiConfigNoPagination = {
     ],
     serverConfig: (),
     paginationConfig: {
-        paginationEnabled: false}
+        enabled: false}
 };

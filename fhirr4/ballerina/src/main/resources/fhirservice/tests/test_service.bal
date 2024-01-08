@@ -178,8 +178,8 @@ Service fhirService = service object {
 
 // This service is used to test the FHIR service with default pagination.
 Service fhirServiceWithDefaultPagination = service object {
-    resource function get test1/Patient(r4:FHIRContext fhirContext) returns map<r4:RequestSearchParameter[]> {
-        return fhirContext.getRequestSearchParameters();
+    resource function get test1/Patient(r4:FHIRContext fhirContext) returns [map<r4:RequestSearchParameter[]>, r4:PaginationContext] {
+        return [fhirContext.getRequestSearchParameters(), <r4:PaginationContext>fhirContext.getPaginationContext()];
     }
 
     resource function get test2/Patient(r4:FHIRContext fhirContext) returns r4:Bundle {

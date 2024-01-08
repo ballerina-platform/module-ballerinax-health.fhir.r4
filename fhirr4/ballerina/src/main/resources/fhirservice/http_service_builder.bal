@@ -31,7 +31,6 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
         isolated resource function get [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
 
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            boolean paginationEnabled = apiConfig.paginationConfig.paginationEnabled;
             handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_GET);
             if resourceMethod is handle {
                 boolean hasPathParam = isHavingPathParam(resourceMethod);
@@ -49,6 +48,9 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithID(id, fhirContext, fhirService, resourceMethod);
+                        if executeResourceResult is r4:Bundle {
+                            executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
+                        }
                     } else if paths[paths.length() - 2] == HISTORY {
                         // vread
                         string fhirResource = paths[paths.length() - 4];
@@ -81,10 +83,8 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
-                        if executeResourceResult is r4:Bundle && paginationEnabled {
-                            // casting directly since this is type-checked already
-                            int count = <int>apiConfig.paginationConfig.pageSize;
-                            executeResourceResult = addPagination(fhirContext, executeResourceResult, count, req.extraPathInfo);
+                        if executeResourceResult is r4:Bundle {
+                            executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
                         }
                     } else if paths[paths.length() - 1] == METADATA {
                         // metadata
@@ -103,10 +103,8 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
-                        if executeResourceResult is r4:Bundle && paginationEnabled {
-                            // casting directly since this is type-checked already
-                            int count = <int>apiConfig.paginationConfig.pageSize;
-                            executeResourceResult = addPagination(fhirContext, executeResourceResult, count, req.extraPathInfo);
+                        if executeResourceResult is r4:Bundle {
+                            executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
                         }
                     }
                 }
