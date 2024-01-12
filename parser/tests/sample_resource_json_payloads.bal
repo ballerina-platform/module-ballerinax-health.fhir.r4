@@ -15,147 +15,898 @@
 // under the License.
 
 json TEST_FHIR_RESOURCE_JSON_PATIENT_01 = {
-    "resourceType":"Patient",
-    "id":"123344",
+    "resourceType": "Patient",
+    "id": "123344",
     "meta": {
         "profile": [
             "http://hl7.org/fhir/StructureDefinition/Patient"
         ]
     },
-    "identifier":[
+    "identifier": [
         {
-            "use":"usual",
-            "type":{
-                "coding":[
+            "use": "usual",
+            "type": {
+                "coding": [
                     {
-                        "system":"http://terminology.hl7.org/CodeSystem/v2-0203",
-                        "code":"MR"
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
                     }
                 ]
             },
-            "system":"urn:oid:1.2.36.146.595.217.0.1",
-            "value":"12345",
-            "period":{
-                "start":"2001-05-06"
+            "system": "urn:oid:1.2.36.146.595.217.0.1",
+            "value": "12345",
+            "period": {
+                "start": "2001-05-06"
             },
-            "assigner":{
-                "display":"Acme Healthcare"
+            "assigner": {
+                "display": "Acme Healthcare"
             }
         }
     ],
-    "active":true,
-    "name":[
+    "active": true,
+    "name": [
         {
-            "use":"official",
-            "family":"Chalmers",
-            "given":[
+            "use": "official",
+            "family": "Chalmers",
+            "given": [
                 "Peter",
                 "James"
             ]
         }
     ],
-    "telecom":[
+    "telecom": [
         {
-            "system":"phone",
-            "value":"(03) 5555 6473",
-            "use":"work",
-            "rank":1
+            "system": "phone",
+            "value": "(03) 5555 6473",
+            "use": "work",
+            "rank": 1
         }
     ],
-    "gender":"male",
-    "birthDate":"1974-12-25",
-    "deceasedBoolean":false,
-    "address":[
+    "gender": "male",
+    "birthDate": "1974-12-25",
+    "deceasedBoolean": false,
+    "address": [
         {
-            "use":"home",
-            "type":"both",
-            "text":"534 Erewhon St PeasantVille, Rainbow, Vic  3999",
-            "line":[
+            "use": "home",
+            "type": "both",
+            "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999",
+            "line": [
                 "534 Erewhon St"
             ],
-            "city":"PleasantVille",
-            "district":"Rainbow",
-            "state":"Vic",
-            "postalCode":"3999",
-            "period":{
-                "start":"1974-12-25"
+            "city": "PleasantVille",
+            "district": "Rainbow",
+            "state": "Vic",
+            "postalCode": "3999",
+            "period": {
+                "start": "1974-12-25"
             }
         }
     ],
-    "managingOrganization":{
-        "reference":"Organization/1"
+    "managingOrganization": {
+        "reference": "Organization/1"
+    }
+};
+
+json TEST_FHIR_RESOURCE_JSON_PATIENT_WITHOUT_PROFILE = {
+    "resourceType": "Patient",
+    "id": "123344",
+    "meta": {
+        "profile": [
+        ]
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:1.2.36.146.595.217.0.1",
+            "value": "12345",
+            "period": {
+                "start": "2001-05-06"
+            },
+            "assigner": {
+                "display": "Acme Healthcare"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "Chalmers",
+            "given": [
+                "Peter",
+                "James"
+            ]
+        }
+    ],
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "(03) 5555 6473",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "male",
+    "birthDate": "1974-12-25",
+    "deceasedBoolean": false,
+    "address": [
+        {
+            "use": "home",
+            "type": "both",
+            "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999",
+            "line": [
+                "534 Erewhon St"
+            ],
+            "city": "PleasantVille",
+            "district": "Rainbow",
+            "state": "Vic",
+            "postalCode": "3999",
+            "period": {
+                "start": "1974-12-25"
+            }
+        }
+    ],
+    "managingOrganization": {
+        "reference": "Organization/1"
+    }
+};
+
+json TEST_FHIR_RESOURCE_JSON_INVALID_PROFILE = {
+    "resourceType": "Patient",
+    "id": "123344",
+    "meta": {
+        "profile": [
+            "http://hl7.org/fhir/StructureDefinition/ABCDPatient"
+        ]
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:1.2.36.146.595.217.0.1",
+            "value": "12345",
+            "period": {
+                "start": "2001-05-06"
+            },
+            "assigner": {
+                "display": "Acme Healthcare"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "Chalmers",
+            "given": [
+                "Peter",
+                "James"
+            ]
+        }
+    ],
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "(03) 5555 6473",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "male",
+    "birthDate": "1974-12-25",
+    "deceasedBoolean": false,
+    "address": [
+        {
+            "use": "home",
+            "type": "both",
+            "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999",
+            "line": [
+                "534 Erewhon St"
+            ],
+            "city": "PleasantVille",
+            "district": "Rainbow",
+            "state": "Vic",
+            "postalCode": "3999",
+            "period": {
+                "start": "1974-12-25"
+            }
+        }
+    ],
+    "managingOrganization": {
+        "reference": "Organization/1"
+    }
+};
+
+json TEST_FHIR_RESOURCE_JSON_WITH_NO_PROFILE_UNKNOWN_RESOURCE_TYPE = {
+    "resourceType": "ABCDPatient",
+    "id": "123344",
+    "meta": {
+        "profile": [
+        ]
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:1.2.36.146.595.217.0.1",
+            "value": "12345",
+            "period": {
+                "start": "2001-05-06"
+            },
+            "assigner": {
+                "display": "Acme Healthcare"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "Chalmers",
+            "given": [
+                "Peter",
+                "James"
+            ]
+        }
+    ],
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "(03) 5555 6473",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "male",
+    "birthDate": "1974-12-25",
+    "deceasedBoolean": false,
+    "address": [
+        {
+            "use": "home",
+            "type": "both",
+            "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999",
+            "line": [
+                "534 Erewhon St"
+            ],
+            "city": "PleasantVille",
+            "district": "Rainbow",
+            "state": "Vic",
+            "postalCode": "3999",
+            "period": {
+                "start": "1974-12-25"
+            }
+        }
+    ],
+    "managingOrganization": {
+        "reference": "Organization/1"
+    }
+};
+
+json TEST_FHIR_RESOURCE_JSON_INVALID_TYPE = {
+    "resourceType": "ABCDPatient",
+    "id": "123344",
+    "meta": {
+        "profile": [
+            "http://hl7.org/fhir/StructureDefinition/Patient"
+        ]
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:1.2.36.146.595.217.0.1",
+            "value": "12345",
+            "period": {
+                "start": "2001-05-06"
+            },
+            "assigner": {
+                "display": "Acme Healthcare"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "Chalmers",
+            "given": [
+                "Peter",
+                "James"
+            ]
+        }
+    ],
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "(03) 5555 6473",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "male",
+    "birthDate": "1974-12-25",
+    "deceasedBoolean": false,
+    "address": [
+        {
+            "use": "home",
+            "type": "both",
+            "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999",
+            "line": [
+                "534 Erewhon St"
+            ],
+            "city": "PleasantVille",
+            "district": "Rainbow",
+            "state": "Vic",
+            "postalCode": "3999",
+            "period": {
+                "start": "1974-12-25"
+            }
+        }
+    ],
+    "managingOrganization": {
+        "reference": "Organization/1"
+    }
+};
+
+json TEST_FHIR_RESOURCE_JSON_INVALID_TYPE_WITHOUT_PROFILE = {
+    "resourceType": "ABCDPatient",
+    "id": "123344",
+    "meta": {
+        "profile": [
+        ]
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:1.2.36.146.595.217.0.1",
+            "value": "12345",
+            "period": {
+                "start": "2001-05-06"
+            },
+            "assigner": {
+                "display": "Acme Healthcare"
+            }
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "Chalmers",
+            "given": [
+                "Peter",
+                "James"
+            ]
+        }
+    ],
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "(03) 5555 6473",
+            "use": "work",
+            "rank": 1
+        }
+    ],
+    "gender": "male",
+    "birthDate": "1974-12-25",
+    "deceasedBoolean": false,
+    "address": [
+        {
+            "use": "home",
+            "type": "both",
+            "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999",
+            "line": [
+                "534 Erewhon St"
+            ],
+            "city": "PleasantVille",
+            "district": "Rainbow",
+            "state": "Vic",
+            "postalCode": "3999",
+            "period": {
+                "start": "1974-12-25"
+            }
+        }
+    ],
+    "managingOrganization": {
+        "reference": "Organization/1"
     }
 };
 
 json TEST_FHIR_RESOURCE_JSON_INVALID_PATIENT_01 = {
-    "resourceType":"Patient",
-    "id":"123344",
+    "resourceType": "Patient",
+    "id": "123344",
     "meta": {
         "profile": [
             "http://hl7.org/fhir/StructureDefinition/Patient"
         ]
     },
-    "identifierr":[
+    "identifierr": [
         {
-            "use":"usual",
-            "type":{
-                "coding":[
+            "use": "usual",
+            "type": {
+                "coding": [
                     {
-                        "system":"http://terminology.hl7.org/CodeSystem/v2-0203",
-                        "code":"MR"
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
                     }
                 ]
             },
-            "system":"urn:oid:1.2.36.146.595.217.0.1",
-            "value":"12345",
-            "period":{
-                "start":"2001-05-06"
+            "system": "urn:oid:1.2.36.146.595.217.0.1",
+            "value": "12345",
+            "period": {
+                "start": "2001-05-06"
             },
-            "assigner":{
-                "display":"Acme Healthcare"
+            "assigner": {
+                "display": "Acme Healthcare"
             }
         }
     ],
-    "active":true,
-    "name":[
+    "active": true,
+    "name": [
         {
-            "use":"official",
-            "family":"Chalmers",
-            "given":[
+            "use": "official",
+            "family": "Chalmers",
+            "given": [
                 "Peter",
                 "James"
             ]
         }
     ],
-    "telecom":[
+    "telecom": [
         {
-            "system":"phone",
-            "value":"(03) 5555 6473",
-            "use":"work",
-            "rank":1
+            "system": "phone",
+            "value": "(03) 5555 6473",
+            "use": "work",
+            "rank": 1
         }
     ],
-    "gender":"male",
-    "birthDate":"1974-12-25",
-    "deceasedBoolean":false,
-    "address":[
+    "gender": "male",
+    "birthDate": "1974-12-25",
+    "deceasedBoolean": false,
+    "address": [
         {
-            "use":"home",
-            "type":"both",
-            "text":"534 Erewhon St PeasantVille, Rainbow, Vic  3999",
-            "line":[
+            "use": "home",
+            "type": "both",
+            "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999",
+            "line": [
                 "534 Erewhon St"
             ],
-            "city":"PleasantVille",
-            "district":"Rainbow",
-            "state":"Vic",
-            "postalCode":"3999",
-            "period":{
-                "start":"1974-12-25"
+            "city": "PleasantVille",
+            "district": "Rainbow",
+            "state": "Vic",
+            "postalCode": "3999",
+            "period": {
+                "start": "1974-12-25"
             }
         }
     ],
-    "managingOrganization":{
-        "reference":"Organization/1"
+    "managingOrganization": {
+        "reference": "Organization/1"
     }
 };
+
+xml TEST_FHIR_RESOURCE_XML_PATIENT_01 = xml `<Patient xmlns="http://hl7.org/fhir">
+	<id value="example"/>
+	<text>
+		<status value="generated"/>
+		<div xmlns="http://www.w3.org/1999/xhtml">
+			<table>
+				<tbody>
+					<tr>
+						<td>Name</td>
+						<td>Peter James 
+              <b>Chalmers</b> (&quot;Jim&quot;)
+            </td>
+					</tr>
+					<tr>
+						<td>Address</td>
+						<td>534 Erewhon, Pleasantville, Vic, 3999</td>
+					</tr>
+					<tr>
+						<td>Contacts</td>
+						<td>Home: unknown. Work: (03) 5555 6473</td>
+					</tr>
+					<tr>
+						<td>Id</td>
+						<td>MRN: 12345 (Acme Healthcare)</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</text>
+	<!--   MRN assigned by ACME healthcare on 6-May 2001   -->
+	<identifier>
+		<use value="usual"/>
+		<type>
+			<coding>
+				<system value="http://terminology.hl7.org/CodeSystem/v2-0203"/>
+				<code value="MR"/>
+			</coding>
+		</type>
+		<system value="urn:oid:1.2.36.146.595.217.0.1"/>
+		<value value="12345"/>
+		<period>
+			<start value="2001-05-06"/>
+		</period>
+		<assigner>
+			<display value="Acme Healthcare"/>
+		</assigner>
+	</identifier>
+	<active value="true"/>
+	<!--   Peter James Chalmers, but called "Jim"   -->
+	<name>
+		<use value="official"/>
+		<family value="Chalmers"/>
+		<given value="Peter"/>
+		<given value="James"/>
+	</name>
+	<name>
+		<use value="usual"/>
+		<given value="Jim"/>
+	</name>
+	<name>
+    <!--  Maiden names apply for anyone whose name changes as a result of marriage - irrespective of gender  -->
+    <use value="maiden"/>
+    <family value="Windsor"/>
+		<given value="Peter"/>
+		<given value="James"/>
+    <period>
+      <end value="2002"/>
+    </period>
+	</name>
+	<telecom>
+		<use value="home"/>
+		<!--   home communication details aren't known   -->
+	</telecom>
+	<telecom>
+		<system value="phone"/>
+		<value value="(03) 5555 6473"/>
+		<use value="work"/>
+		<rank value="1"/>
+	</telecom>
+	<telecom>
+		<system value="phone"/>
+		<value value="(03) 3410 5613"/>
+		<use value="mobile"/>
+		<rank value="2"/>
+	</telecom>
+	<telecom>
+		<system value="phone"/>
+		<value value="(03) 5555 8834"/>
+		<use value="old"/>
+		<period>
+      <end value="2014"/>
+		</period>
+	</telecom>
+	<!--   use FHIR code system for male / female   -->
+	<gender value="male"/>
+	<birthDate value="1974-12-25">
+		<extension url="http://hl7.org/fhir/StructureDefinition/patient-birthTime">
+			<valueDateTime value="1974-12-25T14:35:45-05:00"/>
+		</extension>
+	</birthDate>
+	<deceasedBoolean value="false"/>
+	<address>
+		<use value="home"/>
+		<type value="both"/>
+		<text value="534 Erewhon St PeasantVille, Rainbow, Vic  3999"/>
+		<line value="534 Erewhon St"/>
+		<city value="PleasantVille"/>
+		<district value="Rainbow"/>
+		<state value="Vic"/>
+		<postalCode value="3999"/>
+		<period>
+			<start value="1974-12-25"/>
+		</period>
+	</address>
+	<contact>
+		<relationship>
+			<coding>
+				<system value="http://terminology.hl7.org/CodeSystem/v2-0131"/>
+				<code value="N"/>
+			</coding>
+		</relationship>
+		<name>
+			<family value="du March&#xE9;">
+				<!--   the "du" part is a family name prefix (VV in iso 21090)   -->
+				<extension url="http://hl7.org/fhir/StructureDefinition/humanname-own-prefix">
+					<valueString value="VV"/>
+				</extension>
+			</family>
+			<given value="B&#xE9;n&#xE9;dicte"/>
+		</name>
+		<telecom>
+			<system value="phone"/>
+			<value value="+33 (237) 998327"/>
+		</telecom>
+		<address>
+			<use value="home"/>
+			<type value="both"/>
+			<line value="534 Erewhon St"/>
+			<city value="PleasantVille"/>
+			<district value="Rainbow"/>
+			<state value="Vic"/>
+			<postalCode value="3999"/>
+			<period>
+				<start value="1974-12-25"/>
+			</period>
+		</address>
+		<gender value="female"/>
+		<period>
+			<!--   The contact relationship started in 2012   -->
+			<start value="2012"/>
+		</period>
+	</contact>
+	<managingOrganization>
+		<reference value="Organization/1"/>
+	</managingOrganization>
+</Patient>`;
+
+string TEST_FHIR_RESOURCE_JSON_PATIENT_01_STRING = string `{
+        "resourceType" : "Patient",
+    "id":  "123344",
+    "meta" : {
+    "profile": [
+        "http://hl7.org/fhir/StructureDefinition/Patient"
+    ]
+},
+    "identifier": [
+{
+"use":"usual",
+"type":{
+"coding":[
+{
+"system":"http://terminology.hl7.org/CodeSystem/v2-0203",
+"code":"MR"
+}
+]
+},
+"system":"urn:oid:1.2.36.146.595.217.0.1",
+"value":"12345",
+"period":{
+"start":"2001-05-06"
+},
+"assigner":{
+"display":"Acme Healthcare"
+}
+}
+    ] ,
+ "active": true ,
+ "name":[
+{
+"use":"official",
+"family":"Chalmers",
+"given":[
+"Peter",
+"James"
+]
+}
+    ] ,
+ "telecom":[
+{
+"system":"phone",
+"value":"(03) 5555 6473",
+"use":"work",
+"rank":1
+}
+    ] ,
+ "gender": "male" ,
+ "birthDate": "1974-12-25" ,
+ "deceasedBoolean": false ,
+ "address":[
+{
+"use":"home",
+"type":"both",
+"text":"534 Erewhon St PeasantVille, Rainbow, Vic  3999",
+"line":[
+"534 Erewhon St"
+],
+"city":"PleasantVille",
+"district":"Rainbow",
+"state":"Vic",
+"postalCode":"3999",
+"period":{
+"start":"1974-12-25"
+}
+}
+    ] ,
+ "managingOrganization": {
+ "reference": "Organization/1"
+  }
+}`;
+
+string TEST_FHIR_RESOURCE_XML_PATIENT_01_STRING = string `<Patient xmlns="http://hl7.org/fhir">
+	<id value="example"/>
+	<text>
+		<status value="generated"/>
+		<div xmlns="http://www.w3.org/1999/xhtml">
+			<table>
+				<tbody>
+					<tr>
+						<td>Name</td>
+						<td>Peter James 
+              <b>Chalmers</b> (&quot;Jim&quot;)
+            </td>
+					</tr>
+					<tr>
+						<td>Address</td>
+						<td>534 Erewhon, Pleasantville, Vic, 3999</td>
+					</tr>
+					<tr>
+						<td>Contacts</td>
+						<td>Home: unknown. Work: (03) 5555 6473</td>
+					</tr>
+					<tr>
+						<td>Id</td>
+						<td>MRN: 12345 (Acme Healthcare)</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</text>
+	<!--   MRN assigned by ACME healthcare on 6-May 2001   -->
+	<identifier>
+		<use value="usual"/>
+		<type>
+			<coding>
+				<system value="http://terminology.hl7.org/CodeSystem/v2-0203"/>
+				<code value="MR"/>
+			</coding>
+		</type>
+		<system value="urn:oid:1.2.36.146.595.217.0.1"/>
+		<value value="12345"/>
+		<period>
+			<start value="2001-05-06"/>
+		</period>
+		<assigner>
+			<display value="Acme Healthcare"/>
+		</assigner>
+	</identifier>
+	<active value="true"/>
+	<!--   Peter James Chalmers, but called "Jim"   -->
+	<name>
+		<use value="official"/>
+		<family value="Chalmers"/>
+		<given value="Peter"/>
+		<given value="James"/>
+	</name>
+	<name>
+		<use value="usual"/>
+		<given value="Jim"/>
+	</name>
+	<name>
+    <!--  Maiden names apply for anyone whose name changes as a result of marriage - irrespective of gender  -->
+    <use value="maiden"/>
+    <family value="Windsor"/>
+		<given value="Peter"/>
+		<given value="James"/>
+    <period>
+      <end value="2002"/>
+    </period>
+	</name>
+	<telecom>
+		<use value="home"/>
+		<!--   home communication details aren't known   -->
+	</telecom>
+	<telecom>
+		<system value="phone"/>
+		<value value="(03) 5555 6473"/>
+		<use value="work"/>
+		<rank value="1"/>
+	</telecom>
+	<telecom>
+		<system value="phone"/>
+		<value value="(03) 3410 5613"/>
+		<use value="mobile"/>
+		<rank value="2"/>
+	</telecom>
+	<telecom>
+		<system value="phone"/>
+		<value value="(03) 5555 8834"/>
+		<use value="old"/>
+		<period>
+      <end value="2014"/>
+		</period>
+	</telecom>
+	<!--   use FHIR code system for male / female   -->
+	<gender value="male"/>
+	<birthDate value="1974-12-25">
+		<extension url="http://hl7.org/fhir/StructureDefinition/patient-birthTime">
+			<valueDateTime value="1974-12-25T14:35:45-05:00"/>
+		</extension>
+	</birthDate>
+	<deceasedBoolean value="false"/>
+	<address>
+		<use value="home"/>
+		<type value="both"/>
+		<text value="534 Erewhon St PeasantVille, Rainbow, Vic  3999"/>
+		<line value="534 Erewhon St"/>
+		<city value="PleasantVille"/>
+		<district value="Rainbow"/>
+		<state value="Vic"/>
+		<postalCode value="3999"/>
+		<period>
+			<start value="1974-12-25"/>
+		</period>
+	</address>
+	<contact>
+		<relationship>
+			<coding>
+				<system value="http://terminology.hl7.org/CodeSystem/v2-0131"/>
+				<code value="N"/>
+			</coding>
+		</relationship>
+		<name>
+			<family value="du March&#xE9;">
+				<!--   the "du" part is a family name prefix (VV in iso 21090)   -->
+				<extension url="http://hl7.org/fhir/StructureDefinition/humanname-own-prefix">
+					<valueString value="VV"/>
+				</extension>
+			</family>
+			<given value="B&#xE9;n&#xE9;dicte"/>
+		</name>
+		<telecom>
+			<system value="phone"/>
+			<value value="+33 (237) 998327"/>
+		</telecom>
+		<address>
+			<use value="home"/>
+			<type value="both"/>
+			<line value="534 Erewhon St"/>
+			<city value="PleasantVille"/>
+			<district value="Rainbow"/>
+			<state value="Vic"/>
+			<postalCode value="3999"/>
+			<period>
+				<start value="1974-12-25"/>
+			</period>
+		</address>
+		<gender value="female"/>
+		<period>
+			<!--   The contact relationship started in 2012   -->
+			<start value="2012"/>
+		</period>
+	</contact>
+	<managingOrganization>
+		<reference value="Organization/1"/>
+	</managingOrganization>
+</Patient>`;
+
+string TEST_FHIR_RESOURCE_UNSUPPORTED_STRING = "hello";
