@@ -25,19 +25,19 @@ public type FHIRErrorType distinct (error<FHIRErrorDetail>);
 public type FHIRError distinct FHIRErrorType;
 
 # FHIR validation related error
-public type FHIRValidationError distinct FHIRError;
+public type FHIRValidationError FHIRError;
 
 # FHIR validation related error
-public type FHIRParseError distinct FHIRError;
+public type FHIRParseError FHIRError;
 
 # FHIR processing related issue related error
-public type FHIRProcessingError distinct FHIRError;
+public type FHIRProcessingError FHIRError;
 
 # FHIR serializer error
-public type FHIRSerializerError distinct FHIRError;
+public type FHIRSerializerError FHIRError;
 
 # FHIR data/resource type related error
-public type FHIRTypeError distinct FHIRError;
+public type FHIRTypeError FHIRError;
 
 # Code that describes the type of issue.
 public enum IssueType {
