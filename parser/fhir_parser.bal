@@ -89,7 +89,8 @@ returns anydata|r4:FHIRParseError {
                 httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         } else {
-            return r4:createParserErrorFrom(resourceDefinition);
+            return <r4:FHIRParseError>r4:createFHIRError(resourceDefinition.message(), r4:ERROR, r4:INVALID_STRUCTURE, errorType = r4:PARSE_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST);
         }
     } else {
         string[]? payloadProfiles = extractProfiles(_payload);

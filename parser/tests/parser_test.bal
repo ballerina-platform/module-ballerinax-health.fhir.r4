@@ -66,19 +66,18 @@ function parseFHIRJsonWithInvalidResourceTypeTest() {
     }
 }
 
-// FIXME: This test case fails due to a bug in fhir r4. Commenting the test case till we fix it.
-// @test:Config {}
-// function parseFHIRJsonWithInvalidTargetModelTypeTest() {
-//     anydata|r4:FHIRParseError pat = parse(TEST_FHIR_RESOURCE_JSON_PATIENT_01, targetFHIRModelType = anydata);
-//     if pat is r4:FHIRParseError {
-//         test:assertEquals(pat.message(), "Failed to find FHIR profile for the resource type : ABCDPatient", "Mismatching error message");
-//         r4:FHIRErrorDetail & readonly errorDetail = pat.detail();
+@test:Config {}
+function parseFHIRJsonWithInvalidTargetModelTypeTest() {
+    anydata|r4:FHIRParseError pat = parse(TEST_FHIR_RESOURCE_JSON_PATIENT_01, targetFHIRModelType = anydata);
+    if pat is r4:FHIRParseError {
+        test:assertEquals(pat.message(), "Provided type does not represent a FHIR resource", "Mismatching error message");
+        r4:FHIRErrorDetail & readonly errorDetail = pat.detail();
 
-//         test:assertEquals(errorDetail.httpStatusCode, 400, "Error status code must be 400");
-//     } else {
-//         test:assertFail("Expect to fail since the FHIR resource has an invalid resource type");
-//     }
-// }
+        test:assertEquals(errorDetail.httpStatusCode, 400, "Error status code must be 400");
+    } else {
+        test:assertFail("Expect to fail since the FHIR resource has an invalid resource type");
+    }
+}
 
 @test:Config {}
 function parseFHIRJsonWithInvalidResourceTypeAndWithoutAProfileTest() {
