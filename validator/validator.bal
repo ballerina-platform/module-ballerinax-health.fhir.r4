@@ -141,7 +141,7 @@ isolated function parseConstraintErrors(string message) returns string[] {
 
     //Parsing for dateTime errors.
     foreach var i in 0 ... data.length() - 1 {
-        regexp:Groups[] invalidDates = re `\$\.(\w+):pattern`.findAllGroups(data[i]);
+        regexp:Groups[] invalidDates = re `\$\.([\w\.\[\]]+):pattern`.findAllGroups(data[i]);
         foreach regexp:Groups result in invalidDates {
             if result is regexp:Groups {
                 regexp:Span? value = result[1];
