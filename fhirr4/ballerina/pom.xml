@@ -148,6 +148,8 @@
                                     <executable>bal</executable>
                                     <arguments>
                                         <argument>test</argument>
+<!--                                        <argument>&#45;&#45;test-report</argument>-->
+<!--                                        <argument>&#45;&#45;code-coverage</argument>-->
                                         <argument>${project.build.outputDirectory}/fhirservice</argument>
                                     </arguments>
                                 </configuration>

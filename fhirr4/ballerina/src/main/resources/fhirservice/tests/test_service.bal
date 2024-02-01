@@ -20,6 +20,7 @@ import ballerina/http;
 
 type ServiceTestError distinct error;
 
+// This service is used to test the FHIR service.
 Service fhirService = service object {
     // read
     resource function get fhir/r4/Patient/[string id](r4:FHIRContext fhirCtx) returns international401:Patient|ServiceTestError {
@@ -172,5 +173,89 @@ Service fhirService = service object {
         } else {
             return error("Incorrect interation engaged!");
         }
+    }
+};
+
+// This service is used to test the FHIR service with default pagination.
+Service fhirServiceWithDefaultPagination = service object {
+    resource function get test1/Patient(r4:FHIRContext fhirContext) returns [map<r4:RequestSearchParameter[]>, r4:PaginationContext] {
+        return [fhirContext.getRequestSearchParameters(), <r4:PaginationContext>fhirContext.getPaginationContext()];
+    }
+
+    resource function get test2/Patient(r4:FHIRContext fhirContext) returns r4:Bundle {
+        r4:DomainResource[] patients = [
+            {
+                resourceType: "Patient",
+                id: "1"
+            },
+            {
+                resourceType: "Patient",
+                id: "2"
+            }
+        ];
+        return r4:createFhirBundle(r4:BUNDLE_TYPE_SEARCHSET, patients);
+    }
+
+    resource function get test3/Patient(r4:FHIRContext fhirContext) returns r4:Bundle {
+        r4:DomainResource[] patients = [
+            {
+                resourceType: "Patient",
+                id: "1"
+            },
+            {
+                resourceType: "Patient",
+                id: "2"
+            },
+            {
+                resourceType: "Patient",
+                id: "3"
+            },
+            {
+                resourceType: "Patient",
+                id: "4"
+            },
+            {
+                resourceType: "Patient",
+                id: "5"
+            },
+            {
+                resourceType: "Patient",
+                id: "6"
+            },
+            {
+                resourceType: "Patient",
+                id: "7"
+            },
+            {
+                resourceType: "Patient",
+                id: "8"
+            },
+            {
+                resourceType: "Patient",
+                id: "9"
+            },
+            {
+                resourceType: "Patient",
+                id: "10"
+            }
+        ];
+        return r4:createFhirBundle(r4:BUNDLE_TYPE_SEARCHSET, patients);
+    }
+};
+
+// This service is used to test disabled pagination.
+Service fhirServiceNoPagination = service object {
+    resource function get test1/Patient(r4:FHIRContext fhirContext) returns r4:Bundle {
+        r4:DomainResource[] patients = [
+            {
+                resourceType: "Patient",
+                id: "1"
+            },
+            {
+                resourceType: "Patient",
+                id: "2"
+            }
+        ];
+        return r4:createFhirBundle(r4:BUNDLE_TYPE_SEARCHSET, patients);
     }
 };

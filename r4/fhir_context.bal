@@ -24,6 +24,7 @@ public isolated class FHIRContext {
     private boolean inErrorState = false;
     private int errorCode = 500;
     private string rawPath = "";
+    private PaginationContext? paginationContext = ();
 
     public isolated function init(FHIRRequest request, readonly & HTTPRequest httpRequest, readonly & FHIRSecurity security) {
         self.fhirRequest = request;
@@ -119,6 +120,24 @@ public isolated class FHIRContext {
     # + return - Incoming HTTP request
     public isolated function getHTTPRequest() returns HTTPRequest? {
         return self.httpRequest;
+    }
+
+    # Set pagination info to fhir context.
+    #
+    # + paginationContext - Pagination context record with page size and page number
+    public isolated function setPaginationContext(PaginationContext paginationContext) {
+        lock {
+            self.paginationContext = paginationContext.cloneReadOnly();
+        }
+    }
+
+    # Get pagination info from fhir context.
+    # 
+    # + return - Pagination context
+    public isolated function getPaginationContext() returns PaginationContext? {
+        lock {
+            return self.paginationContext;
+        }
     }
 
     # Set FHIR response sent to client application.

@@ -25,11 +25,15 @@ const SPACE_CHARACTER = " ";
 const SCOPES = "scope";
 const IDP_CLAIMS = "idp_claims";
 const X_JWT_HEADER = "x-jwt-assertion";
+const PAGE = "page";
+const COUNT = "_count";
 
 # FHIR Pre-processor implementation.
 public isolated class FHIRPreprocessor {
 
     final r4:ResourceAPIConfig apiConfig;
+    final boolean paginationEnabled;
+    final int pageSize;
     // All the active search parameters
     private final readonly & map<r4:SearchParamConfig> searchParamConfigMap;
 
@@ -38,6 +42,8 @@ public isolated class FHIRPreprocessor {
     # + apiConfig - The API configuration
     public isolated function init(r4:ResourceAPIConfig apiConfig) {
         self.apiConfig = apiConfig;
+        self.paginationEnabled = apiConfig.paginationConfig.enabled;
+        self.pageSize = apiConfig.paginationConfig.pageSize;
 
         map<r4:SearchParamConfig> searchParamConfigs = {};
         // process common seach parameters
@@ -130,6 +136,9 @@ public isolated class FHIRPreprocessor {
         // Create FHIR context
         r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
 
+        // Create pagination context and set to FHIR context
+        fCtx.setPaginationContext(check self.processPaginationParams(httpRequest));
+
         // Set FHIR context inside HTTP context
         setFHIRContext(fCtx, httpCtx);
     }
@@ -207,6 +216,9 @@ public isolated class FHIRPreprocessor {
         // Create FHIR context
         r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
 
+       // Create pagination context and set to FHIR context
+        fCtx.setPaginationContext(check self.processPaginationParams(httpRequest));
+
         // Set FHIR context inside HTTP context
         setFHIRContext(fCtx, httpCtx);
     }
@@ -272,6 +284,9 @@ public isolated class FHIRPreprocessor {
 
         // Create FHIR context
         r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Create pagination context and set to FHIR context
+        fCtx.setPaginationContext(check self.processPaginationParams(httpRequest));
 
         // Set FHIR context inside HTTP context
         setFHIRContext(fCtx, httpCtx);
@@ -496,7 +511,8 @@ public isolated class FHIRPreprocessor {
 
                 processResult = check processCommonSearchParameter(parameterDef, fhirResourceType, queryParam,
                                                                         self.apiConfig, self.searchParamConfigMap);
-
+            } else if PAGE == queryParam.name {
+                processResult = [];
             } else {
                 string diagnose = string `Unknown search parameter \"${queryParam.name}\" for resource type 
                     \"${fhirResourceType}\". Valid/Supported search parameters for this search are: 
@@ -538,6 +554,46 @@ public isolated class FHIRPreprocessor {
         }
 
         return processedSearchParams;
+    }
+
+    isolated function processPaginationParams (http:Request request) returns r4:PaginationContext|r4:FHIRError {
+        int page = 1;
+        int count = self.pageSize;
+        if request.getQueryParamValue(PAGE) is string {
+            if self.paginationEnabled {
+                // multiple page parameters are not allowed. only the first value will be taken
+                string? pageStr = request.getQueryParamValue(PAGE);
+                if pageStr is string {
+                    int|error pageInt = int:fromString(pageStr);
+                    if pageInt is error {
+                        return r4:createFHIRError(string `Invalid page number: ${pageStr}`, r4:ERROR, r4:PROCESSING, httpStatusCode = http:STATUS_BAD_REQUEST);
+                    } else {
+                        page = pageInt;
+                    }
+                }
+            } else {
+                // pagination not enabled. so can't process page parameter
+                return r4:createFHIRError("Pagination not supported", r4:ERROR, r4:PROCESSING, httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+        }
+        if request.getQueryParamValue(COUNT) is string {
+            if self.paginationEnabled {
+                string? countStr = request.getQueryParamValue(COUNT);
+                if countStr is string {
+                    int|error countInt = int:fromString(countStr);
+                    if countInt is error {
+                        return r4:createFHIRError(string `Invalid count value: ${countStr}`, r4:ERROR, r4:PROCESSING, httpStatusCode = http:STATUS_BAD_REQUEST);
+                    } else {
+                        count = countInt < self.pageSize ? countInt : count;
+                    }
+                }
+            }
+        }
+        return {
+            paginationEnabled: self.paginationEnabled,
+            page: page,
+            pageSize: count
+        };
     }
 
     isolated function handleSmartSecurity(r4:FHIRSecurity fhirSecurity, string? id) returns r4:FHIRError? {
