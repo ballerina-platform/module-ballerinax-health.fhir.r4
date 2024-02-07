@@ -233,6 +233,26 @@ isolated function processFHIRParserErrors(string message) returns string[] {
             errors.push(valueName + ". " + valueData);
         }
 
+        //Parsing for invalid array elements
+        regexp:Groups? invalidArrayElementsData = re `^\s*array element '([^']+)'`.findGroups(data[i]);
+        if invalidArrayElementsData is regexp:Groups {
+            string valueName = "";
+            string valueData = "";
+            regexp:Span? value = invalidArrayElementsData[1];
+            if value !is () {
+                valueName = "Invalid array element '" + value.substring() + "'";
+            }
+            //To get the expected type from the error message
+            regexp:Groups? expectedDataFormat = re `should be of type '([^']+)'`.findGroups(data[i]);
+            if expectedDataFormat is regexp:Groups {
+                regexp:Span? dataType = expectedDataFormat[1];
+                if dataType !is () {
+                    valueData = "Type of element should be '" + dataType.substring() + "'";
+                }
+            }
+            errors.push(valueName + ". " + valueData);
+        }
+
     }
 
     //Parsing for fhir multitype scenario
