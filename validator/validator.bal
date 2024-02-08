@@ -273,7 +273,7 @@ isolated function processFHIRParserErrors(string message) returns string[] {
                     regexp:Span? fieldData = capturedData[1];
                     if fieldData !is () {
                         valueName = fieldData.substring();
-                        errors.push("The field '" + valueName + "' may be missing or invalid or it's value invalid");
+                        errors.push("The field '" + valueName + "' should be of type value[x] or url[x] where x is a valid fhir data type");
                         break;
                     }
                 }
