@@ -64,11 +64,10 @@
         'json: fhirResourceJsonSerializer
     }
 }
-public type Resource record {|
+public type Resource record {
     string resourceType;
     string id?;
     Meta meta?;
     uri implicitRules?;
     code language?;
-    Element ...;
-|};
+};
