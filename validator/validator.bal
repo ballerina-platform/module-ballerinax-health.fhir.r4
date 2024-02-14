@@ -139,8 +139,9 @@ isolated function parseConstraintErrors(string message) returns string[] {
     string:RegExp regex = re `\n`;
     string[] data = regex.split(message);
 
-    //Parsing for dateTime errors.
     foreach var i in 0 ... data.length() - 1 {
+
+        //Parsing for dateTime errors.
         regexp:Groups[] invalidDates = re `\$\.([\w\.\[\]]+):pattern`.findAllGroups(data[i]);
         foreach regexp:Groups result in invalidDates {
             if result is regexp:Groups {
@@ -150,6 +151,8 @@ isolated function parseConstraintErrors(string message) returns string[] {
                 }
             }
         }
+
+        //Add parsing logic here for other constraint errors
     }
     return errors;
 }
@@ -252,6 +255,8 @@ isolated function processFHIRParserErrors(string message) returns string[] {
             }
             errors.push(valueName + ". " + valueData);
         }
+
+        //Add parsing logic here for other parser errors
 
     }
 
