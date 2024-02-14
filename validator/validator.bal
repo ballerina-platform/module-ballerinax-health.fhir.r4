@@ -147,7 +147,7 @@ isolated function parseConstraintErrors(string message) returns string[] {
             if result is regexp:Groups {
                 regexp:Span? value = result[1];
                 if value !is () {
-                    errors.push("Invalid pattern (constraint) for field '" + value.substring() + "'");
+                    errors.push(string `Invalid pattern (constraint) for field '${value.substring()}'`);
                 }
             }
         }
@@ -163,18 +163,18 @@ isolated function processFHIRParserErrors(string message) returns string[] {
 
     //Removes related content if fhir multitype scenario is present so that it can be styled differently
     //The regex searches for a '{' enclosed within \n tags which signifies the start of multitype error.
-    string:RegExp regex1 = re `\n\s*\{[\s\S]*`;
-    string editedMessage = regex1.replace(message, "");
+    string:RegExp removeMultitypeRegex = re `\n\s*\{[\s\S]*`;
+    string editedMessage = removeMultitypeRegex.replace(message, "");
 
-    string:RegExp regex2 = re `\n`;
-    string[] data = regex2.split(editedMessage);
+    string:RegExp splitErrorRegex = re `\n`;
+    string[] data = splitErrorRegex.split(editedMessage);
 
     foreach var i in 0 ... data.length() - 1 {
 
         //Parsing for resource Type
         regexp:Groups? resourceType = re `Failed to find FHIR profile for the resource type`.findGroups(data[i]);
         if resourceType is regexp:Groups {
-            errors.push("Resource type is invalid");
+            errors.push(string `Resource type is invalid`);
         }
 
         //Parsing for missing fields
@@ -182,8 +182,7 @@ isolated function processFHIRParserErrors(string message) returns string[] {
         if missingFieldsData is regexp:Groups {
             regexp:Span? value = missingFieldsData[1];
             if value !is () {
-                errors.push("Missing required field '" + value.substring() + "'");
-
+                errors.push(string `Missing required field '${value.substring()}'`);
             }
         }
 
@@ -192,7 +191,7 @@ isolated function processFHIRParserErrors(string message) returns string[] {
         if missingElementsData is regexp:Groups {
             regexp:Span? value = missingElementsData[1];
             if value !is () {
-                errors.push("Missing required Element: '" + value.substring() + "'");
+                errors.push(string `Missing required Element: '${value.substring()}'`);
             }
         }
 
@@ -203,17 +202,17 @@ isolated function processFHIRParserErrors(string message) returns string[] {
             string fieldData = "";
             regexp:Span? value = invalidFieldData[1];
             if value !is () {
-                fieldName = "Invalid field '" + value.substring() + "'";
+                fieldName = string `Invalid field '${value.substring()}'`;
             }
             //To get the expected type from the error message
             regexp:Groups? expectedDataFormat = re `should be of type '([^']+)'`.findGroups(data[i]);
             if expectedDataFormat is regexp:Groups {
                 regexp:Span? dataType = expectedDataFormat[1];
                 if dataType !is () {
-                    fieldData = "Type of field should be '" + dataType.substring() + "'";
+                    fieldData = string `Type of field should be '${dataType.substring()}'`;
                 }
             }
-            errors.push(fieldName + ". " + fieldData);
+            errors.push(string `${fieldName}. ${fieldData}`);
         }
 
         //Parsing for invalid field values
@@ -223,17 +222,17 @@ isolated function processFHIRParserErrors(string message) returns string[] {
             string valueData = "";
             regexp:Span? value = invalidValuesData[1];
             if value !is () {
-                valueName = "Invalid value of field '" + value.substring() + "'";
+                valueName = string `Invalid value of field '${value.substring()}'`;
             }
             //To get the expected type from the error message
             regexp:Groups? expectedDataFormat = re `should be of type '([^']+)'`.findGroups(data[i]);
             if expectedDataFormat is regexp:Groups {
                 regexp:Span? dataType = expectedDataFormat[1];
                 if dataType !is () {
-                    valueData = "Type of value should be '" + dataType.substring() + "'";
+                    valueData = string `Type of value should be '${dataType.substring()}'`;
                 }
             }
-            errors.push(valueName + ". " + valueData);
+            errors.push(string `${valueName}. ${valueData}`);
         }
 
         //Parsing for invalid array elements
@@ -243,17 +242,17 @@ isolated function processFHIRParserErrors(string message) returns string[] {
             string valueData = "";
             regexp:Span? value = invalidArrayElementsData[1];
             if value !is () {
-                valueName = "Invalid array element '" + value.substring() + "'";
+                valueName = string `Invalid array element '${value.substring()}'`;
             }
             //To get the expected type from the error message
             regexp:Groups? expectedDataFormat = re `should be of type '([^']+)'`.findGroups(data[i]);
             if expectedDataFormat is regexp:Groups {
                 regexp:Span? dataType = expectedDataFormat[1];
                 if dataType !is () {
-                    valueData = "Type of element should be '" + dataType.substring() + "'";
+                    valueData = string `Type of element should be '${dataType.substring()}'`;
                 }
             }
-            errors.push(valueName + ". " + valueData);
+            errors.push(string `${valueName}. ${valueData}`);
         }
 
         //Add parsing logic here for other parser errors
@@ -268,7 +267,7 @@ isolated function processFHIRParserErrors(string message) returns string[] {
         if value !is () {
             string capturedString = value.substring();
             //Splits message into lines based on \n
-            string[] capturedErrors = regex2.split(capturedString);
+            string[] capturedErrors = splitErrorRegex.split(capturedString);
 
             string valueName = "";
             //To get the field name from the error message if error is with the value
@@ -278,7 +277,7 @@ isolated function processFHIRParserErrors(string message) returns string[] {
                     regexp:Span? fieldData = capturedData[1];
                     if fieldData !is () {
                         valueName = fieldData.substring();
-                        errors.push("The field '" + valueName + "' should be of type value[x] or url[x] where x is a valid fhir data type");
+                        errors.push(string `The field '${valueName}' should be of type value[x] or url[x] where x is a valid fhir data type`);
                         break;
                     }
                 }
@@ -291,7 +290,7 @@ isolated function processFHIRParserErrors(string message) returns string[] {
                         regexp:Span? fieldData = capturedData[1];
                         if fieldData !is () {
                             valueName = fieldData.substring();
-                            errors.push("The field '" + valueName + "' should be of type value[x] or url[x] where x is a valid fhir data type");
+                            errors.push(string `The field '${valueName}' should be of type value[x] or url[x] where x is a valid fhir data type`);
                             break;
                         }
                     }
