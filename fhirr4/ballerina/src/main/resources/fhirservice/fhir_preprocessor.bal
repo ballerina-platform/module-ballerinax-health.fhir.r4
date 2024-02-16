@@ -1,25 +1,21 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
 // You may obtain a copy of the License at
-
 // http://www.apache.org/licenses/LICENSE-2.0
-
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import ballerina/http;
 import ballerina/jwt;
+import ballerina/lang.regexp;
 import ballerina/log;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.parser;
-import ballerina/lang.regexp;
 
 const SPACE_CHARACTER = " ";
 const SCOPES = "scope";
@@ -63,7 +59,7 @@ public isolated class FHIRPreprocessor {
     # + httpRequest - The HTTP request
     # + httpCtx - The HTTP request context
     # + return - The next service or an error
-    public isolated function processRead (string fhirResourceType, string id, http:Request httpRequest, http:RequestContext httpCtx)
+    public isolated function processRead(string fhirResourceType, string id, http:Request httpRequest, http:RequestContext httpCtx)
                                                                                     returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : read");
         // Validate main HTTP headers
@@ -98,7 +94,7 @@ public isolated class FHIRPreprocessor {
     # + httpRequest - The HTTP request
     # + httpCtx - The HTTP request context
     # + return - The next service or an error
-    public isolated function processSearch (string fhirResourceType, http:Request httpRequest, http:RequestContext httpCtx)
+    public isolated function processSearch(string fhirResourceType, http:Request httpRequest, http:RequestContext httpCtx)
                                                                                     returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : search");
 
@@ -113,10 +109,11 @@ public isolated class FHIRPreprocessor {
         readonly & FHIRSearchInteraction searchInteraction = {};
 
         r4:FHIRRequest fhirRequest = new (searchInteraction,
-        fhirResourceType,
-        (),
-        requestSearchParameters.cloneReadOnly(),
-        clientHeaders.acceptType);
+            fhirResourceType,
+            (),
+            requestSearchParameters.cloneReadOnly(),
+            clientHeaders.acceptType
+        );
 
         // Populate JWT information in FHIR context
         readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
@@ -141,8 +138,8 @@ public isolated class FHIRPreprocessor {
     # + httpRequest - The HTTP request
     # + httpCtx - The HTTP request context
     # + return - The next service or an error
-    public isolated function processCreate (string resourceType, json|xml payload, http:Request httpRequest,
-                                                http:RequestContext httpCtx) returns r4:FHIRError? {
+    public isolated function processCreate(string resourceType, json|xml payload, http:Request httpRequest,
+            http:RequestContext httpCtx) returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : Create");
         // Validate main HTTP headers
         r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
@@ -150,7 +147,7 @@ public isolated class FHIRPreprocessor {
         if self.apiConfig.resourceType != resourceType {
             string diagMsg = string `Request path level resource type : \" ${resourceType}\" does not match API config resource type: 
                 \"${self.apiConfig.resourceType}\"`;
-            return  r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
+            return r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
         }
 
         // Validate and parse payload to FHIR resource model and create resource entity
@@ -182,7 +179,7 @@ public isolated class FHIRPreprocessor {
     # + httpRequest - The HTTP request
     # + httpCtx - The HTTP request context
     # + return - Error if occurs
-    public isolated function processInstanceHistory (string fhirResourceType, string id, http:Request httpRequest, http:RequestContext httpCtx)
+    public isolated function processInstanceHistory(string fhirResourceType, string id, http:Request httpRequest, http:RequestContext httpCtx)
                                                                                     returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : instance history");
         // Validate main HTTP headers
@@ -219,7 +216,7 @@ public isolated class FHIRPreprocessor {
     # + httpRequest - The HTTP request  
     # + httpCtx - The HTTP request context
     # + return - Error if occurs
-    public isolated function processVread (string fhirResourceType, string id, string vid, http:Request httpRequest, http:RequestContext httpCtx)
+    public isolated function processVread(string fhirResourceType, string id, string vid, http:Request httpRequest, http:RequestContext httpCtx)
                                                                                     returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : vread");
         // Validate main HTTP headers
@@ -249,11 +246,11 @@ public isolated class FHIRPreprocessor {
     }
 
     # Process the FHIR History interaction.
-    # 
+    #
     # + httpRequest - The HTTP request  
     # + httpCtx - The HTTP request context
     # + return - Error if occurs
-    public isolated function processHistory (http:Request httpRequest, http:RequestContext httpCtx)
+    public isolated function processHistory(http:Request httpRequest, http:RequestContext httpCtx)
                                                                                     returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : vread");
         // Validate main HTTP headers
@@ -278,11 +275,11 @@ public isolated class FHIRPreprocessor {
     }
 
     # Process the FHIR Capabilities interaction.
-    # 
+    #
     # + httpRequest - The HTTP request  
     # + httpCtx - The HTTP request context
     # + return - Error if occurs
-    public isolated function processCapability (http:Request httpRequest, http:RequestContext httpCtx)
+    public isolated function processCapability(http:Request httpRequest, http:RequestContext httpCtx)
                                                                                     returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : vread");
         // Validate main HTTP headers
@@ -314,7 +311,7 @@ public isolated class FHIRPreprocessor {
     # + httpRequest - The HTTP request  
     # + httpCtx - The HTTP request context
     # + return - The next service or an error
-    public isolated function processUpdate (string fhirResourceType, string id, json payload, http:Request httpRequest, http:RequestContext httpCtx)
+    public isolated function processUpdate(string fhirResourceType, string id, json payload, http:Request httpRequest, http:RequestContext httpCtx)
                                                                                     returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : update");
         // Validate main HTTP headers
@@ -326,22 +323,21 @@ public isolated class FHIRPreprocessor {
         if self.apiConfig.resourceType != fhirResourceType {
             string diagMsg = string `Request path level resource type : \" ${fhirResourceType}\" does not match API config resource type: 
                 \"${self.apiConfig.resourceType}\"`;
-            return  r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
+            return r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
         }
-        
 
         // Validate and parse payload to FHIR resource model and create resource entity
         anydata parsedResource = check parser:validateAndParse(payload, self.apiConfig);
         r4:FHIRResourceEntity resourceEntity = new (parsedResource);
-        
+
         // Validate resource ID
         json|error idInPayload = payload.id;
         if idInPayload is error {
-            return r4:createFHIRError("Payload doesn't have the mandatory ID field", r4:ERROR, r4:PROCESSING, 
+            return r4:createFHIRError("Payload doesn't have the mandatory ID field", r4:ERROR, r4:PROCESSING,
                                         errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
         } else {
             if idInPayload.toString() != id {
-                return r4:createFHIRError("Payload ID doesn't match with the resource ID", r4:ERROR, r4:PROCESSING, 
+                return r4:createFHIRError("Payload ID doesn't match with the resource ID", r4:ERROR, r4:PROCESSING,
                                             errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         }
@@ -356,7 +352,7 @@ public isolated class FHIRPreprocessor {
         if fhirResourceType == PATIENT_RESOURCE {
             _ = check self.handleSmartSecurity(fhirSecurity, id);
         }
-        
+
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
 
         // Create FHIR context
@@ -374,7 +370,7 @@ public isolated class FHIRPreprocessor {
     # + httpRequest - The HTTP request  
     # + httpCtx - The HTTP request context
     # + return - The next service or an error
-    public isolated function processPatch (string fhirResourceType, string id, json payload, http:Request httpRequest, http:RequestContext httpCtx)
+    public isolated function processPatch(string fhirResourceType, string id, json payload, http:Request httpRequest, http:RequestContext httpCtx)
                                                                                     returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : patch");
         // Validate main HTTP headers
@@ -386,9 +382,9 @@ public isolated class FHIRPreprocessor {
         if self.apiConfig.resourceType != fhirResourceType {
             string diagMsg = string `Request path level resource type : \" ${fhirResourceType}\" does not match API config resource type: 
                 \"${self.apiConfig.resourceType}\"`;
-            return  r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
+            return r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
         }
-        
+
         // Create FHIR request
         r4:FHIRRequest fhirRequest = new (patchInteraction, fhirResourceType, (), {}, clientHeaders.acceptType);
 
@@ -399,7 +395,7 @@ public isolated class FHIRPreprocessor {
         if fhirResourceType == PATIENT_RESOURCE {
             _ = check self.handleSmartSecurity(fhirSecurity, id);
         }
-        
+
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
 
         // Create FHIR context
@@ -416,7 +412,7 @@ public isolated class FHIRPreprocessor {
     # + httpRequest - The HTTP request  
     # + httpCtx - The HTTP request context
     # + return - Error if occurs
-    public isolated function processDelete (string fhirResourceType, string id, http:Request httpRequest, http:RequestContext httpCtx)
+    public isolated function processDelete(string fhirResourceType, string id, http:Request httpRequest, http:RequestContext httpCtx)
                                                                                     returns r4:FHIRError? {
         log:printDebug("Pre-processing FHIR interaction : delete");
         // Validate main HTTP headers
@@ -444,8 +440,6 @@ public isolated class FHIRPreprocessor {
         // Set FHIR context inside HTTP context
         setFHIRContext(fCtx, httpCtx);
     }
-
-    
 
     isolated function processSearchParameters(string fhirResourceType, http:Request request)
                                                                 returns map<r4:RequestSearchParameter[]>|r4:FHIRError {
@@ -478,7 +472,7 @@ public isolated class FHIRPreprocessor {
                     string diagnose = string `Unsupported search parameter \"${queryParam.name}\" for resource type 
                         \"${fhirResourceType}\". Supported search parameters are: 
                         ${r4:extractActiveSearchParameterNames(self.searchParamConfigMap).toBalString()}`;
-                    return r4:createFHIRError(string `Unsupported search parameter : ${queryParam.name}`, r4:ERROR, r4:PROCESSING, 
+                    return r4:createFHIRError(string `Unsupported search parameter : ${queryParam.name}`, r4:ERROR, r4:PROCESSING,
                                                     diagnostic = diagnose, httpStatusCode = http:STATUS_BAD_REQUEST);
                 }
             } else if r4:COMMON_SEARCH_PARAMETERS.hasKey(queryParam.name) {
@@ -599,7 +593,7 @@ isolated function processCommonSearchParameter(r4:CommonSearchParameterDefinitio
         } else {
             string diagnose = string `Unsupported search parameter \"${queryParam.name}\" for resource type \" 
                 ${fhirResourceType}\". Supported search parameters are: ${r4:extractActiveSearchParameterNames(searchParamConfigMap).toBalString()}`;
-            return r4:createFHIRError(string `Unsupported search parameter : ${queryParam.name}`, r4:ERROR, r4:PROCESSING_NOT_SUPPORTED, diagnostic = diagnose, 
+            return r4:createFHIRError(string `Unsupported search parameter : ${queryParam.name}`, r4:ERROR, r4:PROCESSING_NOT_SUPPORTED, diagnostic = diagnose,
                 httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
         }
     }
@@ -670,21 +664,28 @@ isolated function validateClientRequestHeaders(http:Request request) returns r4:
 
     string|http:HeaderNotFoundError acceptHeader = request.getHeader("Accept");
     if acceptHeader is string {
-        match acceptHeader {
-            "" => {
-                // Accept since it is not mandatory
+        string[] acceptParts = regexp:split(re `,`, acceptHeader.trim());
+        boolean isValidMimeType = false;
+        foreach var part in acceptParts {
+            string[] typeAndParams = regexp:split(re `;`, part.trim());
+
+            // Extract MIME type
+            string mimeType = typeAndParams[0].trim().toLowerAscii();
+            match mimeType {
+                "*/*" => {
+                    // Client accepts anything, go with the default
+                    isValidMimeType = true;
+                }
+                "application/fhir+json" => {
+                    headers.acceptType = r4:JSON;
+                    isValidMimeType = true;
+                }
             }
-            "*/*" => {
-                // Client accepts anything, go with the default
-            }
-            "application/fhir+json" => {
-                headers.acceptType = r4:JSON;
-            }
-            _ => {
-                string message = string `Unsupported Accept header value of \"${acceptHeader}\" was provided in the request. 
+        }
+        if !isValidMimeType {
+            string message = string `Unsupported Accept header value of \"${acceptHeader}\" was provided in the request. 
                     Only \"application/fhir+json\" is supported.`;
-                return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, message, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_NOT_ACCEPTABLE);
-            }
+            return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, message, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_NOT_ACCEPTABLE);
         }
     }
 
