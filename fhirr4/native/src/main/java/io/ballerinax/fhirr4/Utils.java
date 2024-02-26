@@ -19,6 +19,7 @@
 package io.ballerinax.fhirr4;
 
 import static io.ballerinax.fhirr4.HTTPToFHIRAdaptor.PATH_PARAM_IDENTIFIER;
+import static io.ballerinax.fhirr4.HTTPToFHIRAdaptor.SPECIAL_ESCAPE_CHAR;
 
 public class Utils {
 
@@ -36,7 +37,7 @@ public class Utils {
             return false;
         }
         for (int i = 0; i < resourcePaths.length; i++) {
-            String value1 = resourcePaths[i];
+            String value1 = resourcePaths[i].contains(SPECIAL_ESCAPE_CHAR) ? resourcePaths[i].replace(SPECIAL_ESCAPE_CHAR, "") : resourcePaths[i];
             String value2 = requestPaths[i];
             if ((!value1.equals(value2) && !value1.equals(PATH_PARAM_IDENTIFIER)) || (value1.equals(PATH_PARAM_IDENTIFIER) && value2.equals("_history"))) {
                 return false;
