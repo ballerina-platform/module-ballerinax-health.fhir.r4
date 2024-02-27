@@ -49,11 +49,11 @@ isolated function ccdaToDiagnosticReport(xml organizerElement) returns uscore501
 
         diagnosticReport.status = mapCcdatoFhirDiagnosticReportStatus(statusCodeElement);
 
-        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingtoFhirCodeableConcept(translationElement);
+        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(translationElement);
         if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
             diagnosticReport.code = mapCcdaCodingtoFhirCodeableConceptResult;
         } else {
-            mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingtoFhirCodeableConcept(codeElement);
+            mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(codeElement);
             if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
                 diagnosticReport.code = mapCcdaCodingtoFhirCodeableConceptResult;
             }

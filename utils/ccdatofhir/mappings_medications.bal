@@ -88,7 +88,7 @@ isolated function ccdaToMedication(xml substanceAdministrationElement) returns u
             medication.dosageInstruction = [dosageInstruction];
         }
 
-        medication.dosageInstruction[0].route = mapCcdaCodingtoFhirCodeableConcept(routeCodeElement);
+        medication.dosageInstruction[0].route = mapCcdaCodingToFhirCodeableConcept(routeCodeElement);
 
         string|error? doseValue = doseQuantityElement.value;
         string|error? doseUnit = doseQuantityElement.unit;
@@ -129,7 +129,7 @@ isolated function ccdaToMedication(xml substanceAdministrationElement) returns u
         }
 
         xml manufacturedMaterialCodeElement = manufacturedMaterialElement/<v3:code|code>;
-        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingtoFhirCodeableConcept(manufacturedMaterialCodeElement);
+        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(manufacturedMaterialCodeElement);
         if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
             medication.medicationCodeableConcept = mapCcdaCodingtoFhirCodeableConceptResult;
         }
@@ -140,14 +140,14 @@ isolated function ccdaToMedication(xml substanceAdministrationElement) returns u
             xml entryRelationshipObservationValueElement = entryRelationshipObservationElement/<v3:value|value>;
 
             if entryRelationshipObservationValueElement is xml:Element {
-                r4:CodeableConcept? reasonCode = mapCcdaCodingtoFhirCodeableConcept(entryRelationshipObservationValueElement);
+                r4:CodeableConcept? reasonCode = mapCcdaCodingToFhirCodeableConcept(entryRelationshipObservationValueElement);
                 if reasonCode is r4:CodeableConcept {
                     medication.reasonCode = [reasonCode];
                 }
             }
         } else if entryRelationshipTypeCode is string && entryRelationshipTypeCode == "SUBJ" {
             xml entryRelationshipObservationActCodeElement = entryRelationshipElement/<v3:act>/<v3:code>;
-            r4:CodeableConcept? additionalInstruction = mapCcdaCodingtoFhirCodeableConcept(entryRelationshipObservationActCodeElement);
+            r4:CodeableConcept? additionalInstruction = mapCcdaCodingToFhirCodeableConcept(entryRelationshipObservationActCodeElement);
 
             if additionalInstruction is r4:CodeableConcept {
                 dosageInstruction = {

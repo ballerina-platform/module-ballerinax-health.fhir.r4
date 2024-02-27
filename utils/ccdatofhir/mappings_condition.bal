@@ -78,7 +78,7 @@ isolated function ccdaToCondition(xml sectionElement, xml actElement) returns us
             condition.abatementDateTime = mapCCDAHighEffectiveTimetoFHIRDateTimeResult;
         }
 
-        r4:CodeableConcept? codeableConcept = mapCcdaCodingtoFhirCodeableConcept(valueElement);
+        r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(valueElement);
         if codeableConcept is r4:CodeableConcept {
             condition.code = codeableConcept;
         }

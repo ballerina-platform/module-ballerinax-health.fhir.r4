@@ -53,7 +53,7 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
         uscore501:USCorePatientProfileTelecom[] telecoms = [];
         foreach xml telecomInstance in telecomElement {
             uscore501:USCorePatientProfileTelecom?|error mapCcdaTelecomToFhirTelecomResult = mapCcdaTelecomToFhirPatientTelecom(telecomInstance);
-            if mapCcdaTelecomToFhirTelecomResult is r4:ContactPoint {
+            if mapCcdaTelecomToFhirTelecomResult is uscore501:USCorePatientProfileTelecom {
                 telecoms.push(mapCcdaTelecomToFhirTelecomResult);
             }
         }
@@ -65,7 +65,7 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
         patient.telecom = telecoms;
 
         xml nameElement = patientElement/<v3:name|name>;
-        r4:HumanName[]?|error mapCcdaNametoFhirNameResult = mapCcdaNametoFhirName(nameElement);
+        r4:HumanName[]?|error mapCcdaNametoFhirNameResult = mapCcdaNameToFhirName(nameElement);
         if mapCcdaNametoFhirNameResult is r4:HumanName[] {
             patient.name = mapCcdaNametoFhirNameResult;
         }
@@ -78,7 +78,7 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
             patient.birthDate = mapCCDABirthTimetoFHIRBirthDateResult;
         }
 
-        r4:CodeableConcept? mapCCDAMaritalStatusCodetoFHIRMaritalStatusResult = mapCcdaCodingtoFhirCodeableConcept(maritalStatusCodeElement);
+        r4:CodeableConcept? mapCCDAMaritalStatusCodetoFHIRMaritalStatusResult = mapCcdaCodingToFhirCodeableConcept(maritalStatusCodeElement);
         if mapCCDAMaritalStatusCodetoFHIRMaritalStatusResult is r4:CodeableConcept {
             patient.maritalStatus = mapCCDAMaritalStatusCodetoFHIRMaritalStatusResult;
         }
@@ -86,7 +86,7 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
         xml preferenceIndElement = languageCommunicationElement/<v3:preferenceInd|preferenceInd>;
         xml languageCodeElement = languageCommunicationElement/<v3:languageCode|languageCode>;
 
-        r4:Coding?|error mapCCDALanguageCodetoFHIRCommunicationLanguageResult = mapCcdaCodingtoFhirCoding(languageCodeElement);
+        r4:Coding?|error mapCCDALanguageCodetoFHIRCommunicationLanguageResult = mapCcdaCodingToFhirCoding(languageCodeElement);
         if mapCCDALanguageCodetoFHIRCommunicationLanguageResult is r4:Coding {
             uscore501:USCorePatientProfileCommunication patientCommunication = {language: {}};
             patientCommunication.language.coding = [mapCCDALanguageCodetoFHIRCommunicationLanguageResult];
@@ -125,7 +125,7 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
 
         r4:Extension[] extensions = [];
         xml patientRaceElement = patientElement/<v3:raceCode|raceCode>;
-        r4:Coding? mapCCDARaceCodetoFHIRRaceResult = mapCcdaCodingtoFhirCoding(patientRaceElement);
+        r4:Coding? mapCCDARaceCodetoFHIRRaceResult = mapCcdaCodingToFhirCoding(patientRaceElement);
         if mapCCDARaceCodetoFHIRRaceResult is r4:Coding {
             r4:CodingExtension raceExtension = {valueCoding: {}, url: "ombCategory"};
             raceExtension.valueCoding = mapCCDARaceCodetoFHIRRaceResult;
@@ -137,7 +137,7 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
         }
 
         xml patientEthnicityElement = patientElement/<v3:ethnicGroupCode|ethnicGroupCode>;
-        r4:Coding? mapCCDAEthnicityCodetoFHIREthnicityResult = mapCcdaCodingtoFhirCoding(patientEthnicityElement);
+        r4:Coding? mapCCDAEthnicityCodetoFHIREthnicityResult = mapCcdaCodingToFhirCoding(patientEthnicityElement);
         if mapCCDAEthnicityCodetoFHIREthnicityResult is r4:Coding {
             r4:CodingExtension ethnicityExtension = {valueCoding: {}, url: "ombCategory"};
             ethnicityExtension.valueCoding = mapCCDAEthnicityCodetoFHIREthnicityResult;
@@ -190,29 +190,35 @@ public isolated function mapCcdaTelecomToFhirPatientTelecom(xml telecomElement) 
     string? systemVal = ();
     string? valueVal = ();
     if telecomValue is string {
-        systemVal = re `:`.split(telecomValue)[0];
-        valueVal = re `:`.split(telecomValue)[1];
-
-        match (systemVal) {
-            "tel" => {
-                systemVal = r4:phone;
-            }
-            "mailto" => {
-                systemVal = r4:email;
-            }
-            "fax" => {
-                systemVal = r4:fax;
-            }
-            "http" => {
-                systemVal = r4:url;
-            }
-            "x-text-fax" => {
-                systemVal = r4:sms;
-            }
-            _ => {
+        string[] valTokens = re `:`.split(telecomValue);
+            if valTokens.length() == 1 {
                 systemVal = r4:other;
+                valueVal = telecomValue;
+            } else {
+                systemVal = valTokens[0];
+                valueVal = valTokens[1];
+                
+                match (systemVal) {
+                    "tel" => {
+                        systemVal = r4:phone;
+                    }
+                    "mailto" => {
+                        systemVal = r4:email;
+                    }
+                    "fax" => {
+                        systemVal = r4:fax;
+                    }
+                    "http" => {
+                        systemVal = r4:url;
+                    }
+                    "x-text-fax" => {
+                        systemVal = r4:sms;
+                    }
+                    _ => {
+                        systemVal = r4:other;
+                    }
+                }
             }
-        }
     } else {
         log:printDebug("Telecom value not available", telecomValue);
     }
