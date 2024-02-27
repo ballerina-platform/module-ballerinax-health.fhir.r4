@@ -40,6 +40,8 @@ import static io.ballerinax.fhirr4.Utils.isPathsMatching;
 public class HTTPToFHIRAdaptor {
 
     public static final String PATH_PARAM_IDENTIFIER = "^";
+    // Special escape character used to escape the special characters in the path parameter
+    public static final String SPECIAL_ESCAPE_CHAR = "\\";
 
     private HTTPToFHIRAdaptor(){}
 
