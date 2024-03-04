@@ -144,7 +144,7 @@ isolated function parseConstraintErrors(string message) returns string[] {
         //Parsing for dateTime errors.
         regexp:Groups[] invalidDates = re `\$\.([\w\.\[\]]+):pattern`.findAllGroups(data[i]);
         foreach regexp:Groups result in invalidDates {
-            if (result is regexp:Groups && result.length() > 1) {
+            if (result.length() > 1) {
                 regexp:Span? value = result[1];
                 if value !is () {
                     errors.push(string `Invalid pattern (constraint) for field '${value.substring()}'`);
