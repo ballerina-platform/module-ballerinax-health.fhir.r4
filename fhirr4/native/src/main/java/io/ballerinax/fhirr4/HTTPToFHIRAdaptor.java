@@ -182,13 +182,12 @@ public class HTTPToFHIRAdaptor {
         return null;
     }
 
-    public static Object getResourceMethod(BObject service, BArray path, BString accessor) {
+    public static Object getResourceMethod(BObject service, BArray servicePath, BArray path, BString accessor) {
         ServiceType serviceType = (ServiceType) service.getType();
-        return getResourceMethod(serviceType, path.getStringArray(), accessor.getValue());
+        return getResourceMethod(serviceType, servicePath.getStringArray(), path.getStringArray(), accessor.getValue());
     }
 
-    public static Object isHavingPathParam(ResourceMethodType resourceMethod) {
-
+    public static Object isHavingPathParam(ResourceMethodType resourceMethod) { 
         String[] paths = resourceMethod.getResourcePath();
         for (String s : paths) {
             if (PATH_PARAM_IDENTIFIER.equals(s)) {
@@ -197,10 +196,10 @@ public class HTTPToFHIRAdaptor {
         }
         return false;
     }
-
-    private static ResourceMethodType getResourceMethod(ServiceType serviceType, String[] path, String accessor) {
+    
+    private static ResourceMethodType getResourceMethod(ServiceType serviceType, String[] servicePath, String[] path, String accessor) {
         for (ResourceMethodType resourceMethod : serviceType.getResourceMethods()) {
-            if (accessor.equalsIgnoreCase(resourceMethod.getAccessor()) && isPathsMatching(resourceMethod.getResourcePath(), path)) {
+            if (accessor.equalsIgnoreCase(resourceMethod.getAccessor()) && isPathsMatching(resourceMethod.getResourcePath(), servicePath, path)) {
                 return resourceMethod;
             }
         }

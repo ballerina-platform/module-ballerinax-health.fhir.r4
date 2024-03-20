@@ -15,10 +15,11 @@
 // under the License.
 
 import ballerina/http;
+import ballerina/lang.regexp;
 import ballerinax/health.fhir.r4;
 
 // Construct an http service for a fhir service.
-isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) returns http:Service {
+isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, string[] & readonly servicePath) returns http:Service {
     http:InterceptableService httpService = isolated service object {
 
         private final Holder holder = h;
@@ -28,10 +29,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
             return [new FHIRResponseErrorInterceptor(), new FHIRResponseInterceptor(apiConfig)];
         }
 
-        isolated resource function get [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
+        isolated resource function get [string... path](http:Request req, http:RequestContext ctx) returns any|error {
 
+            string[] paths = getRequestPaths(req.rawPath);
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_GET);
+            handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_GET);
             if resourceMethod is handle {
                 boolean hasPathParam = isHavingPathParam(resourceMethod);
                 any|error executeResourceResult = ();
@@ -110,10 +112,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
             }
         }
 
-        isolated resource function post [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
+        isolated resource function post [string... path](http:Request req, http:RequestContext ctx) returns any|error {
 
+            string[] paths = getRequestPaths(req.rawPath);
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_POST);
+            handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_POST);
             json|http:ClientError payload = req.getJsonPayload();
             if payload is json {
                 if resourceMethod is handle {
@@ -138,10 +141,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
             }
         }
 
-        isolated resource function put [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
+        isolated resource function put [string... path](http:Request req, http:RequestContext ctx) returns any|error {
             // update
+            string[] paths = getRequestPaths(req.rawPath);
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_PUT);
+            handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_PUT);
             json|http:ClientError payload = req.getJsonPayload();
             if payload is json {
                 if resourceMethod is handle {
@@ -166,10 +170,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                 return r4:createFHIRError(string `Invalid payload`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         }
-        isolated resource function patch [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
+        isolated resource function patch [string... path](http:Request req, http:RequestContext ctx) returns any|error {
             // patch
+            string[] paths = getRequestPaths(req.rawPath);
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            handle? resourceMethod = getResourceMethod(fhirService, paths, http:HTTP_PATCH);
+            handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_PATCH);
             json|http:ClientError payload = req.getJsonPayload();
             if payload is json {
                 if resourceMethod is handle {
@@ -194,10 +199,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
                 return r4:createFHIRError(string `Invalid payload`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         }
-        isolated resource function delete [string... paths](http:Request req, http:RequestContext ctx) returns any|error {
+        isolated resource function delete [string... path](http:Request req, http:RequestContext ctx) returns any|error {
             // delete
+            string[] paths = getRequestPaths(req.rawPath);
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            handle? resourceMethod = getResourceMethod(fhirService, paths, http:DELETE);
+            handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_DELETE);
 
             if resourceMethod is handle {
                 string fhirResource = paths[paths.length() - 2];
@@ -220,4 +226,16 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig) retur
         }
     };
     return httpService;
+}
+
+# Process an API request raw path to obtain clean path segments.
+#
+# + path - The raw URL path from an API request, potentially including query parameters
+# + return - An array containing the cleaned path segments
+isolated function getRequestPaths(string path) returns string[] {
+    string[] paths;
+    string rawPath = path.includes("?") ? (path.substring(0, path.indexOf("?") ?: 0)) : path;
+    paths = regexp:split(re `/`, rawPath);
+    _ = paths.remove(0);
+    return paths;
 }

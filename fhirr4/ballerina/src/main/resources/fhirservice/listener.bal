@@ -44,7 +44,7 @@ public isolated class Listener {
     public isolated function attach(Service fhirService, string[]|string? name = ()) returns error? {
         Holder holder = new (fhirService);
         lock {
-            self.httpService = getHttpService(holder, self.config);
+            self.httpService = getHttpService(holder, self.config, name is string[] ? name.cloneReadOnly() : []);
             check self.ls.attach(self.httpService, name.cloneReadOnly());
         }
     }
