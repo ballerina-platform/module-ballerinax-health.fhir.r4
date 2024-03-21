@@ -646,7 +646,9 @@ isolated function preprocessGeneralSearchParameter(r4:FHIRSearchParameterDefinit
 # + return - FHIRRequestMimeHeaders containing details extracted from about MIME types. FHIRError otherwise
 isolated function validateClientRequestHeaders(http:Request request) returns r4:FHIRRequestMimeHeaders|r4:FHIRError {
     r4:FHIRRequestMimeHeaders headers = {};
-    string contentType = request.getContentType();
+
+    string[] contentTypeAndParams = regexp:split(re `;`, request.getContentType().trim());
+    string contentType = contentTypeAndParams[0].trim().toLowerAscii();
 
     match contentType {
         "" => {
