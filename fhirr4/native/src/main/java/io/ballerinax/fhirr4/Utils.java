@@ -21,6 +21,9 @@ package io.ballerinax.fhirr4;
 import static io.ballerinax.fhirr4.HTTPToFHIRAdaptor.PATH_PARAM_IDENTIFIER;
 import static io.ballerinax.fhirr4.HTTPToFHIRAdaptor.SPECIAL_ESCAPE_CHAR;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 public class Utils {
 
     /**
@@ -31,7 +34,13 @@ public class Utils {
      * @return {@code true} if the length of the resource path array is equal to the size of the provided list of paths,
      *         {@code false} otherwise
      */
-    static boolean isPathsMatching(String[] resourcePaths, String[] requestPaths) {
+    static boolean isPathsMatching(String[] resourcePaths, String[] servicePath, String[] requestPaths) {
+
+        if (resourcePaths[0] == "." && requestPaths.length == servicePath.length) {
+            return true;
+        }
+
+        resourcePaths = Stream.concat(Arrays.stream(servicePath), Arrays.stream(resourcePaths)).toArray(String[]::new);
 
         if (resourcePaths.length != requestPaths.length) {
             return false;

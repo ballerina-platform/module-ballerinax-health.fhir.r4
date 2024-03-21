@@ -17,7 +17,7 @@
 import ballerina/jballerina.java;
 import ballerinax/health.fhir.r4;
 
-isolated function getResourceMethod(service object {} serviceObject, string[] path, string accessor)
+isolated function getResourceMethod(service object {} serviceObject, string[] servicePath, string[] path, string accessor)
     returns handle? = @java:Method {
     'class: "io.ballerinax.fhirr4.HTTPToFHIRAdaptor"
 } external;
