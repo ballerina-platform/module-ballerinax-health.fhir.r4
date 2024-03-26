@@ -40,9 +40,9 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                 r4:FHIRContext fhirContext;
                 if hasPathParam {
                     // can be any of read, vread, instance history
-                    if paths[paths.length() - 1] == HISTORY {
+                    if (paths.length() >= 1 && paths[paths.length() - 1] == HISTORY) {
                         // instance history
-                        string fhirResource = paths[paths.length() - 3];
+                        string fhirResource = apiConfig.resourceType;
                         string id = paths[paths.length() - 2];
                         r4:FHIRError? processIHistory = self.preprocessor.processInstanceHistory(fhirResource, id, req, ctx);
                         if processIHistory is r4:FHIRError {
@@ -50,9 +50,9 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithID(id, fhirContext, fhirService, resourceMethod);
-                    } else if paths[paths.length() - 2] == HISTORY {
+                    } else if (paths.length() >= 2 && paths[paths.length() - 2] == HISTORY) {
                         // vread
-                        string fhirResource = paths[paths.length() - 4];
+                        string fhirResource = apiConfig.resourceType;
                         string id = paths[paths.length() - 3];
                         string vid = paths[paths.length() - 1];
                         r4:FHIRError? processIHistory = self.preprocessor.processVread(fhirResource, id, vid, req, ctx);
@@ -63,7 +63,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         executeResourceResult = executeWithIDAndVID(id, vid, fhirContext, fhirService, resourceMethod);
                     } else {
                         // read
-                        string fhirResource = paths[paths.length() - 2];
+                        string fhirResource = apiConfig.resourceType;
                         string id = paths[paths.length() - 1];
                         r4:FHIRError? processRead = self.preprocessor.processRead(fhirResource, id, req, ctx);
                         if processRead is r4:FHIRError {
@@ -74,7 +74,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                     }
                 } else {
                     // can be any of search, type history, system history, metadata
-                    if paths[paths.length() - 1] == HISTORY {
+                    if (paths.length() >= 1 && paths[paths.length() - 1] == HISTORY) {
                         // system history or type history
                         r4:FHIRError? processHistory = self.preprocessor.processHistory(req, ctx);
                         if processHistory is r4:FHIRError {
@@ -82,7 +82,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
-                    } else if paths[paths.length() - 1] == METADATA {
+                    } else if (paths.length() >= 1 && paths[paths.length() - 1] == METADATA) {
                         // metadata
                         r4:FHIRError? processCapability = self.preprocessor.processCapability(req, ctx);
                         if processCapability is r4:FHIRError {
@@ -92,7 +92,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
                     } else {
                         // search
-                        string fhirResource = paths[paths.length() - 1];
+                        string fhirResource = apiConfig.resourceType;
                         r4:FHIRError? processSearch = self.preprocessor.processSearch(fhirResource, req, ctx);
                         if processSearch is r4:FHIRError {
                             return processSearch;
@@ -120,7 +120,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
             json|http:ClientError payload = req.getJsonPayload();
             if payload is json {
                 if resourceMethod is handle {
-                    string fhirResource = paths[paths.length() - 1];
+                    string fhirResource = apiConfig.resourceType;
                     r4:FHIRError? processCreate = self.preprocessor.processCreate(fhirResource, payload, req, ctx);
                     if processCreate is r4:FHIRError {
                         return processCreate;
@@ -149,7 +149,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
             json|http:ClientError payload = req.getJsonPayload();
             if payload is json {
                 if resourceMethod is handle {
-                    string fhirResource = paths[paths.length() - 2];
+                    string fhirResource = apiConfig.resourceType;
                     string id = paths[paths.length() - 1];
                     r4:FHIRError? processUpdate = self.preprocessor.processUpdate(fhirResource, id, payload, req, ctx);
                     if processUpdate is r4:FHIRError {
@@ -178,7 +178,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
             json|http:ClientError payload = req.getJsonPayload();
             if payload is json {
                 if resourceMethod is handle {
-                    string fhirResource = paths[paths.length() - 2];
+                    string fhirResource = apiConfig.resourceType;
                     string id = paths[paths.length() - 1];
                     r4:FHIRError? processPatch = self.preprocessor.processPatch(fhirResource, id, payload, req, ctx);
                     if processPatch is r4:FHIRError {
@@ -206,7 +206,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
             handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_DELETE);
 
             if resourceMethod is handle {
-                string fhirResource = paths[paths.length() - 2];
+                string fhirResource = apiConfig.resourceType;
                 string id = paths[paths.length() - 1];
                 r4:FHIRError? processDelete = self.preprocessor.processDelete(fhirResource, id, req, ctx);
                 if processDelete is r4:FHIRError {
@@ -237,5 +237,6 @@ isolated function getRequestPaths(string path) returns string[] {
     string rawPath = path.includes("?") ? (path.substring(0, path.indexOf("?") ?: 0)) : path;
     paths = regexp:split(re `/`, rawPath);
     _ = paths.remove(0);
+    _ = paths[0] == "" ? paths.remove(0) : [];
     return paths;
 }
