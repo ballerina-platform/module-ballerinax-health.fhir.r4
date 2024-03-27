@@ -36,13 +36,30 @@ public class Utils {
      */
     static boolean isPathsMatching(String[] resourcePaths, String[] servicePath, String[] requestPaths) {
 
-        if (resourcePaths[0] == "." && requestPaths.length == servicePath.length) {
+        if (resourcePaths[0].equals(".") && (servicePath.length == requestPaths.length)) {
             return true;
+        }
+
+        if (servicePath.length == 0 && resourcePaths.length == requestPaths.length) {
+            int count = requestPaths.length - 1;
+            for (int i = resourcePaths.length - 1; i >= 0; i--) {
+                if (requestPaths[count].equals(resourcePaths[i]) || (resourcePaths[i].equals(PATH_PARAM_IDENTIFIER))) {
+                    if (resourcePaths[i].equals(PATH_PARAM_IDENTIFIER) && requestPaths[count].equals("_history")) {
+                        break;
+                    }
+                    count--;
+                    if (i == 0) {
+                        return true;
+                    }
+                } else {
+                    break;
+                }
+            }
         }
 
         resourcePaths = Stream.concat(Arrays.stream(servicePath), Arrays.stream(resourcePaths)).toArray(String[]::new);
 
-        if (resourcePaths.length != requestPaths.length) {
+        if (resourcePaths.length != requestPaths.length || requestPaths.length == 0) {
             return false;
         }
         for (int i = 0; i < resourcePaths.length; i++) {
