@@ -214,22 +214,6 @@ public isolated function addValueSet(r4:ValueSet valueSet) returns r4:FHIRError?
     return terminologyProcessor.addValueSet(valueSet);
 }
 
-# Get all the CodeSystem records.
-# + return - Map of CodeSystem records
-public isolated function getCodeSystemMap() returns map<r4:CodeSystem> {
-    lock {
-        return terminologyProcessor.getCodeSystemMap();
-    }
-}
-
-# Get all the ValueSet records.
-# + return - Map of ValueSet records
-public isolated function getValueSetMap() returns map<r4:ValueSet> {
-    lock {
-        return terminologyProcessor.getValueSetMap();
-    }
-}
-
 # Set the external terminology retriever function.
 #
 # + finder - Implementation of the external terminology retriever class

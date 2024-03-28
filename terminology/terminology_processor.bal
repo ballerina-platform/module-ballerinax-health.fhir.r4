@@ -234,8 +234,7 @@ public isolated class TerminologyProcessor {
                     string `Can not find the URL of the CodeSystem with name: ${codeSystem.name.toBalString()}`,
                     r4:ERROR,
                     r4:INVALID_REQUIRED,
-                    diagnostic = string `Add a proper URL for the resource: 
-                                            http://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.url`,
+                    diagnostic = string `Add a proper URL for the resource: http://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.url`,
                     errorType = r4:VALIDATION_ERROR,
                     httpStatusCode = http:STATUS_BAD_REQUEST
                 );
@@ -246,8 +245,7 @@ public isolated class TerminologyProcessor {
                     string `Can not find the version of the CodeSystem with name: ${codeSystem.name.toBalString()}`,
                     r4:ERROR,
                     r4:INVALID_REQUIRED,
-                    diagnostic = string `Add appropriate version for the resource: 
-                                            https://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.version`,
+                    diagnostic = string `Add appropriate version for the resource: https://hl7.org/fhir/R4/codesystem-definitions.html#CodeSystem.version`,
                     errorType = r4:VALIDATION_ERROR,
                     httpStatusCode = http:STATUS_BAD_REQUEST
                 );
@@ -275,8 +273,7 @@ public isolated class TerminologyProcessor {
                     "Validation failed",
                     r4:ERROR,
                     r4:INVALID,
-                    diagnostic = string `Check whether the data conforms to the specification: 
-                                            http://hl7.org/fhir/R4/codesystem-definitions.html`,
+                    diagnostic = string `Check whether the data conforms to the specification: http://hl7.org/fhir/R4/codesystem-definitions.html`,
                     errorType = r4:VALIDATION_ERROR,
                     cause = validateResult,
                     httpStatusCode = http:STATUS_BAD_REQUEST
@@ -316,8 +313,7 @@ public isolated class TerminologyProcessor {
                     string `Can not find the version of the ValueSet with name: ${valueSet.name.toBalString()}`,
                     r4:ERROR,
                     r4:INVALID_REQUIRED,
-                    diagnostic = string `Add appropriate version for the resource: 
-                                            http://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.version`,
+                    diagnostic = string `Add appropriate version for the resource: http://hl7.org/fhir/R4/valueset-definitions.html#ValueSet.version`,
                     errorType = r4:VALIDATION_ERROR,
                     httpStatusCode = http:STATUS_BAD_REQUEST
                 );
@@ -345,8 +341,7 @@ public isolated class TerminologyProcessor {
                     "Validation failed",
                     r4:ERROR,
                     r4:INVALID,
-                    diagnostic = string `Check whether the data conforms to the specification: 
-                                            http://hl7.org/fhir/R4/valueset-definitions.html`,
+                    diagnostic = string `Check whether the data conforms to the specification: http://hl7.org/fhir/R4/valueset-definitions.html`,
                     errorType = r4:VALIDATION_ERROR,
                     cause = validateResult,
                     httpStatusCode = http:STATUS_BAD_REQUEST
@@ -533,7 +528,7 @@ public isolated class TerminologyProcessor {
 
             if self.finder is Finder {
                 return check (<Finder>self.finder).searchCodeSystem(searchParameters.clone(), offset = offset, count = count);
-            } 
+            }
 
             r4:CodeSystem[] codeSystemArray = self.codeSystems.toArray();
 
@@ -617,7 +612,7 @@ public isolated class TerminologyProcessor {
 
             if self.finder is Finder {
                 return (<Finder>self.finder).searchValueSet(searchParameters.clone(), offset = offset, count = count);
-            }  
+            }
 
             r4:ValueSet[] valueSetArray = self.valueSets.toArray();
 
@@ -700,7 +695,7 @@ public isolated class TerminologyProcessor {
                         return (<Finder>self.finder).findConcept(<r4:uri>system, codeValue);
                     } else {
                         return r4:createFHIRError(
-                            "Provided CodeSystem or system url is invalide",
+                            "Provided CodeSystem or system url is invalid",
                             r4:ERROR,
                             r4:INVALID_REQUIRED,
                             errorType = r4:PROCESSING_ERROR,
@@ -728,7 +723,7 @@ public isolated class TerminologyProcessor {
                         return (<Finder>self.finder).findConcept(<r4:uri>system, <r4:code>codeValue.code);
                     } else {
                         return r4:createFHIRError(
-                            "Provided CodeSystem or system url is invalide",
+                            "Provided CodeSystem or system url is invalid",
                             r4:ERROR,
                             r4:INVALID_REQUIRED,
                             errorType = r4:PROCESSING_ERROR,
@@ -763,7 +758,7 @@ public isolated class TerminologyProcessor {
                                 findConceptResult = check (<Finder>self.finder).findConcept(<r4:uri>system, <r4:code>c.code);
                             } else {
                                 return r4:createFHIRError(
-                                    "Provided CodeSystem or system url is invalide",
+                                    "Provided CodeSystem or system url is invalid",
                                     r4:ERROR,
                                     r4:INVALID_REQUIRED,
                                     errorType = r4:PROCESSING_ERROR,
@@ -1069,7 +1064,7 @@ public isolated class TerminologyProcessor {
                     if searchParameters.hasKey(FILTER) {
                         string filter = searchParameters.get(FILTER)[0].value;
                         r4:ValueSetComposeIncludeConcept[] result = from r4:ValueSetComposeIncludeConcept entry in concepts
-                            where entry[DISPLAY] is string && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, 
+                            where entry[DISPLAY] is string && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`,
                             (<string>entry[DISPLAY]).toUpperAscii())
                             select entry;
                         concepts = result;
@@ -1193,7 +1188,7 @@ public isolated class TerminologyProcessor {
         lock {
             if self.finder is Finder {
                 return (<Finder>self.finder).findCodeSystem(url, version);
-            }  
+            }
 
             boolean isIdExistInRegistry = false;
             if version is string {
@@ -1244,7 +1239,7 @@ public isolated class TerminologyProcessor {
                 r4:PROCESSING_NOT_FOUND,
                 httpStatusCode = http:STATUS_NOT_FOUND
             );
-            
+
         }
     }
 
@@ -1258,7 +1253,7 @@ public isolated class TerminologyProcessor {
         lock {
             if self.finder is Finder {
                 return (<Finder>self.finder).findValueSet(url, version);
-            }  
+            }
 
             boolean isIdExistInRegistry = false;
             if version is string {
@@ -1311,7 +1306,7 @@ public isolated class TerminologyProcessor {
                     r4:PROCESSING_NOT_FOUND,
                     httpStatusCode = http:STATUS_NOT_FOUND
                 );
-            
+
         }
 
     }
@@ -1362,22 +1357,6 @@ public isolated class TerminologyProcessor {
                 r4:ERROR,
                 r4:PROCESSING_NOT_FOUND
             );
-        }
-    }
-
-    # Get all the CodeSystem records.
-    # + return - Map of CodeSystem records
-    public isolated function getCodeSystemMap() returns map<r4:CodeSystem> {
-        lock {
-            return self.codeSystems.clone();
-        }
-    }
-
-    # Get all the ValueSet records.
-    # + return - Map of ValueSet records
-    public isolated function getValueSetMap() returns map<r4:ValueSet> {
-        lock {
-            return self.valueSets.clone();
         }
     }
 
