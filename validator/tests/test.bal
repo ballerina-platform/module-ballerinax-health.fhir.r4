@@ -216,3 +216,137 @@ function testTargetType() {
         test:assertFail(msg = "Validation failed");
     }
 }
+
+@test:Config{}
+function testCreateErrors() {
+    //For creating parser errors
+    r4:FHIRError parserError = createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID,
+                errorType = r4:PARSE_ERROR, httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
+
+    //For creating default fhir errors
+    r4:FHIRError fhirError = createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID,
+                httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
+
+    test:assertTrue(<r4:FHIRParseError>parserError is r4:FHIRParseError);
+    test:assertTrue(fhirError is r4:FHIRError);
+
+}
+
+@test:Config{}
+function testDatetimeErrorMessageParsing() {
+    string errorMessage = string `Validation failed for '$.identifier[0].period.start:pattern' constraint(s).`;
+    string[] parsedError = parseConstraintErrors(errorMessage);
+
+    test:assertTrue(parsedError == ["Invalid pattern (constraint) for field 'identifier[0].period.start'"]);
+}
+
+@test:Config{}
+function testResourceTypeParsing() {
+    string errorMessage = string `Failed to find FHIR profile for the resource type : Psatient`;
+    string[] parsedError = processFHIRParserErrors(errorMessage);
+
+    test:assertTrue(parsedError == ["Resource type is invalid"]);
+}
+
+@test:Config{}
+function testMissingFieldParsing() {
+    string errorMessage = string `Failed to parse request body as JSON resource due to Invalid JSON content detected, missing required element: "resourceType"`;
+    string[] parsedError = processFHIRParserErrors(errorMessage);
+
+    test:assertTrue(parsedError == ["Missing required Element: 'resourceType'"]);
+}
+
+@test:Config{}
+function testMissingElementParsing() {
+    string errorMessage = string `Failed to parse request body as JSON resource due to 'map<json>' value cannot be converted to 'health.fhir.r4.international401:Patient':
+                missing required field 'text.status' of type 'ballerinax/health.fhir.r4:4:StatusCode' in record 'health.fhir.r4:Narrative'`;
+    string[] parsedError = processFHIRParserErrors(errorMessage);
+
+    test:assertTrue(parsedError == ["Missing required field 'text.status'"]);
+}
+
+@test:Config{}
+function testInvalidFieldParsing() {
+    string errorMessage = string `Failed to parse request body as JSON resource due to 'map<json>' value cannot be converted to 'health.fhir.r4.international401:Patient':
+                value of field 'isd' adding to the record 'health.fhir.r4.international401:Patient' should be of type 'health.fhir.r4:Element', found '"example"'`;
+    string[] parsedError = processFHIRParserErrors(errorMessage);
+
+    test:assertTrue(parsedError == ["Invalid field 'isd'. Type of field should be 'health.fhir.r4:Element'"]);
+}
+
+@test:Config{}
+function testInvalidFieldValueParsing() {
+    string errorMessage = string `Failed to parse request body as JSON resource due to 'map<json>' value cannot be converted to 'health.fhir.r4.international401:Patient':
+                field 'telecom[1].system' in record 'health.fhir.r4:ContactPoint' should be of type 'ballerinax/health.fhir.r4:4:ContactPointSystem', found '1'`;
+    string[] parsedError = processFHIRParserErrors(errorMessage);
+
+    test:assertTrue(parsedError == ["Invalid value of field 'telecom[1].system'. Type of value should be 'ballerinax/health.fhir.r4:4:ContactPointSystem'"]);
+}
+
+@test:Config{}
+function testInvalidArrayElements() {
+    string errorMessage = string `Failed to parse request body as JSON resource due to 'map<json>' value cannot be converted to 'health.fhir.r4.international401:Patient':
+                array element 'name[0].given[0]' should be of type 'string', found '1'`;
+    string[] parsedError = processFHIRParserErrors(errorMessage);
+
+    test:assertTrue(parsedError == ["Invalid array element 'name[0].given[0]'. Type of element should be 'string'"]);
+}
+
+@test:Config{}
+function testMultityypeScenarioFieldParsing() {
+    string errorMessage = string `Failed to parse request body as JSON resource due to 'map<json>' value cannot be converted to 'health.fhir.r4.international401:Patient':
+                {
+                  missing required field 'contact[0].name._family.extension[0].valueCodeableConcept' of type 'health.fhir.r4:CodeableConcept' in record 'health.fhir.r4:CodeableConceptExtension'     
+                  value of field 'valuaeString' adding to the record 'health.fhir.r4:CodeableConceptExtension' should be of type 'health.fhir.r4:Element', found '"VV"'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueString' of type 'string' in record 'health.fhir.r4:StringExtension'
+                  value of field 'valuaeString' adding to the record 'health.fhir.r4:StringExtension' should be of type 'health.fhir.r4:Element', found '"VV"'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueCoding' of type 'health.fhir.r4:Coding' in record 'health.fhir.r4:CodingExtension'
+                  value of field 'valuaeString' adding to the record 'health.fhir.r4:CodingExtension' should be of type 'health.fhir.r4:Element', found '"VV"'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueCode' of type 'health.fhir.r4:code' in record 'health.fhir.r4:CodeExtension'
+                  value of field 'valuaeString' adding to the record 'health.fhir.r4:CodeExtension' should be of type 'health.fhir.r4:Element', found '"VV"'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueInteger' of type 'health.fhir.r4:integer' in record 'health.fhir.r4:IntegerExtension'
+                  value of field 'valuaeString' adding to the record 'health.fhir.r4:IntegerExtension' should be of type 'health.fhir.r4:Element', found '"VV"'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueBase64Binary' of type 'health.fhir.r4:base64Binary' in record 'health.fhir.r4:Base64BinaryExtension'
+                  value of field 'valuaeString' adding to the record 'health.fhir.r4:Base64BinaryExtension' should be of type 'health.fhir.r4:Element', found '"VV"'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueBoolean' of type 'boolean' in record 'health.fhir.r4:BooleanExtension'
+                ...`;
+    string[] parsedError = processFHIRParserErrors(errorMessage);
+
+    test:assertTrue(parsedError == ["The field 'valuaeString' should be of type value[x] or url[x] where x is a valid fhir data type"]);
+}
+
+@test:Config{}
+function testMultityypeScenarioValueParsing() {
+    string errorMessage = string `Failed to parse request body as JSON resource due to 'map<json>' value cannot be converted to 'health.fhir.r4.international401:Patient': 
+                {
+                  missing required field 'contact[0].name._family.extension[0].valueCodeableConcept' of type 'health.fhir.r4:CodeableConcept' in record 'health.fhir.r4:CodeableConceptExtension'     
+                  value of field 'valueString' adding to the record 'health.fhir.r4:CodeableConceptExtension' should be of type 'health.fhir.r4:Element', found '1'
+                or
+                  field 'contact[0].name._family.extension[0].valueString' in record 'health.fhir.r4:StringExtension' should be of type 'string', found '1'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueCoding' of type 'health.fhir.r4:Coding' in record 'health.fhir.r4:CodingExtension'
+                  value of field 'valueString' adding to the record 'health.fhir.r4:CodingExtension' should be of type 'health.fhir.r4:Element', found '1'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueCode' of type 'health.fhir.r4:code' in record 'health.fhir.r4:CodeExtension'
+                  value of field 'valueString' adding to the record 'health.fhir.r4:CodeExtension' 
+                  should be of type 'health.fhir.r4:Element', found '1'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueInteger' of type 'health.fhir.r4:integer' in record 'health.fhir.r4:IntegerExtension'
+                  value of field 'valueString' adding to the record 'health.fhir.r4:IntegerExtension' should be of type 'health.fhir.r4:Element', found '1'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueBase64Binary' of type 'health.fhir.r4:base64Binary' in record 'health.fhir.r4:Base64BinaryExtension'
+                  value of field 'valueString' adding to the record 'health.fhir.r4:Base64BinaryExtension' should be of type 'health.fhir.r4:Element', found '1'
+                or
+                  missing required field 'contact[0].name._family.extension[0].valueBoolean' of type 'boolean' in record 'health.fhir.r4:BooleanExtension'
+                  value of field 'valueString' adding to the record 'health.fhir.r4:BooleanExtension' should be of type 'health.fhir.r4:Element', found '1'
+                ...`;
+    string[] parsedError = processFHIRParserErrors(errorMessage);
+
+    test:assertTrue(parsedError == ["The field 'contact[0].name._family.extension[0].valueString' should be of type value[x] or url[x] where x is a valid fhir data type"]);
+}
