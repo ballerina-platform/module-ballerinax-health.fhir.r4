@@ -89,23 +89,26 @@ public isolated function createValidationError(string message, r4:Severity errSe
 # + data - FHIR resource (can be in json or anydata)
 # + targetFHIRModelType - (Optional) target model type to validate. Derived from payload if not given
 # + return - If the validation fails, return validation error
-public isolated function validate(json|anydata data, typedesc<anydata>? targetFHIRModelType = ()) returns r4:FHIRValidationError? {
+public isolated function validate(anydata data, typedesc<anydata>? targetFHIRModelType = ()) returns r4:FHIRValidationError? {
 
     anydata finalData;
 
-    if data is json {
+    if data is json|xml|string {
         anydata|r4:FHIRParseError parsedResult = parser:parse(data, targetFHIRModelType);
 
         if parsedResult is r4:FHIRParseError {
             log:printDebug(string `FHIR parsing failed, ${parsedResult.message()}`);
             string[] errors = processFHIRParserErrors(parsedResult.message());
             return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, parsedResult.message(),
-                                                errorType = r4:VALIDATION_ERROR, cause = parsedResult, parsedErrors = errors);
+                                                errorType = r4:VALIDATION_ERROR, cause = parsedResult, parsedErrors = errors, httpStatusCode = parsedResult.detail().httpStatusCode);
         } else {
             finalData = parsedResult;
         }
-    } else {
+    } else if data is r4:DomainResource{
         finalData = data;
+    } else {
+        return <r4:FHIRValidationError>r4:createFHIRError("FHIR resource validation failed", r4:ERROR, r4:INVALID, 
+                        "Invalid FHIR resource type", errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
     }
 
     // Get the types of the FHIR resources, it can be international or any specific FHIR profiles like Uscore
@@ -117,19 +120,9 @@ public isolated function validate(json|anydata data, typedesc<anydata>? targetFH
         log:printDebug(string `Constraint validation failed, ${validationResult.message()}`);
         string[] errors = parseConstraintErrors(validationResult.message());
         return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, validationResult.message(),
-                                                errorType = r4:VALIDATION_ERROR, cause = validationResult, parsedErrors = errors);
+                                                errorType = r4:VALIDATION_ERROR, cause = validationResult, parsedErrors = errors, httpStatusCode = http:STATUS_BAD_REQUEST);
     }
 
-}
-
-# This method will validate parsed FHIR resource.
-# Validation consist of Structure, cardinality, Value domain, Profile.
-# This is only for internal use.
-#
-# + data - parsed FHIR resource
-# + return - If the validation fails, return validation error
-isolated function validateFhirResource(anydata data) returns r4:FHIRValidationError? {
-    return validate(data);
 }
 
 isolated function parseConstraintErrors(string message) returns string[] {
