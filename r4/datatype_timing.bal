@@ -75,7 +75,7 @@ public type Timing record {|
 
     dateTime[] event?;
     ElementRepeat repeat?;
-    RepeatCode code?;
+    CodeableConcept code?;
 
 |};
 
