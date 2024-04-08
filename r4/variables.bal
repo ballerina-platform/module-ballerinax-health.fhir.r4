@@ -179,16 +179,6 @@ public final readonly & map<CommonSearchParameterDefinition> CONTROL_SEARCH_PARA
         preProcessor: paginationSearchParamPreProcessor,
         postProcessor: paginationSearchParamPostProcessor
     },
-    "_offset": {
-        name: "_offset",
-        'type: NUMBER,
-        base: ["Resource"],
-        expression: (),
-        default: 0,
-        effectiveLevel: SEARCH_PARAM_CATEGORY_SEARCH_RESULT,
-        preProcessor: paginationSearchParamPreProcessor,
-        postProcessor: paginationSearchParamPostProcessor
-    },
     "_include": {
         name: "_include",
         'type: TOKEN,
