@@ -36,3 +36,6 @@ public const FHIR_BASE_IG = "international";
 const CANONICAL_REGEX = "^(https?|http)\\:\\/\\/[-a-zA-Z0-9+&@#\\/%~_!:,\\.;]*[-a-zA-Z0-9\\+&@#\\/%=~_](\\|[-a-zA-Z0-9]*)?";
 
 const REFERENCE_TYPE_CONTAINED = "contained";
+
+# Location header property name
+public const LOCATION_HEADER_PROP_NAME = "_OH_LOCATION_HEADER_";
