@@ -472,3 +472,14 @@ public type JWT record {
     readonly & jwt:Header header;
     readonly & jwt:Payload payload;
 };
+
+# Record to hold pagination related info in fhir context.
+#
+# + paginationEnabled - Whether pagination is enabled or not  
+# + page - Page number 
+# + pageSize - Page size
+public type PaginationContext record {|
+    readonly boolean paginationEnabled;
+    readonly int page;
+    readonly int pageSize;
+|};
