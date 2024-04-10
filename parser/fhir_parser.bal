@@ -229,5 +229,5 @@ isolated function extractResourceType(json|xml payload) returns string|r4:FHIRVa
     string message = "Failed to parse request body as JSON resource";
     string diagnostic = "Invalid JSON content detected, missing required element: \"resourceType\"";
     return <r4:FHIRValidationError>r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
-                                errorType = r4:VALIDATION_ERROR);
+                                errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
 }
