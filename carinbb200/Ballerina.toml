@@ -1,0 +1,9 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.r4.carinbb"
+version = "1.0.0"
+distribution = "2201.8.1"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "health_fhir_r4_carinbb"]
+export = ["health.fhir.r4.carinbb"]
+
