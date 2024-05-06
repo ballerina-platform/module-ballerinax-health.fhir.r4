@@ -318,7 +318,7 @@ modules = [
 
 [[package]]
 org = "ballerinax"
-name = "health.fhir.r4.carinbb"
+name = "health.fhir.r4.carinbb200"
 version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
@@ -326,6 +326,6 @@ dependencies = [
 	{org = "ballerinax", name = "health.fhir.r4"}
 ]
 modules = [
-	{org = "ballerinax", packageName = "health.fhir.r4.carinbb", moduleName = "health.fhir.r4.carinbb"}
+	{org = "ballerinax", packageName = "health.fhir.r4.carinbb200", moduleName = "health.fhir.r4.carinbb200"}
 ]
 
