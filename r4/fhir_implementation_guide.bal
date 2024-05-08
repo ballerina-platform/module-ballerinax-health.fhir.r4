@@ -18,7 +18,7 @@
 public isolated class FHIRImplementationGuide {
 
     private final readonly & IGInfoRecord igRecord;
-    
+
     public isolated function init(readonly & IGInfoRecord igRecord) {
         self.igRecord = igRecord;
     }
@@ -38,19 +38,28 @@ public isolated class FHIRImplementationGuide {
     public isolated function getSearchParameters() returns map<FHIRSearchParameterDefinition[]>[] {
         return self.igRecord.searchParameters;
     }
+
+    # Get IG FHIR operation definitions.
+    #
+    # + return - A map of FHIR operation definitions
+    public isolated function getOperations() returns map<FHIROperationDefinition[]> {
+        return self.igRecord.operations;
+    }
 }
 
 # Record to hold information about an implementation guide.
-# 
+#
 # + title - Name for this implementation guide (human friendly)
 # + name - Name for this implementation guide (computer friendly)
 # + terminology - terminology object  
 # + profiles - profiles supported by the IG (key : profile uri)
 # + searchParameters - search parameters defined in the IG (key: parameter name)
+# + operations - operations defined in the IG (key: operation name)
 public type IGInfoRecord record {|
     readonly string title;
     readonly string name;
     Terminology terminology;
     readonly & map<Profile> profiles;
-    readonly & map<FHIRSearchParameterDefinition[]>[]  searchParameters;
+    readonly & map<FHIRSearchParameterDefinition[]>[] searchParameters;
+    readonly & map<FHIROperationDefinition[]> operations;
 |};
