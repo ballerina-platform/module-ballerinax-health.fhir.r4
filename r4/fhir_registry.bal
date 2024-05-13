@@ -73,6 +73,9 @@ public isolated class FHIRRegistry {
     // search parameter map (key: resource type)
     private map<SearchParamCollection> searchParameterMap = {};
 
+    // Operations map (key: resource type)
+    private map<OperationCollection> operationsMap = {};
+
     public function init() {
     }
 
@@ -132,6 +135,29 @@ public isolated class FHIRRegistry {
             }
         }
 
+        lock {
+            // Add operations
+            foreach FHIROperationDefinition[] operationsMap in ig.getOperations() {
+                foreach FHIROperationDefinition operation in operationsMap {
+                    string[]? resources = operation.'resource;
+                    if resources is string[] {
+                        foreach string resourceType in resources {
+                            if self.operationsMap.hasKey(resourceType) {
+                                OperationCollection collection = self.operationsMap.get(resourceType);
+                                if !collection.hasKey(operation.name) {
+                                    collection[operation.name] = operation;
+                                }
+                            } else {
+                                OperationCollection collection = {};
+                                collection[operation.name] = operation;
+                                self.operationsMap[resourceType] = collection;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // Update terminology processor
         terminologyProcessor.addTerminology(ig.getTerminology());
     }
@@ -176,6 +202,34 @@ public isolated class FHIRRegistry {
         return ();
     }
 
+    # Get the resource operations in the registry.
+    #
+    # + resourceType - The resource type
+    # + return - The operations in the registry
+    public isolated function getResourceOperations(string resourceType) returns OperationCollection {
+        lock {
+            if self.operationsMap.hasKey(resourceType) {
+                return self.operationsMap.get(resourceType).cloneReadOnly();
+            }
+        }
+        return {};
+    }
+
+    # Get a resource operation in the registry by name.
+    #
+    # + resourceType - The resource type
+    # + operation - The name of the operation
+    # + return - The operation if found in the registry, otherwise ()
+    public isolated function getResourceOperationByName(string resourceType,
+            string operation) returns FHIROperationDefinition? {
+        lock {
+            if self.operationsMap.hasKey(resourceType) && self.operationsMap.get(resourceType).hasKey(operation) {
+                return self.operationsMap.get(resourceType).get(operation).clone();
+            }
+        }
+        return ();
+    }
+
     # Get the profiles in the registry
     #
     # + url - The url of the profile
@@ -215,3 +269,6 @@ public isolated class FHIRRegistry {
 
 # Search parameter map (key: parameter name)
 public type SearchParamCollection map<FHIRSearchParameterDefinition>;
+
+# Operation map (key: operation name)
+public type OperationCollection map<FHIROperationDefinition>;

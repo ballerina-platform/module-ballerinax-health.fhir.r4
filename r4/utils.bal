@@ -1,24 +1,20 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
 // You may obtain a copy of the License at
-
 // http://www.apache.org/licenses/LICENSE-2.0
-
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import ballerina/http;
 import ballerina/lang.value;
 import ballerina/log;
-import ballerina/uuid;
 import ballerina/url;
+import ballerina/uuid;
 
 # Get the FHIR context from the HTTP request context.
 #
@@ -202,4 +198,40 @@ public isolated function decodeFhirSearchParameters(string urlEncodedParams)
         return createFHIRError(errorMsg, CODE_SEVERITY_FATAL, INVALID, httpStatusCode = http:STATUS_BAD_REQUEST);
     }
     return arr;
+}
+
+# Maps a given FHIR primitive type to a corresponding FHIR search parameter type.
+#
+# + primitiveType - The FHIR primitive type to be mapped
+# + return - The corresponding FHIR search parameter type or a `FHIRError` if the primitive type does not 
+# correspond to a search parameter type
+public isolated function primitiveTypeToSearchParamType(string primitiveType) returns FHIRSearchParameterType|FHIRError {
+    match primitiveType {
+        "base64Binary"|"boolean"|"code" => {
+            return TOKEN;
+        }
+        "canonical" => {
+            return REFERENCE;
+        }
+        "date"|"dateTime" => {
+            return DATE;
+        }
+        "id"|"instant" => {
+            return TOKEN;
+        }
+        "decimal"|"integer"|"positiveInt"|"unsignedInteger" => {
+            return NUMBER;
+        }
+        "string" => {
+            return STRING;
+        }
+        "oid"|"uri"|"url"|"uuid" => {
+            return URI;
+        }
+        _ => {
+            string msg = "FHIR primitive type \"" + primitiveType + "\" does not correspond to a recognized "
+            + "FHIR search parameter type.";
+            return createFHIRError(msg, ERROR, PROCESSING);
+        }
+    }
 }

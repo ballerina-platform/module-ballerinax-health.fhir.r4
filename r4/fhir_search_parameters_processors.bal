@@ -1,12 +1,9 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
 // You may obtain a copy of the License at
-
 // http://www.apache.org/licenses/LICENSE-2.0
-
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -73,9 +70,13 @@ public type CommonSearchParameterDefinition record {
     CommonSearchParameterPostProcessor? postProcessor;
 };
 
-public isolated function createRequestSearchParameter(FHIRSearchParameterDefinition|CommonSearchParameterDefinition definition,
-        FHIRSearchParameterModifier|string? modifier, anydata value) returns RequestSearchParameter|FHIRError {
-    match definition.'type {
+public isolated function createRequestSearchParameter(FHIRSearchParameterDefinition|CommonSearchParameterDefinition
+        |FHIROperationParameterDefinition definition, FHIRSearchParameterModifier|string? modifier,
+        anydata value) returns RequestSearchParameter|FHIRError {
+    FHIRSearchParameterType|string? 'type =
+        definition is FHIROperationParameterDefinition ? definition.searchType : definition.'type;
+
+    match 'type {
         STRING => {
             // Search parameter is a simple string
             string strValue = value.toString();
@@ -125,7 +126,7 @@ public isolated function createRequestSearchParameter(FHIRSearchParameterDefinit
             return createSearchParameterWrapper(definition.name, SPECIAL, value.toString(), specialResult);
         }
         _ => {
-            string message = string `Unknown search parameter type : ${definition.'type}`;
+            string message = string `Unknown search parameter type : ${'type.toString()}`;
             return <FHIRValidationError>createInternalFHIRError(message, ERROR, PROCESSING,
                                                                         errorType = VALIDATION_ERROR,
                                                                         diagnostic = message);
@@ -133,9 +134,9 @@ public isolated function createRequestSearchParameter(FHIRSearchParameterDefinit
     }
 }
 
-isolated function parseNumber(FHIRSearchParameterDefinition|CommonSearchParameterDefinition definition,
-        FHIRSearchParameterModifier|string? modifier, anydata value)
-        returns readonly & NumberSearchParameter|FHIRValidationError {
+isolated function parseNumber(FHIRSearchParameterDefinition|CommonSearchParameterDefinition
+        |FHIROperationParameterDefinition definition, FHIRSearchParameterModifier|string? modifier,
+        anydata value) returns readonly & NumberSearchParameter|FHIRValidationError {
     Prefix prefix;
     int|float decodedValue;
     if value is string {
@@ -190,9 +191,9 @@ isolated function parseNumber(FHIRSearchParameterDefinition|CommonSearchParamete
     return sParameter;
 }
 
-isolated function parseToken(FHIRSearchParameterDefinition|CommonSearchParameterDefinition definition,
-        FHIRSearchParameterModifier|string? modifier, anydata value)
-        returns readonly & TokenSearchParameter|FHIRValidationError {
+isolated function parseToken(FHIRSearchParameterDefinition|CommonSearchParameterDefinition
+        |FHIROperationParameterDefinition definition, FHIRSearchParameterModifier|string? modifier,
+        anydata value) returns readonly & TokenSearchParameter|FHIRValidationError {
     if value is string {
         string[] split = regexp:split(re `\|`, value.trim());
         string? system = ();
@@ -240,9 +241,9 @@ isolated function parseToken(FHIRSearchParameterDefinition|CommonSearchParameter
     }
 }
 
-isolated function parseDate(FHIRSearchParameterDefinition|CommonSearchParameterDefinition definition,
-        FHIRSearchParameterModifier|string? modifier, anydata value)
-        returns readonly & DateSearchParameter|FHIRValidationError {
+isolated function parseDate(FHIRSearchParameterDefinition|CommonSearchParameterDefinition
+        |FHIROperationParameterDefinition definition, FHIRSearchParameterModifier|string? modifier,
+        anydata value) returns readonly & DateSearchParameter|FHIRValidationError {
     if value is string {
         var [prefix, decodedValue] = decodePrefixedValue(value);
         time:Civil|error civilTime = iso8601toCivil(decodedValue);
@@ -276,8 +277,8 @@ isolated function parseDate(FHIRSearchParameterDefinition|CommonSearchParameterD
     }
 }
 
-isolated function parseRefernce(FHIRSearchParameterDefinition|CommonSearchParameterDefinition definition,
-        FHIRSearchParameterModifier|string? modifier, anydata value)
+isolated function parseRefernce(FHIRSearchParameterDefinition|CommonSearchParameterDefinition
+        |FHIROperationParameterDefinition definition, FHIRSearchParameterModifier|string? modifier, anydata value)
         returns readonly & ReferenceSearchParameter|FHIRValidationError {
     if value is string {
         if value.indexOf("/") is () {
@@ -345,8 +346,8 @@ isolated function parseRefernce(FHIRSearchParameterDefinition|CommonSearchParame
     }
 }
 
-isolated function parseQuantity(FHIRSearchParameterDefinition|CommonSearchParameterDefinition definition,
-        FHIRSearchParameterModifier|string? modifier, anydata value)
+isolated function parseQuantity(FHIRSearchParameterDefinition|CommonSearchParameterDefinition
+        |FHIROperationParameterDefinition definition, FHIRSearchParameterModifier|string? modifier, anydata value)
         returns (QuantitySearchParameter & readonly)|FHIRParseError {
     if value is string {
         var [tempPrefix, strippedValue] = decodePrefixedValue(value);
@@ -401,8 +402,8 @@ isolated function parseQuantity(FHIRSearchParameterDefinition|CommonSearchParame
     }
 }
 
-isolated function parseURI(FHIRSearchParameterDefinition|CommonSearchParameterDefinition definition,
-        FHIRSearchParameterModifier|string? modifier, anydata value)
+isolated function parseURI(FHIRSearchParameterDefinition|CommonSearchParameterDefinition
+        |FHIROperationParameterDefinition definition, FHIRSearchParameterModifier|string? modifier, anydata value)
         returns readonly & URISearchParameter|FHIRParseError {
     if value is string {
         if modifier != () {
@@ -427,8 +428,8 @@ isolated function parseURI(FHIRSearchParameterDefinition|CommonSearchParameterDe
     }
 }
 
-isolated function parseComposite(FHIRSearchParameterDefinition|CommonSearchParameterDefinition definition,
-        FHIRSearchParameterModifier|string? modifier, anydata value)
+isolated function parseComposite(FHIRSearchParameterDefinition|CommonSearchParameterDefinition
+        |FHIROperationParameterDefinition definition, FHIRSearchParameterModifier|string? modifier, anydata value)
         returns readonly & CompositeSearchParameter|FHIRParseError {
     if value is string {
         if modifier != () {
@@ -453,8 +454,8 @@ isolated function parseComposite(FHIRSearchParameterDefinition|CommonSearchParam
     }
 }
 
-isolated function parseSpecial(FHIRSearchParameterDefinition|CommonSearchParameterDefinition definition,
-        FHIRSearchParameterModifier|string? modifier, anydata value)
+isolated function parseSpecial(FHIRSearchParameterDefinition|CommonSearchParameterDefinition
+        |FHIROperationParameterDefinition definition, FHIRSearchParameterModifier|string? modifier, anydata value)
         returns readonly & SpecialSearchParameter|FHIRParseError {
     if value is string {
         if modifier != () {

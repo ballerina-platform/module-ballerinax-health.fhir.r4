@@ -15,10 +15,13 @@
 // under the License.
 
 # Function type to be implemented to override the operation pre-processing
-public type OperationPreProcessor function (FHIROperationDefinition definition, FHIRContext context) returns FHIRError?;
+public type OperationPreProcessor isolated function (FHIROperationDefinition definition, string resourceType,
+        map<string[]?>? requestQueryParams, json|xml? payload) returns map<RequestSearchParameter[]>
+        |FHIRResourceEntity|FHIRError?;
 
 # Function type to be implemented to override the operation post-processing
-public type OperationPostProcessor function (FHIROperationDefinition definition, FHIRContext context) returns FHIRError?;
+public type OperationPostProcessor isolated function (FHIROperationDefinition definition,
+        FHIRContext context) returns FHIRError?;
 
 # Redefined FHIR read-only FHIR resource API config
 public type ResourceAPIConfig readonly & ResourceAPIConfigType;
@@ -63,16 +66,37 @@ public type SearchParamConfig record {|
     readonly Information information?;
 |};
 
+# Operation parameter configuration.
+#
+# + name - Name of the operation parameter  
+# + active - Whether this operation parameter is activated or deactivated 
+# + scopes - Scopes the operation parameter is applicable to
+# + min - Minimum number of values the parameter can have (min cardinality)
+# + max - Maximum number of values the parameter can have (max cardinality)
+# + parts - Nested parts of the operation parameter
+# + information - Meta information about the operation parameter
+public type OperationParamConfig record {|
+    readonly string name;
+    readonly boolean active;
+    readonly FHIRInteractionLevel[] scopes?;
+    readonly int min?;
+    readonly string max?;
+    readonly OperationParamConfig[] parts?;
+    readonly Information information?;
+|};
+
 # Operation configuration.
 #
 # + name - Name of the operation
 # + active - Is this operation is activated or deactivated
+# + parameters - Parameters of the operation
 # + preProcessor - Override this operation pre-processing function. If the integration  developer wants to take control of pre-processing the operation.  
 # + postProcessor - Override this operation post-processing function. If the integration  developer wants to take control of post-processing the operation.
-# + information - Meta infomation about the operation (no processed, just for information)
+# + information - Meta information about the operation (no processed, just for information)
 public type OperationConfig record {|
     readonly string name;
     readonly boolean active;
+    readonly OperationParamConfig[] parameters?;
     readonly & OperationPreProcessor preProcessor?;
     readonly & OperationPostProcessor postProcessor?;
     readonly Information information?;
