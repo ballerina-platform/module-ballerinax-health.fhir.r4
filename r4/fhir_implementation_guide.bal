@@ -42,7 +42,7 @@ public isolated class FHIRImplementationGuide {
     # Get IG FHIR operation definitions.
     #
     # + return - A map of FHIR operation definitions
-    public isolated function getOperations() returns map<FHIROperationDefinition[]> {
+    public isolated function getOperations() returns map<FHIROperationDefinition[]>? {
         return self.igRecord.operations;
     }
 }
@@ -61,5 +61,5 @@ public type IGInfoRecord record {|
     Terminology terminology;
     readonly & map<Profile> profiles;
     readonly & map<FHIRSearchParameterDefinition[]>[] searchParameters;
-    readonly & map<FHIROperationDefinition[]> operations;
+    readonly & map<FHIROperationDefinition[]> operations?;
 |};

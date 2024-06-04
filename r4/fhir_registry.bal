@@ -137,20 +137,23 @@ public isolated class FHIRRegistry {
 
         lock {
             // Add operations
-            foreach FHIROperationDefinition[] operationsMap in ig.getOperations() {
-                foreach FHIROperationDefinition operation in operationsMap {
-                    string[]? resources = operation.'resource;
-                    if resources is string[] {
-                        foreach string resourceType in resources {
-                            if self.operationsMap.hasKey(resourceType) {
-                                OperationCollection collection = self.operationsMap.get(resourceType);
-                                if !collection.hasKey(operation.name) {
-                                    collection[operation.name] = operation;
+            map<FHIROperationDefinition[]>? igOperationsDefinitionsMap = ig.getOperations();
+            if igOperationsDefinitionsMap != () {
+                foreach FHIROperationDefinition[] operationDefinitions in igOperationsDefinitionsMap {
+                    foreach FHIROperationDefinition operationDefinition in operationDefinitions {
+                        string[]? resources = operationDefinition.'resource;
+                        if resources is string[] {
+                            foreach string resourceType in resources {
+                                if self.operationsMap.hasKey(resourceType) {
+                                    OperationCollection collection = self.operationsMap.get(resourceType);
+                                    if !collection.hasKey(operationDefinition.name) {
+                                        collection[operationDefinition.name] = operationDefinition;
+                                    }
+                                } else {
+                                    OperationCollection collection = {};
+                                    collection[operationDefinition.name] = operationDefinition;
+                                    self.operationsMap[resourceType] = collection;
                                 }
-                            } else {
-                                OperationCollection collection = {};
-                                collection[operation.name] = operation;
-                                self.operationsMap[resourceType] = collection;
                             }
                         }
                     }
