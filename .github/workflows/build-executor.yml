@@ -19,8 +19,9 @@ jobs:
 
       - name: Run ballerina build for staging
         if: inputs.bal_central_environment == 'STAGE'
-        uses: ballerina-platform/ballerina-action@2201.8.6
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
+          version: ${{ vars.BAL_VERSION }}
           args:
             pack
         env:
@@ -31,8 +32,9 @@ jobs:
 
       - name: Run ballerina build for dev
         if: inputs.bal_central_environment == 'DEV'
-        uses: ballerina-platform/ballerina-action@2201.8.6
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
+          version: ${{ vars.BAL_VERSION }}
           args:
             pack
         env:
@@ -43,8 +45,9 @@ jobs:
 
       - name: Run ballerina build for prod
         if: inputs.bal_central_environment == 'PROD'
-        uses: ballerina-platform/ballerina-action@2201.8.6
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
+          version: ${{ vars.BAL_VERSION }}
           args:
             pack
         env:
@@ -53,8 +56,9 @@ jobs:
 
       - name: Push to Staging
         if: inputs.bal_central_environment == 'STAGE'
-        uses: ballerina-platform/ballerina-action@2201.8.6
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
+          version: ${{ vars.BAL_VERSION }}
           args:
              push
         env:
@@ -65,8 +69,9 @@ jobs:
 
       - name: Push to Dev
         if: inputs.bal_central_environment == 'DEV'
-        uses: ballerina-platform/ballerina-action@2201.8.6
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
+          version: ${{ vars.BAL_VERSION }}
           args:
             push
         env:
@@ -77,8 +82,9 @@ jobs:
 
       - name: Push to Prod
         if: inputs.bal_central_environment == 'PROD'
-        uses: ballerina-platform/ballerina-action@2201.8.6
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
+          version: ${{ vars.BAL_VERSION }}
           args:
             push
         env:
@@ -123,8 +129,9 @@ jobs:
 
       - name: Ballerina Build after incrementing version
         if: ${{ inputs.bal_central_environment == 'PROD' }}
-        uses: ballerina-platform/ballerina-action@2201.8.6
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
+          version: ${{ vars.BAL_VERSION }}
           args:
             pack
         env:
