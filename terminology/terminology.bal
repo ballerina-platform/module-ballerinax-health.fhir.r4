@@ -341,8 +341,7 @@ public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]>? sea
                         httpStatusCode = http:STATUS_BAD_REQUEST
                     );
         }
-    }
-    else {
+    } else {
         return r4:createFHIRError(
                     "Cannot find a ValueSet",
                     r4:ERROR,
