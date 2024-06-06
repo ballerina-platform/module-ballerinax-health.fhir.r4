@@ -1,6 +1,8 @@
 Ballerina FHIR R4 Packages
 ==========================
 
+![Daily Build](https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4/actions/workflows/daily-build.yml/badge.svg)
+
 The Ballerina FHIR R4 packages include FHIR R4 data types, FHIR resource types as specified in commonly used Implementation Guides (IGs), parsers and serializers for FHIR resources, FHIR service type as well as miscellaneous utilities for creating, accessing, and manipulating FHIR resources.
 
 **Note:**
