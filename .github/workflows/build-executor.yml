@@ -24,6 +24,7 @@ jobs:
       - name: Run ballerina build for staging
         if: inputs.bal_central_environment == 'STAGE'
         uses: ballerina-platform/setup-ballerina@v1.1.0
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: $BALLERINA_VERSION
           args:
@@ -36,6 +37,7 @@ jobs:
 
       - name: Run ballerina build for dev
         if: inputs.bal_central_environment == 'DEV'
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: $BALLERINA_VERSION
@@ -50,6 +52,7 @@ jobs:
       - name: Run ballerina build for prod
         if: inputs.bal_central_environment == 'PROD'
         uses: ballerina-platform/setup-ballerina@v1.1.0
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: $BALLERINA_VERSION
           args:
@@ -60,6 +63,7 @@ jobs:
 
       - name: Push to Staging
         if: inputs.bal_central_environment == 'STAGE'
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: $BALLERINA_VERSION
@@ -74,6 +78,7 @@ jobs:
       - name: Push to Dev
         if: inputs.bal_central_environment == 'DEV'
         uses: ballerina-platform/setup-ballerina@v1.1.0
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: $BALLERINA_VERSION
           args:
@@ -86,6 +91,7 @@ jobs:
 
       - name: Push to Prod
         if: inputs.bal_central_environment == 'PROD'
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: $BALLERINA_VERSION
@@ -133,6 +139,7 @@ jobs:
 
       - name: Ballerina Build after incrementing version
         if: ${{ inputs.bal_central_environment == 'PROD' }}
+        uses: ballerina-platform/setup-ballerina@v1.1.0
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: $BALLERINA_VERSION

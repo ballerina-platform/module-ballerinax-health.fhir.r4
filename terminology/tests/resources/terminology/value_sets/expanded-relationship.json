@@ -1,36 +1,81 @@
 {
-    "resourceType":"ValueSet",
-    "meta":{
-        "lastUpdated":"2022-05-28T12:47:40.239+10:00",
-        "profile":["http://hl7.org/fhir/StructureDefinition/shareablevalueset"]
+    "resourceType": "ValueSet",
+    "meta": {
+        "lastUpdated": "2022-05-28T12:47:40.239+10:00",
+        "profile": [
+            "http://hl7.org/fhir/StructureDefinition/shareablevalueset"
+        ]
     },
-    "date":"2022-05-28T12:47:40+10:00",
-    "copyright":"This is an example set.",
-    "extension":[{"url":"http://hl7.org/fhir/StructureDefinition/structuredefinition-wg",
-    "valueCode":"fm"}],
-    "description":"This value set includes the Patient to subscriber relationship codes.",
-    "experimental":true,
-    "title":"Relationship",
-    "contact":[{"telecom":[{"system":"url","value":"http://hl7.org/fhir"}]}],
-    "id":"relationship",
-    "text" : {
-        "status" : "generated",
-        "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><ul><li>Include all codes defined in <a href=\"codesystem-relationship.html\"><code>http://hl7.org/fhir/relationship</code></a></li></ul></div>"
-      },
-    "identifier":[{"system":"urn:ietf:rfc:3986","value":"urn:oid:2.16.840.1.113883.4.642.3.35"}],
-    "version":"4.0.1","url":"http://hl7.org/fhir/ValueSet/relationship",
-    "expansion":{
-        "contains":[
-            {"code":"1","display":"Self"},
-            {"code":"2","display":"Spouse"}],
-        "total":5,
-        "offset":0,
-        "timestamp":"2023-06-28T04:17:01.448894Z"
-        },
-    "immutable":true,
-    "compose":{
-        "include":[{"system":"http://hl7.org/fhir/relationship"}]
+    "date": "2022-05-28T12:47:40+10:00",
+    "copyright": "This is an example set.",
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-wg",
+            "valueCode": "fm"
+        }
+    ],
+    "description": "This value set includes the Patient to subscriber relationship codes.",
+    "experimental": true,
+    "title": "Relationship",
+    "contact": [
+        {
+            "telecom": [
+                {
+                    "system": "url",
+                    "value": "http://hl7.org/fhir"
+                }
+            ]
+        }
+    ],
+    "id": "relationship",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><ul><li>Include all codes defined in <a href=\"codesystem-relationship.html\"><code>http://hl7.org/fhir/relationship</code></a></li></ul></div>"
     },
-    "name":"Beneficiary Relationship Codes",
-    "publisher":"FHIR Project team","status":"draft"
+    "identifier": [
+        {
+            "system": "urn:ietf:rfc:3986",
+            "value": "urn:oid:2.16.840.1.113883.4.642.3.35"
+        }
+    ],
+    "version": "4.0.1",
+    "url": "http://hl7.org/fhir/ValueSet/relationship",
+    "expansion": {
+        "contains": [
+            {
+                "code": "1",
+                "display": "Self"
+            },
+            {
+                "code": "2",
+                "display": "Spouse"
+            },
+            {
+                "code": "3",
+                "display": "Child"
+            },
+            {
+                "code": "4",
+                "display": "Common Law Spouse"
+            },
+            {
+                "code": "5",
+                "display": "Other"
+            }
+        ],
+        "total": 5,
+        "offset": 0,
+        "timestamp": "2023-06-28T04:17:01.448894Z"
+    },
+    "immutable": true,
+    "compose": {
+        "include": [
+            {
+                "system": "http://hl7.org/fhir/relationship"
+            }
+        ]
+    },
+    "name": "Beneficiary Relationship Codes",
+    "publisher": "FHIR Project team",
+    "status": "draft"
 }
