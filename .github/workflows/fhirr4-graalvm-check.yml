@@ -3,6 +3,9 @@ name: FHIRR4 GraalVM Check
 on:
   workflow_dispatch:
 
+env:
+  BALLERINA_VERSION: 2201.8.6
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,7 +31,7 @@ jobs:
       - name: Set Up Ballerina
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ vars.BAL_VERSION }}
+          version: $BALLERINA_VERSION
 
       - name: Setup Java and Maven
         uses: actions/setup-java@v2

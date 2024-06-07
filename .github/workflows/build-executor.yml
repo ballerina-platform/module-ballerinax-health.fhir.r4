@@ -9,6 +9,10 @@ on:
       bal_central_environment:
         required: true
         type: string
+
+env:
+  BALLERINA_VERSION: 2201.8.6
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -21,7 +25,7 @@ jobs:
         if: inputs.bal_central_environment == 'STAGE'
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ vars.BAL_VERSION }}
+          version: $BALLERINA_VERSION
           args:
             pack
         env:
@@ -34,7 +38,7 @@ jobs:
         if: inputs.bal_central_environment == 'DEV'
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ vars.BAL_VERSION }}
+          version: $BALLERINA_VERSION
           args:
             pack
         env:
@@ -47,7 +51,7 @@ jobs:
         if: inputs.bal_central_environment == 'PROD'
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ vars.BAL_VERSION }}
+          version: $BALLERINA_VERSION
           args:
             pack
         env:
@@ -58,7 +62,7 @@ jobs:
         if: inputs.bal_central_environment == 'STAGE'
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ vars.BAL_VERSION }}
+          version: $BALLERINA_VERSION
           args:
              push
         env:
@@ -71,7 +75,7 @@ jobs:
         if: inputs.bal_central_environment == 'DEV'
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ vars.BAL_VERSION }}
+          version: $BALLERINA_VERSION
           args:
             push
         env:
@@ -84,7 +88,7 @@ jobs:
         if: inputs.bal_central_environment == 'PROD'
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ vars.BAL_VERSION }}
+          version: $BALLERINA_VERSION
           args:
             push
         env:
@@ -131,7 +135,7 @@ jobs:
         if: ${{ inputs.bal_central_environment == 'PROD' }}
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ vars.BAL_VERSION }}
+          version: $BALLERINA_VERSION
           args:
             pack
         env:
