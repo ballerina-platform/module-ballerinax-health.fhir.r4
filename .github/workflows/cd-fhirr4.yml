@@ -11,6 +11,9 @@ on:
         - DEV
         - PROD
         required: true
+        
+env:
+  BALLERINA_VERSION: 2201.8.6
 
 jobs:
   release:
@@ -29,7 +32,7 @@ jobs:
       - name: Setup latest Ballerina version
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ vars.BAL_VERSION }}
+          version: $BALLERINA_VERSION
       
       - name: Print ballerina version
         run: bal version
