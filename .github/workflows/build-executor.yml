@@ -11,7 +11,7 @@ on:
         type: string
 
 env:
-  BALLERINA_VERSION: 2201.8.6
+  BALLERINA_VERSION: 2201.9.0
 
 jobs:
   release:
