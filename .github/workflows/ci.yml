@@ -90,7 +90,7 @@ jobs:
 
       - name: Ballerina Build
         if: ${{ matrix.path != 'fhirr4' }}
-        uses: ballerina-platform/ballerina-action@2201.8.1
+        uses: ballerina-platform/ballerina-action@2201.9.0
         with:
           args: pack
         env:
@@ -143,7 +143,7 @@ jobs:
 
       - name: Ballerina Test
         if: ${{ matrix.path != 'fhirr4' }}
-        uses: ballerina-platform/ballerina-action@2201.8.1
+        uses: ballerina-platform/ballerina-action@2201.9.0
         with:
           args: test --code-coverage
         env:
