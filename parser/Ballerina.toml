@@ -2,7 +2,7 @@
 org = "ballerinax"
 name = "health.fhir.r4.parser"
 version = "5.0.1"
-distribution = "2201.8.6"
+distribution = "2201.9.0"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Parser"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
