@@ -10,7 +10,6 @@ env:
   R4_PATTERN: '*/*'
   UTILS_PATTERN: 'utils/*/*'
   GITHUB_WORKFLOWS_DIR: '.github'
-  BALLERINA_VERSION: 2201.8.6
 
 jobs:
   setup:
@@ -91,9 +90,8 @@ jobs:
 
       - name: Ballerina Build
         if: ${{ matrix.path != 'fhirr4' }}
-        uses: ballerina-platform/setup-ballerina@v1.1.0
+        uses: ballerina-platform/ballerina-action@2201.8.1
         with:
-          version: $BALLERINA_VERSION
           args: pack
         env:
           WORKING_DIR: ./${{ matrix.path }}
@@ -110,7 +108,7 @@ jobs:
         uses: ballerina-platform/setup-ballerina@v1.1.0
         if: ${{ matrix.path == 'fhirr4' }}
         with:
-          version: $BALLERINA_VERSION
+          version: 2201.8.1
 
       - name: Create settings.xml
         if: ${{ matrix.path == 'fhirr4' }}
@@ -145,9 +143,8 @@ jobs:
 
       - name: Ballerina Test
         if: ${{ matrix.path != 'fhirr4' }}
-        uses: ballerina-platform/setup-ballerina@v1.1.0
+        uses: ballerina-platform/ballerina-action@2201.8.1
         with:
-          version: $BALLERINA_VERSION
           args: test --code-coverage
         env:
           WORKING_DIR: ./${{ matrix.path }}
@@ -164,7 +161,7 @@ jobs:
         uses: ballerina-platform/setup-ballerina@v1.1.0
         if: ${{ matrix.path == 'fhirr4' }}
         with:
-          version: $BALLERINA_VERSION
+          version: 2201.8.1
 
       - name: Create settings.xml
         if: ${{ matrix.path == 'fhirr4' }}
