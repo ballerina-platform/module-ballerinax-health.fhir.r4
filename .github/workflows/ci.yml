@@ -92,7 +92,6 @@ jobs:
       - name: Ballerina Build
         if: ${{ matrix.path != 'fhirr4' }}
         uses: ballerina-platform/setup-ballerina@v1.1.0
-        uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: $BALLERINA_VERSION
           args: pack
@@ -146,7 +145,6 @@ jobs:
 
       - name: Ballerina Test
         if: ${{ matrix.path != 'fhirr4' }}
-        uses: ballerina-platform/setup-ballerina@v1.1.0
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
           version: $BALLERINA_VERSION
