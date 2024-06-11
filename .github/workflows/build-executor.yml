@@ -9,6 +9,8 @@ on:
       bal_central_environment:
         required: true
         type: string
+env:
+  BALLERINA_VERSION: 2201.9.0
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -17,74 +19,66 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set Up Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        with:
+          version: $BALLERINA_VERSION
+
       - name: Run ballerina build for staging
         if: inputs.bal_central_environment == 'STAGE'
-        uses: ballerina-platform/ballerina-action@2201.9.0
-        with:
-          args:
-            pack
-        env:
-          WORKING_DIR: ${{ inputs.working_dir }}
-          JAVA_HOME: /usr/lib/jvm/default-jvm   
+        env:   
           BALLERINA_STAGE_CENTRAL: true
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_STAGE_ACCESS_TOKEN }}
+        run: |
+          pushd "${{ inputs.working_dir }}"
+          bal pack
+          popd
 
       - name: Run ballerina build for dev
         if: inputs.bal_central_environment == 'DEV'
-        uses: ballerina-platform/ballerina-action@2201.9.0
-        with:
-          args:
-            pack
-        env:
-          WORKING_DIR: ${{ inputs.working_dir }}
-          JAVA_HOME: /usr/lib/jvm/default-jvm 
+        env: 
           BALLERINA_DEV_CENTRAL: true
-          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_DEV_ACCESS_TOKEN }} 
+          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_DEV_ACCESS_TOKEN }}
+        run: |
+          pushd "${{ inputs.working_dir }}"
+          bal pack
+          popd
 
       - name: Run ballerina build for prod
         if: inputs.bal_central_environment == 'PROD'
-        uses: ballerina-platform/ballerina-action@2201.9.0
-        with:
-          args:
-            pack
-        env:
-          WORKING_DIR: ${{ inputs.working_dir }}
-          JAVA_HOME: /usr/lib/jvm/default-jvm 
+        run: |
+          pushd "${{ inputs.working_dir }}"
+          bal pack
+          popd
 
       - name: Push to Staging
         if: inputs.bal_central_environment == 'STAGE'
-        uses: ballerina-platform/ballerina-action@2201.9.0
-        with:
-          args:
-             push
         env:
-            WORKING_DIR:  ${{ inputs.working_dir }}
-            JAVA_HOME: /usr/lib/jvm/default-jvm
             BALLERINA_STAGE_CENTRAL: true
             BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_STAGE_ACCESS_TOKEN }}
+        run: |
+          pushd "${{ inputs.working_dir }}"
+          bal push
+          popd
 
       - name: Push to Dev
         if: inputs.bal_central_environment == 'DEV'
-        uses: ballerina-platform/ballerina-action@2201.9.0
-        with:
-          args:
-            push
         env:
-          WORKING_DIR: ${{ inputs.working_dir }}
-          JAVA_HOME: /usr/lib/jvm/default-jvm
           BALLERINA_DEV_CENTRAL: true
-          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_DEV_ACCESS_TOKEN }}     
+          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_DEV_ACCESS_TOKEN }}
+        run: |
+          pushd "${{ inputs.working_dir }}"
+          bal push
+          popd    
 
       - name: Push to Prod
         if: inputs.bal_central_environment == 'PROD'
-        uses: ballerina-platform/ballerina-action@2201.9.0
-        with:
-          args:
-            push
         env:
-          WORKING_DIR: ${{ inputs.working_dir }}
-          JAVA_HOME: /usr/lib/jvm/default-jvm
           BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
+        run: |
+          pushd "${{ inputs.working_dir }}"
+          bal push
+          popd
 
       - name: Publish Release
         if: inputs.bal_central_environment == 'PROD'
@@ -123,13 +117,10 @@ jobs:
 
       - name: Ballerina Build after incrementing version
         if: ${{ inputs.bal_central_environment == 'PROD' }}
-        uses: ballerina-platform/ballerina-action@2201.9.0
-        with:
-          args:
-            pack
-        env:
-          WORKING_DIR: ${{ inputs.working_dir }}
-          JAVA_HOME: /usr/lib/jvm/default-jvm
+        run: |
+          pushd "${{ inputs.working_dir }}"
+          bal pack
+          popd
 
       - name: Commit changes and make a PR
         if: ${{ inputs.bal_central_environment == 'PROD' }}
