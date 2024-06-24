@@ -116,7 +116,7 @@ public const RESOURCE_NAME_HREXCOVERAGE = "Coverage";
             dataType: r4:Reference,
             min: 1,
             max: 1,
-            isArray: false,
+            isArray: true,
             path: "Coverage.payor"
         },
         "id" : {
@@ -173,7 +173,7 @@ public const RESOURCE_NAME_HREXCOVERAGE = "Coverage";
             dataType: HRexCoverageIdentifier,
             min: 0,
             max: 1,
-            isArray: false,
+            isArray: true,
             path: "Coverage.identifier"
         },
         "costToBeneficiary" : {
@@ -282,14 +282,25 @@ public type HRexCoverage record {|
     r4:code language?;
     r4:CodeableConcept 'type?;
     string network?;
-    r4:Reference payor;
+    // The 'payor' field's type was manually corrected.
+    // See issue: https://github.com/wso2-enterprise/open-healthcare/issues/1590
+    @constraint:Array {
+        minLength: 1,
+        maxLength: 1
+    }
+    r4:Reference[] payor;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept relationship?;
     HRexCoverageClass[] 'class?;
     string dependent?;
     r4:positiveInt 'order?;
-    HRexCoverageIdentifier identifier?;
+    // The 'identifier' field's type was manually corrected.
+    // See issue: https://github.com/wso2-enterprise/open-healthcare/issues/1590
+    @constraint:Array {
+        maxLength: 1
+    }
+    HRexCoverageIdentifier[] identifier?;
     HRexCoverageCostToBeneficiary[] costToBeneficiary?;
     r4:Period period?;
     r4:Reference subscriber?;
@@ -827,4 +838,3 @@ public type HRexCoverageClassGroup record {|
     HRexCoverageClassType 'type;
     string value;
 |};
-
