@@ -1,0 +1,14 @@
+name: daily-build-r4
+
+on:
+  schedule:
+    - cron: '00 20 * * *'    # 01:30 in LK time (GMT+5:30)
+  workflow_dispatch:
+
+jobs:
+  build:
+     uses: ./.github/workflows/daily-build-executor.yml
+     secrets: inherit
+     with:
+      working_dir: r4
+          

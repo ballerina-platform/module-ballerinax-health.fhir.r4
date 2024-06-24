@@ -1,0 +1,14 @@
+name: daily-build-terminology
+
+on:
+  schedule:
+    - cron: '05 20 * * *'    # 01:35 in LK time (GMT+5:30)
+  workflow_dispatch:
+
+jobs:
+  build:
+     uses: ./.github/workflows/daily-build-executor.yml
+     secrets: inherit
+     with:
+      working_dir: terminology
+          

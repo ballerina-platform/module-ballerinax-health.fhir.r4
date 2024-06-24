@@ -1,0 +1,14 @@
+name: daily-build-lkcore010
+
+on:
+  schedule:
+    - cron: '50 19 * * *'    # 01:20 in LK time (GMT+5:30)
+  workflow_dispatch:
+
+jobs:
+  build:
+     uses: ./.github/workflows/daily-build-executor.yml
+     secrets: inherit
+     with:
+      working_dir: lkcore010
+         

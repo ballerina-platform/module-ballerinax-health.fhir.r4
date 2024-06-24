@@ -1,0 +1,14 @@
+name: daily-build-uscore501
+
+on:
+  schedule:
+    - cron: '10 20 * * *'    # 01:40 in LK time (GMT+5:30)
+  workflow_dispatch:
+
+jobs:
+  build:
+     uses: ./.github/workflows/daily-build-executor.yml
+     secrets: inherit
+     with:
+      working_dir: uscore501
+         
