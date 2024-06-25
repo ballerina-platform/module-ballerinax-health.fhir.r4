@@ -8,9 +8,4 @@ keywords = ["Healthcare", "FHIR", "R4", "Parser"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
 export = ["health.fhir.r4.parser"]
 
-[[dependency]]
-org = "ballerinax"
-name = "health.fhir.r4.international401"
-version = "2.0.2"
-repository = "local"
 
