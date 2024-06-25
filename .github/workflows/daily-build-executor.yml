@@ -1,0 +1,55 @@
+# This workflow runs daily to build, test, and upload code coverage reports for Ballerina projects (excluding Maven projects) to Codecov.
+
+# Reason for using separate workflows per project/folder: GitHub Actions badges only show the overall status of a workflow. Separate workflows allow for individual build badges, which can be displayed on the ballerina-release-dashboard.
+
+name: daily-build-executor
+
+on:
+  workflow_call:
+    inputs:
+      working_dir:
+        required: true
+        type: string
+
+env:
+  BALLERINA_VERSION: 2201.9.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      JAVA_OPTS: -Xmx4G
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        with:
+          version: $BALLERINA_VERSION
+
+      - name: Ballerina Build and Test
+        run: |
+          pushd "${{ inputs.working_dir }}"
+          bal build 
+          bal test --test-report --code-coverage --coverage-format=xml
+          popd
+
+      - name: Find Coverage Reports
+        run: |
+          FIND_REPORTS=$(find "${{ inputs.working_dir }}" -name 'coverage-report.xml' || true)
+          if [[ $FIND_REPORTS != '' ]]; then
+            echo "REPORTS=${FIND_REPORTS}" >> $GITHUB_ENV
+          else
+            echo "No coverage reports found."
+          fi
+
+      - name: Upload Coverage Reports to Codecov
+        if: ${{env.REPORTS}}
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true # Optional: Specify if the CI build should fail when Codecov fails.
+          flags: ${{ inputs.working_dir }}
+          

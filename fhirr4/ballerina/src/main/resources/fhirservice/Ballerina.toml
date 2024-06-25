@@ -10,21 +10,6 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhi
 [build-options]
 observabilityIncluded = true
 
-[[dependency]]
-org = "ballerinax"
-name = "health.fhir.r4"
-version = "${r4.version}"
-
-[[dependency]]
-org = "ballerinax"
-name = "health.fhir.r4.parser"
-version = "${parser.version}"
-
-[[dependency]]
-org = "ballerinax"
-name = "health.fhir.r4.international401"
-version = "${international401.version}"
-
 [platform.java11]
 graalvmCompatible = true
 

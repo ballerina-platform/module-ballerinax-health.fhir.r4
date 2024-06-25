@@ -1,0 +1,68 @@
+name: daily-build-fhirr4
+
+on:
+  schedule:
+    - cron: '40 19 * * *'    # 01:10 in LK time (GMT+5:30)
+  workflow_dispatch:
+
+env:
+  BALLERINA_VERSION: 2201.9.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      JAVA_OPTS: -Xmx4G
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        with:
+          version: $BALLERINA_VERSION
+          
+      - name: Setup Maven
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Create settings.xml
+        run: echo '<settings>
+              <servers>
+                <server>
+                  <id>ballerina-language-repo</id>
+                  <username>${{ github.actor }}</username>
+                  <password>${{ secrets.GITHUB_TOKEN }}</password>
+                </server>
+              </servers>
+            </settings>' > ~/.m2/settings.xml
+      
+      - name: Run Maven Build
+        run: |
+          mvn clean install -f fhirr4
+
+      - name: Generate Coverage Report
+        run: |
+          cd fhirr4/ballerina/target/classes/fhirservice
+          bal test --test-report --code-coverage --coverage-format=xml
+
+      - name: Find Coverage Reports
+        run: |
+          FIND_REPORTS=$(find "fhirr4" -name 'coverage-report.xml' || true)
+          if [[ $FIND_REPORTS != '' ]]; then
+            echo "REPORTS=${FIND_REPORTS}" >> $GITHUB_ENV
+          else
+            echo "No coverage reports found."
+          fi
+      
+      - name: Upload Coverage Reports to Codecov
+        if: ${{env.REPORTS}}
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true # Optional: Specify if the CI build should fail when Codecov fails.
+          flags: fhirr4
+          
