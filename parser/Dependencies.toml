@@ -321,7 +321,7 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4"
-version = "6.0.1"
+version = "5.0.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
@@ -335,11 +335,14 @@ dependencies = [
 	{org = "ballerina", name = "uuid"},
 	{org = "ballerinax", name = "health.base"}
 ]
+modules = [
+	{org = "ballerinax", packageName = "health.fhir.r4", moduleName = "health.fhir.r4"}
+]
 
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.international401"
-version = "2.0.1"
+version = "2.0.2"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "log"},
@@ -357,6 +360,7 @@ dependencies = [
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "test"},
+	{org = "ballerinax", name = "health.fhir.r4"},
 	{org = "ballerinax", name = "health.fhir.r4.international401"}
 ]
 modules = [
