@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.9.0"
+distribution-version = "2201.8.6"
 
 [[package]]
 org = "ballerina"
@@ -317,8 +317,8 @@ modules = [
 ]
 
 [[package]]
-org = "healthcare"
-name = "davincipas"
+org = "ballerinax"
+name = "health.fhir.r4.davincipas"
 version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
@@ -326,6 +326,6 @@ dependencies = [
 	{org = "ballerinax", name = "health.fhir.r4"}
 ]
 modules = [
-	{org = "healthcare", packageName = "davincipas", moduleName = "davincipas"}
+	{org = "ballerinax", packageName = "health.fhir.r4.davincipas", moduleName = "health.fhir.r4.davincipas"}
 ]
 

@@ -5,4 +5,3 @@ version = "1.0.0"
 distribution = "2201.8.6"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "davincipas"]
-export = ["davincipas"]
