@@ -254,5 +254,6 @@ isolated function getRequestPaths(string path) returns string[] {
     paths = regexp:split(re `/`, rawPath);
     _ = paths.remove(0);
     _ = paths[0] == "" ? paths.remove(0) : [];
+    _ = paths[paths.length()-1] == "" ? paths.remove(paths.length()-1) : [];
     return paths;
 }
