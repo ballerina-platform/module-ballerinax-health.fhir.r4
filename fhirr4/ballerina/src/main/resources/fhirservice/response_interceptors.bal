@@ -1,22 +1,18 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
 // You may obtain a copy of the License at
-
 // http://www.apache.org/licenses/LICENSE-2.0
-
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import ballerina/http;
-import ballerina/log;
 import ballerina/io;
+import ballerina/log;
 import ballerinax/health.fhir.r4;
 
 # Response error interceptor to post-process FHIR responses
@@ -25,6 +21,8 @@ public isolated service class FHIRResponseInterceptor {
 
     final r4:ResourceAPIConfig apiConfig;
     private final readonly & map<r4:SearchParamConfig> searchParamConfigMap;
+    // All the operations that are active in the API config
+    private final readonly & map<r4:OperationConfig> operationConfigMap;
     final readonly & r4:AuditConfig? auditConfig;
     final http:Client|http:ClientError? auditClient;
 
@@ -51,6 +49,15 @@ public isolated service class FHIRResponseInterceptor {
             }
         }
         self.searchParamConfigMap = searchParamConfigs.cloneReadOnly();
+
+        // Active operations in the API config
+        map<r4:OperationConfig> operationConfigs = {};
+        foreach r4:OperationConfig operationConfig in self.apiConfig.operations {
+            if operationConfig.active {
+                operationConfigs[operationConfig.name] = operationConfig;
+            }
+        }
+        self.operationConfigMap = operationConfigs.cloneReadOnly();
     }
 
     remote isolated function interceptResponse(http:RequestContext ctx, http:Response res) returns http:NextService|r4:FHIRError? {
@@ -59,6 +66,7 @@ public isolated service class FHIRResponseInterceptor {
         fhirContext.setDirection(r4:OUT);
 
         check self.postProcessSearchParameters(fhirContext);
+        check self.postProcessOperation(fhirContext);
 
         // set the content type to fhir+json if the response is a json payload
         if res.getJsonPayload() is json {
@@ -128,6 +136,32 @@ public isolated service class FHIRResponseInterceptor {
             }
         }
     }
+
+    # Post-processes a FHIR operation.
+    #
+    # + context - The FHIR context.
+    # + return - A `r4:FHIRError` if an error occurs during post-processing, nil otherwise.
+    isolated function postProcessOperation(r4:FHIRContext context) returns r4:FHIRError? {
+        r4:FHIRInteraction interaction = context.getInteraction();
+        if interaction is r4:FHIROperationInteraction {
+            string operation = interaction.operation;
+            if self.operationConfigMap.hasKey(operation) {
+                r4:OperationConfig & readonly operationConfig = self.operationConfigMap.get(operation);
+                r4:OperationPostProcessor? postProcessor = operationConfig.postProcessor;
+                if postProcessor != () {
+                    r4:FHIROperationDefinition? operationDefinition =
+                            r4:fhirRegistry.getResourceOperationByName(self.apiConfig.resourceType, operation);
+                    // Could be a base operation overridden in the API config
+                    if operationDefinition == () && r4:BASE_RESOURCE_OPERATIONS.hasKey(operation) {
+                        operationDefinition = r4:BASE_RESOURCE_OPERATIONS.get(operation);
+                    }
+                    if operationDefinition != () {
+                        check postProcessor(operationDefinition, context);
+                    }
+                }
+            }
+        }
+    }
 }
 
 # Response error interceptor to handle errors thrown by fhir preproccessors
@@ -135,7 +169,7 @@ public isolated service class FHIRResponseErrorInterceptor {
     *http:ResponseErrorInterceptor;
 
     isolated remote function interceptResponseError(error err) returns http:NotFound|http:BadRequest|http:UnsupportedMediaType
-                                    |http:NotAcceptable|http:Unauthorized|http:NotImplemented|http:InternalServerError {
+            |http:NotAcceptable|http:Unauthorized|http:NotImplemented|http:MethodNotAllowed|http:InternalServerError {
         log:printDebug("Execute: FHIR Response Error Interceptor");
         if err is r4:FHIRError {
             match err.detail().httpStatusCode {
@@ -180,6 +214,13 @@ public isolated service class FHIRResponseErrorInterceptor {
                         mediaType: r4:FHIR_MIME_TYPE_JSON
                     };
                     return notImplemented;
+                }
+                http:STATUS_METHOD_NOT_ALLOWED => {
+                    http:MethodNotAllowed methodNotAllowed = {
+                        body: r4:handleErrorResponse(err),
+                        mediaType: r4:FHIR_MIME_TYPE_JSON
+                    };
+                    return methodNotAllowed;
                 }
                 _ => {
                     http:InternalServerError internalServerError = {

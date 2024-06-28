@@ -1,22 +1,18 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
 // You may obtain a copy of the License at
-
 // http://www.apache.org/licenses/LICENSE-2.0
-
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import ballerinax/health.fhir.r4.international401;
-import ballerinax/health.fhir.r4;
 import ballerina/http;
+import ballerinax/health.fhir.r4;
 
 type ServiceTestError distinct error;
 
@@ -257,5 +253,83 @@ Service fhirServiceNoPagination = service object {
             }
         ];
         return r4:createFhirBundle(r4:BUNDLE_TYPE_SEARCHSET, patients);
+    }
+};
+
+// This service is used to test FHIR extended operations
+Service fhirOperationsService = service object {
+    resource function get fhir/r4/ConceptMap/\$translate(r4:FHIRContext fhirCtx)
+            returns international401:Parameters|ServiceTestError {
+        r4:FHIRInteraction interaction = fhirCtx.getInteraction();
+        if interaction is r4:FHIROperationInteraction {
+            return {};
+        } else {
+            return error("Incorrect interaction engaged!");
+        }
+    }
+
+    resource function post fhir/r4/ConceptMap/\$translate(r4:FHIRContext fhirCtx,
+            international401:Parameters parameters) returns international401:Parameters|ServiceTestError {
+        r4:FHIRInteraction interaction = fhirCtx.getInteraction();
+        if interaction is r4:FHIROperationInteraction {
+            return {};
+        } else {
+            return error("Incorrect interaction engaged!");
+        }
+    }
+
+    resource function get fhir/r4/ConceptMap/[string id]/\$translate(r4:FHIRContext fhirCtx,
+            international401:Parameters parameters) returns international401:Parameters|ServiceTestError {
+        r4:FHIRInteraction interaction = fhirCtx.getInteraction();
+        if interaction is r4:FHIROperationInteraction {
+            return {};
+        } else {
+            return error("Incorrect interaction engaged!");
+        }
+    }
+
+    // Base operation resource function
+    resource function get fhir/r4/ConceptMap/\$meta(r4:FHIRContext fhirCtx)
+            returns r4:Meta|ServiceTestError {
+        r4:FHIRInteraction interaction = fhirCtx.getInteraction();
+        if interaction is r4:FHIROperationInteraction {
+            return {};
+        } else {
+            return error("Incorrect interaction engaged!");
+        }
+    }
+
+    resource function get fhir/r4/\$closure(r4:FHIRContext fhirCtx)
+            returns international401:ConceptMap|ServiceTestError {
+        r4:FHIRInteraction interaction = fhirCtx.getInteraction();
+        if interaction is r4:FHIROperationInteraction {
+            return {status: "active"};
+        } else {
+            return error("Incorrect interaction engaged!");
+        }
+    }
+
+    // Invalid operation resource function for testing.
+    // 'ConceptMap' resource does not have a '$find-matches' operation.
+    resource function get fhir/r4/ConceptMap/\$find\-matches(r4:FHIRContext fhirCtx)
+            returns international401:Parameters|ServiceTestError {
+        r4:FHIRInteraction interaction = fhirCtx.getInteraction();
+        if interaction is r4:FHIROperationInteraction {
+            return {};
+        } else {
+            return error("Incorrect interaction engaged!");
+        }
+    }
+
+    // Invalid operation resource function for testing. 
+    // '$translate' operation does not support system scope.
+    resource function get fhir/r4/\$translate(r4:FHIRContext fhirCtx)
+            returns international401:Parameters|ServiceTestError {
+        r4:FHIRInteraction interaction = fhirCtx.getInteraction();
+        if interaction is r4:FHIROperationInteraction {
+            return {};
+        } else {
+            return error("Incorrect interaction engaged!");
+        }
     }
 };
