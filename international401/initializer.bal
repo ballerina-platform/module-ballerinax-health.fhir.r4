@@ -933,7 +933,8 @@ function init() returns r4:FHIRError? {
                 modelType: Location
             }
         },
-        searchParameters: [INTERNATIONAL_IG_SEARCH_PARAMS_1, INTERNATIONAL_IG_SEARCH_PARAMS_2, INTERNATIONAL_IG_SEARCH_PARAMS_3, INTERNATIONAL_IG_SEARCH_PARAMS_4, INTERNATIONAL_IG_SEARCH_PARAMS_5]
+        searchParameters: [INTERNATIONAL_IG_SEARCH_PARAMS_1, INTERNATIONAL_IG_SEARCH_PARAMS_2, INTERNATIONAL_IG_SEARCH_PARAMS_3, INTERNATIONAL_IG_SEARCH_PARAMS_4, INTERNATIONAL_IG_SEARCH_PARAMS_5],
+        operations: INTERNATIONAL_IG_OPERATIONS.cloneReadOnly()
     };
     r4:FHIRImplementationGuide baseImplementationGuide = new(baseIgRecord);
     check fhirRegistry.addImplementationGuide(baseImplementationGuide);
