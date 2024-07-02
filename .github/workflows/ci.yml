@@ -10,7 +10,7 @@ env:
   R4_PATTERN: '*/*'
   UTILS_PATTERN: 'utils/*/*'
   GITHUB_WORKFLOWS_DIR: '.github'
-  BALLERINA_VERSION: 2201.9.0
+  BALLERINA_VERSION: 2201.8.6
 
 jobs:
   setup:
