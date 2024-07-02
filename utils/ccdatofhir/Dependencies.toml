@@ -354,7 +354,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.ccdatofhir"
-version = "2.0.4"
+version = "2.0.5"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "log"},
