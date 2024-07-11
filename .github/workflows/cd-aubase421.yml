@@ -1,4 +1,4 @@
-name: cd-aubase410
+name: cd-aubase421
 
 on:
   workflow_dispatch:
@@ -17,5 +17,5 @@ jobs:
      uses: ./.github/workflows/build-executor.yml
      secrets: inherit
      with:
-      working_dir: ./au/aubase410
+      working_dir: ./au/aubase421
       bal_central_environment: ${{ inputs.bal_central_environment }}
