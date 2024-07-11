@@ -10,5 +10,5 @@ jobs:
      uses: ./.github/workflows/daily-build-executor.yml
      secrets: inherit
      with:
-      working_dir: aubase410
+      working_dir: au/aubase410
       

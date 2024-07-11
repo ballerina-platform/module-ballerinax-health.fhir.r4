@@ -25,7 +25,7 @@ The Ballerina FHIR R4 packages include FHIR R4 data types, FHIR resource types a
 For more information, go to the module(s).
 - [health.fhir.r4](base/Module.md)
 - [health.fhir.r4.uscore](uscore501/Module.md)
-- [health.fhir.r4.aubase](aubase410/Module.md)
+- [health.fhir.r4.aubase](au/aubase410/Module.md)
 - [health.fhirr4](fhirr4/ballerina/src/main/resources/fhirservice/Package.md)
 
 ## Building from the source
