@@ -5,10 +5,9 @@ version = "1.0.0"
 distribution = "2201.8.6"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "aucore040"]
-export = ["aucore040"]
+export = ["health.fhir.r4.aucore040"]
 
 [[dependency]]
 org = "ballerinax"
 name = "health.fhir.r4.aubase421"
 version = "1.0.0"
-

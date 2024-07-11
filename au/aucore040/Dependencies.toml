@@ -22,7 +22,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "cache"
-version = "3.8.0"
+version = "3.7.1"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "jballerina.java"},
@@ -317,8 +317,8 @@ modules = [
 ]
 
 [[package]]
-org = "healthcare"
-name = "aubase421"
+org = "ballerinax"
+name = "health.fhir.r4.aubase421"
 version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
@@ -326,20 +326,20 @@ dependencies = [
 	{org = "ballerinax", name = "health.fhir.r4"}
 ]
 modules = [
-	{org = "healthcare", packageName = "aubase421", moduleName = "aubase421"}
+	{org = "ballerinax", packageName = "health.fhir.r4.aubase421", moduleName = "health.fhir.r4.aubase421"}
 ]
 
 [[package]]
-org = "healthcare"
-name = "aucore040"
+org = "ballerinax"
+name = "health.fhir.r4.aucore040"
 version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerinax", name = "health.fhir.r4"},
-	{org = "healthcare", name = "aubase421"}
+	{org = "ballerinax", name = "health.fhir.r4.aubase421"}
 ]
 modules = [
-	{org = "healthcare", packageName = "aucore040", moduleName = "aucore040"}
+	{org = "ballerinax", packageName = "health.fhir.r4.aucore040", moduleName = "health.fhir.r4.aucore040"}
 ]
 

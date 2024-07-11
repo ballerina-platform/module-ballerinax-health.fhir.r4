@@ -19,7 +19,7 @@
 
 import ballerina/constraint;
 import ballerinax/health.fhir.r4;
-import healthcare/aubase421;
+import ballerinax/health.fhir.r4.aubase421;
 
 public const string PROFILE_BASE_AUCOREPRACTITIONER = "http://hl7.org.au/fhir/core/StructureDefinition/au-core-practitioner";
 public const RESOURCE_NAME_AUCOREPRACTITIONER = "Practitioner";
