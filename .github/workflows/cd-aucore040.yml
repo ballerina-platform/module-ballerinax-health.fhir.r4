@@ -1,4 +1,4 @@
-name: cd-aubase410
+name: cd-aucore040
 
 on:
   workflow_dispatch:
