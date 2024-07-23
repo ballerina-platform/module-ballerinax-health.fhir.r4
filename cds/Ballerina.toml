@@ -1,0 +1,9 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.cds"
+version = "0.0.1"
+distribution = "2201.8.6"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "CDS", "CRD"]
+repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+export = ["health.fhir.cds"]
