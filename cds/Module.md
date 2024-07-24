@@ -6,13 +6,14 @@ This section focuses on samples depicting how to use this package to implement C
 
 ### Prerequisites
 
-1. Install Ballerina 2201.6.0 or later
+1. Install [Ballerina](https://ballerina.io/downloads/) 2201.8.2 or later
 
 ### 1. Validate the context data of CDS request
 
 Sample below is using the CDS request resource in `health.fhir.r4.cds` package.
 
 ```ballerina
+import ballerina/log;
 import ballerinax/health.fhir.cds;
 
 public function main() returns error? {
@@ -55,7 +56,14 @@ public function main() returns error? {
 
     cds:CdsService cdsService = check cdsServiceJson.cloneWithType();
     cds:CdsRequest cdsRequest = check cdsRequestPayload.cloneWithType();
-    _ = check cds:validateContext(cdsRequest, cdsService);
+    cds:CdsError? validationResult = cds:validateContext(cdsRequest, cdsService);
+    if validationResult is cds:CdsError {
+        log:printError(string `Error message: ${validationResult.message()}`);
+        log:printError(string `Error description: ${validationResult.detail().description ?: ""}`);
+        log:printError(string `Status code: ${validationResult.detail().code}`);
+    }else {
+        log:printInfo("Context validation is successful!");
+    }
 }
 ```
 
@@ -105,7 +113,14 @@ public function main() returns error? {
 
     cds:CdsService cdsService = check cdsServiceJson.cloneWithType();
     cds:CdsRequest cdsRequest = check payload.cloneWithType();
-    cds:CdsRequest result = check cds:validateAndProcessPrefetch(cdsRequest, cdsService);
-    log:printInfo(result.toJsonString());
+    cds:CdsRequest|cds:CdsError result = cds:validateAndProcessPrefetch(cdsRequest, cdsService);
+
+    if (result is cds:CdsError) {
+        log:printError(string `Error message: ${result.message()}`);
+        log:printError(string `Error description: ${result.detail().description ?: ""}`);
+        log:printError(string `Status code: ${result.detail().code}`);
+    } else {
+        log:printInfo(string `Validated CDS request: ${result.toJsonString()}`);
+    }
 }
 ```
