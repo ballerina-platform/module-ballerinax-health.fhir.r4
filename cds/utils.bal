@@ -62,12 +62,15 @@ public isolated function validateContext(CdsRequest cdsRequest, CdsService cdsSe
         ENCOUNTER_DISCHARGE => {
             parsedOutput = context.cloneWithType(EncounterDischargeContext);
         }
+
+        _ => {
+            return <CdsError>parsedOutput;
+        }
     }
 
     if ((parsedOutput is error)) {
         return createCdsError(errorMessage, 400, description = description);
     }
-
     return;
 }
 
