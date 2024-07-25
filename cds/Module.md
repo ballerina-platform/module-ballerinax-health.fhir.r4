@@ -61,7 +61,7 @@ public function main() returns error? {
         log:printError(string `Error message: ${validationResult.message()}`);
         log:printError(string `Error description: ${validationResult.detail().description ?: ""}`);
         log:printError(string `Status code: ${validationResult.detail().code}`);
-    }else {
+    } else {
         log:printInfo("Context validation is successful!");
     }
 }
