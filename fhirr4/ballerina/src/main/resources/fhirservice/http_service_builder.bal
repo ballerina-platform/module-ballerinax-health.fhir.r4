@@ -17,6 +17,7 @@
 import ballerina/http;
 import ballerina/lang.regexp;
 import ballerinax/health.fhir.r4;
+import ballerina/log;
 
 // Construct an http service for a fhir service.
 isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, string[] & readonly servicePath) returns http:Service {
@@ -32,6 +33,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
         isolated resource function get [string... path](http:Request req, http:RequestContext ctx) returns any|error {
 
             string[] paths = getRequestPaths(req.rawPath);
+            log:printDebug(string`Request paths:  ${paths.toString()}`);
             Service fhirService = self.holder.getFhirServiceFromHolder();
             handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_GET);
             if resourceMethod is handle {
@@ -39,9 +41,11 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                 any|error executeResourceResult = ();
                 r4:FHIRContext fhirContext;
                 if hasPathParam {
+                    log:printDebug("Request context has path parameter.");
                     // can be any of read, vread, instance history
                     if (paths.length() >= 1 && paths[paths.length() - 1] == HISTORY) {
                         // instance history
+                        log:printDebug("Start processing instance history interaction.");
                         string fhirResource = apiConfig.resourceType;
                         string id = paths[paths.length() - 2];
                         r4:FHIRError? processIHistory = self.preprocessor.processInstanceHistory(fhirResource, id, req, ctx);
@@ -53,8 +57,10 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         if executeResourceResult is r4:Bundle {
                             executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
                         }
+                        log:printDebug("End processing instance history interaction.");
                     } else if (paths.length() >= 2 && paths[paths.length() - 2] == HISTORY) {
                         // vread
+                        log:printDebug("Start processing vread interaction.");
                         string fhirResource = apiConfig.resourceType;
                         string id = paths[paths.length() - 3];
                         string vid = paths[paths.length() - 1];
@@ -64,8 +70,10 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithIDAndVID(id, vid, fhirContext, fhirService, resourceMethod);
+                        log:printDebug("End processing vread interaction.");
                     } else {
                         // read
+                        log:printDebug("Start processing read interaction.");
                         string fhirResource = apiConfig.resourceType;
                         string id = paths[paths.length() - 1];
                         r4:FHIRError? processRead = self.preprocessor.processRead(fhirResource, id, req, ctx);
@@ -74,11 +82,13 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithID(id, fhirContext, fhirService, resourceMethod);
+                        log:printDebug("End processing read interaction.");
                     }
                 } else {
                     // can be any of search, type history, system history, metadata
                     if (paths.length() >= 1 && paths[paths.length() - 1] == HISTORY) {
                         // system history or type history
+                        log:printDebug("Start processing system/type history interaction.");
                         r4:FHIRError? processHistory = self.preprocessor.processHistory(req, ctx);
                         if processHistory is r4:FHIRError {
                             return processHistory;
@@ -88,16 +98,20 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         if executeResourceResult is r4:Bundle {
                             executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
                         }
+                        log:printDebug("End processing system/type history interaction.");
                     } else if (paths.length() >= 1 && paths[paths.length() - 1] == METADATA) {
                         // metadata
+                        log:printDebug("Start processing metadata interaction.");
                         r4:FHIRError? processCapability = self.preprocessor.processCapability(req, ctx);
                         if processCapability is r4:FHIRError {
                             return processCapability;
                         }
                         fhirContext = check r4:getFHIRContext(ctx);
                         executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
+                        log:printDebug("End processing metadata interaction.");
                     } else {
                         // search
+                        log:printDebug("Start processing search interaction.");
                         string fhirResource = apiConfig.resourceType;
                         r4:FHIRError? processSearch = self.preprocessor.processSearch(fhirResource, req, ctx);
                         if processSearch is r4:FHIRError {
@@ -108,6 +122,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         if executeResourceResult is r4:Bundle {
                             executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
                         }
+                        log:printDebug("End processing search interaction.");
                     }
                 }
                 if (executeResourceResult is error) {

@@ -34,10 +34,15 @@ import io.ballerina.runtime.api.values.BString;
 import static io.ballerinax.fhirr4.ModuleUtils.getModule;
 import static io.ballerinax.fhirr4.Utils.isPathsMatching;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * Class responsible for mapping a FHIR service to its underlying HTTP service
  */
 public class HTTPToFHIRAdaptor {
+
+    private static final String MODULE_NAME = "ballerinax/health.fhirr4";
 
     public static final String PATH_PARAM_IDENTIFIER = "^";
     // Special escape character used to escape the special characters in the path parameter
@@ -197,13 +202,33 @@ public class HTTPToFHIRAdaptor {
         return false;
     }
     
-    private static ResourceMethodType getResourceMethod(ServiceType serviceType, String[] servicePath, String[] path, String accessor) {
+    private static ResourceMethodType getResourceMethod(ServiceType serviceType, String[] servicePath, String[] path, String accessor) {        
+        String isDebugEnabled = System.getenv("BAL_FHIR_SERVICE_DEBUG_ENABLED");
+        if (isDebugEnabled != null && isDebugEnabled.equals("true")) {
+            logDebug("Entering getResourceMethod with accessor: " + accessor +
+                 ", servicePath: " + String.join("/", servicePath) +
+                 ", path: " + String.join("/", path));
+        }
         for (ResourceMethodType resourceMethod : serviceType.getResourceMethods()) {
             if (accessor.equalsIgnoreCase(resourceMethod.getAccessor()) && isPathsMatching(resourceMethod.getResourcePath(), servicePath, path)) {
+                if (isDebugEnabled != null && isDebugEnabled.equals("true")) {
+                    logDebug("Matched resource method: " + resourceMethod.getAccessor() +
+                         " with path: " + String.join("/", resourceMethod.getResourcePath()));
+                }
                 return resourceMethod;
             }
         }
         return null;
+    }
+
+    private static String getCurrentTimestamp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        return OffsetDateTime.now().format(formatter);
+    }
+
+    private static void logDebug(String message) {
+        System.err.println("time=" + getCurrentTimestamp() + " level=DEBUG" + 
+                           " module=" + MODULE_NAME + " message=\"" + message + "\"");
     }
 
 }
