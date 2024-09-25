@@ -224,13 +224,26 @@ public type Card record {|
     }
     string summary;
     string detail?;
-    string indicator;
+    Indicator indicator;
     Source 'source;
     Suggestion[] suggestions?;
-    string selectionBehavior?;
+    SelectionBehavior selectionBehavior?;
     r4:Coding[] overrideReason?;
     Link[] links?;
 |};
+
+# Urgency/importance of what this card conveys.
+public enum Indicator {
+    INFO = "info",
+    WARNING = "warning",
+    CRITICAL = "critical"
+};
+
+# Describes the intended selection behavior of the suggestions in the card.
+public enum SelectionBehavior {
+    AT_MOST_ONE = "at-most-one",
+    ANY = "any"
+};
 
 # Grouping structure for the Source of the information displayed on this card. 
 # The source should be the primary source of guidance for the decision support the card represents.
@@ -325,11 +338,16 @@ public type Feedbacks record {|
 # + outcomeTimestamp - ISO8601 representation of the date and time in Coordinated Universal Time (UTC) when action was taken on the card, as profiled in section 5.6 of RFC3339. e.g. 1985-04-12T23:20:50.52Z
 public type Feedback record {|
     string card;
-    string outcome;
+    FeedbackOutcome outcome;
     AcceptedSuggestion[] acceptedSuggestions?;
     OverrideReason overrideReason?;
     r4:dateTime outcomeTimestamp;
 |};
+
+public enum FeedbackOutcome {
+    ACCEPTED = "accepted",
+    OVERRIDDEN = "overridden"
+}
 
 # The CDS Client can inform the service when one or more suggestions were accepted by POSTing a simple JSON object.
 # https://cds-hooks.hl7.org/2.0/#suggestion-accepted
