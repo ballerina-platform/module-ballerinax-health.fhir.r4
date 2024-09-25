@@ -25,3 +25,10 @@ replay_pid*
 
 # Ballerina
 target/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
