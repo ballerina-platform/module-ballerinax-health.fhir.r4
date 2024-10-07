@@ -54,13 +54,17 @@ public type ResourceAPIConfigType record {|
 # Search parameter configuration.
 #
 # + name - Name of the search parameter  
-# + active - Is this search parameter is activated or deactivated  
+# + active - Is this search parameter is activated or deactivated
+# + type - Type of the search parameter
+# + expression - Expression to be used to evaluate the search parameter  
 # + preProcessor - Override this search parameter pre-processing function. If the integration  developer wants to take control of pre-processing the search parameter.  
 # + postProcessor - Override this search parameter post-processing function. If the integration  developer wants to take control of post-processing the search parameter
 # + information - Meta infomation about the search parameter (no processed, just for information)
 public type SearchParamConfig record {|
     readonly string name;
     readonly boolean active;
+    FHIRSearchParameterType 'type?;
+    string expression?;
     readonly & SearchParameterPreProcessor preProcessor?;
     readonly & SearchParameterPostProcessor postProcessor?;
     readonly Information information?;

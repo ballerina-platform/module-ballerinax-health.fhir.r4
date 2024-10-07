@@ -268,6 +268,21 @@ public isolated class FHIRRegistry {
             return self.resourceTypeProfiles.hasKey(resourceType);
         }
     }
+
+    # Add a custom search parameter to the registry
+    # 
+    # + resourceType - The resource type
+    # + searchParameter - The search parameter to be added
+    public isolated function addSearchParameter(string resourceType, FHIRSearchParameterDefinition searchParameter) {
+        lock {
+            if self.searchParameterMap.hasKey(resourceType) {
+                SearchParamCollection collection = self.searchParameterMap.get(resourceType);
+                if !collection.hasKey(searchParameter.name) {
+                    collection[searchParameter.name] = searchParameter.clone();
+                }
+            } 
+        }
+    }
 }
 
 # Search parameter map (key: parameter name)
