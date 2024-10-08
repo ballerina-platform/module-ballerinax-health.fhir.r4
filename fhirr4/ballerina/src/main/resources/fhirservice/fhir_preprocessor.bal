@@ -57,6 +57,16 @@ public isolated class FHIRPreprocessor {
         // process resource specific seach parameters
         foreach r4:SearchParamConfig item in self.apiConfig.searchParameters {
             searchParamConfigs[item.name] = item;
+            r4:FHIRSearchParameterDefinition? searchParamDef = r4:fhirRegistry.getResourceSearchParameterByName(self.apiConfig.resourceType, item.name);
+            if searchParamDef is () {
+                r4:FHIRSearchParameterDefinition customSearchParamDef = {
+                    name: item.name,
+                    'type: (item.'type != () ? <r4:FHIRSearchParameterType>item.'type : r4:STRING),
+                    expression: item.expression,
+                    base: []
+                };
+                r4:fhirRegistry.addSearchParameter(self.apiConfig.resourceType, customSearchParamDef);
+            }
         }
         self.searchParamConfigMap = searchParamConfigs.cloneReadOnly();
 
