@@ -210,11 +210,11 @@ public class HTTPToFHIRAdaptor {
                  ", path: " + String.join("/", path));
         }
         for (ResourceMethodType resourceMethod : serviceType.getResourceMethods()) {
+            if (isDebugEnabled != null && isDebugEnabled.equals("true")) {
+                logDebug("Resource method accessor: " + resourceMethod.getAccessor() +
+                     " with resource path: " + String.join("/", resourceMethod.getResourcePath()) + ", and request path: " + String.join("/",path));
+            }
             if (accessor.equalsIgnoreCase(resourceMethod.getAccessor()) && isPathsMatching(resourceMethod.getResourcePath(), servicePath, path)) {
-                if (isDebugEnabled != null && isDebugEnabled.equals("true")) {
-                    logDebug("Matched resource method: " + resourceMethod.getAccessor() +
-                         " with path: " + String.join("/", resourceMethod.getResourcePath()));
-                }
                 return resourceMethod;
             }
         }
