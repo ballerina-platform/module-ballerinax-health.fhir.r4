@@ -1,0 +1,21 @@
+name: cd-davincipas
+
+on:
+  workflow_dispatch:
+    inputs:
+      bal_central_environment:
+        description: Ballerina Central Environment
+        type: choice
+        options:
+        - STAGE
+        - DEV
+        - PROD
+        required: true
+
+jobs:
+  build:
+     uses: ./.github/workflows/build-executor.yml
+     secrets: inherit
+     with:
+      working_dir: ./davincipas
+      bal_central_environment: ${{ inputs.bal_central_environment }}
