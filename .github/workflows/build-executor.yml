@@ -9,16 +9,8 @@ on:
       bal_central_environment:
         required: true
         type: string
-      ballerina_version:
-        description: Ballerina Version
-        type: choice
-        options:
-        - 2201.9.0
-        - 2201.8.5
-        - 2201.10.2
-        required: true
 env:
-  # BALLERINA_VERSION: 2201.8.6
+   BALLERINA_VERSION: 2201.10.2
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -30,7 +22,7 @@ jobs:
       - name: Set Up Ballerina
         uses: ballerina-platform/setup-ballerina@v1.1.0
         with:
-          version: ${{ inputs.ballerina_version }}
+          version: $BALLERINA_VERSION
 
       - name: Run ballerina build for staging
         if: inputs.bal_central_environment == 'STAGE'
