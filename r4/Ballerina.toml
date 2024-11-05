@@ -1,8 +1,8 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4"
-version = "5.1.2"
-distribution = "2201.8.6"
+version = "5.2.0"
+distribution = "2201.10.2"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
