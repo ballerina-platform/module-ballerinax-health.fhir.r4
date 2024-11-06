@@ -1,11 +1,12 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4.validator"
-version = "4.2.3"
-distribution = "2201.8.6"
+version = "4.3.0"
+distribution = "2201.10.2"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Validator"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
 export = ["health.fhir.r4.validator"]
+
 
 
