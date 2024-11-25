@@ -941,6 +941,41 @@ json TEST_FHIR_RESOURCE_JSON_INVALID_PATIENT_02 = {
     "birthDate": "jdlksjldjl"
 };
 
+json TEST_FHIR_RESOURCE_JSON_INVALID_PATIENT_03 = {
+    "resourceType": "Patient",
+    "id": "example-patient",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">John Doe</div>"
+    },
+    "identifier": [],
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "valueCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/v3/Race",
+                        "code": "2106-3",
+                        "display": "White"
+                    }
+                ]
+            }
+        }
+    ],
+    "name": [
+        {
+            "use": "official",
+            "family": "Doe",
+            "given": [
+                "John"
+            ]
+        }
+    ],
+    "gender": "male",
+    "birthDate": "2000-01-01"
+};
+
 json TEST_FHIR_RESOURCE_JSON_VALID_PATIENT_01 = {
     "resourceType": "Patient",
     "id": "example-patient",

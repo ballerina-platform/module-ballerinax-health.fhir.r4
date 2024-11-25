@@ -110,9 +110,9 @@ public function main() {
 
 *Note:* `parse` function returns `anydata` type when success, and it needs to be cast to the relevant FHIR Resource type.
 
-**03. Parse and validation with a valide FHIR data**
+**03. Parse and validation with valid FHIR data**
 
-In this approach the parser will attempt to parse and apply to the validation the given FHIR resource payload to given resource type profile.
+In this approach, the parser will attempt to parse the given FHIR resource payload and apply validation against the specified resource type profile.
 
 ```ballerina
 import ballerina/log;
@@ -167,11 +167,11 @@ public function main() {
 }
 ```
 
-*Note:* `parseWithValidation` function returns `anydata` type when success, and it needs to be cast to the relevant FHIR Resource type. It will return validation error if it is fails.
+*Note:* `parseWithValidation` function returns `anydata` type when successful, and it needs to be cast to the relevant FHIR Resource type. It will return a validation error if it fails.
 
 **04. Parse and validation with invalid FHIR data**
 
-In this approach the parser will attempt to parse and apply to the validation the given FHIR resource payload to given resource type profile.
+In this approach, the parser will attempt to parse the given FHIR resource payload and apply validation against the specified resource type profile.
 
 ```ballerina
 import ballerina/log;
@@ -216,4 +216,4 @@ public function main() returns error? {
 }
 ```
 
-*Note:* `parseWithValidation` function returns `anydata` type when success, and it needs to be cast to the relevant FHIR Resource type. It will return validation error if it is fails.
+*Note:* `parseWithValidation` function returns `anydata` type when successful, and it needs to be cast to the relevant FHIR Resource type. It will return a validation error if it fails.

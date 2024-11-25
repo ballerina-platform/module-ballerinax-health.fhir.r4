@@ -14,6 +14,7 @@ import ballerina/log;
 import ballerina/test;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.uscore501;
 
 // Test functions
 @test:Config {}
@@ -279,6 +280,22 @@ function parseWithValidationFailureTest() returns r4:FHIRParseError|r4:FHIRValid
         string? diagnostic = errorDetail.issues[0].diagnostic;
         if diagnostic is string {
             test:assertEquals(diagnostic, "Validation failed for '$.birthDate:pattern' constraint(s).");
+        }
+    } else {
+        test:assertFail("Expect to fail since the FHIR server is not capable of understanding the given FHIR resource.");
+    }
+}
+
+@test:Config {}
+function parseWithValidationFailureTest2() returns r4:FHIRParseError|r4:FHIRValidationError? {
+    anydata|r4:FHIRValidationError|r4:FHIRParseError patient = parseWithValidation(TEST_FHIR_RESOURCE_JSON_INVALID_PATIENT_03, uscore501:USCorePatientProfile);
+    if patient is r4:FHIRValidationError {
+        test:assertEquals(patient.message(), "FHIR resource validation failed");
+        r4:FHIRErrorDetail & readonly errorDetail = patient.detail();
+
+        string? diagnostic = errorDetail.issues[0].diagnostic;
+        if diagnostic is string {
+            test:assertEquals(diagnostic, "Validation failed for '$.identifier:minLength' constraint(s).");
         }
     } else {
         test:assertFail("Expect to fail since the FHIR server is not capable of understanding the given FHIR resource.");

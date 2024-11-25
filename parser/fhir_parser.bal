@@ -38,7 +38,7 @@ public isolated function validateAndParse(json|xml payload, r4:ResourceAPIConfig
 public isolated function parseWithValidation(json|xml|string payload, typedesc<anydata>? targetFHIRModelType = (), string? targetProfile = ())
                                                             returns anydata|r4:FHIRValidationError|r4:FHIRParseError {
     anydata parseResult = check parse(payload, targetFHIRModelType, targetProfile);
-    check validate(parseResult, targetFHIRModelType);
+    check validate(parseResult);
     return parseResult;
 }
 

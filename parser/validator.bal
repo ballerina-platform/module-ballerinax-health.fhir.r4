@@ -40,7 +40,7 @@ public type FHIRValidationIssueDetail record {
 # + httpStatusCode - (optional) [default: 500] HTTP status code to return to the client
 # + return - Return Value Description
 # + parsedErrors - (optional) usefriendly error messages parsed from original error message
-isolated function createValidationError(string message, r4:Severity errServerity, r4:IssueType code,
+public isolated function createValidationError(string message, r4:Severity errServerity, r4:IssueType code,
         string? diagnostic = (), string[]? expression = (), error? cause = (),
         r4:FHIRErrorTypes? errorType = (), string[]? parsedErrors = (), int httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR)
         returns r4:FHIRError {
@@ -85,10 +85,9 @@ isolated function createValidationError(string message, r4:Severity errServerity
 # This method will validate FHIR resource.
 # Validation consist of Structure, cardinality, Value domain, Profile, json.
 #
-# + data - FHIR resource (can be in json or anydata)
-# + targetFHIRModelType - (Optional) target model type to validate. Derived from payload if not given
+# + data - FHIR resource
 # + return - If the validation fails, return validation error
-isolated function validate(anydata data, typedesc<anydata>? targetFHIRModelType = ()) returns r4:FHIRValidationError? {
+public isolated function validate(anydata data) returns r4:FHIRValidationError? {
 
     if data is r4:DomainResource {
         // Get the types of the FHIR resources, it can be international or any specific FHIR profiles like Uscore
@@ -108,7 +107,7 @@ isolated function validate(anydata data, typedesc<anydata>? targetFHIRModelType 
     }
 }
 
-isolated function parseConstraintErrors(string message) returns string[] {
+public isolated function parseConstraintErrors(string message) returns string[] {
 
     string[] errors = [];
 
