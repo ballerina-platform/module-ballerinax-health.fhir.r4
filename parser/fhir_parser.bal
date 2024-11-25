@@ -29,6 +29,19 @@ public isolated function validateAndParse(json|xml payload, r4:ResourceAPIConfig
     return check parseFHIRResource(profile, payload);
 }
 
+# Function to validate and parse FHIR resource payload.
+#
+# + payload - FHIR resource payload
+# + targetFHIRModelType - (Optional) target model type to parse. Derived from payload if not given.
+# + targetProfile - (Optional) target profile to parse. Derived from payload if not given.
+# + return - Record representation of the FHIR resource if success. Otherwise, return validation error.
+public isolated function parseWithValidation(json|xml|string payload, typedesc<anydata>? targetFHIRModelType = (), string? targetProfile = ())
+                                                            returns anydata|r4:FHIRValidationError|r4:FHIRParseError {
+    anydata parseResult = check parse(payload, targetFHIRModelType, targetProfile);
+    check validate(parseResult, targetFHIRModelType);
+    return parseResult;
+}
+
 # Function to parse FHIR Payload into FHIR Resource model.
 # Note : When using inside FHIR templates, use ballerinax/health.fhir.r4.parser module instead of this.
 #
