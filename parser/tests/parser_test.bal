@@ -268,3 +268,34 @@ function parseAndValidateWithUnmatchingResourceTypeTest() returns r4:FHIRParseEr
         test:assertFail("Expect to fail since the FHIR server is not capable of understanding the given FHIR resource.");
     }
 }
+
+@test:Config {}
+function parseWithValidationFailureTest() returns r4:FHIRParseError|r4:FHIRValidationError? {
+    anydata|r4:FHIRValidationError|r4:FHIRParseError? patient = parseWithValidation(TEST_FHIR_RESOURCE_JSON_INVALID_PATIENT_02);
+    if patient is r4:FHIRValidationError {
+        test:assertEquals(patient.message(), "FHIR resource validation failed");
+        r4:FHIRErrorDetail & readonly errorDetail = patient.detail();
+
+        string? diagnostic = errorDetail.issues[0].diagnostic;
+        if diagnostic is string {
+            test:assertEquals(diagnostic, "Validation failed for '$.birthDate:pattern' constraint(s).");
+        }
+    } else {
+        test:assertFail("Expect to fail since the FHIR server is not capable of understanding the given FHIR resource.");
+    }
+}
+
+@test:Config {}
+function parseWithValidationSuccessTest() returns r4:FHIRParseError|r4:FHIRValidationError? {
+    anydata|r4:FHIRValidationError|r4:FHIRParseError patient = parseWithValidation(TEST_FHIR_RESOURCE_JSON_VALID_PATIENT_01);
+    if patient is r4:FHIRValidationError {
+        test:assertEquals(patient.message(), "FHIR resource validation failed");
+        // r4:FHIRErrorDetail & readonly errorDetail = pat.detail();
+
+        // test:assertEquals(errorDetail.httpStatusCode, 400, "Error status code must be 400");
+    } else if patient is anydata {
+        test:assertTrue(patient is international401:Patient);
+    } else {
+
+    }
+}

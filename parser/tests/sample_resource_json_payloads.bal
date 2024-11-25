@@ -910,3 +910,73 @@ string TEST_FHIR_RESOURCE_XML_PATIENT_01_STRING = string `<Patient xmlns="http:/
 </Patient>`;
 
 string TEST_FHIR_RESOURCE_UNSUPPORTED_STRING = "hello";
+
+json TEST_FHIR_RESOURCE_JSON_INVALID_PATIENT_02 = {
+    "resourceType": "Patient",
+    "id": "591841",
+    "meta": {
+        "versionId": "1",
+        "lastUpdated": "2020-01-22T05:30:13.137+00:00",
+        "source": "#KO38Q3spgrJoP5fa"
+    },
+    "identifier": [
+        {
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/v2/0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "value": "18e5fd39-7444-4b30-91d4-57226deb2c78"
+        }
+    ],
+    "name": [
+        {
+            "family": "Cushing",
+            "given": ["Caleb"]
+        }
+    ],
+    "birthDate": "jdlksjldjl"
+};
+
+json TEST_FHIR_RESOURCE_JSON_VALID_PATIENT_01 = {
+    "resourceType": "Patient",
+    "id": "example-patient",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">John Doe</div>"
+    },
+    "identifier": [
+        {
+            "system": "http://example.com/patient-ids",
+            "value": "12345"
+        }
+    ],
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "valueCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/v3/Race",
+                        "code": "2106-3",
+                        "display": "White"
+                    }
+                ]
+            }
+        }
+    ],
+    "name": [
+        {
+            "use": "official",
+            "family": "Doe",
+            "given": [
+                "John"
+            ]
+        }
+    ],
+    "gender": "male",
+    "birthDate": "2000-01-01"
+};
