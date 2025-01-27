@@ -57,7 +57,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient",
     elements: {
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -65,7 +65,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.extension"
         },
-        "gender" : {
+        "gender": {
             name: "gender",
             dataType: USCorePatientProfileGender,
             min: 1,
@@ -74,7 +74,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             path: "Patient.gender",
             valueSet: "http://hl7.org/fhir/ValueSet/administrative-gender"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -82,7 +82,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.modifierExtension"
         },
-        "link" : {
+        "link": {
             name: "link",
             dataType: USCorePatientProfileLink,
             min: 0,
@@ -90,7 +90,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.link"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -99,7 +99,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             path: "Patient.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "contact" : {
+        "contact": {
             name: "contact",
             dataType: USCorePatientProfileContact,
             min: 0,
@@ -107,7 +107,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.contact"
         },
-        "deceasedDateTime" : {
+        "deceasedDateTime": {
             name: "deceasedDateTime",
             dataType: r4:dateTime,
             min: 0,
@@ -115,7 +115,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.deceased[x]"
         },
-        "generalPractitioner" : {
+        "generalPractitioner": {
             name: "generalPractitioner",
             dataType: r4:Reference,
             min: 0,
@@ -123,7 +123,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.generalPractitioner"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: USCorePatientProfileTelecom,
             min: 0,
@@ -131,7 +131,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.telecom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -139,7 +139,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -147,7 +147,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.text"
         },
-        "communication" : {
+        "communication": {
             name: "communication",
             dataType: USCorePatientProfileCommunication,
             min: 0,
@@ -155,7 +155,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.communication"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: USCorePatientProfileIdentifier,
             min: 1,
@@ -163,7 +163,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.identifier"
         },
-        "address" : {
+        "address": {
             name: "address",
             dataType: USCorePatientProfileAddress,
             min: 0,
@@ -171,7 +171,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.address"
         },
-        "multipleBirthBoolean" : {
+        "multipleBirthBoolean": {
             name: "multipleBirthBoolean",
             dataType: boolean,
             min: 0,
@@ -179,7 +179,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.multipleBirth[x]"
         },
-        "active" : {
+        "active": {
             name: "active",
             dataType: boolean,
             min: 0,
@@ -187,7 +187,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.active"
         },
-        "photo" : {
+        "photo": {
             name: "photo",
             dataType: r4:Attachment,
             min: 0,
@@ -195,7 +195,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.photo"
         },
-        "birthDate" : {
+        "birthDate": {
             name: "birthDate",
             dataType: r4:date,
             min: 0,
@@ -203,7 +203,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.birthDate"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -211,7 +211,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.contained"
         },
-        "deceasedBoolean" : {
+        "deceasedBoolean": {
             name: "deceasedBoolean",
             dataType: boolean,
             min: 0,
@@ -219,7 +219,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.deceased[x]"
         },
-        "managingOrganization" : {
+        "managingOrganization": {
             name: "managingOrganization",
             dataType: r4:Reference,
             min: 0,
@@ -227,7 +227,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.managingOrganization"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -235,7 +235,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.meta"
         },
-        "multipleBirthInteger" : {
+        "multipleBirthInteger": {
             name: "multipleBirthInteger",
             dataType: r4:integer,
             min: 0,
@@ -243,7 +243,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.multipleBirth[x]"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: USCorePatientProfileName,
             min: 1,
@@ -251,7 +251,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: true,
             path: "Patient.name"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -259,7 +259,7 @@ public const RESOURCE_NAME_USCOREPATIENTPROFILE = "Patient";
             isArray: false,
             path: "Patient.implicitRules"
         },
-        "maritalStatus" : {
+        "maritalStatus": {
             name: "maritalStatus",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -325,22 +325,22 @@ public type USCorePatientProfile record {|
     USCorePatientProfileName[] name;
     r4:uri implicitRules?;
     r4:CodeableConcept maritalStatus?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # USCorePatientProfileAddressType enum
 public enum USCorePatientProfileAddressType {
-   CODE_TYPE_POSTAL = "postal",
-   CODE_TYPE_PHYSICAL = "physical",
-   CODE_TYPE_BOTH = "both"
+    CODE_TYPE_POSTAL = "postal",
+    CODE_TYPE_PHYSICAL = "physical",
+    CODE_TYPE_BOTH = "both"
 }
 
 # USCorePatientProfileTelecomUse enum
 public enum USCorePatientProfileTelecomUse {
-   CODE_USE_TEMP = "temp",
-   CODE_USE_WORK = "work",
-   CODE_USE_OLD = "old",
-   CODE_USE_MOBILE = "mobile"
+    CODE_USE_TEMP = "temp",
+    CODE_USE_WORK = "work",
+    CODE_USE_OLD = "old",
+    CODE_USE_MOBILE = "mobile"
 }
 
 # FHIR USCorePatientProfileName datatype record.
@@ -461,10 +461,10 @@ public type USCorePatientProfileName record {|
 
 # USCorePatientProfileLinkType enum
 public enum USCorePatientProfileLinkType {
-   CODE_TYPE_REFER = "refer",
-   CODE_TYPE_REPLACES = "replaces",
-   CODE_TYPE_SEEALSO = "seealso",
-   CODE_TYPE_REPLACED_BY = "replaced-by"
+    CODE_TYPE_REFER = "refer",
+    CODE_TYPE_REPLACES = "replaces",
+    CODE_TYPE_SEEALSO = "seealso",
+    CODE_TYPE_REPLACED_BY = "replaced-by"
 }
 
 # FHIR USCorePatientProfileIdentifier datatype record.
@@ -574,17 +574,18 @@ public type USCorePatientProfileIdentifier record {|
 
 # USCorePatientProfileGender enum
 public enum USCorePatientProfileGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_UNKNOWN = "unknown"
+    CODE_GENDER_OTHER = "other",
+    CODE_GENDER_FEMALE = "female",
+    CODE_GENDER_MALE = "male",
+    CODE_GENDER_UNKNOWN = "unknown"
 }
 
 # USCorePatientProfileContactGender enum
 public enum USCorePatientProfileContactGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
+    CODE_GENDER_OTHER = "other",
+    CODE_GENDER_FEMALE = "female",
+    CODE_GENDER_MALE = "male",
+    CODE_GENDER_UNKNOWN = "unknown"
 }
 
 # FHIR USCorePatientProfileTelecom datatype record.
@@ -827,12 +828,12 @@ public type USCorePatientProfileLink record {|
 
 # USCorePatientProfileNameUse enum
 public enum USCorePatientProfileNameUse {
-   CODE_USE_MAIDEN = "maiden",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_OLD = "old",
-   CODE_USE_NICKNAME = "nickname",
-   CODE_USE_OFFICIAL = "official",
-   CODE_USE_ANONYMOUS = "anonymous"
+    CODE_USE_MAIDEN = "maiden",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_OLD = "old",
+    CODE_USE_NICKNAME = "nickname",
+    CODE_USE_OFFICIAL = "official",
+    CODE_USE_ANONYMOUS = "anonymous"
 }
 
 # FHIR USCorePatientProfileAddress datatype record.
@@ -986,11 +987,11 @@ public type USCorePatientProfileAddress record {|
 
 # USCorePatientProfileIdentifierUse enum
 public enum USCorePatientProfileIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # FHIR USCorePatientProfileContact datatype record.
@@ -1122,19 +1123,19 @@ public type USCorePatientProfileContact record {|
 
 # USCorePatientProfileAddressUse enum
 public enum USCorePatientProfileAddressUse {
-   CODE_USE_TEMP = "temp",
-   CODE_USE_WORK = "work",
-   CODE_USE_OLD = "old",
-   CODE_USE_BILLING = "billing"
+    CODE_USE_TEMP = "temp",
+    CODE_USE_WORK = "work",
+    CODE_USE_OLD = "old",
+    CODE_USE_BILLING = "billing"
 }
 
 # USCorePatientProfileTelecomSystem enum
 public enum USCorePatientProfileTelecomSystem {
-   CODE_SYSTEM_OTHER = "other",
-   CODE_SYSTEM_PAGER = "pager",
-   CODE_SYSTEM_SMS = "sms",
-   CODE_SYSTEM_FAX = "fax",
-   CODE_SYSTEM_EMAIL = "email",
-   CODE_SYSTEM_URL = "url"
+    CODE_SYSTEM_OTHER = "other",
+    CODE_SYSTEM_PAGER = "pager",
+    CODE_SYSTEM_SMS = "sms",
+    CODE_SYSTEM_FAX = "fax",
+    CODE_SYSTEM_EMAIL = "email",
+    CODE_SYSTEM_URL = "url"
 }
 
