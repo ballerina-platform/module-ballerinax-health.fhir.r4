@@ -325,7 +325,7 @@ public type USCorePatientProfile record {|
     USCorePatientProfileName[] name;
     r4:uri implicitRules?;
     r4:CodeableConcept maritalStatus?;
-    r4:Element...;
+    r4:Element ...;
 |};
 
 # USCorePatientProfileAddressType enum
