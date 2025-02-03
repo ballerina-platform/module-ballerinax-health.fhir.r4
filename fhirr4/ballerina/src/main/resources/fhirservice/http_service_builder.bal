@@ -12,8 +12,8 @@
 // under the License.
 import ballerina/http;
 import ballerina/lang.regexp;
-import ballerinax/health.fhir.r4;
 import ballerina/log;
+import ballerinax/health.fhir.r4;
 
 // Construct an http service for a fhir service.
 isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, string[] & readonly servicePath) returns http:Service {
@@ -29,7 +29,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
         isolated resource function get [string... path](http:Request req, http:RequestContext ctx) returns any|error {
 
             string[] paths = getRequestPaths(req.rawPath);
-            log:printDebug(string`Request paths:  ${paths.toString()}`);
+            log:printDebug(string `Request paths:  ${paths.toString()}`);
             Service fhirService = self.holder.getFhirServiceFromHolder();
             handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_GET);
             if resourceMethod is handle {
@@ -156,6 +156,12 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
 
         isolated resource function post [string... path](http:Request req, http:RequestContext ctx) returns any|error {
 
+            map<string>|http:ClientError formParams = req.getFormParams();
+            if formParams is http:ClientError {
+                log:printDebug("Couldn't extract form data", formParams);
+            } else {
+                log:printDebug("Form data: " + formParams.toString());
+            }
             string[] paths = getRequestPaths(req.rawPath);
             Service fhirService = self.holder.getFhirServiceFromHolder();
             handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_POST);
@@ -197,6 +203,17 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         return r4:createFHIRError(string `Invalid operation payload`, r4:CODE_SEVERITY_ERROR,
                                 r4:TRANSIENT, httpStatusCode = http:STATUS_BAD_REQUEST);
                     }
+                } else if isSearchPath(paths) { // Search
+                    r4:FHIRError? processSearch = self.preprocessor.processSearch(fhirResource, req, ctx);
+                    if processSearch is r4:FHIRError {
+                        return processSearch;
+                    }
+                    fhirContext = check r4:getFHIRContext(ctx);
+                    executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
+                    if executeResourceResult is r4:Bundle {
+                        executeResourceResult = handleBundleInfo(executeResourceResult, fhirContext, req.extraPathInfo);
+                    }
+                    log:printDebug("End processing search interaction.");
                 } else if payload is json { // Create interaction
                     r4:FHIRError? processCreate = self.preprocessor.processCreate(fhirResource, payload, req, ctx);
                     if processCreate is r4:FHIRError {
@@ -206,7 +223,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                     executeResourceResult = executeWithPayload(payload, fhirContext, fhirService, resourceMethod);
                 } else {
                     return r4:createFHIRError(string `Invalid payload`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT,
-                        httpStatusCode = http:STATUS_BAD_REQUEST);
+                            httpStatusCode = http:STATUS_BAD_REQUEST);
                 }
                 if executeResourceResult is error {
                     fhirContext.setInErrorState(true);
@@ -324,7 +341,7 @@ isolated function getRequestPaths(string path) returns string[] {
     paths = regexp:split(re `/`, rawPath);
     _ = paths.remove(0);
     _ = paths[0] == "" ? paths.remove(0) : [];
-    _ = paths[paths.length()-1] == "" ? paths.remove(paths.length()-1) : [];
+    _ = paths[paths.length() - 1] == "" ? paths.remove(paths.length() - 1) : [];
     return paths;
 }
 
@@ -334,6 +351,13 @@ isolated function getRequestPaths(string path) returns string[] {
 # + return - A boolean indicating whether the paths represent an operation path
 isolated function isOperationPath(string[] paths) returns boolean
     => paths.length() > 0 && paths[paths.length() - 1].startsWith("$");
+
+# Checks if paths represents a search path.
+#
+# + paths - An paths to check
+# + return - A boolean indicating whether the paths represent a search path
+isolated function isSearchPath(string[] paths) returns boolean
+    => paths.length() > 0 && paths[paths.length() - 1] == "_search";
 
 # Determines the scope of a FHIR operation request.
 #

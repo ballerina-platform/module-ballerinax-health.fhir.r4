@@ -385,11 +385,11 @@ public isolated class FHIRPreprocessor {
         json|error idInPayload = payload.id;
         if idInPayload is error {
             return r4:createFHIRError("Payload doesn't have the mandatory ID field", r4:ERROR, r4:PROCESSING,
-                                        errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                    errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
         } else {
             if idInPayload.toString() != id {
                 return r4:createFHIRError("Payload ID doesn't match with the resource ID", r4:ERROR, r4:PROCESSING,
-                                            errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                        errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         }
 
@@ -541,8 +541,8 @@ public isolated class FHIRPreprocessor {
 
             map<r4:RequestSearchParameter[]>|r4:FHIRResourceEntity? processRes =
                     check preProcessOperation(fhirResourceType, fhirOperation, operationRequestScope,
-                            baseOperationDefinition, baseOperationConfig, self.operationConfigMap, self.apiConfig,
-                            payload, httpRequest, httpCtx, clientHeaders);
+                    baseOperationDefinition, baseOperationConfig, self.operationConfigMap, self.apiConfig,
+                    payload, httpRequest, httpCtx, clientHeaders);
 
             if processRes is map<r4:RequestSearchParameter[]> {
                 requestOperationSearchParameters = processRes;
@@ -584,6 +584,18 @@ public isolated class FHIRPreprocessor {
         r4:SearchParamCollection searchParamDefinitions = r4:fhirRegistry.getResourceSearchParameters(fhirResourceType);
 
         map<string[]> requestQueryParams = request.getQueryParams();
+        if request.method == http:POST && request.getContentType().equalsIgnoreCaseAscii("application/x-www-form-urlencoded") {
+            // Extract search parameters from the form data
+            map<string>|http:ClientError formData = request.getFormParams();
+            if formData is http:ClientError {
+                return r4:createFHIRError("Error occurred while extracting form data", r4:ERROR, r4:PROCESSING,
+                        httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+            foreach string paramName in formData.keys() {
+                string paramValue = formData.get(paramName);
+                requestQueryParams[paramName] = [paramValue];
+            }
+        }
         foreach string originalParamName in requestQueryParams.keys() {
 
             // Decode search parameter key and seperate name and modifier
@@ -603,14 +615,14 @@ public isolated class FHIRPreprocessor {
 
                     // pre process search parameters
                     processResult = check processResourceBoundSearchParameter(parameterDef, fhirResourceType,
-                                                                                searchParamConfig, queryParam);
+                            searchParamConfig, queryParam);
 
                 } else {
                     string diagnose = string `Unsupported search parameter \"${queryParam.name}\" for resource type 
                         \"${fhirResourceType}\". Supported search parameters are: 
                         ${r4:extractActiveSearchParameterNames(self.searchParamConfigMap).toBalString()}`;
                     return r4:createFHIRError(string `Unsupported search parameter : ${queryParam.name}`, r4:ERROR, r4:PROCESSING,
-                                                    diagnostic = diagnose, httpStatusCode = http:STATUS_BAD_REQUEST);
+                            diagnostic = diagnose, httpStatusCode = http:STATUS_BAD_REQUEST);
                 }
             } else if r4:COMMON_SEARCH_PARAMETERS.hasKey(queryParam.name) {
                 // processing common search parameter
@@ -618,7 +630,7 @@ public isolated class FHIRPreprocessor {
                 r4:CommonSearchParameterDefinition parameterDef = r4:COMMON_SEARCH_PARAMETERS.get(queryParam.name);
 
                 processResult = check processCommonSearchParameter(parameterDef, fhirResourceType, queryParam,
-                                                                    self.apiConfig, self.searchParamConfigMap);
+                        self.apiConfig, self.searchParamConfigMap);
 
             } else if r4:CONTROL_SEARCH_PARAMETERS.hasKey(queryParam.name) {
                 // processing control search parameter
@@ -626,7 +638,7 @@ public isolated class FHIRPreprocessor {
                 r4:CommonSearchParameterDefinition parameterDef = r4:CONTROL_SEARCH_PARAMETERS.get(queryParam.name);
 
                 processResult = check processCommonSearchParameter(parameterDef, fhirResourceType, queryParam,
-                                                                        self.apiConfig, self.searchParamConfigMap);
+                        self.apiConfig, self.searchParamConfigMap);
             } else if PAGE == queryParam.name {
                 processResult = [];
             } else {
@@ -634,7 +646,7 @@ public isolated class FHIRPreprocessor {
                     \"${fhirResourceType}\". Valid/Supported search parameters for this search are: 
                     ${self.searchParamConfigMap.keys().toString()}`;
                 return r4:createFHIRError(string `Unknown search parameter : ${queryParam.name}`, r4:ERROR, r4:PROCESSING,
-                                            diagnostic = diagnose, httpStatusCode = http:STATUS_BAD_REQUEST);
+                        diagnostic = diagnose, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
 
             // add process result to pre-processed search parameter map
@@ -759,7 +771,7 @@ isolated function preProcessOperation(string fhirResourceType, string fhirOperat
                 + "\"" + operationRequestScope + "\". Supported scopes for \"$" + fhirOperation + "\" "
                 + "operation: " + operationScopes.toBalString() + ".";
         return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
-                            httpStatusCode = http:STATUS_BAD_REQUEST);
+                httpStatusCode = http:STATUS_BAD_REQUEST);
     }
 
     // Operation parameter definitions and configs
@@ -786,7 +798,7 @@ isolated function preProcessOperation(string fhirResourceType, string fhirOperat
         // Process operation query parameters
         map<r4:RequestSearchParameter[]> requestOperationSearchParameters =
                 check processOperationQueryParams(fhirOperation, operationRequestScope,
-                        operationParameterDefinitions, operationParameterConfigs, httpRequest);
+                operationParameterDefinitions, operationParameterConfigs, httpRequest);
 
         // Validate operation parameter cardinality
         check validateOperationParamCardinality(fhirOperation, operationParameterConfigs,
@@ -815,7 +827,7 @@ isolated function preProcessOperation(string fhirResourceType, string fhirOperat
             string diagnostic = "Payload for operation \"$" + fhirOperation + "\" is not a valid \"Parameters\" "
                         + "resource. Please provide a valid \"Parameters\" resource as the payload.";
             return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
-                        httpStatusCode = http:STATUS_BAD_REQUEST);
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
         }
 
         // Process operation params of the payload
@@ -862,7 +874,7 @@ isolated function processOperationQueryParams(string fhirOperation,
 
         // Process operation parameter
         check processOperationQueryParam(queryParam, fhirOperation, operationRequestScope,
-                    operationParamDefinitions, operationParamConfigs, processedOperationSearchParams);
+                operationParamDefinitions, operationParamConfigs, processedOperationSearchParams);
     }
 
     return processedOperationSearchParams;
@@ -914,7 +926,7 @@ isolated function processOperationQueryParam(r4:RequestQueryParameter queryParam
                     operationParamConfigs);
         } else { // Multi-part parameter without parts
             return createMultiPartOperationParamWithoutPartsError(paramDefinition.name, fhirOperation,
-                        operationParamDefinitions);
+                    operationParamDefinitions);
         }
     } else { // Not a multi-part parameter
         searchParams = check processOperationQueryParamAsSearchParam(queryParam, paramDefinition);
@@ -964,11 +976,11 @@ isolated function processOperationPartQueryParam(string fhirOperation, r4:FHIRIn
         if remainingParts.length() > 0 {
             // Process next part parameter
             return processOperationPartQueryParam(fhirOperation, operationRequestScope, queryParam, remainingParts[0],
-                        remainingParts.slice(1), partParamDefinition, partParamConfig, operationParamDefinitions,
-                        operationParamConfigs);
+                    remainingParts.slice(1), partParamDefinition, partParamConfig, operationParamDefinitions,
+                    operationParamConfigs);
         } else { // Multi-part parameter without parts
             return createMultiPartOperationParamWithoutPartsError(partParamName, fhirOperation,
-                        operationParamDefinitions);
+                    operationParamDefinitions);
         }
     } else {
         // Process current (last) part parameter as search parameter
@@ -1056,7 +1068,7 @@ isolated function processOperationPayloadParams(string fhirOperation, r4:FHIRInt
     if parameters != () {
         foreach international401:ParametersParameter 'parameter in parameters {
             check validateAndProcessOperationPayloadParam(fhirOperation, 'parameter, operationRequestScope,
-            operationParamDefinitions, operationParamConfigs, processedOperationParams);
+                    operationParamDefinitions, operationParamConfigs, processedOperationParams);
         }
     }
 
@@ -1331,7 +1343,7 @@ isolated function processCommonSearchParameter(r4:CommonSearchParameterDefinitio
             string diagnose = string `Unsupported search parameter \"${queryParam.name}\" for resource type \" 
                 ${fhirResourceType}\". Supported search parameters are: ${r4:extractActiveSearchParameterNames(searchParamConfigMap).toBalString()}`;
             return r4:createFHIRError(string `Unsupported search parameter : ${queryParam.name}`, r4:ERROR, r4:PROCESSING_NOT_SUPPORTED, diagnostic = diagnose,
-                httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+                    httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
         }
     }
     // If we reach here, the developer haven't override the search parameter
@@ -1393,6 +1405,9 @@ isolated function validateClientRequestHeaders(http:Request request) returns r4:
         }
         "application/fhir+json" => {
             headers.contentType = r4:JSON;
+        }
+        "application/x-www-form-urlencoded" => {
+            // Accept for the POST search scenario
         }
         _ => {
             string message = string `Unsupported Content-Type header value of \"${contentType}\" was provided in the request. 
@@ -1501,7 +1516,7 @@ isolated function getJwtDetails(http:Request httpRequest) returns readonly & r4:
                 if claimList is error {
                     string message = "IDP claims are not available";
                     return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, message,
-                                            errorType = r4:PROCESSING_ERROR, httpStatusCode = http:STATUS_UNAUTHORIZED);
+                            errorType = r4:PROCESSING_ERROR, httpStatusCode = http:STATUS_UNAUTHORIZED);
                 }
                 // Split the scope string
                 string[] scopeslist = regexp:split(re `${SPACE_CHARACTER}`, <string>payload.get(SCOPES));
@@ -1509,7 +1524,7 @@ isolated function getJwtDetails(http:Request httpRequest) returns readonly & r4:
                 if userName is error {
                     string message = "Username is not available";
                     return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, message,
-                                            errorType = r4:PROCESSING_ERROR, httpStatusCode = http:STATUS_UNAUTHORIZED);
+                            errorType = r4:PROCESSING_ERROR, httpStatusCode = http:STATUS_UNAUTHORIZED);
                 } else {
                     readonly & r4:FHIRUser fhirUserInfo = {
                         userID: <string & readonly>userName.toString(),
@@ -1535,7 +1550,7 @@ isolated function getJwtDetails(http:Request httpRequest) returns readonly & r4:
         } else {
             string message = "Error occured in JWT decode";
             return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, message,
-                                    errorType = r4:PROCESSING_ERROR, httpStatusCode = http:STATUS_UNAUTHORIZED);
+                    errorType = r4:PROCESSING_ERROR, httpStatusCode = http:STATUS_UNAUTHORIZED);
         }
     } else {
         fhirSecurity = {
