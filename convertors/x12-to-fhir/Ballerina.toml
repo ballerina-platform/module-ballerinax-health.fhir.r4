@@ -1,0 +1,5 @@
+[package]
+org = "ballerinax"
+name = "x12_to_fhir"
+version = "0.1.0"
+distribution = "2201.10.2"
