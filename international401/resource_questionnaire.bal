@@ -60,7 +60,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/StructureDefinition/Questionnaire",
     elements: {
-        "date" : {
+        "date": {
             name: "date",
             dataType: r4:dateTime,
             min: 0,
@@ -68,7 +68,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.date"
         },
-        "copyright" : {
+        "copyright": {
             name: "copyright",
             dataType: r4:markdown,
             min: 0,
@@ -76,7 +76,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.copyright"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -84,7 +84,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: true,
             path: "Questionnaire.extension"
         },
-        "approvalDate" : {
+        "approvalDate": {
             name: "approvalDate",
             dataType: r4:date,
             min: 0,
@@ -92,7 +92,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.approvalDate"
         },
-        "code" : {
+        "code": {
             name: "code",
             dataType: r4:Coding,
             min: 0,
@@ -101,7 +101,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             path: "Questionnaire.code",
             valueSet: "http://hl7.org/fhir/ValueSet/questionnaire-questions"
         },
-        "purpose" : {
+        "purpose": {
             name: "purpose",
             dataType: r4:markdown,
             min: 0,
@@ -109,7 +109,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.purpose"
         },
-        "jurisdiction" : {
+        "jurisdiction": {
             name: "jurisdiction",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -118,7 +118,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             path: "Questionnaire.jurisdiction",
             valueSet: "http://hl7.org/fhir/ValueSet/jurisdiction"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -126,7 +126,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: true,
             path: "Questionnaire.modifierExtension"
         },
-        "description" : {
+        "description": {
             name: "description",
             dataType: r4:markdown,
             min: 0,
@@ -134,7 +134,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.description"
         },
-        "experimental" : {
+        "experimental": {
             name: "experimental",
             dataType: boolean,
             min: 0,
@@ -142,7 +142,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.experimental"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -151,7 +151,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             path: "Questionnaire.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "title" : {
+        "title": {
             name: "title",
             dataType: string,
             min: 0,
@@ -159,7 +159,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.title"
         },
-        "subjectType" : {
+        "subjectType": {
             name: "subjectType",
             dataType: r4:code,
             min: 0,
@@ -168,7 +168,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             path: "Questionnaire.subjectType",
             valueSet: "http://hl7.org/fhir/ValueSet/resource-types|4.0.1"
         },
-        "contact" : {
+        "contact": {
             name: "contact",
             dataType: r4:ContactDetail,
             min: 0,
@@ -176,7 +176,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: true,
             path: "Questionnaire.contact"
         },
-        "derivedFrom" : {
+        "derivedFrom": {
             name: "derivedFrom",
             dataType: r4:canonical,
             min: 0,
@@ -184,7 +184,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: true,
             path: "Questionnaire.derivedFrom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -192,7 +192,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -200,7 +200,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.text"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -208,7 +208,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: true,
             path: "Questionnaire.identifier"
         },
-        "item" : {
+        "item": {
             name: "item",
             dataType: QuestionnaireItem,
             min: 0,
@@ -216,7 +216,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: true,
             path: "Questionnaire.item"
         },
-        "effectivePeriod" : {
+        "effectivePeriod": {
             name: "effectivePeriod",
             dataType: r4:Period,
             min: 0,
@@ -224,7 +224,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.effectivePeriod"
         },
-        "version" : {
+        "version": {
             name: "version",
             dataType: string,
             min: 0,
@@ -232,7 +232,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.version"
         },
-        "url" : {
+        "url": {
             name: "url",
             dataType: r4:uri,
             min: 0,
@@ -240,7 +240,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.url"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -248,7 +248,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: true,
             path: "Questionnaire.contained"
         },
-        "lastReviewDate" : {
+        "lastReviewDate": {
             name: "lastReviewDate",
             dataType: r4:date,
             min: 0,
@@ -256,7 +256,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.lastReviewDate"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -264,7 +264,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.meta"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: string,
             min: 0,
@@ -272,7 +272,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.name"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -280,7 +280,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.implicitRules"
         },
-        "publisher" : {
+        "publisher": {
             name: "publisher",
             dataType: string,
             min: 0,
@@ -288,7 +288,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: false,
             path: "Questionnaire.publisher"
         },
-        "useContext" : {
+        "useContext": {
             name: "useContext",
             dataType: r4:UsageContext,
             min: 0,
@@ -296,7 +296,7 @@ public const RESOURCE_NAME_QUESTIONNAIRE = "Questionnaire";
             isArray: true,
             path: "Questionnaire.useContext"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: QuestionnaireStatus,
             min: 1,
@@ -346,24 +346,35 @@ public type Questionnaire record {|
     string publisher?;
     r4:UsageContext[] useContext?;
     QuestionnaireStatus status;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # QuestionnaireItemEnableBehavior enum
 public enum QuestionnaireItemEnableBehavior {
-   CODE_ENABLEBEHAVIOR_ALL = "all",
-   CODE_ENABLEBEHAVIOR_ANY = "any"
+    CODE_ENABLEBEHAVIOR_ALL = "all",
+    CODE_ENABLEBEHAVIOR_ANY = "any"
 }
 
 # QuestionnaireItemType enum
 public enum QuestionnaireItemType {
-   CODE_TYPE_DATE = "date",
-   CODE_TYPE_DATETIME = "dateTime",
-   CODE_TYPE_BOOLEAN = "boolean",
-   CODE_TYPE_DISPLAY = "display",
-   CODE_TYPE_INTEGER = "integer",
-   CODE_TYPE_DECIMAL = "decimal",
-   CODE_TYPE_GROUP = "group"
+    CODE_TYPE_DATE = "date",
+    CODE_TYPE_DATETIME = "dateTime",
+    CODE_TYPE_BOOLEAN = "boolean",
+    CODE_TYPE_DISPLAY = "display",
+    CODE_TYPE_INTEGER = "integer",
+    CODE_TYPE_DECIMAL = "decimal",
+    CODE_TYPE_GROUP = "group",
+    CODE_TYPE_QUESTION = "question",
+    CODE_TYPE_TIME = "time",
+    CODE_TYPE_STRING = "string",
+    CODE_TYPE_TEXT = "text",
+    CODE_TYPE_URL = "url",
+    CODE_TYPE_CHOICE = "choice",
+    CODE_TYPE_OPEN_CHOICE = "open-choice",
+    CODE_TYPE_ATTACHMENT = "attachment",
+    CODE_TYPE_REFERENCE = "reference",
+    CODE_TYPE_QUANTITY = "quantity"
+
 }
 
 # FHIR QuestionnaireItemAnswerOption datatype record.
@@ -495,24 +506,25 @@ public type QuestionnaireItemAnswerOption record {|
 
 # FHIR QuestionnaireItem datatype record.
 #
-# + repeats - An indication, if true, that the item may occur multiple times in the response, collecting multiple answers for questions or multiple sets of answers for groups.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - A terminology code that corresponds to this group or question (e.g. a code from LOINC, which defines many questions and answers).
-# + enableWhen - A constraint indicating that this item should only be enabled (displayed/allow answers to be captured) when the specified condition is true.
-# + initial - One or more values that should be pre-populated in the answer when initially rendering the questionnaire for user input.
-# + prefix - A short label for a particular group, question or set of display text within the questionnaire used for reference by the individual completing the questionnaire.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + readOnly - An indication, when true, that the value cannot be changed by a human respondent to the Questionnaire.
-# + 'type - The type of questionnaire item this is - whether text for display, a grouping of other items or a particular type of data to be captured (string, integer, coded choice, etc.).
-# + required - An indication, if true, that the item must be present in a 'completed' QuestionnaireResponse. If false, the item may be skipped when answering the questionnaire.
-# + linkId - An identifier that is unique within the Questionnaire allowing linkage to the equivalent item in a QuestionnaireResponse resource.
-# + definition - This element is a URI that refers to an [ElementDefinition](elementdefinition.html) that provides information about this item, including information that might otherwise be included in the instance of the Questionnaire resource. A detailed description of the construction of the URI is shown in Comments, below. If this element is present then the following element values MAY be derived from the Element Definition if the corresponding elements of this Questionnaire resource instance have no value: * code (ElementDefinition.code) * type (ElementDefinition.type) * required (ElementDefinition.min) * repeats (ElementDefinition.max) * maxLength (ElementDefinition.maxLength) * answerValueSet (ElementDefinition.binding) * options (ElementDefinition.binding).
-# + enableBehavior - Controls how multiple enableWhen values are interpreted - whether all or any must be true.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + text - The name of a section, the text of a question or text content for a display item.
-# + answerOption - One of the permitted answers for a 'choice' or 'open-choice' question.
-# + answerValueSet - A reference to a value set containing a list of codes representing permitted answers for a 'choice' or 'open-choice' question.
-# + maxLength - The maximum number of characters that are permitted in the answer to be considered a 'valid' QuestionnaireResponse.
+# + repeats - An indication, if true, that the item may occur multiple times in the response, collecting multiple answers for questions or multiple sets of answers for groups.  
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.  
+# + code - A terminology code that corresponds to this group or question (e.g. a code from LOINC, which defines many questions and answers).  
+# + enableWhen - A constraint indicating that this item should only be enabled (displayed/allow answers to be captured) when the specified condition is true.  
+# + initial - One or more values that should be pre-populated in the answer when initially rendering the questionnaire for user input.  
+# + prefix - A short label for a particular group, question or set of display text within the questionnaire used for reference by the individual completing the questionnaire.  
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).  
+# + readOnly - An indication, when true, that the value cannot be changed by a human respondent to the Questionnaire.  
+# + 'type - The type of questionnaire item this is - whether text for display, a grouping of other items or a particular type of data to be captured (string, integer, coded choice, etc.).  
+# + required - An indication, if true, that the item must be present in a 'completed' QuestionnaireResponse. If false, the item may be skipped when answering the questionnaire.  
+# + linkId - An identifier that is unique within the Questionnaire allowing linkage to the equivalent item in a QuestionnaireResponse resource.  
+# + definition - This element is a URI that refers to an [ElementDefinition](elementdefinition.html) that provides information about this item, including information that might otherwise be included in the instance of the Questionnaire resource. A detailed description of the construction of the URI is shown in Comments, below. If this element is present then the following element values MAY be derived from the Element Definition if the corresponding elements of this Questionnaire resource instance have no value: * code (ElementDefinition.code) * type (ElementDefinition.type) * required (ElementDefinition.min) * repeats (ElementDefinition.max) * maxLength (ElementDefinition.maxLength) * answerValueSet (ElementDefinition.binding) * options (ElementDefinition.binding).  
+# + enableBehavior - Controls how multiple enableWhen values are interpreted - whether all or any must be true.  
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.  
+# + text - The name of a section, the text of a question or text content for a display item.  
+# + answerOption - One of the permitted answers for a 'choice' or 'open-choice' question.  
+# + answerValueSet - A reference to a value set containing a list of codes representing permitted answers for a 'choice' or 'open-choice' question.  
+# + maxLength - The maximum number of characters that are permitted in the answer to be considered a 'valid' QuestionnaireResponse.  
+# + item - Text, questions and other groups to be nested beneath a question or group.
 @r4:DataTypeDefinition {
     name: "QuestionnaireItem",
     baseType: (),
@@ -678,6 +690,15 @@ public type QuestionnaireItemAnswerOption record {|
             isArray: false,
             description: "The maximum number of characters that are permitted in the answer to be considered a 'valid' QuestionnaireResponse.",
             path: "Questionnaire.item.maxLength"
+        },
+        "item": {
+            name: "item",
+            dataType: QuestionnaireItem,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Text, questions and other groups to be nested beneath a question or group.",
+            path: "Questionnaire.item.item"
         }
     },
     serializers: {
@@ -706,25 +727,26 @@ public type QuestionnaireItem record {|
     QuestionnaireItemAnswerOption[] answerOption?;
     r4:canonical answerValueSet?;
     r4:integer maxLength?;
+    QuestionnaireItem[] item?;
 |};
 
 # QuestionnaireStatus enum
 public enum QuestionnaireStatus {
-   CODE_STATUS_DRAFT = "draft",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_RETIRED = "retired",
-   CODE_STATUS_UNKNOWN = "unknown"
+    CODE_STATUS_DRAFT = "draft",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_RETIRED = "retired",
+    CODE_STATUS_UNKNOWN = "unknown"
 }
 
 # QuestionnaireItemEnableWhenOperator enum
 public enum QuestionnaireItemEnableWhenOperator {
-   CODE_OPERATOR_LESS_THAN_OR_EQUAL = "<=",
-   CODE_OPERATOR_EXISTS = "exists",
-   CODE_OPERATOR_NOT_EQUAL = "!=",
-   CODE_OPERATOR_LESS_THAN = "<",
-   CODE_OPERATOR_EQUAL = "=",
-   CODE_OPERATOR_GREATER_THAN = ">",
-   CODE_OPERATOR_GREATER_THAN_OR_EQUAL = ">="
+    CODE_OPERATOR_LESS_THAN_OR_EQUAL = "<=",
+    CODE_OPERATOR_EXISTS = "exists",
+    CODE_OPERATOR_NOT_EQUAL = "!=",
+    CODE_OPERATOR_LESS_THAN = "<",
+    CODE_OPERATOR_EQUAL = "=",
+    CODE_OPERATOR_GREATER_THAN = ">",
+    CODE_OPERATOR_GREATER_THAN_OR_EQUAL = ">="
 }
 
 # FHIR QuestionnaireItemInitial datatype record.
