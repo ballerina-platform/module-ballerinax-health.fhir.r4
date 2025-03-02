@@ -30,20 +30,20 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
 # + extension - An Extension
 # * extension Slicings
 # 1) Extension: Used to provide required information about home health care services. (CR6)
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 2) Extension: A code specifying the level of service being requested (UM06)
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 3) Extension: Information about a hospital claim being requested.
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 4) Extension: Used to indicate condition codes for various requests for service.
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # + use - A code to indicate whether the nature of the request is: to request adjudication of products and services previously rendered; or requesting authorization and adjudication for provision in the future; or requesting the non-binding adjudication of the listed products and services which could be provided in the future.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -56,24 +56,24 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
 # + supportingInfo - Additional information codes regarding exceptions, special considerations, the condition, situation, prior or concurrent issues.
 # * supportingInfo Slicings
 # 1) PASClaimSupportingInfoPatientEvent: Information about the dates of the event that are being requested.
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 2) PASClaimSupportingInfoDischargeDates: Information about the discharge dates of a hospital admission being requested.
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 3) PASClaimSupportingInfoAdditionalInformation: Send additional paperwork or supporting information for the request. This can be most commonly a DocumentReference profile although any type of information is allowed.
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # 4) PASClaimSupportingInfoAdmissionDates: Information about the admission dates of a hospital admission being requested.
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 5) PASClaimSupportingInfoMessageText: Send text messages to the UMO.
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # + fundsReserve - A code to indicate whether and for whom funds are to be reserved for future claims.
 # + provider - The provider which is responsible for the claim, predetermination or preauthorization.
@@ -85,12 +85,12 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
 # + careTeam - The members of the team who provided the products and services.
 # * careTeam Slicings
 # 1) PASClaimCareTeamOverallClaimMember: Care Team Providers that are applicable to all services being requested. NOTE: Only the first 14 can be sent in the X12 Request.
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # 2) PASClaimCareTeamItemClaimMember: Care Team Providers that are applicable to a specific item (as referenced by that item). NOTE: Only the first 10 can be sent in the X12 Request.
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # + identifier - An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.
 # + item - A claim line. Either a simple product or service or a 'group' of details which can each be a simple items or groups of sub-details.
@@ -113,7 +113,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-claim",
     elements: {
-        "insurance" : {
+        "insurance": {
             name: "insurance",
             dataType: PASClaimInsurance,
             min: 1,
@@ -121,7 +121,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.insurance"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -129,7 +129,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.extension"
         },
-        "use" : {
+        "use": {
             name: "use",
             dataType: PASClaimUse,
             min: 1,
@@ -138,7 +138,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             path: "Claim.use",
             valueSet: "http://hl7.org/fhir/ValueSet/claim-use|4.0.1"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -146,7 +146,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.modifierExtension"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -155,7 +155,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             path: "Claim.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "type" : {
+        "type": {
             name: "type",
             dataType: r4:CodeableConcept,
             min: 1,
@@ -164,7 +164,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             path: "Claim.type",
             valueSet: "http://hl7.org/fhir/ValueSet/claim-type"
         },
-        "accident" : {
+        "accident": {
             name: "accident",
             dataType: PASClaimAccident,
             min: 0,
@@ -172,7 +172,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.accident"
         },
-        "payee" : {
+        "payee": {
             name: "payee",
             dataType: PASClaimPayee,
             min: 0,
@@ -180,7 +180,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.payee"
         },
-        "total" : {
+        "total": {
             name: "total",
             dataType: r4:Money,
             min: 0,
@@ -188,7 +188,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.total"
         },
-        "related" : {
+        "related": {
             name: "related",
             dataType: PASClaimRelated,
             min: 0,
@@ -196,7 +196,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.related"
         },
-        "supportingInfo" : {
+        "supportingInfo": {
             name: "supportingInfo",
             dataType: PASClaimSupportingInfo,
             min: 0,
@@ -204,7 +204,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.supportingInfo"
         },
-        "fundsReserve" : {
+        "fundsReserve": {
             name: "fundsReserve",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -213,7 +213,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             path: "Claim.fundsReserve",
             valueSet: "http://hl7.org/fhir/ValueSet/fundsreserve"
         },
-        "provider" : {
+        "provider": {
             name: "provider",
             dataType: r4:Reference,
             min: 1,
@@ -221,7 +221,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.provider"
         },
-        "insurer" : {
+        "insurer": {
             name: "insurer",
             dataType: r4:Reference,
             min: 1,
@@ -229,7 +229,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.insurer"
         },
-        "patient" : {
+        "patient": {
             name: "patient",
             dataType: r4:Reference,
             min: 1,
@@ -237,7 +237,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.patient"
         },
-        "enterer" : {
+        "enterer": {
             name: "enterer",
             dataType: r4:Reference,
             min: 0,
@@ -245,7 +245,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.enterer"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -253,7 +253,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -261,7 +261,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.text"
         },
-        "careTeam" : {
+        "careTeam": {
             name: "careTeam",
             dataType: PASClaimCareTeam,
             min: 0,
@@ -269,15 +269,15 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.careTeam"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
-            dataType: r4:Identifier,
+            dataType: ProfileIdentifier,
             min: 1,
-            max: 1,
-            isArray: false,
+            max: 2,
+            isArray: true,
             path: "Claim.identifier"
         },
-        "item" : {
+        "item": {
             name: "item",
             dataType: PASClaimItem,
             min: 1,
@@ -285,7 +285,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.item"
         },
-        "created" : {
+        "created": {
             name: "created",
             dataType: r4:dateTime,
             min: 1,
@@ -293,7 +293,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.created"
         },
-        "diagnosis" : {
+        "diagnosis": {
             name: "diagnosis",
             dataType: PASClaimDiagnosis,
             min: 0,
@@ -301,7 +301,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.diagnosis"
         },
-        "originalPrescription" : {
+        "originalPrescription": {
             name: "originalPrescription",
             dataType: r4:Reference,
             min: 0,
@@ -309,7 +309,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.originalPrescription"
         },
-        "procedure" : {
+        "procedure": {
             name: "procedure",
             dataType: PASClaimProcedure,
             min: 0,
@@ -317,7 +317,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.procedure"
         },
-        "priority" : {
+        "priority": {
             name: "priority",
             dataType: r4:CodeableConcept,
             min: 1,
@@ -326,7 +326,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             path: "Claim.priority",
             valueSet: "http://hl7.org/fhir/ValueSet/process-priority"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -334,7 +334,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: true,
             path: "Claim.contained"
         },
-        "referral" : {
+        "referral": {
             name: "referral",
             dataType: r4:Reference,
             min: 0,
@@ -342,7 +342,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.referral"
         },
-        "prescription" : {
+        "prescription": {
             name: "prescription",
             dataType: r4:Reference,
             min: 0,
@@ -350,7 +350,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.prescription"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -358,7 +358,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.meta"
         },
-        "billablePeriod" : {
+        "billablePeriod": {
             name: "billablePeriod",
             dataType: r4:Period,
             min: 0,
@@ -366,7 +366,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.billablePeriod"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -374,7 +374,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.implicitRules"
         },
-        "subType" : {
+        "subType": {
             name: "subType",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -383,7 +383,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             path: "Claim.subType",
             valueSet: "http://hl7.org/fhir/ValueSet/claim-subtype"
         },
-        "facility" : {
+        "facility": {
             name: "facility",
             dataType: r4:Reference,
             min: 0,
@@ -391,7 +391,7 @@ public const RESOURCE_NAME_PASCLAIM = "Claim";
             isArray: false,
             path: "Claim.facility"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: PASClaimStatus,
             min: 1,
@@ -412,7 +412,7 @@ public type PASClaim record {|
     RESOURCE_NAME_PASCLAIM resourceType = RESOURCE_NAME_PASCLAIM;
 
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     PASClaimInsurance[] insurance;
     r4:Extension[] extension?;
@@ -433,9 +433,13 @@ public type PASClaim record {|
     string id?;
     r4:Narrative text?;
     PASClaimCareTeam[] careTeam?;
-    ProfileIdentifier identifier;
     @constraint:Array {
-       minLength: 1
+        minLength: 1,
+        maxLength: 2
+    }
+    ProfileIdentifier[] identifier;
+    @constraint:Array {
+        minLength: 1
     }
     PASClaimItem[] item;
     r4:dateTime created;
@@ -452,7 +456,7 @@ public type PASClaim record {|
     r4:CodeableConcept subType?;
     r4:Reference facility?;
     PASClaimStatus status;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR PASClaimSupportingInfoPatientEvent datatype record.
@@ -734,7 +738,7 @@ public type PASClaimCareTeamItemClaimMember record {|
     r4:CodeableConcept qualification?;
     r4:positiveInt sequence;
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     r4:Extension[] extension;
     r4:CodeableConcept role?;
@@ -742,8 +746,8 @@ public type PASClaimCareTeamItemClaimMember record {|
     r4:Extension[] modifierExtension?;
     boolean responsible?;
     @constraint:Array {
-       minLength: 1,
-       maxLength: 1
+        minLength: 1,
+        maxLength: 1
     }
     r4:Extension[] careTeamClaimScope;
     string id?;
@@ -814,7 +818,7 @@ public type PASClaimSupportingInfoCategory record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     PASClaimSupportingInfoCategoryCoding[] coding;
 |};
@@ -917,7 +921,7 @@ public type PASClaimCareTeam record {|
     r4:CodeableConcept qualification?;
     r4:positiveInt sequence;
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     r4:Extension[] extension;
     r4:CodeableConcept role?;
@@ -1100,9 +1104,9 @@ public type PASClaimSupportingInfo record {|
 
 # PASClaimUse enum
 public enum PASClaimUse {
-   CODE_USE_PREDETERMINATION = "predetermination",
-   CODE_USE_PREAUTHORIZATION = "preauthorization",
-   CODE_USE_CLAIM = "claim"
+    CODE_USE_PREDETERMINATION = "predetermination",
+    CODE_USE_PREAUTHORIZATION = "preauthorization",
+    CODE_USE_CLAIM = "claim"
 }
 
 # FHIR PASClaimSupportingInfoCategoryTwo datatype record.
@@ -1131,7 +1135,7 @@ public type PASClaimSupportingInfoCategoryTwo record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     PASClaimSupportingInfoCategoryCodingTwo[] coding;
 |};
@@ -1575,7 +1579,7 @@ public type PASClaimCareTeamOverallClaimMember record {|
     r4:CodeableConcept qualification?;
     r4:positiveInt sequence;
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     r4:Extension[] extension;
     r4:CodeableConcept role?;
@@ -1583,8 +1587,8 @@ public type PASClaimCareTeamOverallClaimMember record {|
     r4:Extension[] modifierExtension?;
     boolean responsible?;
     @constraint:Array {
-       minLength: 1,
-       maxLength: 1
+        minLength: 1,
+        maxLength: 1
     }
     r4:Extension[] careTeamClaimScope;
     string id?;
@@ -2144,10 +2148,10 @@ public type PASClaimSupportingInfoAdmissionDates record {|
 
 # PASClaimStatus enum
 public enum PASClaimStatus {
-   CODE_STATUS_DRAFT = "draft",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_CANCELLED = "cancelled",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
+    CODE_STATUS_DRAFT = "draft",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_CANCELLED = "cancelled",
+    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
 }
 
 # FHIR PASClaimSupportingInfoAdditionalInformation datatype record.
@@ -2303,7 +2307,7 @@ public type PASClaimSupportingInfoCategoryOne record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     PASClaimSupportingInfoCategoryCodingOne[] coding;
 |};
@@ -2793,7 +2797,7 @@ public type PASClaimSupportingInfoCategoryThree record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     PASClaimSupportingInfoCategoryCodingThree[] coding;
 |};
@@ -3338,7 +3342,7 @@ public type PASClaimSupportingInfoCategoryFour record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     PASClaimSupportingInfoCategoryCodingFour[] coding;
 |};
