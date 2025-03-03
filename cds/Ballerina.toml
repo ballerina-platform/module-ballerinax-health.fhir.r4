@@ -1,7 +1,7 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.cds"
-version = "1.1.2"
+version = "1.1.3"
 distribution = "2201.10.2"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "CDS", "CRD"]
