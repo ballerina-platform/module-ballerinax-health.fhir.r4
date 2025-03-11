@@ -5875,6 +5875,69 @@ final readonly & map<r4:FHIROperationDefinition[]> INTERNATIONAL_IG_OPERATIONS =
             ]
         }
     ],
+    "export": [
+        {
+            name: "export",
+            instanceLevel: true,
+            typeLevel: true,
+            systemLevel: false,
+            'resource: [
+                "Patient",
+                "Group"
+            ],
+            'parameter: [
+                {
+                    name: "_outputFormat",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "_since",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "instant"
+                },
+                {
+                    name: "_type",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "string"
+                },
+                {
+                    name: "_elements",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "string"
+                },
+                {
+                    name: "patient",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "Reference"
+                },
+                {
+                    name: "includeAssociatedData",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "code"
+                },
+                {
+                    name: "_typeFilter",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "string"
+                }
+            ]
+        }
+    ],
     "questionnaire": [
         {
             name: "questionnaire",

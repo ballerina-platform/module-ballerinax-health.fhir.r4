@@ -39,6 +39,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                 if isOperationPath(paths) {
                     string fhirResource = apiConfig.resourceType;
                     string operation = paths[path.length() - 1].substring(1);
+                    log:printDebug(string `Processing operation: ${operation}`);
                     r4:FHIRInteractionLevel operationScope = getRequestOperationScope(operation, fhirResource, paths);
                     if hasPathParam { // Instance level operation
                         string id = paths[paths.length() - 2];
