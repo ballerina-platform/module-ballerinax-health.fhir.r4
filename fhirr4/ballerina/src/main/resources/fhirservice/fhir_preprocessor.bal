@@ -553,7 +553,7 @@ public isolated class FHIRPreprocessor {
             string message = "Unknown operation";
             string diagnostic = "Operation \"$" + fhirOperation + "\" is not known for resource type \""
                     + fhirResourceType + "\". Known and defined operations for \"" + fhirResourceType
-                    + "\" resource: " + self.operationConfigMap.keys().toString() + ".";
+                    + "\" resource: " + resourceOperationDefinitions.keys().toString() + ".";
             return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
                     httpStatusCode = http:STATUS_BAD_REQUEST);
         }
