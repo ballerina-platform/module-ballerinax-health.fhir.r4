@@ -1,0 +1,9 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.r4.ips"
+version = "1.0.0"
+distribution = "2201.10.2"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "ips"]
+export = ["health.fhir.r4.ips"]
+
