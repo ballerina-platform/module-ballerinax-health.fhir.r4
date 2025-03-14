@@ -1,0 +1,13 @@
+name: daily-build-ips
+
+on:
+  schedule:
+    - cron: "30 21 * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/daily-build-executor.yml
+    secrets: inherit
+    with:
+      working_dir: ips
