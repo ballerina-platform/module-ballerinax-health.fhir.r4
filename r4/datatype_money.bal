@@ -15,7 +15,7 @@
 // under the License.
 
 # An amount of economic utility in some recognized currency.
-# 
+#
 # + id - Unique id for inter-element referencing
 # + extension - Additional content defined by implementations
 # + value - Numerical value (with implicit precision)

@@ -39,7 +39,7 @@ public const RESOURCE_NAME_OPERATIONOUTCOME = "OperationOutcome";
     baseType: DomainResource,
     profile: "http://hl7.org/fhir/StructureDefinition/OperationOutcome",
     elements: {
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: Resource,
             min: 0,
@@ -47,7 +47,7 @@ public const RESOURCE_NAME_OPERATIONOUTCOME = "OperationOutcome";
             isArray: true,
             path: "OperationOutcome.contained"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: Extension,
             min: 0,
@@ -55,7 +55,7 @@ public const RESOURCE_NAME_OPERATIONOUTCOME = "OperationOutcome";
             isArray: true,
             path: "OperationOutcome.extension"
         },
-        "issue" : {
+        "issue": {
             name: "issue",
             dataType: OperationOutcomeIssue,
             min: 1,
@@ -63,7 +63,7 @@ public const RESOURCE_NAME_OPERATIONOUTCOME = "OperationOutcome";
             isArray: true,
             path: "OperationOutcome.issue"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: Meta,
             min: 0,
@@ -71,7 +71,7 @@ public const RESOURCE_NAME_OPERATIONOUTCOME = "OperationOutcome";
             isArray: false,
             path: "OperationOutcome.meta"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: Extension,
             min: 0,
@@ -79,7 +79,7 @@ public const RESOURCE_NAME_OPERATIONOUTCOME = "OperationOutcome";
             isArray: true,
             path: "OperationOutcome.modifierExtension"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: uri,
             min: 0,
@@ -87,7 +87,7 @@ public const RESOURCE_NAME_OPERATIONOUTCOME = "OperationOutcome";
             isArray: false,
             path: "OperationOutcome.implicitRules"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: code,
             min: 0,
@@ -96,7 +96,7 @@ public const RESOURCE_NAME_OPERATIONOUTCOME = "OperationOutcome";
             path: "OperationOutcome.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -104,7 +104,7 @@ public const RESOURCE_NAME_OPERATIONOUTCOME = "OperationOutcome";
             isArray: false,
             path: "OperationOutcome.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: Narrative,
             min: 0,
@@ -124,12 +124,12 @@ public type OperationOutcome record {|
     RESOURCE_NAME_OPERATIONOUTCOME resourceType = RESOURCE_NAME_OPERATIONOUTCOME;
 
     BaseOperationOutcomeMeta meta = {
-        profile : [PROFILE_BASE_OPERATIONOUTCOME]
+        profile: [PROFILE_BASE_OPERATIONOUTCOME]
     };
     Resource[] contained?;
     Extension[] extension?;
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     OperationOutcomeIssue[] issue;
     Extension[] modifierExtension?;
@@ -167,10 +167,10 @@ public type BaseOperationOutcomeMeta record {|
 
 # OperationOutcomeIssueSeverity enum
 public enum OperationOutcomeIssueSeverity {
-   CODE_SEVERITY_WARNING = "warning",
-   CODE_SEVERITY_INFORMATION = "information",
-   CODE_SEVERITY_ERROR = "error",
-   CODE_SEVERITY_FATAL = "fatal"
+    CODE_SEVERITY_WARNING = "warning",
+    CODE_SEVERITY_INFORMATION = "information",
+    CODE_SEVERITY_ERROR = "error",
+    CODE_SEVERITY_FATAL = "fatal"
 }
 
 # FHIR OperationOutcomeIssue datatype record.

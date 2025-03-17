@@ -20,11 +20,11 @@ type CodeConceptDetails record {
 };
 
 # Function definition for code system finder implementations
-public type CodeSystemFinder isolated function (uri system, code code) returns CodeSystem | ValueSet | FHIRError;
+public type CodeSystemFinder isolated function (uri system, code code) returns CodeSystem|ValueSet|FHIRError;
 
 # A processor to process terminology data and create relevent data elements
 public class TerminologyProcessor {
-    
+
     private map<CodeSystem> codeSystems = {};
     private map<ValueSet> valueSets = {};
 
@@ -49,13 +49,13 @@ public class TerminologyProcessor {
     }
 
     # Create CodeableConcept for given code in a given system.
-    # 
+    #
     # + system - system uri of the code system or value set
     # + code - code interested
     # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code 
-    #                       system in a external source system)
+    # system in a external source system)
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCodeableConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    public isolated function createCodeableConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                     returns CodeableConcept|FHIRError {
         CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder);
         if conceptResult != () {
@@ -66,13 +66,13 @@ public class TerminologyProcessor {
     }
 
     # Create Coding for given code in a given system.
-    # 
+    #
     # + system - system uri of the code system or value set
     # + code - code interested
     # + codeSystemFinder - (optional) custom code system function (utility will used this function to find code 
-    #                       system in a external source system)
+    # system in a external source system)
     # + return - Created CodeableConcept record or FHIRError if not found
-    public isolated function createCoding(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    public isolated function createCoding(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                                 returns Coding|FHIRError {
         CodeConceptDetails? conceptResult = check self.findConcept(system, code, codeSystemFinder);
         if conceptResult != () {
@@ -82,8 +82,7 @@ public class TerminologyProcessor {
         return createInternalFHIRError(msg, ERROR, PROCESSING_NOT_FOUND);
     }
 
-
-    private isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ()) 
+    private isolated function findConcept(uri system, code code, CodeSystemFinder? codeSystemFinder = ())
                                                                                 returns (CodeConceptDetails|FHIRError)? {
         if codeSystemFinder != () {
             (CodeSystem|ValueSet) & readonly result = check codeSystemFinder(system, code).cloneReadOnly();
@@ -103,7 +102,7 @@ public class TerminologyProcessor {
     }
 
     # Function to find code system concept within a CodeSystem.
-    # 
+    #
     # + codeSystem - Target CodeSystem
     # + code - code searching for
     # + return - Code system concept found in the CodeSystem 
@@ -116,7 +115,7 @@ public class TerminologyProcessor {
                     CodeConceptDetails codeConcept = {
                         url: url,
                         concept: concept
-                    }; 
+                    };
                     return codeConcept;
                 }
             }
@@ -125,7 +124,7 @@ public class TerminologyProcessor {
     }
 
     # Function to find code system concept within a ValueSet.
-    # 
+    #
     # + valueSet - Target ValueSet
     # + code - code searching for
     # + return - ValueSet/CodeSystem concept found 
@@ -170,7 +169,7 @@ public class TerminologyProcessor {
                                 }
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -202,9 +201,9 @@ public class TerminologyProcessor {
             }
         }
         return cConcept;
-    } 
+    }
 
-    private isolated function conceptToCoding (CodeSystemConcept|ValueSetComposeIncludeConcept concept, uri system) returns Coding {
+    private isolated function conceptToCoding(CodeSystemConcept|ValueSetComposeIncludeConcept concept, uri system) returns Coding {
 
         Coding codingValue = {
             code: concept.code,
@@ -215,5 +214,5 @@ public class TerminologyProcessor {
             codingValue.display = displayValue;
         }
         return codingValue;
-    } 
+    }
 }

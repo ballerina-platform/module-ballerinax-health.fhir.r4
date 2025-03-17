@@ -552,7 +552,7 @@ public type ElementDefinition record {|
 # + elementContextDefinition - element definition record
 # + return - error if validation fails
 public isolated function elementDefinitionDataTypeValidationFunction(anydata data,
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         map<anydata> mapObj = {};
@@ -562,7 +562,7 @@ public isolated function elementDefinitionDataTypeValidationFunction(anydata dat
             string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
             return <FHIRValidationError>createInternalFHIRError(
                         "Error occurred while casting data to map representation", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg, cause = e);
+                    diagnostic = diagnosticMsg, cause = e);
 
         }
 
@@ -586,14 +586,14 @@ public isolated function elementDefinitionDataTypeValidationFunction(anydata dat
         boolean minValueUnsignedIntValCheck = minValueUnsignedIntVal is ();
         boolean minValueQuantityValCheck = minValueQuantityVal is ();
 
-        boolean expression = (minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) && 
-                        (minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (!minValueQuantityValCheck) 
+        boolean expression = (minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) &&
+                        (minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (!minValueQuantityValCheck)
                         || (minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) && (minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (!minValueUnsignedIntValCheck) && (minValueQuantityValCheck)
-                        || (minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) && (minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (!minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck) 
+                        || (minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) && (minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (!minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck)
                         || (minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) && (minValueTimeValCheck) && (minValueDecimalValCheck) && (!minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck)
-                        || (minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) && (minValueTimeValCheck) && (!minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck) 
+                        || (minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) && (minValueTimeValCheck) && (!minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck)
                         || (minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) && (!minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck)
-                        || (minValueDateValCheck) && (minValueDateTimeValCheck) && (!minValueInstantValCheck) && (minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck) 
+                        || (minValueDateValCheck) && (minValueDateTimeValCheck) && (!minValueInstantValCheck) && (minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck)
                         || (minValueDateValCheck) && (!minValueDateTimeValCheck) && (minValueInstantValCheck) && (minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck)
                         || (!minValueDateValCheck) && (minValueDateTimeValCheck) && (minValueInstantValCheck) && (minValueTimeValCheck) && (minValueDecimalValCheck) && (minValueIntegerValCheck) && (minValuePositiveIntValCheck) && (minValueUnsignedIntValCheck) && (minValueQuantityValCheck);
 
@@ -617,15 +617,15 @@ public isolated function elementDefinitionDataTypeValidationFunction(anydata dat
         boolean maxValueUnsignedIntValCheck = maxValueUnsignedIntVal is ();
         boolean maxValueQuantityValCheck = maxValueQuantityVal is ();
 
-        boolean expressionTwo = (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && 
-                        (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (!maxValueQuantityValCheck) 
-                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (!maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck) 
-                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (!maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck) 
-                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (!maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck) 
-                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (!maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck) 
-                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (!maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck) 
-                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (!maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck) 
-                        || (maxValueDateValCheck) && (!maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck) 
+        boolean expressionTwo = (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) &&
+                        (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (!maxValueQuantityValCheck)
+                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (!maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck)
+                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (!maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck)
+                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (!maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck)
+                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (!maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck)
+                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (!maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck)
+                        || (maxValueDateValCheck) && (maxValueDateTimeValCheck) && (!maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck)
+                        || (maxValueDateValCheck) && (!maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck)
                         || (!maxValueDateValCheck) && (maxValueDateTimeValCheck) && (maxValueInstantValCheck) && (maxValueTimeValCheck) && (maxValueDecimalValCheck) && (maxValueIntegerValCheck) && (maxValuePositiveIntValCheck) && (maxValueUnsignedIntValCheck) && (maxValueQuantityValCheck);
 
         if (expression) {
@@ -637,7 +637,7 @@ public isolated function elementDefinitionDataTypeValidationFunction(anydata dat
                                 "ElementDefinition element according to FHIR Specification";
                 return <FHIRValidationError>createInternalFHIRError(
                                 "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                                diagnostic = diagnosticMsg);
+                        diagnostic = diagnosticMsg);
             }
         }
         else {
@@ -645,7 +645,7 @@ public isolated function elementDefinitionDataTypeValidationFunction(anydata dat
                             "ElementDefinition element according to FHIR Specification";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg);
+                    diagnostic = diagnosticMsg);
         }
 
     }

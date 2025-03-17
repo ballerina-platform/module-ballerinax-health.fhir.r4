@@ -24,7 +24,7 @@
     name: "ContactDetail",
     baseType: Element,
     elements: {
-        "name" : {
+        "name": {
             name: "name",
             dataType: string,
             min: 0,
@@ -32,7 +32,7 @@
             isArray: false,
             description: "Name of an individual to contact"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: ContactPoint,
             min: 0,
@@ -42,7 +42,7 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }

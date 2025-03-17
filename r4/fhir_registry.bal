@@ -270,7 +270,7 @@ public isolated class FHIRRegistry {
     }
 
     # Add a custom search parameter to the registry
-    # 
+    #
     # + resourceType - The resource type
     # + searchParameter - The search parameter to be added
     public isolated function addSearchParameter(string resourceType, FHIRSearchParameterDefinition searchParameter) {
@@ -280,7 +280,7 @@ public isolated class FHIRRegistry {
                 if !collection.hasKey(searchParameter.name) {
                     collection[searchParameter.name] = searchParameter.clone();
                 }
-            } 
+            }
         }
     }
 }

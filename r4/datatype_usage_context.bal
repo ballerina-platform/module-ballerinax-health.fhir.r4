@@ -90,7 +90,7 @@ public type UsageContext record {|
 |};
 
 public isolated function usageContextDataTypeValidationFunction(anydata data,
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         map<anydata> mapObj = {};
@@ -100,7 +100,7 @@ public isolated function usageContextDataTypeValidationFunction(anydata data,
             string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred while casting data to map representation", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg, cause = e);
+                    diagnostic = diagnosticMsg, cause = e);
 
         }
         CodeableConcept? valueCodeableConceptVal = ();
@@ -124,8 +124,8 @@ public isolated function usageContextDataTypeValidationFunction(anydata data,
         boolean valueRangeValCheck = valueRangeVal is ();
         boolean valueReferenceValCheck = valueReferenceVal is ();
 
-        boolean expression = (valueCodeableConceptValCheck) && (valueQuantityValCheck) && (valueRangeValCheck) && (!valueReferenceValCheck) 
-                        || (valueCodeableConceptValCheck) && (valueQuantityValCheck) && (!valueRangeValCheck) && (valueReferenceValCheck) 
+        boolean expression = (valueCodeableConceptValCheck) && (valueQuantityValCheck) && (valueRangeValCheck) && (!valueReferenceValCheck)
+                        || (valueCodeableConceptValCheck) && (valueQuantityValCheck) && (!valueRangeValCheck) && (valueReferenceValCheck)
                         || (valueCodeableConceptValCheck) && (!valueQuantityValCheck) && (valueRangeValCheck) && (valueReferenceValCheck)
                         || (!valueCodeableConceptValCheck) && (valueQuantityValCheck) && (valueRangeValCheck) && (valueReferenceValCheck);
 
@@ -136,7 +136,7 @@ public isolated function usageContextDataTypeValidationFunction(anydata data,
             string diagnosticMsg = "Error occurred due to incorrect definition of timing attribute of UsageContext element according to FHIR Specification";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg);
+                    diagnostic = diagnosticMsg);
         }
 
     }

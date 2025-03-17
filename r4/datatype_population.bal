@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-
 # A definition of a set of people that apply to some clinically related context, for example people contraindicated for a certain medication.
 #
 # + id - Unique id for inter-element referencing  
@@ -93,7 +92,7 @@ public type Population record {|
 |};
 
 public isolated function populationDataTypeValidationFunction(anydata data,
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         map<anydata> mapObj = {};
@@ -103,7 +102,7 @@ public isolated function populationDataTypeValidationFunction(anydata data,
             string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred while casting data to map representation", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg, cause = e);
+                    diagnostic = diagnosticMsg, cause = e);
 
         }
         Range? ageRangeVal = <Range?>mapObj.get("ageRange");
@@ -123,7 +122,7 @@ public isolated function populationDataTypeValidationFunction(anydata data,
                             "of TriggerDefinition element according to FHIR Specificatio";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg);
+                    diagnostic = diagnosticMsg);
         }
     }
 }

@@ -40,7 +40,7 @@
         'json: complexDataTypeJsonSerializer
     }
 }
-public type Availability record{|
+public type Availability record {|
     AvailableTime[] availableTime?;
     NotAvailableTime[] notAvailableTime?;
 |};

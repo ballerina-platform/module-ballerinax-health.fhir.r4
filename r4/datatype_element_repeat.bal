@@ -238,7 +238,7 @@ public enum Daycode {
 # + elementContextDefinition - Element context definition
 # + return - FHIRValidationError array if validation fails, else nil
 public isolated function repeatElementDataTypeValidationFunction(anydata data,
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         map<anydata> mapObj = {};
@@ -248,7 +248,7 @@ public isolated function repeatElementDataTypeValidationFunction(anydata data,
             string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred while casting data to map representation", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg, cause = e);
+                    diagnostic = diagnosticMsg, cause = e);
 
         }
         Duration? boundsDurationVal = ();
@@ -267,8 +267,8 @@ public isolated function repeatElementDataTypeValidationFunction(anydata data,
         boolean boundsRangeValCheck = boundsRangeVal is ();
         boolean boundsPeriodValCheck = boundsPeriodVal is ();
 
-        boolean expression = (boundsDurationValCheck) && (boundsRangeValCheck) && (!boundsPeriodValCheck) 
-                        || (boundsDurationValCheck) && (!boundsRangeValCheck) && (boundsPeriodValCheck) || (!boundsDurationValCheck) 
+        boolean expression = (boundsDurationValCheck) && (boundsRangeValCheck) && (!boundsPeriodValCheck)
+                        || (boundsDurationValCheck) && (!boundsRangeValCheck) && (boundsPeriodValCheck) || (!boundsDurationValCheck)
                         && (boundsRangeValCheck) && (boundsPeriodValCheck);
 
         if (expression) {
@@ -278,7 +278,7 @@ public isolated function repeatElementDataTypeValidationFunction(anydata data,
             string diagnosticMsg = "Error occurred due to incorrect definition of bounds element according to FHIR Specificatio";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg);
+                    diagnostic = diagnosticMsg);
         }
 
     }

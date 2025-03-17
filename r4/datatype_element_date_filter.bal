@@ -92,12 +92,12 @@ public type ElementDateFilter record {|
 |};
 
 # This function validates the data type definition of the ElementDateFilter record.
-# 
+#
 # + data - data to be validated
 # + elementContextDefinition - element context definition
 # + return - FHIRValidationError array or else nil
 public isolated function dataFilterDataTypeValidationFunction(anydata data,
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         map<anydata> mapObj = {};
@@ -107,7 +107,7 @@ public isolated function dataFilterDataTypeValidationFunction(anydata data,
             string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred while casting data to map representation", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg, cause = e);
+                    diagnostic = diagnosticMsg, cause = e);
 
         }
         dateTime? valueDateTimeVal = ();
@@ -126,9 +126,9 @@ public isolated function dataFilterDataTypeValidationFunction(anydata data,
         boolean valuePeriodValCheck = valuePeriodVal is ();
         boolean valueDurationValCheck = valueDurationVal is ();
 
-        boolean expression = (valueDateTimeValCheck) && (valuePeriodValCheck) && 
-                        (!valueDurationValCheck) || (valueDateTimeValCheck) && (!valuePeriodValCheck) && 
-                        (valueDurationValCheck) || (!valueDateTimeValCheck) && (valuePeriodValCheck) && 
+        boolean expression = (valueDateTimeValCheck) && (valuePeriodValCheck) &&
+                        (!valueDurationValCheck) || (valueDateTimeValCheck) && (!valuePeriodValCheck) &&
+                        (valueDurationValCheck) || (!valueDateTimeValCheck) && (valuePeriodValCheck) &&
                         (valueDurationValCheck);
 
         if (expression) {
@@ -138,7 +138,7 @@ public isolated function dataFilterDataTypeValidationFunction(anydata data,
             string diagnosticMsg = "Error occurred due to incorrect definition of value attribute in DataFilter element according to FHIR Specification";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg);
+                    diagnostic = diagnosticMsg);
         }
 
     }

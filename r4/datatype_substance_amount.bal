@@ -144,9 +144,8 @@ public type ReferenceRange record {|
     Quantity highLimit?;
 |};
 
-
 public isolated function substanceAmountDataTypeValidationFunction(anydata data,
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         map<anydata> mapObj = {};
@@ -156,7 +155,7 @@ public isolated function substanceAmountDataTypeValidationFunction(anydata data,
             string diagnosticMsg = "Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred while casting data to map representation", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg, cause = e);
+                    diagnostic = diagnosticMsg, cause = e);
 
         }
         Quantity? amountQuantityVal = <Quantity?>mapObj.get("amountQuantity");
@@ -179,7 +178,7 @@ public isolated function substanceAmountDataTypeValidationFunction(anydata data,
                             "of TriggerDefinition element according to FHIR Specificatio";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg);
+                    diagnostic = diagnosticMsg);
         }
     }
 }

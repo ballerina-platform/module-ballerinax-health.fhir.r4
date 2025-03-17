@@ -67,7 +67,7 @@ public function subTypingTest() {
     // type of the resource you want to parse.
     Patient|error patient = input.fromJsonWithType(Patient);
     test:assertTrue(patient is DomainResource, msg = "FHIR resource is not a Domain Resource. " +
-    "Every FHIR resource should be a Domain Resource.");
+            "Every FHIR resource should be a Domain Resource.");
 }
 
 @test:Config {}

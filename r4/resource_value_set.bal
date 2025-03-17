@@ -56,7 +56,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
     baseType: DomainResource,
     profile: "http://hl7.org/fhir/StructureDefinition/ValueSet",
     elements: {
-        "date" : {
+        "date": {
             name: "date",
             dataType: dateTime,
             min: 0,
@@ -64,7 +64,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.date"
         },
-        "copyright" : {
+        "copyright": {
             name: "copyright",
             dataType: markdown,
             min: 0,
@@ -72,7 +72,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.copyright"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: Extension,
             min: 0,
@@ -80,7 +80,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: true,
             path: "ValueSet.extension"
         },
-        "purpose" : {
+        "purpose": {
             name: "purpose",
             dataType: markdown,
             min: 0,
@@ -88,7 +88,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.purpose"
         },
-        "jurisdiction" : {
+        "jurisdiction": {
             name: "jurisdiction",
             dataType: CodeableConcept,
             min: 0,
@@ -97,7 +97,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             path: "ValueSet.jurisdiction",
             valueSet: "http://hl7.org/fhir/ValueSet/jurisdiction"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: Extension,
             min: 0,
@@ -105,7 +105,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: true,
             path: "ValueSet.modifierExtension"
         },
-        "description" : {
+        "description": {
             name: "description",
             dataType: markdown,
             min: 0,
@@ -113,7 +113,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.description"
         },
-        "experimental" : {
+        "experimental": {
             name: "experimental",
             dataType: boolean,
             min: 0,
@@ -121,7 +121,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.experimental"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: code,
             min: 0,
@@ -130,7 +130,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             path: "ValueSet.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "title" : {
+        "title": {
             name: "title",
             dataType: string,
             min: 0,
@@ -138,7 +138,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.title"
         },
-        "contact" : {
+        "contact": {
             name: "contact",
             dataType: ContactDetail,
             min: 0,
@@ -146,7 +146,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: true,
             path: "ValueSet.contact"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -154,7 +154,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: Narrative,
             min: 0,
@@ -162,7 +162,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.text"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: Identifier,
             min: 0,
@@ -170,7 +170,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: true,
             path: "ValueSet.identifier"
         },
-        "version" : {
+        "version": {
             name: "version",
             dataType: string,
             min: 0,
@@ -178,7 +178,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.version"
         },
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 0,
@@ -186,7 +186,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.url"
         },
-        "expansion" : {
+        "expansion": {
             name: "expansion",
             dataType: ValueSetExpansion,
             min: 0,
@@ -194,7 +194,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.expansion"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: Resource,
             min: 0,
@@ -202,7 +202,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: true,
             path: "ValueSet.contained"
         },
-        "immutable" : {
+        "immutable": {
             name: "immutable",
             dataType: boolean,
             min: 0,
@@ -210,7 +210,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.immutable"
         },
-        "compose" : {
+        "compose": {
             name: "compose",
             dataType: ValueSetCompose,
             min: 0,
@@ -218,7 +218,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.compose"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: Meta,
             min: 0,
@@ -226,7 +226,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.meta"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: string,
             min: 0,
@@ -234,7 +234,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.name"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: uri,
             min: 0,
@@ -242,7 +242,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.implicitRules"
         },
-        "publisher" : {
+        "publisher": {
             name: "publisher",
             dataType: string,
             min: 0,
@@ -250,7 +250,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: false,
             path: "ValueSet.publisher"
         },
-        "useContext" : {
+        "useContext": {
             name: "useContext",
             dataType: UsageContext,
             min: 0,
@@ -258,7 +258,7 @@ public const RESOURCE_NAME_VALUESET = "ValueSet";
             isArray: true,
             path: "ValueSet.useContext"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: ValueSetStatus,
             min: 1,
@@ -279,7 +279,7 @@ public type ValueSet record {|
     RESOURCE_NAME_VALUESET resourceType = RESOURCE_NAME_VALUESET;
 
     BaseValueSetMeta meta = {
-        profile : [PROFILE_BASE_VALUESET]
+        profile: [PROFILE_BASE_VALUESET]
     };
     dateTime date?;
     markdown copyright?;
@@ -417,15 +417,15 @@ public type ValueSetComposeIncludeConceptDesignation record {|
 
 # ValueSetComposeIncludeFilterOp enum
 public enum ValueSetComposeIncludeFilterOp {
-   CODE_OP_IS_NOT_A = "is-not-a",
-   CODE_OP_REGEX = "regex",
-   CODE_OP_IN = "in",
-   CODE_OP_DESCENDENT_OF = "descendent-of",
-   CODE_OP_NOT_IN = "not-in",
-   CODE_OP_EXISTS = "exists",
-   CODE_OP_GENERALIZES = "generalizes",
-   CODE_OP_EQUAL = "=",
-   CODE_OP_IS_A = "is-a"
+    CODE_OP_IS_NOT_A = "is-not-a",
+    CODE_OP_REGEX = "regex",
+    CODE_OP_IN = "in",
+    CODE_OP_DESCENDENT_OF = "descendent-of",
+    CODE_OP_NOT_IN = "not-in",
+    CODE_OP_EXISTS = "exists",
+    CODE_OP_GENERALIZES = "generalizes",
+    CODE_OP_EQUAL = "=",
+    CODE_OP_IS_A = "is-a"
 }
 
 # FHIR ValueSetComposeIncludeFilter datatype record.
@@ -728,10 +728,10 @@ public type ValueSetExpansionParameter record {|
 
 # ValueSetStatus enum
 public enum ValueSetStatus {
-   CODE_STATUS_DRAFT = "draft",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_RETIRED = "retired",
-   CODE_STATUS_UNKNOWN = "unknown"
+    CODE_STATUS_DRAFT = "draft",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_RETIRED = "retired",
+    CODE_STATUS_UNKNOWN = "unknown"
 }
 
 # FHIR ValueSetCompose datatype record.
@@ -808,7 +808,7 @@ public enum ValueSetStatus {
 }
 public type ValueSetCompose record {|
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     ValueSetComposeInclude[] include;
     Extension[] extension?;
