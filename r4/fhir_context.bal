@@ -143,12 +143,18 @@ public isolated class FHIRContext {
         }
     }
 
+    # Set custom HTTP response sent to client.
+    #
+    # + response - HTTP response object
     public isolated function setHTTPResponse(HTTPResponse response) {
         lock {
             self.httpResponse = response.clone();
         }
     }
 
+    # Get custom HTTP response object.
+    # 
+    # + return - HTTP response object in the context.
     public isolated function getHTTPResponse() returns HTTPResponse? {
         lock {
             return self.httpResponse.clone();
@@ -167,11 +173,8 @@ public isolated class FHIRContext {
             }
 
             HTTPResponse response = <HTTPResponse>self.httpResponse;
-            // Check if the header already exists. Override the initial value of the header.
-            if (response.headers.hasKey(headerName)) {
-                log:printWarn(string `Attempting to override the initial value of the header : ${headerName}`);
-            }
 
+            // If the header already exists. Override the initial value of the header.
             response.headers[headerName] = headerValue;
         }
 
