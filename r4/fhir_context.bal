@@ -1,6 +1,4 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-import ballerina/log;
-
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
@@ -153,7 +151,7 @@ public isolated class FHIRContext {
     }
 
     # Get custom HTTP response object.
-    # 
+    #
     # + return - HTTP response object in the context.
     public isolated function getHTTPResponse() returns HTTPResponse? {
         lock {
