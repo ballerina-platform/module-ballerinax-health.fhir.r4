@@ -286,6 +286,9 @@ version = "2.5.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
+modules = [
+	{org = "ballerina", packageName = "time", moduleName = "time"}
+]
 
 [[package]]
 org = "ballerina"
@@ -304,6 +307,9 @@ dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.int"},
 	{org = "ballerina", name = "time"}
+]
+modules = [
+	{org = "ballerina", packageName = "uuid", moduleName = "uuid"}
 ]
 
 [[package]]
@@ -343,13 +349,29 @@ modules = [
 
 [[package]]
 org = "ballerinax"
+name = "health.fhir.r4.international401"
+version = "2.2.2"
+dependencies = [
+	{org = "ballerina", name = "constraint"},
+	{org = "ballerina", name = "log"},
+	{org = "ballerinax", name = "health.fhir.r4"}
+]
+modules = [
+	{org = "ballerinax", packageName = "health.fhir.r4.international401", moduleName = "health.fhir.r4.international401"}
+]
+
+[[package]]
+org = "ballerinax"
 name = "health.fhir.r4.ips"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "test"},
-	{org = "ballerinax", name = "health.fhir.r4"}
+	{org = "ballerina", name = "time"},
+	{org = "ballerina", name = "uuid"},
+	{org = "ballerinax", name = "health.fhir.r4"},
+	{org = "ballerinax", name = "health.fhir.r4.international401"}
 ]
 modules = [
 	{org = "ballerinax", packageName = "health.fhir.r4.ips", moduleName = "health.fhir.r4.ips"}
