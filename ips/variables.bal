@@ -32,3 +32,13 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONALPATIENTSUM
 
 public json[] FHIR_VALUE_SETS = [];
 public json[] FHIR_CODE_SYSTEMS = [];
+
+configurable string ips_bundle_identifier_system = "urn:oid:2.16.724.4.8.10.200.10";
+configurable string ips_composition_status = "final";
+configurable string ips_composition_title = "International Patient Summary";
+configurable string ips_composition_problem_section_title = "Active Problems";
+configurable string ips_composition_allergy_section_title = "Allergies";
+configurable string ips_composition_medication_section_title = "Medications";
+configurable string[] attesters = [];
+configurable string custodian = "";
+configurable string author = "";

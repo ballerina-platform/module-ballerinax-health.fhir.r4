@@ -4,7 +4,7 @@ import ballerinax/health.fhir.r4;
 // write test cases of usage of getIpsBundle function
 
 @test:Config
-function testIpsBundleCreation() {
+function testIpsBundleCreation() returns error? {
     IpsBundleData sampleData = {
         composition: {
             id: "comp-001",
@@ -47,7 +47,7 @@ function testIpsBundleCreation() {
         ]
     };
 
-    r4:Bundle ipsBundle = getIpsBundle(sampleData);
+    r4:Bundle ipsBundle = check getIpsBundle(sampleData);
     test:assertEquals(ipsBundle.'type, "document");
     r4:BundleEntry[]? entry = ipsBundle.entry;
     if entry is r4:BundleEntry[] {

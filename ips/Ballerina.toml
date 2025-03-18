@@ -5,5 +5,4 @@ version = "1.0.1"
 distribution = "2201.10.2"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "ips"]
-export = ["health.fhir.r4.ips"]
 
