@@ -137,7 +137,7 @@ public isolated function createFHIRError(string message, Severity errServerity, 
         returns FHIRError {
     string diagnosticMessage = diagnostic != () ? string `${message} due to ${diagnostic}` : message;
     return createTypedError(diagnosticMessage, errServerity, code, diagnostic, expression, cause, errorType,
-                                internal = false, httpStatusCode = httpStatusCode);
+            internal = false, httpStatusCode = httpStatusCode);
 }
 
 # Utility function to create internal FHIRError.

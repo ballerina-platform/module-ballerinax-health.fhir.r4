@@ -140,7 +140,7 @@ public type DataRequirement record {
 # + elementContextDefinition - Element context definition
 # + return - FHIRValidationError array if validation fails or else nil
 public isolated function dataRequirementDataTypeValidationFunction(anydata data,
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         map<anydata> mapObj = {};
@@ -150,7 +150,7 @@ public isolated function dataRequirementDataTypeValidationFunction(anydata data,
             string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred while casting data to map representation", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg, cause = e);
+                    diagnostic = diagnosticMsg, cause = e);
 
         }
         CodeableConcept? subjectCodeableConceptVal = <CodeableConcept?>mapObj.get("subjectCodeableConcept");
@@ -158,7 +158,7 @@ public isolated function dataRequirementDataTypeValidationFunction(anydata data,
 
         boolean subjectCodeableConceptValCheck = subjectCodeableConceptVal is ();
         boolean subjectReferenceValCheck = subjectReferenceVal is ();
-        boolean expression = (subjectCodeableConceptValCheck) && (!subjectReferenceValCheck) || 
+        boolean expression = (subjectCodeableConceptValCheck) && (!subjectReferenceValCheck) ||
                         (!subjectCodeableConceptValCheck) && (subjectReferenceValCheck);
 
         if (expression) {
@@ -168,7 +168,7 @@ public isolated function dataRequirementDataTypeValidationFunction(anydata data,
             string diagnosticMsg = "Error occurred due to incorrect definition of subject attribute in DataRequirement element according to FHIR Specification";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg);
+                    diagnostic = diagnosticMsg);
         }
 
     }

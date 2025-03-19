@@ -15,11 +15,11 @@
 // under the License.
 
 # A resource with narrative, extensions, and contained resources.
-#   * Rule: If the resource is contained in another resource, it SHALL NOT contain nested Resources.
-#   * Rule: If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource
-#   * Rule: If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated.
-#   * Rule: If a resource is contained in another resource, it SHALL NOT have a security label.
-#   * Guideline: A resource should have narrative for robust management.
+# * Rule: If the resource is contained in another resource, it SHALL NOT contain nested Resources.
+# * Rule: If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource
+# * Rule: If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated.
+# * Rule: If a resource is contained in another resource, it SHALL NOT have a security label.
+# * Guideline: A resource should have narrative for robust management.
 #
 # + text - Text summary of the resource, for human interpretation
 # + contained - Contained, inline Resources
@@ -30,7 +30,7 @@
     baseType: Resource,
     profile: (),
     elements: {
-        "text" : {
+        "text": {
             name: "text",
             dataType: Narrative,
             min: 0,
@@ -38,7 +38,7 @@
             isArray: false,
             description: "Text summary of the resource, for human interpretation"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: Resource,
             min: 0,
@@ -46,7 +46,7 @@
             isArray: true,
             description: "Contained, inline Resources"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: Extension,
             min: 0,
@@ -54,7 +54,7 @@
             isArray: true,
             description: "Additional content defined by implementations"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: Extension,
             min: 0,
@@ -64,7 +64,7 @@
         }
     },
     serializers: {
-        'xml: fhirResourceXMLSerializer, 
+        'xml: fhirResourceXMLSerializer,
         'json: fhirResourceJsonSerializer
     }
 }

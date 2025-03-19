@@ -19,13 +19,12 @@ import ballerina/log;
 public const string PROFILE_BASE_BUNDLE = "http://hl7.org/fhir/StructureDefinition/Bundle";
 public const RESOURCE_NAME_BUNDLE = "Bundle";
 
-
 @ContainerDefinition {
     name: "Bundle",
     baseType: Resource,
     profile: PROFILE_BASE_BUNDLE,
     elements: {
-        "resourceType" : {
+        "resourceType": {
             name: "resourceType",
             dataType: string,
             min: 1,
@@ -33,7 +32,7 @@ public const RESOURCE_NAME_BUNDLE = "Bundle";
             isArray: false,
             description: "Type of the resource [Bundle]"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: Identifier,
             min: 0,
@@ -41,7 +40,7 @@ public const RESOURCE_NAME_BUNDLE = "Bundle";
             isArray: false,
             description: "Persistent identifier for the bundle"
         },
-        "type" : {
+        "type": {
             name: "type",
             dataType: code,
             min: 1,
@@ -50,7 +49,7 @@ public const RESOURCE_NAME_BUNDLE = "Bundle";
             description: "document | message | transaction | transaction-response | batch | batch-response | history | searchset | collection",
             valueSet: "http://hl7.org/fhir/ValueSet/bundle-type"
         },
-        "timestamp" : {
+        "timestamp": {
             name: "timestamp",
             dataType: instant,
             min: 0,
@@ -58,7 +57,7 @@ public const RESOURCE_NAME_BUNDLE = "Bundle";
             isArray: false,
             description: "When the bundle was assembled"
         },
-        "total" : {
+        "total": {
             name: "total",
             dataType: unsignedInt,
             min: 0,
@@ -66,7 +65,7 @@ public const RESOURCE_NAME_BUNDLE = "Bundle";
             isArray: false,
             description: "If search, the total number of matches"
         },
-        "link" : {
+        "link": {
             name: "link",
             dataType: BundleLink,
             min: 0,
@@ -74,7 +73,7 @@ public const RESOURCE_NAME_BUNDLE = "Bundle";
             isArray: true,
             description: "Links related to this Bundle"
         },
-        "entry" : {
+        "entry": {
             name: "entry",
             dataType: BundleEntry,
             min: 0,
@@ -82,7 +81,7 @@ public const RESOURCE_NAME_BUNDLE = "Bundle";
             isArray: true,
             description: "Entry in the bundle - will have a resource or information"
         },
-        "signature" : {
+        "signature": {
             name: "signature",
             dataType: Signature,
             min: 0,
@@ -92,7 +91,7 @@ public const RESOURCE_NAME_BUNDLE = "Bundle";
         }
     },
     serializers: {
-        'xml: fhirBundleXmlSerializer, 
+        'xml: fhirBundleXmlSerializer,
         'json: fhirBundleJsonSerializer
     }
 }
@@ -102,7 +101,7 @@ public type Bundle record {|
     RESOURCE_NAME_BUNDLE resourceType = RESOURCE_NAME_BUNDLE;
     string id?;
     BaseBundleMeta meta = {
-        profile : [PROFILE_BASE_BUNDLE]
+        profile: [PROFILE_BASE_BUNDLE]
     };
     uri implicitRules?;
     code language?;
@@ -122,7 +121,7 @@ public type Bundle record {|
     baseType: Resource,
     profile: PROFILE_BASE_BUNDLE,
     elements: {
-        "resourceType" : {
+        "resourceType": {
             name: "resourceType",
             dataType: string,
             min: 1,
@@ -130,7 +129,7 @@ public type Bundle record {|
             isArray: false,
             description: "Type of the resource [Bundle]"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: Identifier,
             min: 0,
@@ -138,7 +137,7 @@ public type Bundle record {|
             isArray: false,
             description: "Persistent identifier for the bundle"
         },
-        "type" : {
+        "type": {
             name: "type",
             dataType: code,
             min: 1,
@@ -147,7 +146,7 @@ public type Bundle record {|
             description: "document | message | transaction | transaction-response | batch | batch-response | history | searchset | collection",
             valueSet: "http://hl7.org/fhir/ValueSet/bundle-type"
         },
-        "timestamp" : {
+        "timestamp": {
             name: "timestamp",
             dataType: instant,
             min: 0,
@@ -155,7 +154,7 @@ public type Bundle record {|
             isArray: false,
             description: "When the bundle was assembled"
         },
-        "total" : {
+        "total": {
             name: "total",
             dataType: unsignedInt,
             min: 0,
@@ -163,7 +162,7 @@ public type Bundle record {|
             isArray: false,
             description: "If search, the total number of matches"
         },
-        "link" : {
+        "link": {
             name: "link",
             dataType: BundleLink,
             min: 0,
@@ -171,7 +170,7 @@ public type Bundle record {|
             isArray: true,
             description: "Links related to this Bundle"
         },
-        "entry" : {
+        "entry": {
             name: "entry",
             dataType: BundleEntry,
             min: 0,
@@ -179,7 +178,7 @@ public type Bundle record {|
             isArray: true,
             description: "Entry in the bundle - will have a resource or information"
         },
-        "signature" : {
+        "signature": {
             name: "signature",
             dataType: Signature,
             min: 0,
@@ -189,7 +188,7 @@ public type Bundle record {|
         }
     },
     serializers: {
-        'xml: fhirBundleXmlSerializer, 
+        'xml: fhirBundleXmlSerializer,
         'json: fhirBundleJsonSerializer
     }
 }
@@ -199,7 +198,7 @@ public type BundleWireModel record {|
     RESOURCE_NAME_BUNDLE resourceType = RESOURCE_NAME_BUNDLE;
     string id?;
     BaseBundleMeta meta = {
-        profile : [PROFILE_BASE_BUNDLE]
+        profile: [PROFILE_BASE_BUNDLE]
     };
     uri implicitRules?;
     code language?;
@@ -214,19 +213,18 @@ public type BundleWireModel record {|
     Signature signature?;
 |};
 
-
 @DataTypeDefinition {
     name: "BaseBundleMeta",
     baseType: Meta,
     elements: {},
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
 public type BaseBundleMeta record {|
     *Meta;
-    
+
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     Extension[] extension?;
@@ -241,22 +239,22 @@ public type BaseBundleMeta record {|
 |};
 
 public enum BundleType {
-    BUNDLE_TYPE_DOCUMENT="document",
-    BUNDLE_TYPE_MESSAGE="message",
-    BUNDLE_TYPE_TRANSACTION="transaction",
-    BUNDLE_TYPE_TRANSACTION_RESPONSE="transaction-response",
-    BUNDLE_TYPE_BATCH="batch",
-    BUNDLE_TYPE_BATCH_RESPONSE="batch-response",
-    BUNDLE_TYPE_HISTORY="history",
-    BUNDLE_TYPE_SEARCHSET="searchset",
-    BUNDLE_TYPE_COLLECTION="collection"
+    BUNDLE_TYPE_DOCUMENT = "document",
+    BUNDLE_TYPE_MESSAGE = "message",
+    BUNDLE_TYPE_TRANSACTION = "transaction",
+    BUNDLE_TYPE_TRANSACTION_RESPONSE = "transaction-response",
+    BUNDLE_TYPE_BATCH = "batch",
+    BUNDLE_TYPE_BATCH_RESPONSE = "batch-response",
+    BUNDLE_TYPE_HISTORY = "history",
+    BUNDLE_TYPE_SEARCHSET = "searchset",
+    BUNDLE_TYPE_COLLECTION = "collection"
 }
 
 @DataTypeDefinition {
     name: "",
     baseType: (),
     elements: {
-        "relation" : {
+        "relation": {
             name: "relation",
             dataType: string,
             min: 1,
@@ -264,7 +262,7 @@ public enum BundleType {
             isArray: false,
             description: "See http://www.iana.org/assignments/link-relations/link-relations.xhtml#link-relations-1"
         },
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 1,
@@ -274,7 +272,7 @@ public enum BundleType {
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -287,7 +285,7 @@ public type BundleLink record {|
     name: "BundleEntry",
     baseType: (),
     elements: {
-        "link" : {
+        "link": {
             name: "link",
             dataType: BundleLink,
             min: 0,
@@ -295,7 +293,7 @@ public type BundleLink record {|
             isArray: true,
             description: "Links related to this entry"
         },
-        "fullUrl" : {
+        "fullUrl": {
             name: "fullUrl",
             dataType: uri,
             min: 0,
@@ -303,7 +301,7 @@ public type BundleLink record {|
             isArray: false,
             description: "URI for resource (Absolute URL server address or URI for UUID/OID)"
         },
-        "resource" : {
+        "resource": {
             name: "resource",
             dataType: FHIRResourceEntity,
             min: 0,
@@ -311,7 +309,7 @@ public type BundleLink record {|
             isArray: false,
             description: "A resource in the bundle"
         },
-        "search" : {
+        "search": {
             name: "search",
             dataType: BundleEntrySearch,
             min: 0,
@@ -319,7 +317,7 @@ public type BundleLink record {|
             isArray: false,
             description: "Search related information"
         },
-        "request" : {
+        "request": {
             name: "request",
             dataType: BundleEntryRequest,
             min: 0,
@@ -327,7 +325,7 @@ public type BundleLink record {|
             isArray: false,
             description: "Additional execution information (transaction/batch/history)"
         },
-        "response" : {
+        "response": {
             name: "response",
             dataType: BundleEntryResponse,
             min: 0,
@@ -337,7 +335,7 @@ public type BundleLink record {|
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -355,7 +353,7 @@ public type BundleEntry record {|
     name: "BundleEntryModel",
     baseType: (),
     elements: {
-        "link" : {
+        "link": {
             name: "link",
             dataType: BundleLink,
             min: 0,
@@ -363,7 +361,7 @@ public type BundleEntry record {|
             isArray: true,
             description: "Links related to this entry"
         },
-        "fullUrl" : {
+        "fullUrl": {
             name: "fullUrl",
             dataType: uri,
             min: 0,
@@ -371,7 +369,7 @@ public type BundleEntry record {|
             isArray: false,
             description: "URI for resource (Absolute URL server address or URI for UUID/OID)"
         },
-        "resource" : {
+        "resource": {
             name: "resource",
             dataType: FHIRResourceEntity,
             min: 0,
@@ -379,7 +377,7 @@ public type BundleEntry record {|
             isArray: false,
             description: "A resource in the bundle"
         },
-        "search" : {
+        "search": {
             name: "search",
             dataType: BundleEntrySearch,
             min: 0,
@@ -387,7 +385,7 @@ public type BundleEntry record {|
             isArray: false,
             description: "Search related information"
         },
-        "request" : {
+        "request": {
             name: "request",
             dataType: BundleEntryRequest,
             min: 0,
@@ -395,7 +393,7 @@ public type BundleEntry record {|
             isArray: false,
             description: "Additional execution information (transaction/batch/history)"
         },
-        "response" : {
+        "response": {
             name: "response",
             dataType: BundleEntryResponse,
             min: 0,
@@ -405,7 +403,7 @@ public type BundleEntry record {|
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -423,7 +421,7 @@ public type BundleEntryModel record {|
     name: "BundleEntrySearch",
     baseType: (),
     elements: {
-        "mode" : {
+        "mode": {
             name: "mode",
             dataType: SearchEntryMode,
             min: 0,
@@ -431,7 +429,7 @@ public type BundleEntryModel record {|
             isArray: false,
             description: "match | include | outcome - why this is in the result set"
         },
-        "score" : {
+        "score": {
             name: "score",
             dataType: decimal,
             min: 0,
@@ -441,7 +439,7 @@ public type BundleEntryModel record {|
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -450,19 +448,17 @@ public type BundleEntrySearch record {|
     decimal score?;
 |};
 
-
 public enum SearchEntryMode {
-    MATCH="match",
-    INCLUDE="include",
-    OUTCOME="outcome"
+    MATCH = "match",
+    INCLUDE = "include",
+    OUTCOME = "outcome"
 }
-
 
 @DataTypeDefinition {
     name: "BundleEntryRequest",
     baseType: (),
     elements: {
-        "method" : {
+        "method": {
             name: "method",
             dataType: HTTPVerb,
             min: 1,
@@ -470,7 +466,7 @@ public enum SearchEntryMode {
             isArray: false,
             description: "GET | HEAD | POST | PUT | DELETE | PATCH"
         },
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 1,
@@ -478,7 +474,7 @@ public enum SearchEntryMode {
             isArray: false,
             description: "URL for HTTP equivalent of this entry"
         },
-        "ifNoneMatch" : {
+        "ifNoneMatch": {
             name: "ifNoneMatch",
             dataType: string,
             min: 0,
@@ -486,7 +482,7 @@ public enum SearchEntryMode {
             isArray: false,
             description: "For managing cache currency"
         },
-        "ifModifiedSince" : {
+        "ifModifiedSince": {
             name: "ifModifiedSince",
             dataType: instant,
             min: 0,
@@ -494,7 +490,7 @@ public enum SearchEntryMode {
             isArray: false,
             description: "For managing cache currency"
         },
-        "ifMatch" : {
+        "ifMatch": {
             name: "ifMatch",
             dataType: string,
             min: 0,
@@ -502,7 +498,7 @@ public enum SearchEntryMode {
             isArray: false,
             description: "For managing update contention"
         },
-        "ifNoneExist" : {
+        "ifNoneExist": {
             name: "ifNoneExist",
             dataType: string,
             min: 0,
@@ -512,7 +508,7 @@ public enum SearchEntryMode {
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -525,7 +521,6 @@ public type BundleEntryRequest record {|
     string ifNoneExist?;
 |};
 
-
 public enum HTTPVerb {
     GET, HEAD, POST, PUT, DELETE, PATCH
 }
@@ -534,7 +529,7 @@ public enum HTTPVerb {
     name: "BundleEntryResponse",
     baseType: (),
     elements: {
-        "status" : {
+        "status": {
             name: "status",
             dataType: string,
             min: 1,
@@ -542,7 +537,7 @@ public enum HTTPVerb {
             isArray: false,
             description: "Status response code (text optional)"
         },
-        "location" : {
+        "location": {
             name: "location",
             dataType: uri,
             min: 0,
@@ -550,7 +545,7 @@ public enum HTTPVerb {
             isArray: false,
             description: "The location (if the operation returns a location)"
         },
-        "etag" : {
+        "etag": {
             name: "etag",
             dataType: string,
             min: 0,
@@ -558,7 +553,7 @@ public enum HTTPVerb {
             isArray: false,
             description: "The Etag for the resource (if relevant)"
         },
-        "lastModified" : {
+        "lastModified": {
             name: "lastModified",
             dataType: instant,
             min: 0,
@@ -566,7 +561,7 @@ public enum HTTPVerb {
             isArray: false,
             description: "Server's date time modified"
         },
-        "outcome" : {
+        "outcome": {
             name: "outcome",
             dataType: FHIRResourceEntity,
             min: 0,
@@ -576,7 +571,7 @@ public enum HTTPVerb {
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -596,7 +591,6 @@ public type BundleEntryResponseModel record {|
     AnyBaseResource|FHIRWireFormat outcome?;
 |};
 
-
 isolated function executeBundleJsonSerializer(anydata bundle) returns (json|FHIRSerializerError) {
     log:printDebug("Execute: Bundle JSON serializer executer");
     ContainerDefinitionRecord? resourceDef = (typeof bundle).@ContainerDefinition;
@@ -608,18 +602,18 @@ isolated function executeBundleJsonSerializer(anydata bundle) returns (json|FHIR
                 return wireFormat;
             } else {
                 string diagnosticMsg = string `XML Serializer did not return a XML result. It returned: ${(typeof wireFormat).toBalString()}`;
-                return <FHIRSerializerError>createInternalFHIRError("Resource Serialization failed",FATAL, PROCESSING, 
-                                                                        diagnostic = diagnosticMsg);
+                return <FHIRSerializerError>createInternalFHIRError("Resource Serialization failed", FATAL, PROCESSING,
+                        diagnostic = diagnosticMsg);
             }
         } else {
             string diagnosticMsg = string `Unknown/unsupported data type : ${(typeof bundle).toBalString()}, expected : r4:Bundle`;
-            return <FHIRSerializerError>createInternalFHIRError("Unknown/unsupported data type", FATAL, PROCESSING, 
-                                                                        diagnostic = diagnosticMsg);
+            return <FHIRSerializerError>createInternalFHIRError("Unknown/unsupported data type", FATAL, PROCESSING,
+                    diagnostic = diagnosticMsg);
         }
     } else {
         string diagnosticMsg = string `Resource definition not found of the record : ${(typeof bundle).toBalString()}`;
-        return <FHIRSerializerError>createInternalFHIRError("Resource definition not found",FATAL, PROCESSING, 
-                                                                        diagnostic = diagnosticMsg);
+        return <FHIRSerializerError>createInternalFHIRError("Resource definition not found", FATAL, PROCESSING,
+                diagnostic = diagnosticMsg);
     }
 }
 
@@ -633,18 +627,18 @@ isolated function executeBundleXmlSerializer(anydata bundle) returns xml|FHIRSer
                 return xmlWireFormat;
             } else {
                 string diagnosticMsg = string `XML Serializer did not return a XML result. It returned: ${(typeof xmlWireFormat).toBalString()}`;
-                return <FHIRSerializerError>createInternalFHIRError("Resource Serialization failed",FATAL, PROCESSING, 
-                                                                        diagnostic = diagnosticMsg);
+                return <FHIRSerializerError>createInternalFHIRError("Resource Serialization failed", FATAL, PROCESSING,
+                        diagnostic = diagnosticMsg);
             }
         } else {
             string diagnosticMsg = string `Expected a Bundle (map<value:Cloneable>) but found : ${(typeof bundle).toBalString()}`;
-            return <FHIRSerializerError>createInternalFHIRError("Unexpected data type for the bundle",FATAL, PROCESSING, 
-                                                                    diagnostic = diagnosticMsg);
+            return <FHIRSerializerError>createInternalFHIRError("Unexpected data type for the bundle", FATAL, PROCESSING,
+                    diagnostic = diagnosticMsg);
         }
     } else {
         string diagnosticMsg = string `Resource definition not found of the record : ${(typeof bundle).toBalString()}`;
-        return <FHIRSerializerError>createInternalFHIRError("Resource definition not found",FATAL, PROCESSING, 
-                                                                    diagnostic = diagnosticMsg);
+        return <FHIRSerializerError>createInternalFHIRError("Resource definition not found", FATAL, PROCESSING,
+                diagnostic = diagnosticMsg);
     }
 }
 
@@ -652,20 +646,20 @@ public isolated function fhirBundleXmlSerializer(Bundle data) returns (FHIRWireF
     BundleWireModel bundle = check bundleToWireModel(data, JSON);
     // TODO Implement
     return bundle.toJson();
-    
-}
-public isolated function fhirBundleJsonSerializer(Bundle data) returns (FHIRWireFormat|FHIRSerializerError)? {
-    
-    BundleWireModel bundle = check bundleToWireModel(data, JSON);
-    return bundle.toJson();
-    
+
 }
 
+public isolated function fhirBundleJsonSerializer(Bundle data) returns (FHIRWireFormat|FHIRSerializerError)? {
+
+    BundleWireModel bundle = check bundleToWireModel(data, JSON);
+    return bundle.toJson();
+
+}
 
 // Private Fucntions
 
 // Function to transform Bundle to BundleModel
-isolated function bundleToWireModel(Bundle bundle, FHIRPayloadFormat format) returns BundleWireModel|FHIRSerializerError { 
+isolated function bundleToWireModel(Bundle bundle, FHIRPayloadFormat format) returns BundleWireModel|FHIRSerializerError {
 
     BundleWireModel result = {
         'type: bundle.'type
@@ -710,11 +704,11 @@ isolated function bundleToWireModel(Bundle bundle, FHIRPayloadFormat format) ret
     if link is BundleLink[] {
         result.link = link;
     }
-    
+
     // Transform entries to model entry
     BundleEntry[]? entries = bundle.entry;
     if entries != () {
-        BundleEntryModel[] modelEntries = []; 
+        BundleEntryModel[] modelEntries = [];
         foreach BundleEntry entry in entries {
             BundleEntryModel bEntryModel = {};
 
@@ -749,7 +743,7 @@ isolated function bundleToWireModel(Bundle bundle, FHIRPayloadFormat format) ret
                 BundleEntryResponseModel responseModel = {
                     status: response.status
                 };
-                
+
                 uri? location = response.location;
                 if location is uri {
                     responseModel.location = location;
@@ -786,19 +780,18 @@ isolated function bundleToWireModel(Bundle bundle, FHIRPayloadFormat format) ret
     return result;
 }
 
-
-isolated function serializeEntryResource (anydata|FHIRWireFormat entryResource, FHIRPayloadFormat format) returns FHIRWireFormat|FHIRSerializerError {
+isolated function serializeEntryResource(anydata|FHIRWireFormat entryResource, FHIRPayloadFormat format) returns FHIRWireFormat|FHIRSerializerError {
     if entryResource is FHIRWireFormat {
         FHIRWireFormat wireResource = <FHIRWireFormat>entryResource;
         if (wireResource is json && format == JSON) || (wireResource is xml && format == XML) {
             return wireResource;
         } else {
             string diagnosticMsg = string `Expected type : ${format}, but found ${(typeof wireResource).toBalString()}`;
-            return <FHIRSerializerError>createInternalFHIRError("Mismatching resource entry format",FATAL, PROCESSING, 
-                                                                        diagnostic = diagnosticMsg);
+            return <FHIRSerializerError>createInternalFHIRError("Mismatching resource entry format", FATAL, PROCESSING,
+                    diagnostic = diagnosticMsg);
         }
     } else {
-        FHIRResourceEntity resourceEntity = new(entryResource);
+        FHIRResourceEntity resourceEntity = new (entryResource);
         if format is JSON {
             return check resourceEntity.toJson();
         } else {

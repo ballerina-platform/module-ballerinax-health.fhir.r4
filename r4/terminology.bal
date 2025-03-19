@@ -34,7 +34,7 @@ public type TerminologyLoader distinct object {
 # An in-memory implementation of a terminology loader
 public class InMemoryTerminologyLoader {
     *TerminologyLoader;
-    
+
     final json[] codeSystems;
     final json[] valueSets;
 
@@ -53,7 +53,7 @@ public class InMemoryTerminologyLoader {
                 valueSetArray.push(valueSet);
             } on fail error e {
                 return createFHIRError("Error occurred while type casting json value set to ValueSet type", ERROR,
-                                                                    PROCESSING, diagnostic = e.message(), cause = e);
+                        PROCESSING, diagnostic = e.message(), cause = e);
             }
         }
 
@@ -63,14 +63,14 @@ public class InMemoryTerminologyLoader {
                 CodeSystem codeSystem = check jCodeSystem.cloneWithType();
                 codeSystemArray.push(codeSystem);
             } on fail error e {
-              return createFHIRError("Error occurred while type casting json code system to CodeSystem type", ERROR,
-                                                                    PROCESSING, diagnostic = e.message(), cause = e);
+                return createFHIRError("Error occurred while type casting json code system to CodeSystem type", ERROR,
+                        PROCESSING, diagnostic = e.message(), cause = e);
             }
         }
 
         Terminology terminology = {
-          codeSystems: codeSystemArray.cloneReadOnly(),
-          valueSets: valueSetArray.cloneReadOnly()
+            codeSystems: codeSystemArray.cloneReadOnly(),
+            valueSets: valueSetArray.cloneReadOnly()
         };
         return terminology;
     }

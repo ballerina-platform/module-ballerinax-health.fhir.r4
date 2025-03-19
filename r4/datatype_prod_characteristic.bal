@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-
 # The marketing status describes the date when a medicinal product is actually put on the market or the date as of which it is no longer available.
 #
 # + id - Unique id for inter-element referencing  

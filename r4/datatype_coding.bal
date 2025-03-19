@@ -27,7 +27,7 @@
     name: "Coding",
     baseType: Element,
     elements: {
-        "system" : {
+        "system": {
             name: "system",
             dataType: uri,
             min: 0,
@@ -35,7 +35,7 @@
             isArray: false,
             description: "Identity of the terminology system"
         },
-        "version" : {
+        "version": {
             name: "version",
             dataType: string,
             min: 0,
@@ -43,7 +43,7 @@
             isArray: false,
             description: "Version of the system - if relevant"
         },
-        "code" : {
+        "code": {
             name: "code",
             dataType: code,
             min: 0,
@@ -51,7 +51,7 @@
             isArray: false,
             description: "Symbol in syntax defined by the system"
         },
-        "display" : {
+        "display": {
             name: "display",
             dataType: string,
             min: 0,
@@ -59,7 +59,7 @@
             isArray: false,
             description: "Representation defined by the system"
         },
-        "userSelected" : {
+        "userSelected": {
             name: "userSelected",
             dataType: boolean,
             min: 0,
@@ -69,7 +69,7 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }

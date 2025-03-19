@@ -105,7 +105,7 @@ public type ElementDoseAndRate record {|
 # + elementContextDefinition - Element context definition
 # + return - FHIRValidationError array if validation fails
 public isolated function doseAndRateDataTypeValidationFunction(anydata data,
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         map<anydata> mapObj = {};
@@ -115,7 +115,7 @@ public isolated function doseAndRateDataTypeValidationFunction(anydata data,
             string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
             return <FHIRValidationError>createInternalFHIRError(
                         "Error occurred while casting data to map representation", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg, cause = e);
+                    diagnostic = diagnosticMsg, cause = e);
 
         }
         Range? doseRangeVal = <Range?>mapObj.get("doseRange");
@@ -132,8 +132,8 @@ public isolated function doseAndRateDataTypeValidationFunction(anydata data,
         boolean rateRatioValCheck = rateRatioVal is ();
         boolean rateRangeValCheck = rateRangeVal is ();
         boolean rateQuantityValCheck = rateQuantityVal is ();
-        boolean expressionTwo = (rateRatioValCheck) && (rateRangeValCheck) && (!rateQuantityValCheck) 
-                        || (rateRatioValCheck) && (!rateRangeValCheck) && (rateQuantityValCheck) || (!rateRatioValCheck) 
+        boolean expressionTwo = (rateRatioValCheck) && (rateRangeValCheck) && (!rateQuantityValCheck)
+                        || (rateRatioValCheck) && (!rateRangeValCheck) && (rateQuantityValCheck) || (!rateRatioValCheck)
                         && (rateRangeValCheck) && (rateQuantityValCheck);
 
         if (expression) {
@@ -144,14 +144,14 @@ public isolated function doseAndRateDataTypeValidationFunction(anydata data,
                 string diagnosticMsg = "Error occurred due to incorrect definition of rate attribute in DoseAndRate element according to FHIR Specification";
                 return <FHIRValidationError>createInternalFHIRError(
                                 "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                                diagnostic = diagnosticMsg);
+                        diagnostic = diagnosticMsg);
             }
         }
         else {
             string diagnosticMsg = "Error occurred due to incorrect definition of dose attribute in DoseAndRate element according to FHIR Specification";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg);
+                    diagnostic = diagnosticMsg);
         }
     }
 }

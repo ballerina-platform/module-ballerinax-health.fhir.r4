@@ -15,8 +15,8 @@
 // under the License.
 
 # Each resource contains an element "meta", of type "Meta", which is a set of metadata that provides technical and
-#  workflow context to the resource.
-# 
+# workflow context to the resource.
+#
 # + id - Unique id for inter-element referencing
 # + extension - Additional content defined by implementations
 # + versionId - Version specific identifier
@@ -79,7 +79,7 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }

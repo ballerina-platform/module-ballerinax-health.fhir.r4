@@ -28,7 +28,7 @@
     name: "Identifier",
     baseType: Element,
     elements: {
-        "use" : {
+        "use": {
             name: "use",
             dataType: IdentifierUse,
             min: 0,
@@ -36,7 +36,7 @@
             isArray: false,
             description: "usual | official | temp | secondary | old (If known) IdentifierUse (Required)"
         },
-        "type" : {
+        "type": {
             name: "type",
             dataType: CodeableConcept,
             min: 0,
@@ -44,7 +44,7 @@
             isArray: false,
             description: "Description of identifier"
         },
-        "system" : {
+        "system": {
             name: "system",
             dataType: string,
             min: 0,
@@ -52,7 +52,7 @@
             isArray: false,
             description: "The namespace for the identifier value"
         },
-        "value" : {
+        "value": {
             name: "value",
             dataType: string,
             min: 0,
@@ -60,7 +60,7 @@
             isArray: false,
             description: "The value that is unique"
         },
-        "period" : {
+        "period": {
             name: "period",
             dataType: Period,
             min: 0,
@@ -68,7 +68,7 @@
             isArray: false,
             description: "Time period when id is/was valid for use"
         },
-        "assigner" : {
+        "assigner": {
             name: "assigner",
             dataType: Reference,
             min: 0,
@@ -78,7 +78,7 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }

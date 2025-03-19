@@ -18,7 +18,7 @@
     name: "ExtendedContactDetail",
     baseType: Element,
     elements: {
-        "purpose" : {
+        "purpose": {
             name: "purpose",
             dataType: CodeableConcept,
             min: 0,
@@ -26,7 +26,7 @@
             isArray: false,
             description: "The type of contact"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: HumanName,
             min: 0,
@@ -34,7 +34,7 @@
             isArray: false,
             description: "A name associated with the contact person"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: ContactPoint,
             min: 0,
@@ -42,7 +42,7 @@
             isArray: true,
             description: "A contact detail for the person, e.g. a telephone number or an email address"
         },
-        "address" : {
+        "address": {
             name: "address",
             dataType: Address,
             min: 0,
@@ -50,7 +50,7 @@
             isArray: false,
             description: "Visiting or postal addresses for the contact"
         },
-        "organization" : {
+        "organization": {
             name: "organization",
             dataType: Reference,
             min: 0,
@@ -58,7 +58,7 @@
             isArray: false,
             description: "Organization that is associated with the contact"
         },
-        "period" : {
+        "period": {
             name: "period",
             dataType: Period,
             min: 0,
@@ -68,7 +68,7 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }

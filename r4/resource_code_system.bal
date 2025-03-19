@@ -64,7 +64,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
     baseType: DomainResource,
     profile: "http://hl7.org/fhir/StructureDefinition/CodeSystem",
     elements: {
-        "date" : {
+        "date": {
             name: "date",
             dataType: dateTime,
             min: 0,
@@ -72,7 +72,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.date"
         },
-        "copyright" : {
+        "copyright": {
             name: "copyright",
             dataType: markdown,
             min: 0,
@@ -80,7 +80,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.copyright"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: Extension,
             min: 0,
@@ -88,7 +88,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: true,
             path: "CodeSystem.extension"
         },
-        "valueSet" : {
+        "valueSet": {
             name: "valueSet",
             dataType: canonical,
             min: 0,
@@ -96,7 +96,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.valueSet"
         },
-        "purpose" : {
+        "purpose": {
             name: "purpose",
             dataType: markdown,
             min: 0,
@@ -104,7 +104,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.purpose"
         },
-        "concept" : {
+        "concept": {
             name: "concept",
             dataType: CodeSystemConcept,
             min: 0,
@@ -112,7 +112,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: true,
             path: "CodeSystem.concept"
         },
-        "jurisdiction" : {
+        "jurisdiction": {
             name: "jurisdiction",
             dataType: CodeableConcept,
             min: 0,
@@ -121,7 +121,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             path: "CodeSystem.jurisdiction",
             valueSet: "http://hl7.org/fhir/ValueSet/jurisdiction"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: Extension,
             min: 0,
@@ -129,7 +129,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: true,
             path: "CodeSystem.modifierExtension"
         },
-        "description" : {
+        "description": {
             name: "description",
             dataType: markdown,
             min: 0,
@@ -137,7 +137,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.description"
         },
-        "experimental" : {
+        "experimental": {
             name: "experimental",
             dataType: boolean,
             min: 0,
@@ -145,7 +145,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.experimental"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: code,
             min: 0,
@@ -154,7 +154,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             path: "CodeSystem.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "title" : {
+        "title": {
             name: "title",
             dataType: string,
             min: 0,
@@ -162,7 +162,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.title"
         },
-        "content" : {
+        "content": {
             name: "content",
             dataType: CodeSystemContent,
             min: 1,
@@ -171,7 +171,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             path: "CodeSystem.content",
             valueSet: "http://hl7.org/fhir/ValueSet/codesystem-content-mode|4.0.1"
         },
-        "hierarchyMeaning" : {
+        "hierarchyMeaning": {
             name: "hierarchyMeaning",
             dataType: CodeSystemHierarchyMeaning,
             min: 0,
@@ -180,7 +180,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             path: "CodeSystem.hierarchyMeaning",
             valueSet: "http://hl7.org/fhir/ValueSet/codesystem-hierarchy-meaning|4.0.1"
         },
-        "contact" : {
+        "contact": {
             name: "contact",
             dataType: ContactDetail,
             min: 0,
@@ -188,7 +188,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: true,
             path: "CodeSystem.contact"
         },
-        "property" : {
+        "property": {
             name: "property",
             dataType: CodeSystemProperty,
             min: 0,
@@ -196,7 +196,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: true,
             path: "CodeSystem.property"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -204,7 +204,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: Narrative,
             min: 0,
@@ -212,7 +212,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.text"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: Identifier,
             min: 0,
@@ -220,7 +220,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: true,
             path: "CodeSystem.identifier"
         },
-        "caseSensitive" : {
+        "caseSensitive": {
             name: "caseSensitive",
             dataType: boolean,
             min: 0,
@@ -228,7 +228,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.caseSensitive"
         },
-        "versionNeeded" : {
+        "versionNeeded": {
             name: "versionNeeded",
             dataType: boolean,
             min: 0,
@@ -236,7 +236,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.versionNeeded"
         },
-        "count" : {
+        "count": {
             name: "count",
             dataType: unsignedInt,
             min: 0,
@@ -244,7 +244,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.count"
         },
-        "version" : {
+        "version": {
             name: "version",
             dataType: string,
             min: 0,
@@ -252,7 +252,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.version"
         },
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 0,
@@ -260,7 +260,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.url"
         },
-        "filter" : {
+        "filter": {
             name: "filter",
             dataType: CodeSystemFilter,
             min: 0,
@@ -268,7 +268,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: true,
             path: "CodeSystem.filter"
         },
-        "supplements" : {
+        "supplements": {
             name: "supplements",
             dataType: canonical,
             min: 0,
@@ -276,7 +276,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.supplements"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: Resource,
             min: 0,
@@ -284,7 +284,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: true,
             path: "CodeSystem.contained"
         },
-        "compositional" : {
+        "compositional": {
             name: "compositional",
             dataType: boolean,
             min: 0,
@@ -292,7 +292,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.compositional"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: Meta,
             min: 0,
@@ -300,7 +300,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.meta"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: string,
             min: 0,
@@ -308,7 +308,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.name"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: uri,
             min: 0,
@@ -316,7 +316,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.implicitRules"
         },
-        "publisher" : {
+        "publisher": {
             name: "publisher",
             dataType: string,
             min: 0,
@@ -324,7 +324,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: false,
             path: "CodeSystem.publisher"
         },
-        "useContext" : {
+        "useContext": {
             name: "useContext",
             dataType: UsageContext,
             min: 0,
@@ -332,7 +332,7 @@ public const RESOURCE_NAME_CODESYSTEM = "CodeSystem";
             isArray: true,
             path: "CodeSystem.useContext"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: CodeSystemStatus,
             min: 1,
@@ -353,7 +353,7 @@ public type CodeSystem record {|
     RESOURCE_NAME_CODESYSTEM resourceType = RESOURCE_NAME_CODESYSTEM;
 
     BaseCodeSystemMeta meta = {
-        profile : [PROFILE_BASE_CODESYSTEM]
+        profile: [PROFILE_BASE_CODESYSTEM]
     };
     dateTime date?;
     markdown copyright?;
@@ -418,22 +418,22 @@ public type BaseCodeSystemMeta record {|
 
 # CodeSystemPropertyType enum
 public enum CodeSystemPropertyType {
-   CODE_TYPE_DATETIME = "dateTime",
-   CODE_TYPE_CODE = "code",
-   CODE_TYPE_BOOLEAN = "boolean",
-   CODE_TYPE_STRING = "string",
-   CODE_TYPE_CODING = "Coding",
-   CODE_TYPE_INTEGER = "integer",
-   CODE_TYPE_DECIMAL = "decimal"
+    CODE_TYPE_DATETIME = "dateTime",
+    CODE_TYPE_CODE = "code",
+    CODE_TYPE_BOOLEAN = "boolean",
+    CODE_TYPE_STRING = "string",
+    CODE_TYPE_CODING = "Coding",
+    CODE_TYPE_INTEGER = "integer",
+    CODE_TYPE_DECIMAL = "decimal"
 }
 
 # CodeSystemContent enum
 public enum CodeSystemContent {
-   CODE_CONTENT_FRAGMENT = "fragment",
-   CODE_CONTENT_SUPPLEMENT = "supplement",
-   CODE_CONTENT_NOT_PRESENT = "not-present",
-   CODE_CONTENT_COMPLETE = "complete",
-   CODE_CONTENT_EXAMPLE = "example"
+    CODE_CONTENT_FRAGMENT = "fragment",
+    CODE_CONTENT_SUPPLEMENT = "supplement",
+    CODE_CONTENT_NOT_PRESENT = "not-present",
+    CODE_CONTENT_COMPLETE = "complete",
+    CODE_CONTENT_EXAMPLE = "example"
 }
 
 # FHIR CodeSystemConcept datatype record.
@@ -640,7 +640,7 @@ public type CodeSystemFilter record {|
     string id?;
     string value;
     @constraint:Array {
-       minLength: 1
+        minLength: 1
     }
     CodeSystemFilterOperator[] operator;
 |};
@@ -728,10 +728,10 @@ public type CodeSystemConceptDesignation record {|
 
 # CodeSystemStatus enum
 public enum CodeSystemStatus {
-   CODE_STATUS_DRAFT = "draft",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_RETIRED = "retired",
-   CODE_STATUS_UNKNOWN = "unknown"
+    CODE_STATUS_DRAFT = "draft",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_RETIRED = "retired",
+    CODE_STATUS_UNKNOWN = "unknown"
 }
 
 # FHIR CodeSystemConceptProperty datatype record.
@@ -964,22 +964,22 @@ public type CodeSystemProperty record {|
 
 # CodeSystemHierarchyMeaning enum
 public enum CodeSystemHierarchyMeaning {
-   CODE_HIERARCHYMEANING_CLASSIFIED_WITH = "classified-with",
-   CODE_HIERARCHYMEANING_PART_OF = "part-of",
-   CODE_HIERARCHYMEANING_GROUPED_BY = "grouped-by",
-   CODE_HIERARCHYMEANING_IS_A = "is-a"
+    CODE_HIERARCHYMEANING_CLASSIFIED_WITH = "classified-with",
+    CODE_HIERARCHYMEANING_PART_OF = "part-of",
+    CODE_HIERARCHYMEANING_GROUPED_BY = "grouped-by",
+    CODE_HIERARCHYMEANING_IS_A = "is-a"
 }
 
 # CodeSystemFilterOperator enum
 public enum CodeSystemFilterOperator {
-   CODE_OPERATOR_IS_NOT_A = "is-not-a",
-   CODE_OPERATOR_REGEX = "regex",
-   CODE_OPERATOR_IN = "in",
-   CODE_OPERATOR_DESCENDENT_OF = "descendent-of",
-   CODE_OPERATOR_NOT_IN = "not-in",
-   CODE_OPERATOR_EXISTS = "exists",
-   CODE_OPERATOR_GENERALIZES = "generalizes",
-   CODE_OPERATOR_EQUAL = "=",
-   CODE_OPERATOR_IS_A = "is-a"
+    CODE_OPERATOR_IS_NOT_A = "is-not-a",
+    CODE_OPERATOR_REGEX = "regex",
+    CODE_OPERATOR_IN = "in",
+    CODE_OPERATOR_DESCENDENT_OF = "descendent-of",
+    CODE_OPERATOR_NOT_IN = "not-in",
+    CODE_OPERATOR_EXISTS = "exists",
+    CODE_OPERATOR_GENERALIZES = "generalizes",
+    CODE_OPERATOR_EQUAL = "=",
+    CODE_OPERATOR_IS_A = "is-a"
 }
 

@@ -15,20 +15,20 @@
 // under the License.
 
 # Human-readable summary of the resource (essential clinical and business information).
-# 
+#
 # + id - Unique id for inter-element referencing
 # + extension - Additional content defined by implementations
 # + status - [generated | extensions | additional | empty] NarrativeStatus(http://hl7.org/fhir/valueset-narrative-status.html) (Required)  
 # + div - Limited xhtml content
-#           * Rule: The narrative SHALL contain only the basic html formatting elements and attributes described in 
-#                   chapters 7-11 (except section 4 of chapter 9) and 15 of the HTML 4.0 standard, <a> elements 
-#                   (either name or href), images and internally contained style attributes
-#           * Rule: The narrative SHALL have some non-whitespace content
+# * Rule: The narrative SHALL contain only the basic html formatting elements and attributes described in 
+# chapters 7-11 (except section 4 of chapter 9) and 15 of the HTML 4.0 standard, <a> elements 
+# (either name or href), images and internally contained style attributes
+# * Rule: The narrative SHALL have some non-whitespace content
 @DataTypeDefinition {
     name: "Narrative",
     baseType: Element,
     elements: {
-        "status" : {
+        "status": {
             name: "status",
             dataType: code,
             min: 1,
@@ -36,7 +36,7 @@
             isArray: false,
             description: "[generated | extensions | additional | empty] NarrativeStatus(http://hl7.org/fhir/valueset-narrative-status.html) (Required)"
         },
-        "div" : {
+        "div": {
             name: "div",
             dataType: xhtml,
             min: 1,
@@ -46,7 +46,7 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }

@@ -120,7 +120,7 @@ public type TriggerDefinition record {|
 |};
 
 public isolated function triggerDefinitionDataTypeValidationFunction(anydata data,
-                    ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
+        ElementAnnotationDefinition elementContextDefinition) returns (FHIRValidationError)? {
     DataTypeDefinitionRecord? dataTypeDefinition = (typeof data).@DataTypeDefinition;
     if dataTypeDefinition != () {
         map<anydata> mapObj = {};
@@ -130,7 +130,7 @@ public isolated function triggerDefinitionDataTypeValidationFunction(anydata dat
             string diagnosticMsg = string `Error occurred while casting data of type: ${(typeof data).toBalString()} to map representation`;
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred while casting data to map representation", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg, cause = e);
+                    diagnostic = diagnosticMsg, cause = e);
 
         }
         Timing? timingTimingVal = <Timing?>mapObj.get("timingTiming");
@@ -143,8 +143,8 @@ public isolated function triggerDefinitionDataTypeValidationFunction(anydata dat
         boolean timingDateValCheck = timingDateVal is ();
         boolean timingDateTimeValCheck = timingDateTimeVal is ();
 
-        boolean expression = (timingTimingValCheck) && (timingReferenceValCheck) && (timingDateValCheck) && (!timingDateTimeValCheck) 
-                        || (timingTimingValCheck) && (timingReferenceValCheck) && (!timingDateValCheck) && (timingDateTimeValCheck) 
+        boolean expression = (timingTimingValCheck) && (timingReferenceValCheck) && (timingDateValCheck) && (!timingDateTimeValCheck)
+                        || (timingTimingValCheck) && (timingReferenceValCheck) && (!timingDateValCheck) && (timingDateTimeValCheck)
                         || (timingTimingValCheck) && (!timingReferenceValCheck) && (timingDateValCheck) && (timingDateTimeValCheck)
                         || (!timingTimingValCheck) && (timingReferenceValCheck) && (timingDateValCheck) && (timingDateTimeValCheck);
 
@@ -155,7 +155,7 @@ public isolated function triggerDefinitionDataTypeValidationFunction(anydata dat
             string diagnosticMsg = "Error occurred due to incorrect definition of timing attribute of TriggerDefinition element according to FHIR Specificatio";
             return <FHIRValidationError>createInternalFHIRError(
                             "Error occurred due to incorrect data type definition", FATAL, PROCESSING,
-                            diagnostic = diagnosticMsg);
+                    diagnostic = diagnosticMsg);
         }
 
     }

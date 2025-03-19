@@ -27,7 +27,7 @@
     name: "ContactPoint",
     baseType: Element,
     elements: {
-        "system" : {
+        "system": {
             name: "system",
             dataType: ContactPointSystem,
             min: 0,
@@ -35,7 +35,7 @@
             isArray: false,
             description: "[ phone | fax | email | pager | url | sms | other ] ContactPointSystem (http://hl7.org/fhir/valueset-contact-point-system.html) (Required)"
         },
-        "value" : {
+        "value": {
             name: "value",
             dataType: string,
             min: 0,
@@ -43,7 +43,7 @@
             isArray: false,
             description: "The actual contact point details"
         },
-        "use" : {
+        "use": {
             name: "use",
             dataType: ContactPointUse,
             min: 0,
@@ -51,7 +51,7 @@
             isArray: false,
             description: "[ home | work | temp | old | mobile ] - purpose of this contact point. ContactPointUse (Required) (http://hl7.org/fhir/valueset-contact-point-use.html)"
         },
-        "rank" : {
+        "rank": {
             name: "rank",
             dataType: positiveInt,
             min: 0,
@@ -59,7 +59,7 @@
             isArray: false,
             description: "Specify preferred order of use (1 = highest)"
         },
-        "period" : {
+        "period": {
             name: "period",
             dataType: Period,
             min: 0,
@@ -69,7 +69,7 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }

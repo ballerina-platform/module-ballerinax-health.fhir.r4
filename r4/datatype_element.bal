@@ -22,7 +22,7 @@
     name: "Element",
     baseType: (),
     elements: {
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -30,7 +30,7 @@
             isArray: false,
             description: "Unique id for inter-element referencing"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: Extension,
             min: 0,
@@ -40,12 +40,12 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
 public type Element record {|
     string id?;
     Extension[] extension?;
-    Element ...;
+    Element...;
 |};

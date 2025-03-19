@@ -14,8 +14,8 @@
 // under the License.
 
 import ballerina/http;
-import ballerina/time;
 import ballerina/io;
+import ballerina/time;
 
 # Audit service integration related configuration.
 #

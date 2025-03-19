@@ -24,7 +24,7 @@
     name: "Period",
     baseType: Element,
     elements: {
-        "start" : {
+        "start": {
             name: "start",
             dataType: dateTime,
             min: 0,
@@ -32,7 +32,7 @@
             isArray: false,
             description: "Starting time with inclusive boundary"
         },
-        "end" : {
+        "end": {
             name: "end",
             dataType: dateTime,
             min: 0,
@@ -42,7 +42,7 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }

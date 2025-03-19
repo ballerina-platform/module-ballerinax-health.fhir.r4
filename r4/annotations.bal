@@ -17,6 +17,7 @@
 # Function definition for data type serialization
 public type DataTypeSerializerFunction isolated function (anydata data, ElementAnnotationDefinition elementContextDefinition)
                                                                             returns (FHIRWireFormat|FHIRSerializerError)?;
+
 # Function definition for FHIR resource serialization
 public type ResourceSerializerFunction isolated function (anydata data) returns (FHIRWireFormat|FHIRSerializerError)?;
 
@@ -26,9 +27,9 @@ public type ContainerSerializerFunction isolated function (Bundle data) returns 
 # Function definition for FHIR data type validation
 public type DataTypeValidationFunction isolated function (anydata data, ElementAnnotationDefinition elementContextDefinition)
                                                                                             returns FHIRValidationError?;
+
 # Function definition for FHIR resource validation
 public type ResourceTypeValidationFunction isolated function (anydata data) returns FHIRValidationError?;
-
 
 # Represents definition of a FHIR resource.
 #
@@ -95,7 +96,7 @@ public type DataTypeDefinitionRecord record {
 # + description - Description of the elemenet
 # + path - FHIR path pf the element respective to the parent
 # + valueSet - If coded values are bound to  a ValueSet
-# + mustSupport -  The following data-elements are mandatory (i.e data MUST be present) or must be supported if the data is present in the sending system
+# + mustSupport - The following data-elements are mandatory (i.e data MUST be present) or must be supported if the data is present in the sending system
 public type ElementAnnotationDefinition record {
     string name;
     typedesc dataType;
@@ -154,5 +155,7 @@ public type Mapping record {
 };
 
 public annotation ResourceDefinitionRecord ResourceDefinition on type;
+
 public annotation ContainerDefinitionRecord ContainerDefinition on type;
+
 public annotation DataTypeDefinitionRecord DataTypeDefinition on type;

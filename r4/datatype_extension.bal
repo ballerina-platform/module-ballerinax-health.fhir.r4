@@ -14,18 +14,18 @@
 // specific language governing permissions and limitations
 // under the License.
 
-public type Extension CodeableConceptExtension | StringExtension | CodingExtension | CodeExtension | IntegerExtension
-| Base64BinaryExtension | BooleanExtension | CanonicalExtension | DateExtension | DateTimeExtension | DecimalExtension
-| IdExtension | InstantExtension | Integer64Extension | MarkdownExtension | OidExtension | PositiveIntExtension | TimeExtension | UnsignedIntExtension
-| UriExtension | UrlExtension | UuidExtension | AddressExtension | AgeExtension | AnnotationExtension | AttachmentExtension | CodeableReferenceExtension
-| ContactPointExtension | CountExtension | DistanceExtension | DurationExtension | HumanNameExtension | IdentifierExtension | MoneyExtension
-| PeriodExtension | QuantityExtension | RangeExtension | RatioExtension | RatioRangeExtension | ReferenceExtension | SampledDataExtension | SignatureExtension
-| TimingExtension | ContactDetailExtension | DataRequirementExtension | ExpressionExtension | ParameterDefinitionExtension
-| RelatedArtifactExtension | TriggerDefinitionExtension | UsageContextExtension | AvailabilityExtension | ExtendedContactDetailExtension | DosageExtension 
-| MetaExtension | ExtensionExtension;
+public type Extension CodeableConceptExtension|StringExtension|CodingExtension|CodeExtension|IntegerExtension
+|Base64BinaryExtension|BooleanExtension|CanonicalExtension|DateExtension|DateTimeExtension|DecimalExtension
+|IdExtension|InstantExtension|Integer64Extension|MarkdownExtension|OidExtension|PositiveIntExtension|TimeExtension|UnsignedIntExtension
+|UriExtension|UrlExtension|UuidExtension|AddressExtension|AgeExtension|AnnotationExtension|AttachmentExtension|CodeableReferenceExtension
+|ContactPointExtension|CountExtension|DistanceExtension|DurationExtension|HumanNameExtension|IdentifierExtension|MoneyExtension
+|PeriodExtension|QuantityExtension|RangeExtension|RatioExtension|RatioRangeExtension|ReferenceExtension|SampledDataExtension|SignatureExtension
+|TimingExtension|ContactDetailExtension|DataRequirementExtension|ExpressionExtension|ParameterDefinitionExtension
+|RelatedArtifactExtension|TriggerDefinitionExtension|UsageContextExtension|AvailabilityExtension|ExtendedContactDetailExtension|DosageExtension
+|MetaExtension|ExtensionExtension;
 
 # Every element in a resource or data type includes an optional "extension" child element that may be present
-#  any number of times. 
+# any number of times. 
 #
 # + url - identifies the meaning of the extension
 # + extension - Additional content defined by implementations
@@ -33,7 +33,7 @@ public type Extension CodeableConceptExtension | StringExtension | CodingExtensi
     name: "Extension",
     baseType: Element,
     elements: {
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 1,
@@ -43,7 +43,7 @@ public type Extension CodeableConceptExtension | StringExtension | CodingExtensi
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -58,7 +58,7 @@ public type ExtensionExtension record {|
     name: "Extension",
     baseType: Element,
     elements: {
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 1,
@@ -66,7 +66,7 @@ public type ExtensionExtension record {|
             isArray: false,
             description: "identifies the meaning of the extension"
         },
-        "valueString" : {
+        "valueString": {
             name: "valueString",
             dataType: string,
             min: 0,
@@ -76,7 +76,7 @@ public type ExtensionExtension record {|
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -91,7 +91,7 @@ public type StringExtension record {|
     name: "Extension",
     baseType: Element,
     elements: {
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 1,
@@ -99,7 +99,7 @@ public type StringExtension record {|
             isArray: false,
             description: "identifies the meaning of the extension"
         },
-        "valueCoding" : {
+        "valueCoding": {
             name: "valueCoding",
             dataType: Coding,
             min: 0,
@@ -109,7 +109,7 @@ public type StringExtension record {|
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -124,7 +124,7 @@ public type CodingExtension record {|
     name: "Extension",
     baseType: Element,
     elements: {
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 1,
@@ -132,7 +132,7 @@ public type CodingExtension record {|
             isArray: false,
             description: "identifies the meaning of the extension"
         },
-        "valueCode" : {
+        "valueCode": {
             name: "valueCode",
             dataType: code,
             min: 0,
@@ -142,7 +142,7 @@ public type CodingExtension record {|
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -157,7 +157,7 @@ public type CodeExtension record {|
     name: "Extension",
     baseType: Element,
     elements: {
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 1,
@@ -165,7 +165,7 @@ public type CodeExtension record {|
             isArray: false,
             description: "identifies the meaning of the extension"
         },
-        "valueInteger" : {
+        "valueInteger": {
             name: "valueInteger",
             dataType: integer,
             min: 0,
@@ -175,7 +175,7 @@ public type CodeExtension record {|
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -190,7 +190,7 @@ public type IntegerExtension record {|
     name: "Extension",
     baseType: Element,
     elements: {
-        "url" : {
+        "url": {
             name: "url",
             dataType: uri,
             min: 1,
@@ -198,7 +198,7 @@ public type IntegerExtension record {|
             isArray: false,
             description: "identifies the meaning of the extension"
         },
-        "valueCodeableConcept" : {
+        "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: CodeableConcept,
             min: 0,
@@ -208,7 +208,7 @@ public type IntegerExtension record {|
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
@@ -223,7 +223,7 @@ public type Base64BinaryExtension record {|
     *Element;
 
     uri url;
-    base64Binary valueBase64Binary; 
+    base64Binary valueBase64Binary;
 |};
 
 public type BooleanExtension record {|
@@ -355,7 +355,7 @@ public type AgeExtension record {|
 
 public type AnnotationExtension record {|
     *Element;
-    
+
     uri url;
     Annotation valueAnnotation;
 |};
@@ -558,7 +558,7 @@ public type DosageExtension record {|
 
 public type MetaExtension record {|
     *Element;
-    
+
     uri url;
     Meta valueMeta;
 |};

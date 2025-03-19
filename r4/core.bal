@@ -11,9 +11,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/health.base.message;
 import ballerina/jwt;
 import ballerina/time;
+import ballerinax/health.base.message;
 
 # FHIR wire content type formats
 public type FHIRWireFormat xml|json;
@@ -301,6 +301,7 @@ public isolated class FHIRResourceEntity {
             return self.resourceRecord.clone();
         }
     }
+
     public isolated function toXml() returns xml|FHIRSerializerError {
         lock {
             return executeResourceXMLSerializer(self.resourceRecord.clone());
@@ -350,6 +351,15 @@ public isolated class FHIRContainerResourceEntity {
 public type HTTPRequest record {
     readonly & map<string[]> headers;
     readonly & (json|xml|string)? payload;
+};
+
+# Record collecting information about the HTTP response.
+#
+# + headers - map of outgoing HTTP headers
+# + statusCode - HTTP status code
+public type HTTPResponse record {
+    map<string> headers;
+    int? statusCode;
 };
 
 # Class representing FHIR request

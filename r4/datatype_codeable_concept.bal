@@ -25,7 +25,7 @@
     name: "CodeableConcept",
     baseType: Element,
     elements: {
-        "coding" : {
+        "coding": {
             name: "coding",
             dataType: Coding,
             min: 0,
@@ -33,7 +33,7 @@
             isArray: true,
             description: "Code defined by a terminology system"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: string,
             min: 0,
@@ -43,7 +43,7 @@
         }
     },
     serializers: {
-        'xml: complexDataTypeXMLSerializer, 
+        'xml: complexDataTypeXMLSerializer,
         'json: complexDataTypeJsonSerializer
     }
 }
