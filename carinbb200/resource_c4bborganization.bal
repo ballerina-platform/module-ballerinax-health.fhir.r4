@@ -348,7 +348,14 @@ public type C4BBOrganizationIdentifierTypeOne record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBOrganizationIdentifierTypeCodingOne[] coding;
 |};
@@ -779,7 +786,14 @@ public type C4BBOrganizationMeta record {|
     r4:Coding[] security?;
     r4:id versionId?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.meta.profile constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.meta.profile constraint. This field must be an array containing at most one item."
+        }
     }
     r4:canonical[] profile;
     string id?;
@@ -813,7 +827,14 @@ public type C4BBOrganizationIdentifierType record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBOrganizationIdentifierTypeCoding[] coding;
 |};
@@ -844,7 +865,14 @@ public type C4BBOrganizationIdentifierTypeThree record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBOrganizationIdentifierTypeCodingThree[] coding;
 |};
@@ -914,7 +942,14 @@ public type C4BBOrganizationIdentifierTypeTwo record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Organization.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBOrganizationIdentifierTypeCodingTwo[] coding;
 |};

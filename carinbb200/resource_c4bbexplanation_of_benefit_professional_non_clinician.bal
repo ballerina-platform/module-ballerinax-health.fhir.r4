@@ -577,7 +577,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinician record {|
 
     r4:Period benefitPeriod?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.insurance constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.insurance constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianInsurance[] insurance;
     r4:Reference claimResponse?;
@@ -597,16 +604,37 @@ public type C4BBExplanationOfBenefitProfessionalNonClinician record {|
     r4:Narrative text?;
     C4BBExplanationOfBenefitProfessionalNonClinicianCareTeam[] careTeam?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.identifier constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.identifier constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Identifier[] identifier;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianItem[] item;
     r4:dateTime created;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.diagnosis constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.diagnosis constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianDiagnosis[] diagnosis;
     r4:CodeableConcept priority?;
@@ -622,7 +650,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinician record {|
     C4BBExplanationOfBenefitProfessionalNonClinicianAdjudication[] adjudication?;
     C4BBExplanationOfBenefitProfessionalNonClinicianAddItem[] addItem?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.total constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.total constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianTotal[] total;
     C4BBExplanationOfBenefitProfessionalNonClinicianRelated[] related?;
@@ -1522,7 +1557,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianAdjudicationCategory
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianAdjudicationCategoryCodingOne[] coding;
 |};
@@ -2237,7 +2279,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingSeven[] coding;
 |};
@@ -2362,7 +2411,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingTwo[] coding;
 |};
@@ -2393,7 +2449,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingThree[] coding;
 |};
@@ -2745,7 +2808,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianItemAdjudicationCate
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianItemAdjudicationCategoryCoding[] coding;
 |};
@@ -3152,7 +3222,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingNine[] coding;
 |};
@@ -3309,22 +3386,6 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianIdentifierUniqueclai
     string value;
 |};
 
-# FHIR C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoValueValueValue datatype record.
-#
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoValueValueValue",
-    baseType: (),
-    elements: {
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoValueValueValue record {|
-
-|};
-
 # FHIR C4BBExplanationOfBenefitProfessionalNonClinicianItemAdjudicationBenefitpaymentstatus datatype record.
 #
 # + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
@@ -3445,7 +3506,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianItemAdjudicationCate
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianItemAdjudicationCategoryCodingTwo[] coding;
 |};
@@ -3476,7 +3544,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianIdentifierType recor
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianIdentifierTypeCoding[] coding;
 |};
@@ -3773,7 +3848,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianItem record {|
     r4:positiveInt[] noteNumber?;
     r4:Period servicedPeriod;
     @constraint:Array {
-       minLength: 2
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianItemAdjudication[] adjudication;
     r4:positiveInt[] informationSequence?;
@@ -4172,7 +4254,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingOne[] coding;
 |};
@@ -4364,7 +4453,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingFive[] coding;
 |};
@@ -4395,7 +4491,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingSix[] coding;
 |};
@@ -4749,7 +4852,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianItemAdjudicationCate
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianItemAdjudicationCategoryCodingOne[] coding;
 |};
@@ -4780,7 +4890,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingFour[] coding;
 |};
@@ -5355,7 +5472,7 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianItemDetail record {|
             dataType: r4:CodeableConcept,
             min: 1,
             max: 1,
-            isArray: false,
+            isArray: true,
             description: "When the condition was observed or the relative ranking.",
             path: "ExplanationOfBenefit.diagnosis.type"
         },
@@ -5383,7 +5500,17 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianDiagnosis record {|
     r4:CodeableConcept packageCode?;
     r4:Extension[] modifierExtension?;
     string id?;
-    r4:CodeableConcept 'type;
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.diagnosis.type constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.diagnosis.type constraint. This field must be an array containing at most one item."
+        }
+    }
+    r4:CodeableConcept[] 'type;
     r4:CodeableConcept diagnosisCodeableConcept;
 |};
 
@@ -5547,14 +5674,6 @@ public enum C4BBExplanationOfBenefitProfessionalNonClinicianProcessNoteType {
    CODE_TYPE_PRINT = "print",
    CODE_TYPE_DISPLAY = "display",
    CODE_TYPE_PRINTOPER = "printoper"
-}
-
-# C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoValueComparator enum
-public enum C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoValueComparator {
-   CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
-   CODE_COMPARATOR_LESS_THAN = "<",
-   CODE_COMPARATOR_GREATER_THAN = ">",
-   CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
 }
 
 # FHIR C4BBExplanationOfBenefitProfessionalNonClinicianPayee datatype record.
@@ -5885,7 +6004,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingTen[] coding;
 |};
@@ -6336,7 +6462,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCoding[] coding;
 |};
@@ -6621,7 +6754,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCatego
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianSupportingInfoCategoryCodingEight[] coding;
 |};
@@ -6652,7 +6792,14 @@ public type C4BBExplanationOfBenefitProfessionalNonClinicianAdjudicationCategory
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitProfessionalNonClinicianAdjudicationCategoryCoding[] coding;
 |};

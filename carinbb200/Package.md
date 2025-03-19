@@ -32,17 +32,17 @@ compliant with http://hl7.org/fhir/us/carin-bb/ implementation guide.
 | 10). C4BBRelatedPerson | [[Definition]][s10] [[Ballerina Record]][m10] |
 | 11). C4BBExplanationOfBenefitProfessionalNonClinician | [[Definition]][s11] [[Ballerina Record]][m11] |
 
-[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBPatient
-[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBOrganization
-[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBCoverage
-[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitOutpatientInstitutional
-[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitPharmacy
-[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBPractitioner
-[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitInpatientInstitutional
-[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefit
-[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitOral
-[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBRelatedPerson
-[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitProfessionalNonClinician
+[m1]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBPatient
+[m2]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBOrganization
+[m3]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBCoverage
+[m4]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitOutpatientInstitutional
+[m5]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitPharmacy
+[m6]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBPractitioner
+[m7]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitInpatientInstitutional
+[m8]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefit
+[m9]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitOral
+[m10]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBRelatedPerson
+[m11]: https://lib.ballerina.io/healthcare/health.fhir.r4.carinbb200/1.0.0#C4BBExplanationOfBenefitProfessionalNonClinician
 
 [s1]: http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-Patient
 [s2]: http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-Organization
