@@ -120,7 +120,7 @@ public const RESOURCE_NAME_C4BBCOVERAGE = "Coverage";
             dataType: r4:Reference,
             min: 1,
             max: 1,
-            isArray: false,
+            isArray: true,
             path: "Coverage.payor"
         },
         "id" : {
@@ -286,7 +286,17 @@ public type C4BBCoverage record {|
     r4:code language?;
     r4:CodeableConcept 'type?;
     string network?;
-    r4:Reference payor;
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Coverage.payor constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Coverage.payor constraint. This field must be an array containing at most one item."
+        }
+    }
+    r4:Reference[] payor;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept relationship;
@@ -480,7 +490,14 @@ public type C4BBCoverageMeta record {|
     r4:Coding[] security?;
     r4:id versionId?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Coverage.meta.profile constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Coverage.meta.profile constraint. This field must be an array containing at most one item."
+        }
     }
     r4:canonical[] profile;
     string id?;
@@ -597,7 +614,14 @@ public type C4BBCoverageClassType record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Coverage.class.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Coverage.class.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBCoverageClassTypeCoding[] coding;
 |};
@@ -628,7 +652,14 @@ public type C4BBCoverageClassTypeOne record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Coverage.class.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Coverage.class.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBCoverageClassTypeCodingOne[] coding;
 |};

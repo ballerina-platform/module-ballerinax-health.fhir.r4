@@ -27,19 +27,6 @@ public const RESOURCE_NAME_C4BBPATIENT = "Patient";
 #
 # + resourceType - The type of the resource describes
 # + extension - An Extension
-# * extension Slicings
-# 1) Extension: US Core ethnicity Extension
-#       - min = 0
-#       - max = 1
-#
-# 2) Extension: US Core Race Extension
-#       - min = 0
-#       - max = 1
-#
-# 3) Extension: Extension
-#       - min = 0
-#       - max = 1
-#
 # + gender - Administrative Gender - the gender that the patient is considered to have for administration and record keeping purposes.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + link - Link to another patient resource that concerns the same actual patient.
@@ -314,7 +301,14 @@ public type C4BBPatient record {|
     r4:Narrative text?;
     C4BBPatientCommunication[] communication?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.identifier constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.identifier constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBPatientIdentifier[] identifier;
     C4BBPatientAddress[] address?;
@@ -328,7 +322,14 @@ public type C4BBPatient record {|
     C4BBPatientMeta meta;
     r4:integer multipleBirthInteger?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.name constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.name constraint. This field must be an array containing at most one item."
+        }
     }
     r4:HumanName[] name;
     r4:uri implicitRules?;
@@ -988,7 +989,14 @@ public type C4BBPatientMeta record {|
     r4:Coding[] security?;
     r4:id versionId?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.meta.profile constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.meta.profile constraint. This field must be an array containing at most one item."
+        }
     }
     r4:canonical[] profile;
     string id?;
@@ -1345,7 +1353,14 @@ public type C4BBPatientIdentifierType record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBPatientIdentifierTypeCoding[] coding;
 |};
@@ -1385,7 +1400,14 @@ public type C4BBPatientIdentifierTypeOne record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Patient.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBPatientIdentifierTypeCodingOne[] coding;
 |};

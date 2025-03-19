@@ -217,7 +217,14 @@ public type C4BBPractitioner record {|
     RESOURCE_NAME_C4BBPRACTITIONER resourceType = RESOURCE_NAME_C4BBPRACTITIONER;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.identifier constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.identifier constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Identifier[] identifier;
     r4:Extension[] extension?;
@@ -232,7 +239,14 @@ public type C4BBPractitioner record {|
     r4:Resource[] contained?;
     C4BBPractitionerMeta meta;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.name constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.name constraint. This field must be an array containing at most one item."
+        }
     }
     r4:HumanName[] name;
     r4:uri implicitRules?;
@@ -471,7 +485,14 @@ public type C4BBPractitionerMeta record {|
     r4:Coding[] security?;
     r4:id versionId?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.meta.profile constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.meta.profile constraint. This field must be an array containing at most one item."
+        }
     }
     r4:canonical[] profile;
     string id?;
@@ -544,7 +565,14 @@ public type C4BBPractitionerIdentifierType record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBPractitionerIdentifierTypeCoding[] coding;
 |};
@@ -677,7 +705,14 @@ public type C4BBPractitionerIdentifierTypeOne record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Practitioner.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBPractitionerIdentifierTypeCodingOne[] coding;
 |};

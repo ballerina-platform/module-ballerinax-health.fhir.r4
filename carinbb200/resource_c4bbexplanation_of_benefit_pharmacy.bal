@@ -565,7 +565,14 @@ public type C4BBExplanationOfBenefitPharmacy record {|
 
     r4:Period benefitPeriod?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.insurance constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.insurance constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyInsurance[] insurance;
     r4:Reference claimResponse?;
@@ -578,7 +585,14 @@ public type C4BBExplanationOfBenefitPharmacy record {|
     C4BBExplanationOfBenefitPharmacyProcessNote[] processNote?;
     C4BBExplanationOfBenefitPharmacyPayee payee?;
     @constraint:Array {
-       minLength: 4
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacySupportingInfo[] supportingInfo;
     r4:Reference claim?;
@@ -588,11 +602,25 @@ public type C4BBExplanationOfBenefitPharmacy record {|
     r4:Narrative text?;
     C4BBExplanationOfBenefitPharmacyCareTeam[] careTeam?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.identifier constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.identifier constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Identifier[] identifier;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyItem[] item;
     r4:dateTime created;
@@ -608,12 +636,26 @@ public type C4BBExplanationOfBenefitPharmacy record {|
     C4BBExplanationOfBenefitPharmacyBenefitBalance[] benefitBalance?;
     C4BBExplanationOfBenefitPharmacyAccident accident?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyAdjudication[] adjudication;
     C4BBExplanationOfBenefitPharmacyAddItem[] addItem?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.total constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.total constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyTotal[] total;
     C4BBExplanationOfBenefitPharmacyRelated[] related?;
@@ -661,7 +703,14 @@ public type C4BBExplanationOfBenefitPharmacySupportingInfoCategory record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacySupportingInfoCategoryCoding[] coding;
 |};
@@ -692,7 +741,14 @@ public type C4BBExplanationOfBenefitPharmacySupportingInfoCategoryFour record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacySupportingInfoCategoryCodingFour[] coding;
 |};
@@ -795,7 +851,14 @@ public type C4BBExplanationOfBenefitPharmacyAdjudicationCategoryOne record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyAdjudicationCategoryCodingOne[] coding;
 |};
@@ -987,7 +1050,14 @@ public type C4BBExplanationOfBenefitPharmacySupportingInfoCategoryFive record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacySupportingInfoCategoryCodingFive[] coding;
 |};
@@ -1436,7 +1506,14 @@ public type C4BBExplanationOfBenefitPharmacyIdentifierType record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.identifier.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.identifier.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyIdentifierTypeCoding[] coding;
 |};
@@ -2826,7 +2903,14 @@ public type C4BBExplanationOfBenefitPharmacySupportingInfoCategoryOne record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacySupportingInfoCategoryCodingOne[] coding;
 |};
@@ -3271,7 +3355,14 @@ public type C4BBExplanationOfBenefitPharmacySupportingInfoCategorySix record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacySupportingInfoCategoryCodingSix[] coding;
 |};
@@ -3341,7 +3432,14 @@ public type C4BBExplanationOfBenefitPharmacySupportingInfoCategoryTwo record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacySupportingInfoCategoryCodingTwo[] coding;
 |};
@@ -3648,7 +3746,14 @@ public type C4BBExplanationOfBenefitPharmacyItem record {|
     r4:CodeableConcept productOrService;
     r4:positiveInt[] noteNumber?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyItemAdjudication[] adjudication;
     r4:positiveInt[] informationSequence?;
@@ -5030,7 +5135,14 @@ public type C4BBExplanationOfBenefitPharmacyItemAdjudicationCategory record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyItemAdjudicationCategoryCoding[] coding;
 |};
@@ -5164,7 +5276,14 @@ public type C4BBExplanationOfBenefitPharmacyAdjudicationCategory record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyAdjudicationCategoryCoding[] coding;
 |};
@@ -5195,7 +5314,14 @@ public type C4BBExplanationOfBenefitPharmacySupportingInfoCategorySeven record {
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacySupportingInfoCategoryCodingSeven[] coding;
 |};
@@ -5342,7 +5468,14 @@ public type C4BBExplanationOfBenefitPharmacySupportingInfoCategoryThree record {
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacySupportingInfoCategoryCodingThree[] coding;
 |};
@@ -5606,7 +5739,14 @@ public type C4BBExplanationOfBenefitPharmacyType record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.type.coding constraint. This field must be an array containing at most one item."
+        }
     }
     C4BBExplanationOfBenefitPharmacyTypeCoding[] coding;
 |};
