@@ -92,7 +92,7 @@ public isolated service class FHIRResponseInterceptor {
             }
             // set the response headers
             foreach string headerName in httpResponse.headers.keys() {
-                log:printDebug("Setting header: ");
+                log:printDebug(string `Setting header: ${headerName}`);
 
                 string? headerValue = httpResponse.headers[headerName];
                 if headerValue != () {
