@@ -341,27 +341,27 @@ public enum USCoreQuestionnaireResponseProfileStatus {
 
 # FHIR USCoreQuestionnaireResponseProfileItemAnswer datatype record.
 #
-# + valueQuestionnaireResponseReference - The answer (or one of the answers) provided by the respondent to the question.
+# + valueReference - The answer (or one of the answers) provided by the respondent to the question.
 # + extension - An Extension
-# + valueQuestionnaireResponseAttachment - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseTime - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseQuantity - The answer (or one of the answers) provided by the respondent to the question.
+# + valueAttachment - The answer (or one of the answers) provided by the respondent to the question.
+# + valueTime - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuantity - The answer (or one of the answers) provided by the respondent to the question.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + valueQuestionnaireResponseBoolean - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseString - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseUri - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseCoding - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseDecimal - The answer (or one of the answers) provided by the respondent to the question.
+# + valueBoolean - The answer (or one of the answers) provided by the respondent to the question.
+# + valueString - The answer (or one of the answers) provided by the respondent to the question.
+# + valueUri - The answer (or one of the answers) provided by the respondent to the question.
+# + valueCoding - The answer (or one of the answers) provided by the respondent to the question.
+# + valueDecimal - The answer (or one of the answers) provided by the respondent to the question.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + valueQuestionnaireResponseInteger - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseDate - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseDateTime - The answer (or one of the answers) provided by the respondent to the question.
+# + valueInteger - The answer (or one of the answers) provided by the respondent to the question.
+# + valueDate - The answer (or one of the answers) provided by the respondent to the question.
+# + valueDateTime - The answer (or one of the answers) provided by the respondent to the question.
 @r4:DataTypeDefinition {
     name: "USCoreQuestionnaireResponseProfileItemAnswer",
     baseType: (),
     elements: {
-        "valueQuestionnaireResponseReference": {
-            name: "valueQuestionnaireResponseReference",
+        "valueReference": {
+            name: "valueReference",
             dataType: r4:Reference,
             min: 0,
             max: 1,
@@ -378,8 +378,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "An Extension",
             path: "QuestionnaireResponse.item.answer.extension"
         },
-        "valueQuestionnaireResponseAttachment": {
-            name: "valueQuestionnaireResponseAttachment",
+        "valueAttachment": {
+            name: "valueAttachment",
             dataType: r4:Attachment,
             min: 0,
             max: 1,
@@ -387,8 +387,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseTime": {
-            name: "valueQuestionnaireResponseTime",
+        "valueTime": {
+            name: "valueTime",
             dataType: r4:time,
             min: 0,
             max: 1,
@@ -396,8 +396,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseQuantity": {
-            name: "valueQuestionnaireResponseQuantity",
+        "valueQuantity": {
+            name: "valueQuantity",
             dataType: r4:Quantity,
             min: 0,
             max: 1,
@@ -414,8 +414,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "QuestionnaireResponse.item.answer.modifierExtension"
         },
-        "valueQuestionnaireResponseBoolean": {
-            name: "valueQuestionnaireResponseBoolean",
+        "valueBoolean": {
+            name: "valueBoolean",
             dataType: boolean,
             min: 0,
             max: 1,
@@ -423,8 +423,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseString": {
-            name: "valueQuestionnaireResponseString",
+        "valueString": {
+            name: "valueString",
             dataType: string,
             min: 0,
             max: 1,
@@ -432,8 +432,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseUri": {
-            name: "valueQuestionnaireResponseUri",
+        "valueUri": {
+            name: "valueUri",
             dataType: r4:uri,
             min: 0,
             max: 1,
@@ -441,8 +441,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseCoding": {
-            name: "valueQuestionnaireResponseCoding",
+        "valueCoding": {
+            name: "valueCoding",
             dataType: r4:Coding,
             min: 0,
             max: 1,
@@ -450,8 +450,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseDecimal": {
-            name: "valueQuestionnaireResponseDecimal",
+        "valueDecimal": {
+            name: "valueDecimal",
             dataType: decimal,
             min: 0,
             max: 1,
@@ -468,8 +468,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "QuestionnaireResponse.item.answer.id"
         },
-        "valueQuestionnaireResponseInteger": {
-            name: "valueQuestionnaireResponseInteger",
+        "valueInteger": {
+            name: "valueInteger",
             dataType: r4:integer,
             min: 0,
             max: 1,
@@ -477,8 +477,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseDate": {
-            name: "valueQuestionnaireResponseDate",
+        "valueDate": {
+            name: "valueDate",
             dataType: r4:date,
             min: 0,
             max: 1,
@@ -486,8 +486,8 @@ public enum USCoreQuestionnaireResponseProfileStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseDateTime": {
-            name: "valueQuestionnaireResponseDateTime",
+        "valueDateTime": {
+            name: "valueDateTime",
             dataType: r4:dateTime,
             min: 0,
             max: 1,
@@ -504,69 +504,24 @@ public enum USCoreQuestionnaireResponseProfileStatus {
 public type USCoreQuestionnaireResponseProfileItemAnswer record {|
     *r4:BackboneElement;
 
-    r4:Reference valueQuestionnaireResponseReference?;
+    r4:Reference valueReference?;
     r4:Extension[] extension?;
-    r4:Attachment valueQuestionnaireResponseAttachment?;
-    r4:time valueQuestionnaireResponseTime?;
-    r4:Quantity valueQuestionnaireResponseQuantity?;
+    r4:Attachment valueAttachment?;
+    r4:time valueTime?;
+    r4:Quantity valueQuantity?;
     r4:Extension[] modifierExtension?;
-    boolean valueQuestionnaireResponseBoolean?;
-    string valueQuestionnaireResponseString?;
-    r4:uri valueQuestionnaireResponseUri?;
-    r4:Coding valueQuestionnaireResponseCoding?;
-    decimal valueQuestionnaireResponseDecimal?;
+    boolean valueBoolean?;
+    string valueString?;
+    r4:uri valueUri?;
+    r4:Coding valueCoding?;
+    decimal valueDecimal?;
     string id?;
-    r4:integer valueQuestionnaireResponseInteger?;
-    r4:date valueQuestionnaireResponseDate?;
-    r4:dateTime valueQuestionnaireResponseDateTime?;
+    r4:integer valueInteger?;
+    r4:date valueDate?;
+    r4:dateTime valueDateTime?;
 |};
 
 # FHIR USCoreQuestionnaireResponseProfileQuestionnaire datatype record.
 #
-# + extension - An Extension
-# + id - unique id for the element within a resource (for internal references)
-# + value - Primitive value for canonical
-@r4:DataTypeDefinition {
-    name: "USCoreQuestionnaireResponseProfileQuestionnaire",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "An Extension",
-            path: "QuestionnaireResponse.questionnaire.extension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "unique id for the element within a resource (for internal references)",
-            path: "QuestionnaireResponse.questionnaire.id"
-        },
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Primitive value for canonical",
-            path: "QuestionnaireResponse.questionnaire.value"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type USCoreQuestionnaireResponseProfileQuestionnaire record {|
-
-    r4:Extension[] extension?;
-    string id?;
-    string value?;
-|};
-
+# This type represents a URI reference to a Questionnaire resource.
+public type USCoreQuestionnaireResponseProfileQuestionnaire r4:uri;
