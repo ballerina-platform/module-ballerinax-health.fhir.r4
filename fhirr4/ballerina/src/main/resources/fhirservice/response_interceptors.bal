@@ -82,6 +82,26 @@ public isolated service class FHIRResponseInterceptor {
             res.setHeader(LOCATION_HEADER, location);
         }
 
+        // Set custom headers and status code from the FHIR context(If available)
+        r4:HTTPResponse? httpResponse = fhirContext.getHTTPResponse();
+        if httpResponse != () {
+            log:printDebug("Setting response status code and headers from the FHIR context.");
+            // set the response status code
+            if httpResponse.statusCode is int {
+                res.statusCode = <int> httpResponse.statusCode;
+            }
+            // set the response headers
+            foreach string headerName in httpResponse.headers.keys() {
+                log:printDebug(string `Setting header: ${headerName}`);
+
+                string? headerValue = httpResponse.headers[headerName];
+                if headerValue != () {
+                    res.setHeader(headerName, headerValue);
+                }
+                
+            }
+        }
+
         if fhirContext.isInErrorState() {
             // set the proper response code
             res.statusCode = fhirContext.getErrorCode();
