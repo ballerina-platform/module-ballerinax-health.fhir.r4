@@ -319,7 +319,7 @@ modules = [
 ]
 
 [[package]]
-org = "healthcare"
+org = "ballerinax"
 name = "health.fhir.r4.davinciplannet120"
 version = "1.0.0"
 dependencies = [
@@ -328,6 +328,6 @@ dependencies = [
 	{org = "ballerinax", name = "health.fhir.r4"}
 ]
 modules = [
-	{org = "healthcare", packageName = "health.fhir.r4.davinciplannet120", moduleName = "health.fhir.r4.davinciplannet120"}
+	{org = "ballerinax", packageName = "health.fhir.r4.davinciplannet120", moduleName = "health.fhir.r4.davinciplannet120"}
 ]
 
