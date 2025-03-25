@@ -962,5 +962,4 @@ function testIpsBundleCreationFromR4Bundle() returns error? {
     } else {
         test:assertFail("Error in parsing the bundle");
     }
-
 }
