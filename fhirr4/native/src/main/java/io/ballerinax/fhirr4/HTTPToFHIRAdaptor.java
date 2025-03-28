@@ -19,19 +19,14 @@
 package io.ballerinax.fhirr4;
 
 import io.ballerina.runtime.api.Environment;
-import io.ballerina.runtime.api.Future;
-import io.ballerina.runtime.api.PredefinedTypes;
-import io.ballerina.runtime.api.async.StrandMetadata;
-import io.ballerina.runtime.api.creators.TypeCreator;
+import io.ballerina.runtime.api.concurrent.StrandMetadata;
 import io.ballerina.runtime.api.types.ResourceMethodType;
 import io.ballerina.runtime.api.types.ServiceType;
-import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 
-import static io.ballerinax.fhirr4.ModuleUtils.getModule;
 import static io.ballerinax.fhirr4.Utils.isPathsMatching;
 
 import java.time.OffsetDateTime;
@@ -50,31 +45,6 @@ public class HTTPToFHIRAdaptor {
 
     private HTTPToFHIRAdaptor(){}
 
-    public static final StrandMetadata EXECUTE_WITH_ID = new StrandMetadata(getModule().getOrg(),
-                                                                            getModule().getName(),
-                                                                            getModule().getMajorVersion(),
-                                                                            "executeWithID");
-
-    public static final StrandMetadata EXECUTE_WITH_ID_AND_VID = new StrandMetadata(getModule().getOrg(),
-                                                                            getModule().getName(),
-                                                                            getModule().getMajorVersion(),
-                                                                            "executeWithIDAndVID");
-
-    public static final StrandMetadata EXECUTE_WITH_NO_PARAM = new StrandMetadata(getModule().getOrg(),
-                                                                                  getModule().getName(),
-                                                                                  getModule().getMajorVersion(),
-                                                                                  "executeWithNoParam");
-
-    public static final StrandMetadata EXECUTE_WITH_PAYLOAD = new StrandMetadata(getModule().getOrg(),
-                                                                                 getModule().getName(),
-                                                                                 getModule().getMajorVersion(),
-                                                                                 "executeWithPayload");
-
-    public static final StrandMetadata EXECUTE_WITH_ID_AND_PAYLOAD = new StrandMetadata(getModule().getOrg(),
-                                                                                    getModule().getName(),
-                                                                                    getModule().getMajorVersion(),
-                                                                                    "executeWithIDAndPayload");
-
     public static void addFhirServiceToHolder(BObject holder, BObject service) {
         holder.addNativeData("FHIR_SERVICE", service);
     }
@@ -85,106 +55,37 @@ public class HTTPToFHIRAdaptor {
 
     public static Object executeWithID(Environment environment, BString id, BObject fhirCtx, BObject service,
                                               ResourceMethodType resourceMethod) {
-        Future future = environment.markAsync();
-        ExecutionCallback executionCallback = new ExecutionCallback(future);
         ServiceType serviceType = (ServiceType) service.getType();
-        Type returnType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ANY, PredefinedTypes.TYPE_ERROR);
-        if (resourceMethod != null) {
-            if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
-                environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_WITH_ID, executionCallback,
-                                                                       null, returnType, id, true, fhirCtx, true);
-            } else {
-                environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_WITH_ID, executionCallback,
-                                                                       null, returnType, id, true, fhirCtx, true);
-            }
-        }
-        return null;
+        return environment.getRuntime().callMethod(service, resourceMethod.getName(),
+                new StrandMetadata(serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName()), ModuleUtils.getProperties("executeWithID")), id, fhirCtx);
     }
 
     public static Object executeWithIDAndVID(Environment environment, BString id, BString vid, BObject fhirCtx,
                                              BObject service, ResourceMethodType resourceMethod) {
-        Future future = environment.markAsync();
-        ExecutionCallback executionCallback = new ExecutionCallback(future);
         ServiceType serviceType = (ServiceType) service.getType();
-        Type returnType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ANY, PredefinedTypes.TYPE_ERROR);
-        if (resourceMethod != null) {
-            if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
-                environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_WITH_ID_AND_VID, executionCallback,
-                                                                       null, returnType, id, true, vid, true, fhirCtx,
-                                                                       true);
-            } else {
-                environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_WITH_ID_AND_VID, executionCallback,
-                                                                       null, returnType, id, true, vid, true, fhirCtx,
-                                                                       true);
-            }
-        }
-        return null;
+        return environment.getRuntime().callMethod(service, resourceMethod.getName(),
+                new StrandMetadata(serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName()), ModuleUtils.getProperties("executeWithIDAndVID")), id, vid, fhirCtx);
     }
 
     public static Object executeWithNoParam(Environment environment, BObject fhirCtx, BObject service,
                                          ResourceMethodType resourceMethod) {
-        Future future = environment.markAsync();
-        ExecutionCallback executionCallback = new ExecutionCallback(future);
         ServiceType serviceType = (ServiceType) service.getType();
-        Type returnType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ANY, PredefinedTypes.TYPE_ERROR);
-        if (resourceMethod != null) {
-            if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
-                environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_WITH_NO_PARAM, executionCallback,
-                                                                       null, returnType, fhirCtx, true);
-            } else {
-                environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_WITH_NO_PARAM, executionCallback,
-                                                                       null, returnType, fhirCtx, true);
-            }
-        }
-        return null;
+        return environment.getRuntime().callMethod(service, resourceMethod.getName(),
+                new StrandMetadata(serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName()), ModuleUtils.getProperties("executeWithNoParam")), fhirCtx);
     }
 
     public static Object executeWithPayload(Environment environment, BMap r4Payload, BObject fhirCtx, BObject service,
                                        ResourceMethodType resourceMethod) {
-        Future future = environment.markAsync();
-        ExecutionCallback executionCallback = new ExecutionCallback(future);
         ServiceType serviceType = (ServiceType) service.getType();
-        Type returnType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ANY, PredefinedTypes.TYPE_ERROR);
-        if (resourceMethod != null) {
-            if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
-                environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_WITH_PAYLOAD, executionCallback,
-                                                                       null, returnType, fhirCtx, true,
-                                                                       r4Payload, true);
-            } else {
-                environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
-                                                                       EXECUTE_WITH_PAYLOAD, executionCallback,
-                                                                       null, returnType, fhirCtx, true,
-                                                                       r4Payload, true);
-            }
-        }
-        return null;
+        return environment.getRuntime().callMethod(service, resourceMethod.getName(),
+                new StrandMetadata(serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName()), ModuleUtils.getProperties("executeWithPayload")), fhirCtx, r4Payload);
     }
 
     public static Object executeWithIDAndPayload(Environment environment, BString id, BMap patchPayload,
                                                  BObject fhirCtx, BObject service, ResourceMethodType resourceMethod) {
-        Future future = environment.markAsync();
-        ExecutionCallback executionCallback = new ExecutionCallback(future);
         ServiceType serviceType = (ServiceType) service.getType();
-        Type returnType = TypeCreator.createUnionType(PredefinedTypes.TYPE_ANY, PredefinedTypes.TYPE_ERROR);
-        if (resourceMethod != null) {
-            if (serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName())) {
-                environment.getRuntime().invokeMethodAsyncConcurrently(service, resourceMethod.getName(), null,
-                                          EXECUTE_WITH_ID_AND_PAYLOAD, executionCallback,null, returnType, id, true,
-                                          fhirCtx, true, patchPayload, true);
-            } else {
-                environment.getRuntime().invokeMethodAsyncSequentially(service, resourceMethod.getName(), null,
-                                          EXECUTE_WITH_ID_AND_PAYLOAD, executionCallback,null, returnType, id, true,
-                                          fhirCtx, true, patchPayload, true);
-            }
-        }
-        return null;
+        return environment.getRuntime().callMethod(service, resourceMethod.getName(), new StrandMetadata(
+                serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName()), ModuleUtils.getProperties("executeWithIDAndPayload")), id, fhirCtx, patchPayload);
     }
 
     public static Object getResourceMethod(BObject service, BArray servicePath, BArray path, BString accessor) {
