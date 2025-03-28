@@ -321,7 +321,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.uscore700"
-version = "1.0.2"
+version = "1.0.3"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "log"},
