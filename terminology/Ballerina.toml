@@ -1,10 +1,17 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4.terminology"
-version = "4.2.1"
+version = "5.0.0"
 distribution = "2201.10.2"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Terminology"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
-export = ["health.fhir.r4.terminology"]
+
+
+
+
+
+
+
+
 

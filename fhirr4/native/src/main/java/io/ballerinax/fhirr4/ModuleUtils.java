@@ -21,6 +21,9 @@ package io.ballerinax.fhirr4;
 import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.Module;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This class includes the utility functions related to Ballerina FHIR module.
  *
@@ -38,5 +41,14 @@ public class ModuleUtils {
 
     public static Module getModule() {
         return module;
+    }
+
+    public static Map<String, Object> getProperties(String resourceName) {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("moduleOrg", getModule().getOrg());
+        properties.put("moduleName", getModule().getName());
+        properties.put("moduleVersion", getModule().getMajorVersion());
+        properties.put("parentFunctionName", resourceName);
+        return properties;
     }
 }

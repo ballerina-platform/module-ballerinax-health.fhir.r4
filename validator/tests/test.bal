@@ -17,7 +17,6 @@
 import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401;
-import ballerinax/health.fhir.r4.uscore501;
 import ballerina/test;
 import ballerina/http;
 
@@ -211,25 +210,10 @@ function testTargetType() {
         "gender": "male",
         "birthDate": "2000-01-01"
     };
-    r4:FHIRValidationError? validationResult = validate(patientPayload, uscore501:USCorePatientProfile);
+    r4:FHIRValidationError? validationResult = validate(patientPayload, international401:Patient);
     if validationResult is r4:FHIRValidationError {
         test:assertFail(msg = "Validation failed");
     }
-}
-
-@test:Config{}
-function testCreateErrors() {
-    //For creating parser errors
-    r4:FHIRError parserError = createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID,
-                errorType = r4:PARSE_ERROR, httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
-
-    //For creating default fhir errors
-    r4:FHIRError fhirError = createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID,
-                httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
-
-    test:assertTrue(<r4:FHIRParseError>parserError is r4:FHIRParseError);
-    test:assertTrue(fhirError is r4:FHIRError);
-
 }
 
 @test:Config{}

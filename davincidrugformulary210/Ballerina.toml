@@ -1,8 +1,9 @@
 [package]
 authors = ["Ballerina"]
-distribution = "2201.10.2"
-export = ["health.fhir.r4.davincidrugformulary210"]
+distribution = "2201.12.2"
 keywords = ["Healthcare", "FHIR", "R4", "health_fhir_r4_davincidrugformulary210"]
 name = "health.fhir.r4.davincidrugformulary210"
 org = "ballerinax"
-version = "1.0.0"
+version = "2.0.0"
+
+
