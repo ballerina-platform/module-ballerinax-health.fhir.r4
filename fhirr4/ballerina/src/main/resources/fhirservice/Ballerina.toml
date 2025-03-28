@@ -10,12 +10,6 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhi
 [build-options]
 observabilityIncluded = true
 
-
-
-
-
-
-
 [platform.java11]
 graalvmCompatible = true
 

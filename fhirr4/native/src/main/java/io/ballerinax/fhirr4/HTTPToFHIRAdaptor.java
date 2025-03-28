@@ -19,20 +19,14 @@
 package io.ballerinax.fhirr4;
 
 import io.ballerina.runtime.api.Environment;
-//import io.ballerina.runtime.api.Future;
-//import io.ballerina.runtime.api.PredefinedTypes;
-//import io.ballerina.runtime.api.async.StrandMetadata;
 import io.ballerina.runtime.api.concurrent.StrandMetadata;
-//import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.types.ResourceMethodType;
 import io.ballerina.runtime.api.types.ServiceType;
-//import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 
-//import static io.ballerinax.fhirr4.ModuleUtils.getModule;
 import static io.ballerinax.fhirr4.Utils.isPathsMatching;
 
 import java.time.OffsetDateTime;

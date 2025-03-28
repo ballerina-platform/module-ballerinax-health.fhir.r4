@@ -12,7 +12,7 @@ on:
         type: string
 
 env:
-  BALLERINA_VERSION: 2201.10.2
+  BALLERINA_VERSION: 2201.12.2
 
 jobs:
   build:
