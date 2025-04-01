@@ -9,8 +9,12 @@ on:
       bal_central_environment:
         required: true
         type: string
+      ballerina_version:
+        required: false
+        type: number
+        default: 2201.12.2
 env:
-   BALLERINA_VERSION: 2201.12.2
+   BALLERINA_VERSION: ${{ inputs.ballerina_version }}
 jobs:
   release:
     runs-on: ubuntu-latest

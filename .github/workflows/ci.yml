@@ -10,6 +10,7 @@ env:
   R4_PATTERN: '*/*'
   UTILS_PATTERN: 'utils/*/*'
   AU_PATTERN: 'au/*/*'
+  DK_PATTERN: 'dk/*/*'
   GITHUB_WORKFLOWS_DIR: '.github'
   BALLERINA_VERSION: 2201.12.2
 
@@ -56,6 +57,8 @@ jobs:
             if [[ $file == $UTILS_PATTERN ]]; then
               EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1-2)
             elif [[ $file == $AU_PATTERN ]]; then
+              EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1-2)
+            elif [[ $file == $DK_PATTERN ]]; then
               EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1-2)
             elif [[ $file == $R4_PATTERN ]]; then
               EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1)
