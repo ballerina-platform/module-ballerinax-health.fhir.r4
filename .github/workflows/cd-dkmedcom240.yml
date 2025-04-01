@@ -1,0 +1,31 @@
+name: cd-dkmedcom240
+
+on:
+  workflow_dispatch:
+    inputs:
+      bal_central_environment:
+        description: Ballerina Central Environment
+        type: choice
+        options:
+        - STAGE
+        - DEV
+        - PROD
+        required: true
+      ballerina_version:
+        description: Ballerina Version
+        type: choice
+        options:
+        - 2201.9.0
+        - 2201.10.4
+        - 2201.12.2
+        required: false
+        default: 2201.10.2
+        
+jobs:
+  build:
+     uses: ./.github/workflows/build-executor.yml
+     secrets: inherit
+     with:
+      working_dir: ./dk/medcom240
+      bal_central_environment: ${{ inputs.bal_central_environment }}
+      ballerina_version: ${{ inputs.ballerina_version }}

@@ -1,0 +1,13 @@
+name: daily-build-dkmedcom240
+
+on:
+  schedule:
+    - cron: '35 21 * * *'    # 03:05 in LK time (GMT+5:30)
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/daily-build-executor.yml
+    secrets: inherit
+    with:
+      working_dir: dk/medcom240
