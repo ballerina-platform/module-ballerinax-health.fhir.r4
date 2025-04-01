@@ -42,16 +42,16 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
 # + property - The actual configuration settings of a device as it actually operates, e.g., regulation status, time properties.
 # * property Slicings
 # 1) PhdDevicePropertyCodedListProperties: The device properties represented by a list of codes such as the list of certified PHD or H-FS interfaces
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # 2) PhdDevicePropertyQuantitiesProperty: The device properties represented by quantities such as clock resolution
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # 3) PhdDevicePropertyBitProperties: Properties reported in BITs fields
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # + manufactureDate - The date and time when the device was manufactured.
 # + definition - The reference to the definition for the device.
@@ -62,16 +62,16 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
 # + identifier - The assigned unique identification of the device that is semantically meaningful outside of the FHIR resource context. An example would be the IEEE EUI-64 System-Id or transport address. For PHDs the systemIdentifier is required and the transportAddressIdentifier is highly recommended as this is what most end users see and can obtain from the device itself or device packaging.
 # * identifier Slicings
 # 1) PhdDeviceIdentifierBtmacAddressIdentifier: Bluetooth MAC Transport address identifier
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 2) PhdDeviceIdentifierSystemIdIdentifier: System Id identifier
-#       - min = 1
-#       - max = 1
+# - min = 1
+# - max = 1
 #
 # 3) PhdDeviceIdentifierMacAddressIdentifier: MAC Transport address identifier
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # + serialNumber - The serial number as reported by the Production-Specification attribute.
 # + lotNumber - Lot number assigned by the manufacturer.
@@ -91,7 +91,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/uv/phd/StructureDefinition/PhdDevice",
     elements: {
-        "note" : {
+        "note": {
             name: "note",
             dataType: r4:Annotation,
             min: 0,
@@ -99,7 +99,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.note"
         },
-        "parent" : {
+        "parent": {
             name: "parent",
             dataType: r4:Reference,
             min: 0,
@@ -107,7 +107,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.parent"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -115,7 +115,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.extension"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -123,7 +123,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.modifierExtension"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -132,7 +132,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             path: "Device.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "distinctIdentifier" : {
+        "distinctIdentifier": {
             name: "distinctIdentifier",
             dataType: string,
             min: 0,
@@ -140,7 +140,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.distinctIdentifier"
         },
-        "type" : {
+        "type": {
             name: "type",
             dataType: PhdDeviceType,
             min: 1,
@@ -149,7 +149,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             path: "Device.type",
             valueSet: "http://hl7.org/fhir/ValueSet/device-type"
         },
-        "deviceName" : {
+        "deviceName": {
             name: "deviceName",
             dataType: PhdDeviceDeviceName,
             min: 0,
@@ -157,7 +157,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.deviceName"
         },
-        "manufacturer" : {
+        "manufacturer": {
             name: "manufacturer",
             dataType: string,
             min: 1,
@@ -165,7 +165,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.manufacturer"
         },
-        "statusReason" : {
+        "statusReason": {
             name: "statusReason",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -174,7 +174,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             path: "Device.statusReason",
             valueSet: "http://hl7.org/fhir/ValueSet/device-status-reason"
         },
-        "patient" : {
+        "patient": {
             name: "patient",
             dataType: r4:Reference,
             min: 0,
@@ -182,7 +182,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.patient"
         },
-        "safety" : {
+        "safety": {
             name: "safety",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -190,7 +190,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.safety"
         },
-        "contact" : {
+        "contact": {
             name: "contact",
             dataType: r4:ContactPoint,
             min: 0,
@@ -198,7 +198,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.contact"
         },
-        "property" : {
+        "property": {
             name: "property",
             dataType: PhdDeviceProperty,
             min: 0,
@@ -206,7 +206,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.property"
         },
-        "manufactureDate" : {
+        "manufactureDate": {
             name: "manufactureDate",
             dataType: r4:dateTime,
             min: 0,
@@ -214,7 +214,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.manufactureDate"
         },
-        "definition" : {
+        "definition": {
             name: "definition",
             dataType: r4:Reference,
             min: 0,
@@ -222,7 +222,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.definition"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -230,7 +230,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -238,7 +238,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.text"
         },
-        "expirationDate" : {
+        "expirationDate": {
             name: "expirationDate",
             dataType: r4:dateTime,
             min: 0,
@@ -246,7 +246,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.expirationDate"
         },
-        "owner" : {
+        "owner": {
             name: "owner",
             dataType: r4:Reference,
             min: 0,
@@ -254,7 +254,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.owner"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 1,
@@ -262,7 +262,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.identifier"
         },
-        "serialNumber" : {
+        "serialNumber": {
             name: "serialNumber",
             dataType: string,
             min: 0,
@@ -270,7 +270,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.serialNumber"
         },
-        "lotNumber" : {
+        "lotNumber": {
             name: "lotNumber",
             dataType: string,
             min: 0,
@@ -278,7 +278,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.lotNumber"
         },
-        "version" : {
+        "version": {
             name: "version",
             dataType: PhdDeviceVersion,
             min: 0,
@@ -286,7 +286,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.version"
         },
-        "url" : {
+        "url": {
             name: "url",
             dataType: r4:uri,
             min: 0,
@@ -294,7 +294,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.url"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -302,7 +302,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.contained"
         },
-        "udiCarrier" : {
+        "udiCarrier": {
             name: "udiCarrier",
             dataType: PhdDeviceUdiCarrier,
             min: 0,
@@ -310,7 +310,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.udiCarrier"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: PhdDeviceMeta,
             min: 1,
@@ -318,7 +318,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.meta"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -326,7 +326,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.implicitRules"
         },
-        "specialization" : {
+        "specialization": {
             name: "specialization",
             dataType: PhdDeviceSpecialization,
             min: 1,
@@ -334,7 +334,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: true,
             path: "Device.specialization"
         },
-        "location" : {
+        "location": {
             name: "location",
             dataType: r4:Reference,
             min: 0,
@@ -342,7 +342,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.location"
         },
-        "modelNumber" : {
+        "modelNumber": {
             name: "modelNumber",
             dataType: string,
             min: 1,
@@ -350,7 +350,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.modelNumber"
         },
-        "partNumber" : {
+        "partNumber": {
             name: "partNumber",
             dataType: string,
             min: 0,
@@ -358,7 +358,7 @@ public const RESOURCE_NAME_PHDDEVICE = "Device";
             isArray: false,
             path: "Device.partNumber"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: PhdDeviceStatus,
             min: 0,
@@ -432,7 +432,7 @@ public type PhdDevice record {|
     string modelNumber;
     string partNumber?;
     PhdDeviceStatus status?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR PhdDeviceIdentifierTypeCodingTwo datatype record.
@@ -531,11 +531,11 @@ public type PhdDeviceIdentifierTypeCodingTwo record {|
 
 # PhdDeviceIdentifierUseOne enum
 public enum PhdDeviceIdentifierUseOne {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # FHIR PhdDevicePropertyType datatype record.
@@ -946,9 +946,9 @@ public type PhdDeviceSpecialization record {|
 
 # PhdDeviceUdiCarrierEntryType enum
 public enum PhdDeviceUdiCarrierEntryType {
-   CODE_ENTRYTYPE_RFID = "rfid",
-   CODE_ENTRYTYPE_MANUAL = "manual",
-   CODE_ENTRYTYPE_BARCODE = "barcode"
+    CODE_ENTRYTYPE_RFID = "rfid",
+    CODE_ENTRYTYPE_MANUAL = "manual",
+    CODE_ENTRYTYPE_BARCODE = "barcode"
 }
 
 # FHIR PhdDevicePropertyValueCodeCoding datatype record.
@@ -1234,12 +1234,12 @@ public type PhdDeviceUdiCarrier record {|
 
 # PhdDeviceDeviceNameType enum
 public enum PhdDeviceDeviceNameType {
-   CODE_TYPE_UDI_LABEL_NAME = "udi-label-name",
-   CODE_TYPE_OTHER = "other",
-   CODE_TYPE_MANUFACTURER_NAME = "manufacturer-name",
-   CODE_TYPE_MODEL_NAME = "model-name",
-   CODE_TYPE_USER_FRIENDLY_NAME = "user-friendly-name",
-   CODE_TYPE_PATIENT_REPORTED_NAME = "patient-reported-name"
+    CODE_TYPE_UDI_LABEL_NAME = "udi-label-name",
+    CODE_TYPE_OTHER = "other",
+    CODE_TYPE_MANUFACTURER_NAME = "manufacturer-name",
+    CODE_TYPE_MODEL_NAME = "model-name",
+    CODE_TYPE_USER_FRIENDLY_NAME = "user-friendly-name",
+    CODE_TYPE_PATIENT_REPORTED_NAME = "patient-reported-name"
 }
 
 # FHIR PhdDeviceProperty datatype record.
@@ -1868,10 +1868,10 @@ public type PhdDeviceIdentifierBtmacAddressIdentifier record {|
 
 # PhdDeviceStatus enum
 public enum PhdDeviceStatus {
-   CODE_STATUS_INACTIVE = "inactive",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
-   CODE_STATUS_UNKNOWN = "unknown"
+    CODE_STATUS_INACTIVE = "inactive",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+    CODE_STATUS_UNKNOWN = "unknown"
 }
 
 # FHIR PhdDeviceIdentifierType datatype record.
@@ -2039,10 +2039,10 @@ public type PhdDeviceVersionType record {|
 
 # PhdDevicePropertyValueQuantityComparator enum
 public enum PhdDevicePropertyValueQuantityComparator {
-   CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
-   CODE_COMPARATOR_LESS_THAN = "<",
-   CODE_COMPARATOR_GREATER_THAN = ">",
-   CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
+    CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
+    CODE_COMPARATOR_LESS_THAN = "<",
+    CODE_COMPARATOR_GREATER_THAN = ">",
+    CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
 }
 
 # FHIR PhdDeviceVersionTypeCodingMDCType datatype record.
@@ -3042,20 +3042,20 @@ public type PhdDevicePropertyValueQuantity record {|
 
 # PhdDeviceIdentifierUse enum
 public enum PhdDeviceIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # PhdDeviceIdentifierUseTwo enum
 public enum PhdDeviceIdentifierUseTwo {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # FHIR PhdDevicePropertyCodedListProperties datatype record.

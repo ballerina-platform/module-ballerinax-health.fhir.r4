@@ -63,7 +63,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
     baseType: r4:DomainResource,
     profile: "http://hl7.dk/fhir/core/StructureDefinition/dk-core-condition",
     elements: {
-        "note" : {
+        "note": {
             name: "note",
             dataType: r4:Annotation,
             min: 0,
@@ -71,7 +71,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: true,
             path: "Condition.note"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -79,7 +79,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: true,
             path: "Condition.extension"
         },
-        "code" : {
+        "code": {
             name: "code",
             dataType: DkCoreConditionCode,
             min: 0,
@@ -88,7 +88,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             path: "Condition.code",
             valueSet: "http://hl7.org/fhir/ValueSet/condition-code"
         },
-        "evidence" : {
+        "evidence": {
             name: "evidence",
             dataType: DkCoreConditionEvidence,
             min: 0,
@@ -96,7 +96,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: true,
             path: "Condition.evidence"
         },
-        "onsetRange" : {
+        "onsetRange": {
             name: "onsetRange",
             dataType: r4:Range,
             min: 0,
@@ -104,7 +104,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.onset[x]"
         },
-        "abatementDateTime" : {
+        "abatementDateTime": {
             name: "abatementDateTime",
             dataType: r4:dateTime,
             min: 0,
@@ -112,7 +112,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.abatement[x]"
         },
-        "subject" : {
+        "subject": {
             name: "subject",
             dataType: r4:Reference,
             min: 1,
@@ -120,7 +120,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.subject"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -128,7 +128,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: true,
             path: "Condition.modifierExtension"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -137,7 +137,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             path: "Condition.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "clinicalStatus" : {
+        "clinicalStatus": {
             name: "clinicalStatus",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -146,7 +146,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             path: "Condition.clinicalStatus",
             valueSet: "http://hl7.org/fhir/ValueSet/condition-clinical|4.0.1"
         },
-        "onsetDateTime" : {
+        "onsetDateTime": {
             name: "onsetDateTime",
             dataType: r4:dateTime,
             min: 0,
@@ -154,7 +154,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.onset[x]"
         },
-        "onsetString" : {
+        "onsetString": {
             name: "onsetString",
             dataType: string,
             min: 0,
@@ -162,7 +162,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.onset[x]"
         },
-        "onsetAge" : {
+        "onsetAge": {
             name: "onsetAge",
             dataType: r4:Age,
             min: 0,
@@ -170,7 +170,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.onset[x]"
         },
-        "abatementPeriod" : {
+        "abatementPeriod": {
             name: "abatementPeriod",
             dataType: r4:Period,
             min: 0,
@@ -178,7 +178,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.abatement[x]"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -186,7 +186,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -194,7 +194,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.text"
         },
-        "abatementString" : {
+        "abatementString": {
             name: "abatementString",
             dataType: string,
             min: 0,
@@ -202,7 +202,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.abatement[x]"
         },
-        "severity" : {
+        "severity": {
             name: "severity",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -211,7 +211,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             path: "Condition.severity",
             valueSet: "http://hl7.org/fhir/ValueSet/condition-severity"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -219,7 +219,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: true,
             path: "Condition.identifier"
         },
-        "recorder" : {
+        "recorder": {
             name: "recorder",
             dataType: r4:Reference,
             min: 0,
@@ -227,7 +227,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.recorder"
         },
-        "onsetPeriod" : {
+        "onsetPeriod": {
             name: "onsetPeriod",
             dataType: r4:Period,
             min: 0,
@@ -235,7 +235,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.onset[x]"
         },
-        "verificationStatus" : {
+        "verificationStatus": {
             name: "verificationStatus",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -244,7 +244,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             path: "Condition.verificationStatus",
             valueSet: "http://hl7.org/fhir/ValueSet/condition-ver-status|4.0.1"
         },
-        "recordedDate" : {
+        "recordedDate": {
             name: "recordedDate",
             dataType: r4:dateTime,
             min: 0,
@@ -252,7 +252,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.recordedDate"
         },
-        "abatementRange" : {
+        "abatementRange": {
             name: "abatementRange",
             dataType: r4:Range,
             min: 0,
@@ -260,7 +260,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.abatement[x]"
         },
-        "encounter" : {
+        "encounter": {
             name: "encounter",
             dataType: r4:Reference,
             min: 0,
@@ -268,7 +268,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.encounter"
         },
-        "bodySite" : {
+        "bodySite": {
             name: "bodySite",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -277,7 +277,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             path: "Condition.bodySite",
             valueSet: "http://hl7.org/fhir/ValueSet/body-site"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -285,7 +285,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: true,
             path: "Condition.contained"
         },
-        "asserter" : {
+        "asserter": {
             name: "asserter",
             dataType: r4:Reference,
             min: 0,
@@ -293,7 +293,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.asserter"
         },
-        "stage" : {
+        "stage": {
             name: "stage",
             dataType: DkCoreConditionStage,
             min: 0,
@@ -301,7 +301,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: true,
             path: "Condition.stage"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -309,7 +309,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.meta"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -317,7 +317,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             isArray: false,
             path: "Condition.implicitRules"
         },
-        "category" : {
+        "category": {
             name: "category",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -326,7 +326,7 @@ public const RESOURCE_NAME_DKCORECONDITION = "Condition";
             path: "Condition.category",
             valueSet: "http://hl7.org/fhir/ValueSet/condition-category"
         },
-        "abatementAge" : {
+        "abatementAge": {
             name: "abatementAge",
             dataType: r4:Age,
             min: 0,
@@ -378,7 +378,7 @@ public type DkCoreCondition record {|
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Age abatementAge?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR DkCoreConditionEvidence datatype record.

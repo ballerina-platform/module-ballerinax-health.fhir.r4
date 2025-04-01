@@ -23,7 +23,7 @@ import ballerinax/health.fhir.r4;
     name: "MedComAssignedIdentifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -32,7 +32,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -41,7 +41,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: MedcomAssignedIdentifierUse,
@@ -50,7 +50,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -59,7 +59,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -68,7 +68,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -77,7 +77,8 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -106,12 +107,11 @@ public enum MedcomAssignedIdentifierUse {
     CODE_MEDCOMASSIGNEDIDENTIFIERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "Lpr3Identifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -120,7 +120,7 @@ public enum MedcomAssignedIdentifierUse {
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -129,7 +129,7 @@ public enum MedcomAssignedIdentifierUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: LprIdentifierUse,
@@ -138,7 +138,7 @@ public enum MedcomAssignedIdentifierUse {
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -147,7 +147,7 @@ public enum MedcomAssignedIdentifierUse {
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -156,7 +156,7 @@ public enum MedcomAssignedIdentifierUse {
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -165,7 +165,8 @@ public enum MedcomAssignedIdentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -194,12 +195,11 @@ public enum LprIdentifierUse {
     CODE_LPRIDENTIFIERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "MedComMessagingContactPoint",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -208,7 +208,7 @@ public enum LprIdentifierUse {
             isArray: false,
             description: "Time period when the contact point was/is in use.",
             path: "ContactPoint.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: MedcomMessagingContactpointSystem,
@@ -217,7 +217,7 @@ public enum LprIdentifierUse {
             isArray: false,
             description: "Telecommunications form for contact point - what communications system is required to make use of the contact.",
             path: "ContactPoint.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: MedcomMessagingContactpointUse,
@@ -226,7 +226,7 @@ public enum LprIdentifierUse {
             isArray: false,
             description: "Identifies the purpose for the contact point.",
             path: "ContactPoint.use"
-        },    
+        },
         "rank": {
             name: "rank",
             dataType: r4:positiveInt,
@@ -235,7 +235,7 @@ public enum LprIdentifierUse {
             isArray: false,
             description: "Specifies a preferred order in which to use a set of contacts. ContactPoints with lower rank values are more preferred than those with higher rank values.",
             path: "ContactPoint.rank"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -244,7 +244,8 @@ public enum LprIdentifierUse {
             isArray: false,
             description: "The actual contact point details, in a form that is meaningful to the designated communication system (i.e. phone number or email address).",
             path: "ContactPoint.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -281,5 +282,4 @@ public enum MedcomMessagingContactpointUse {
     CODE_MEDCOMMESSAGINGCONTACTPOINTUSE_MOBILE = "mobile",
     CODE_MEDCOMMESSAGINGCONTACTPOINTUSE_HOME = "home"
 };
-
 

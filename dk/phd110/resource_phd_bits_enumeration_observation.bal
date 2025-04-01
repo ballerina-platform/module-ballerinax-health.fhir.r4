@@ -52,8 +52,8 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
 # + identifier - A unique identifier assigned to this observation.
 # * identifier Slicings
 # 1) PhdBitsEnumerationObservationIdentifierConditionalCreate: Unique identifier of this measurement for a given patient and device
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # + performer - Who was responsible for asserting the observed value as 'true'.
 # + effectivePeriod - The time or time-period the observed value is asserted as being true. It is a time period if a Measure-Active-Period (duration) attribute is part of the metric measurement sent by the PHD. Otherwise it is the time stamp sent by the PHD or the time of reception by the PHG if the PHD sent no time stamp.
@@ -64,20 +64,20 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
 # + component - Some observations have multiple component observations. These component observations are expressed as separate code value pairs that share the same attributes. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations.
 # * component Slicings
 # 1) PhdBitsEnumerationObservationComponentRelativeTimeComponent: Relative time stamp of the measurement reported by the PHD.
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 2) PhdBitsEnumerationObservationComponentHiresRelativeTimeComponent: Hi-Resolution Relative time stamp of the measurement reported by the PHD.
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 3) PhdBitsEnumerationObservationComponentSupplementalTypesComponent: Supplemental Type: A further description of the measurement type.
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # 4) PhdBitsEnumerationObservationComponentBitsComponent: BITs measurements entry components
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
 # + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range. Multiple reference ranges are interpreted as an 'OR'. In other words, to represent two distinct target populations, two `referenceRange` elements would be used.
@@ -96,7 +96,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/uv/phd/StructureDefinition/PhdBitsEnumerationObservation",
     elements: {
-        "valueBoolean" : {
+        "valueBoolean": {
             name: "valueBoolean",
             dataType: boolean,
             min: 0,
@@ -104,7 +104,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "dataAbsentReason" : {
+        "dataAbsentReason": {
             name: "dataAbsentReason",
             dataType: PhdBitsEnumerationObservationDataAbsentReason,
             min: 0,
@@ -113,7 +113,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             path: "Observation.dataAbsentReason",
             valueSet: "http://hl7.org/fhir/ValueSet/data-absent-reason"
         },
-        "note" : {
+        "note": {
             name: "note",
             dataType: r4:Annotation,
             min: 0,
@@ -121,7 +121,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.note"
         },
-        "partOf" : {
+        "partOf": {
             name: "partOf",
             dataType: r4:Reference,
             min: 0,
@@ -129,7 +129,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.partOf"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -137,7 +137,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.extension"
         },
-        "valueTime" : {
+        "valueTime": {
             name: "valueTime",
             dataType: r4:time,
             min: 0,
@@ -145,7 +145,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "code" : {
+        "code": {
             name: "code",
             dataType: PhdBitsEnumerationObservationCode,
             min: 1,
@@ -154,7 +154,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             path: "Observation.code",
             valueSet: "http://hl7.org/fhir/ValueSet/observation-codes"
         },
-        "subject" : {
+        "subject": {
             name: "subject",
             dataType: r4:Reference,
             min: 1,
@@ -162,7 +162,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.subject"
         },
-        "valueRange" : {
+        "valueRange": {
             name: "valueRange",
             dataType: r4:Range,
             min: 0,
@@ -170,7 +170,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -178,7 +178,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.modifierExtension"
         },
-        "focus" : {
+        "focus": {
             name: "focus",
             dataType: r4:Reference,
             min: 0,
@@ -186,7 +186,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.focus"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -195,7 +195,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             path: "Observation.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "valueCodeableConcept" : {
+        "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -203,7 +203,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "valueRatio" : {
+        "valueRatio": {
             name: "valueRatio",
             dataType: r4:Ratio,
             min: 0,
@@ -211,7 +211,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "specimen" : {
+        "specimen": {
             name: "specimen",
             dataType: r4:Reference,
             min: 0,
@@ -219,7 +219,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.specimen"
         },
-        "derivedFrom" : {
+        "derivedFrom": {
             name: "derivedFrom",
             dataType: r4:Reference,
             min: 0,
@@ -227,7 +227,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.derivedFrom"
         },
-        "valueDateTime" : {
+        "valueDateTime": {
             name: "valueDateTime",
             dataType: r4:dateTime,
             min: 0,
@@ -235,7 +235,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -243,7 +243,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -251,7 +251,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.text"
         },
-        "issued" : {
+        "issued": {
             name: "issued",
             dataType: r4:instant,
             min: 0,
@@ -259,7 +259,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.issued"
         },
-        "valueInteger" : {
+        "valueInteger": {
             name: "valueInteger",
             dataType: r4:integer,
             min: 0,
@@ -267,7 +267,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "basedOn" : {
+        "basedOn": {
             name: "basedOn",
             dataType: r4:Reference,
             min: 0,
@@ -275,7 +275,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.basedOn"
         },
-        "valueQuantity" : {
+        "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
             min: 0,
@@ -283,7 +283,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -291,7 +291,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.identifier"
         },
-        "performer" : {
+        "performer": {
             name: "performer",
             dataType: r4:Reference,
             min: 0,
@@ -299,7 +299,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.performer"
         },
-        "effectivePeriod" : {
+        "effectivePeriod": {
             name: "effectivePeriod",
             dataType: r4:Period,
             min: 1,
@@ -307,7 +307,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.effective[x]"
         },
-        "method" : {
+        "method": {
             name: "method",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -316,7 +316,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             path: "Observation.method",
             valueSet: "http://hl7.org/fhir/ValueSet/observation-methods"
         },
-        "hasMember" : {
+        "hasMember": {
             name: "hasMember",
             dataType: r4:Reference,
             min: 0,
@@ -324,7 +324,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.hasMember"
         },
-        "encounter" : {
+        "encounter": {
             name: "encounter",
             dataType: r4:Reference,
             min: 0,
@@ -332,7 +332,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.encounter"
         },
-        "bodySite" : {
+        "bodySite": {
             name: "bodySite",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -341,7 +341,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             path: "Observation.bodySite",
             valueSet: "http://hl7.org/fhir/ValueSet/body-site"
         },
-        "component" : {
+        "component": {
             name: "component",
             dataType: PhdBitsEnumerationObservationComponent,
             min: 0,
@@ -349,7 +349,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.component"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -357,7 +357,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.contained"
         },
-        "referenceRange" : {
+        "referenceRange": {
             name: "referenceRange",
             dataType: PhdBitsEnumerationObservationReferenceRange,
             min: 0,
@@ -365,7 +365,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.referenceRange"
         },
-        "valueString" : {
+        "valueString": {
             name: "valueString",
             dataType: string,
             min: 0,
@@ -373,7 +373,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "effectiveDateTime" : {
+        "effectiveDateTime": {
             name: "effectiveDateTime",
             dataType: r4:dateTime,
             min: 1,
@@ -381,7 +381,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.effective[x]"
         },
-        "interpretation" : {
+        "interpretation": {
             name: "interpretation",
             dataType: PhdBitsEnumerationObservationInterpretation,
             min: 0,
@@ -390,7 +390,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             path: "Observation.interpretation",
             valueSet: "http://hl7.org/fhir/ValueSet/observation-interpretation"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: PhdBitsEnumerationObservationMeta,
             min: 1,
@@ -398,7 +398,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.meta"
         },
-        "valueSampledData" : {
+        "valueSampledData": {
             name: "valueSampledData",
             dataType: r4:SampledData,
             min: 0,
@@ -406,7 +406,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "valuePeriod" : {
+        "valuePeriod": {
             name: "valuePeriod",
             dataType: r4:Period,
             min: 0,
@@ -414,7 +414,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -422,7 +422,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.implicitRules"
         },
-        "category" : {
+        "category": {
             name: "category",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -431,7 +431,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             path: "Observation.category",
             valueSet: "http://hl7.org/fhir/ValueSet/observation-category"
         },
-        "device" : {
+        "device": {
             name: "device",
             dataType: r4:Reference,
             min: 1,
@@ -439,7 +439,7 @@ public const RESOURCE_NAME_PHDBITSENUMERATIONOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.device"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: PhdBitsEnumerationObservationStatus,
             min: 1,
@@ -509,7 +509,7 @@ public type PhdBitsEnumerationObservation record {|
     r4:CodeableConcept[] category?;
     r4:Reference device;
     PhdBitsEnumerationObservationStatus status;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR PhdBitsEnumerationObservationComponentSupplementalTypesComponent datatype record.
@@ -2322,18 +2322,18 @@ public type PhdBitsEnumerationObservationComponent record {|
 
 # PhdBitsEnumerationObservationStatus enum
 public enum PhdBitsEnumerationObservationStatus {
-   CODE_STATUS_AMENDED = "amended",
-   CODE_STATUS_FINAL = "final",
-   CODE_STATUS_REGISTERED = "registered",
-   CODE_STATUS_PRELIMINARY = "preliminary"
+    CODE_STATUS_AMENDED = "amended",
+    CODE_STATUS_FINAL = "final",
+    CODE_STATUS_REGISTERED = "registered",
+    CODE_STATUS_PRELIMINARY = "preliminary"
 }
 
 # PhdBitsEnumerationObservationIdentifierUse enum
 public enum PhdBitsEnumerationObservationIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 

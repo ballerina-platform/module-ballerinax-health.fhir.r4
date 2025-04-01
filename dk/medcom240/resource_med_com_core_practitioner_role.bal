@@ -52,7 +52,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
     baseType: r4:DomainResource,
     profile: "http://medcomfhir.dk/ig/core/StructureDefinition/medcom-core-practitionerrole",
     elements: {
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -60,7 +60,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.identifier"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -68,7 +68,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.extension"
         },
-        "period" : {
+        "period": {
             name: "period",
             dataType: r4:Period,
             min: 0,
@@ -76,7 +76,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: false,
             path: "PractitionerRole.period"
         },
-        "specialty" : {
+        "specialty": {
             name: "specialty",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -85,7 +85,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             path: "PractitionerRole.specialty",
             valueSet: "http://hl7.org/fhir/ValueSet/c80-practice-codes"
         },
-        "code" : {
+        "code": {
             name: "code",
             dataType: MedComCorePractitionerRoleCode,
             min: 0,
@@ -94,7 +94,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             path: "PractitionerRole.code",
             valueSet: "http://medcomfhir.dk/ig/terminology/ValueSet/medcom-core-PractitionerRoles"
         },
-        "practitioner" : {
+        "practitioner": {
             name: "practitioner",
             dataType: r4:Reference,
             min: 0,
@@ -102,7 +102,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: false,
             path: "PractitionerRole.practitioner"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -110,7 +110,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.modifierExtension"
         },
-        "active" : {
+        "active": {
             name: "active",
             dataType: boolean,
             min: 0,
@@ -118,7 +118,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: false,
             path: "PractitionerRole.active"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -127,7 +127,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             path: "PractitionerRole.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "notAvailable" : {
+        "notAvailable": {
             name: "notAvailable",
             dataType: MedComCorePractitionerRoleNotAvailable,
             min: 0,
@@ -135,7 +135,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.notAvailable"
         },
-        "availableTime" : {
+        "availableTime": {
             name: "availableTime",
             dataType: MedComCorePractitionerRoleAvailableTime,
             min: 0,
@@ -143,7 +143,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.availableTime"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -151,7 +151,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.contained"
         },
-        "endpoint" : {
+        "endpoint": {
             name: "endpoint",
             dataType: r4:Reference,
             min: 0,
@@ -159,7 +159,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.endpoint"
         },
-        "healthcareService" : {
+        "healthcareService": {
             name: "healthcareService",
             dataType: r4:Reference,
             min: 0,
@@ -167,7 +167,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.healthcareService"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -175,7 +175,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: false,
             path: "PractitionerRole.meta"
         },
-        "organization" : {
+        "organization": {
             name: "organization",
             dataType: r4:Reference,
             min: 0,
@@ -183,7 +183,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: false,
             path: "PractitionerRole.organization"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -191,7 +191,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: false,
             path: "PractitionerRole.implicitRules"
         },
-        "location" : {
+        "location": {
             name: "location",
             dataType: r4:Reference,
             min: 0,
@@ -199,7 +199,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.location"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: r4:ContactPoint,
             min: 0,
@@ -207,7 +207,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: true,
             path: "PractitionerRole.telecom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -215,7 +215,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: false,
             path: "PractitionerRole.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -223,7 +223,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONERROLE = "PractitionerRole";
             isArray: false,
             path: "PractitionerRole.text"
         },
-        "availabilityExceptions" : {
+        "availabilityExceptions": {
             name: "availabilityExceptions",
             dataType: string,
             min: 0,
@@ -264,7 +264,7 @@ public type MedComCorePractitionerRole record {|
     string id?;
     r4:Narrative text?;
     string availabilityExceptions?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR MedComCorePractitionerRoleNotAvailable datatype record.
@@ -496,12 +496,12 @@ public type MedComCorePractitionerRoleCode record {|
 
 # MedComCorePractitionerRoleAvailableTimeDaysOfWeek enum
 public enum MedComCorePractitionerRoleAvailableTimeDaysOfWeek {
-   CODE_DAYSOFWEEK_THU = "thu",
-   CODE_DAYSOFWEEK_TUE = "tue",
-   CODE_DAYSOFWEEK_WED = "wed",
-   CODE_DAYSOFWEEK_SAT = "sat",
-   CODE_DAYSOFWEEK_FRI = "fri",
-   CODE_DAYSOFWEEK_MON = "mon",
-   CODE_DAYSOFWEEK_SUN = "sun"
+    CODE_DAYSOFWEEK_THU = "thu",
+    CODE_DAYSOFWEEK_TUE = "tue",
+    CODE_DAYSOFWEEK_WED = "wed",
+    CODE_DAYSOFWEEK_SAT = "sat",
+    CODE_DAYSOFWEEK_FRI = "fri",
+    CODE_DAYSOFWEEK_MON = "mon",
+    CODE_DAYSOFWEEK_SUN = "sun"
 }
 

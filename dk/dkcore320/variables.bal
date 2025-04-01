@@ -27,7 +27,7 @@ public final r4:FHIRRegistry fhirRegistry = r4:fhirRegistry;
 
 //Number of search params in DKCORE_IG_SEARCH_PARAMS_1  = 0
 final readonly & map<r4:FHIRSearchParameterDefinition[]> DKCORE_IG_SEARCH_PARAMS_1 = {
-    
+
 };
 
 public json[] FHIR_VALUE_SETS = [];

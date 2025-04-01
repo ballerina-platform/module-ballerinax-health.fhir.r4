@@ -52,7 +52,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
     baseType: r4:DomainResource,
     profile: "http://medcomfhir.dk/ig/core/StructureDefinition/medcom-core-careteam",
     elements: {
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -60,7 +60,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: true,
             path: "CareTeam.identifier"
         },
-        "note" : {
+        "note": {
             name: "note",
             dataType: r4:Annotation,
             min: 0,
@@ -68,7 +68,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: true,
             path: "CareTeam.note"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -76,7 +76,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: true,
             path: "CareTeam.extension"
         },
-        "period" : {
+        "period": {
             name: "period",
             dataType: r4:Period,
             min: 0,
@@ -84,7 +84,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: false,
             path: "CareTeam.period"
         },
-        "subject" : {
+        "subject": {
             name: "subject",
             dataType: r4:Reference,
             min: 0,
@@ -92,7 +92,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: false,
             path: "CareTeam.subject"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -100,7 +100,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: true,
             path: "CareTeam.modifierExtension"
         },
-        "reasonReference" : {
+        "reasonReference": {
             name: "reasonReference",
             dataType: r4:Reference,
             min: 0,
@@ -108,7 +108,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: true,
             path: "CareTeam.reasonReference"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -117,7 +117,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             path: "CareTeam.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "encounter" : {
+        "encounter": {
             name: "encounter",
             dataType: r4:Reference,
             min: 0,
@@ -125,7 +125,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: false,
             path: "CareTeam.encounter"
         },
-        "participant" : {
+        "participant": {
             name: "participant",
             dataType: MedComCoreCareTeamParticipant,
             min: 0,
@@ -133,7 +133,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: true,
             path: "CareTeam.participant"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -141,7 +141,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: true,
             path: "CareTeam.contained"
         },
-        "managingOrganization" : {
+        "managingOrganization": {
             name: "managingOrganization",
             dataType: r4:Reference,
             min: 0,
@@ -149,7 +149,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: true,
             path: "CareTeam.managingOrganization"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -157,7 +157,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: false,
             path: "CareTeam.meta"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: string,
             min: 1,
@@ -165,7 +165,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: false,
             path: "CareTeam.name"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -173,7 +173,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: false,
             path: "CareTeam.implicitRules"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: r4:ContactPoint,
             min: 0,
@@ -181,7 +181,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: true,
             path: "CareTeam.telecom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -189,7 +189,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: false,
             path: "CareTeam.id"
         },
-        "reasonCode" : {
+        "reasonCode": {
             name: "reasonCode",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -198,7 +198,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             path: "CareTeam.reasonCode",
             valueSet: "http://hl7.org/fhir/ValueSet/clinical-findings"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -206,7 +206,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             isArray: false,
             path: "CareTeam.text"
         },
-        "category" : {
+        "category": {
             name: "category",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -215,7 +215,7 @@ public const RESOURCE_NAME_MEDCOMCORECARETEAM = "CareTeam";
             path: "CareTeam.category",
             valueSet: "http://hl7.org/fhir/ValueSet/care-team-category"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: MedComCoreCareTeamStatus,
             min: 0,
@@ -263,7 +263,7 @@ public type MedComCoreCareTeam record {|
     r4:Narrative text?;
     r4:CodeableConcept[] category?;
     MedComCoreCareTeamStatus status?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR MedComCoreCareTeamParticipant datatype record.
@@ -362,10 +362,10 @@ public type MedComCoreCareTeamParticipant record {|
 
 # MedComCoreCareTeamStatus enum
 public enum MedComCoreCareTeamStatus {
-   CODE_STATUS_INACTIVE = "inactive",
-   CODE_STATUS_PROPOSED = "proposed",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
-   CODE_STATUS_SUSPENDED = "suspended"
+    CODE_STATUS_INACTIVE = "inactive",
+    CODE_STATUS_PROPOSED = "proposed",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+    CODE_STATUS_SUSPENDED = "suspended"
 }
 

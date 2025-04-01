@@ -62,7 +62,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
     baseType: r4:DomainResource,
     profile: "http://medcomfhir.dk/ig/core/StructureDefinition/medcom-core-media",
     elements: {
-        "note" : {
+        "note": {
             name: "note",
             dataType: r4:Annotation,
             min: 0,
@@ -70,7 +70,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: true,
             path: "Media.note"
         },
-        "partOf" : {
+        "partOf": {
             name: "partOf",
             dataType: r4:Reference,
             min: 0,
@@ -78,7 +78,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: true,
             path: "Media.partOf"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -86,7 +86,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: true,
             path: "Media.extension"
         },
-        "modality" : {
+        "modality": {
             name: "modality",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -95,7 +95,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             path: "Media.modality",
             valueSet: "http://hl7.org/fhir/ValueSet/media-modality"
         },
-        "subject" : {
+        "subject": {
             name: "subject",
             dataType: r4:Reference,
             min: 0,
@@ -103,7 +103,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.subject"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -111,7 +111,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: true,
             path: "Media.modifierExtension"
         },
-        "createdDateTime" : {
+        "createdDateTime": {
             name: "createdDateTime",
             dataType: r4:dateTime,
             min: 0,
@@ -119,7 +119,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.created[x]"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -128,7 +128,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             path: "Media.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "type" : {
+        "type": {
             name: "type",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -137,7 +137,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             path: "Media.type",
             valueSet: "http://hl7.org/fhir/ValueSet/media-type"
         },
-        "deviceName" : {
+        "deviceName": {
             name: "deviceName",
             dataType: string,
             min: 0,
@@ -145,7 +145,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.deviceName"
         },
-        "content" : {
+        "content": {
             name: "content",
             dataType: MedComCoreMediaContent,
             min: 1,
@@ -153,7 +153,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.content"
         },
-        "operator" : {
+        "operator": {
             name: "operator",
             dataType: r4:Reference,
             min: 0,
@@ -161,7 +161,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.operator"
         },
-        "duration" : {
+        "duration": {
             name: "duration",
             dataType: decimal,
             min: 0,
@@ -169,7 +169,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.duration"
         },
-        "view" : {
+        "view": {
             name: "view",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -178,7 +178,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             path: "Media.view",
             valueSet: "http://hl7.org/fhir/ValueSet/media-view"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -186,7 +186,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.id"
         },
-        "reasonCode" : {
+        "reasonCode": {
             name: "reasonCode",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -195,7 +195,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             path: "Media.reasonCode",
             valueSet: "http://hl7.org/fhir/ValueSet/procedure-reason"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -203,7 +203,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.text"
         },
-        "issued" : {
+        "issued": {
             name: "issued",
             dataType: r4:instant,
             min: 0,
@@ -211,7 +211,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.issued"
         },
-        "basedOn" : {
+        "basedOn": {
             name: "basedOn",
             dataType: r4:Reference,
             min: 0,
@@ -219,7 +219,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: true,
             path: "Media.basedOn"
         },
-        "height" : {
+        "height": {
             name: "height",
             dataType: r4:positiveInt,
             min: 0,
@@ -227,7 +227,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.height"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 1,
@@ -235,7 +235,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: true,
             path: "Media.identifier"
         },
-        "frames" : {
+        "frames": {
             name: "frames",
             dataType: r4:positiveInt,
             min: 0,
@@ -243,7 +243,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.frames"
         },
-        "encounter" : {
+        "encounter": {
             name: "encounter",
             dataType: r4:Reference,
             min: 0,
@@ -251,7 +251,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.encounter"
         },
-        "createdPeriod" : {
+        "createdPeriod": {
             name: "createdPeriod",
             dataType: r4:Period,
             min: 0,
@@ -259,7 +259,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.created[x]"
         },
-        "bodySite" : {
+        "bodySite": {
             name: "bodySite",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -268,7 +268,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             path: "Media.bodySite",
             valueSet: "http://hl7.org/fhir/ValueSet/body-site"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -276,7 +276,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: true,
             path: "Media.contained"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -284,7 +284,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.meta"
         },
-        "width" : {
+        "width": {
             name: "width",
             dataType: r4:positiveInt,
             min: 0,
@@ -292,7 +292,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.width"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -300,7 +300,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.implicitRules"
         },
-        "device" : {
+        "device": {
             name: "device",
             dataType: r4:Reference,
             min: 0,
@@ -308,7 +308,7 @@ public const RESOURCE_NAME_MEDCOMCOREMEDIA = "Media";
             isArray: false,
             path: "Media.device"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: MedComCoreMediaStatus,
             min: 1,
@@ -369,7 +369,7 @@ public type MedComCoreMedia record {|
     r4:uri implicitRules?;
     r4:Reference device?;
     MedComCoreMediaStatus status;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR MedComCoreMediaContent datatype record.
@@ -501,13 +501,13 @@ public type MedComCoreMediaContent record {|
 
 # MedComCoreMediaStatus enum
 public enum MedComCoreMediaStatus {
-   CODE_STATUS_STOPPED = "stopped",
-   CODE_STATUS_COMPLETED = "completed",
-   CODE_STATUS_NOT_DONE = "not-done",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
-   CODE_STATUS_IN_PROGRESS = "in-progress",
-   CODE_STATUS_ON_HOLD = "on-hold",
-   CODE_STATUS_PREPARATION = "preparation",
-   CODE_STATUS_UNKNOWN = "unknown"
+    CODE_STATUS_STOPPED = "stopped",
+    CODE_STATUS_COMPLETED = "completed",
+    CODE_STATUS_NOT_DONE = "not-done",
+    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+    CODE_STATUS_IN_PROGRESS = "in-progress",
+    CODE_STATUS_ON_HOLD = "on-hold",
+    CODE_STATUS_PREPARATION = "preparation",
+    CODE_STATUS_UNKNOWN = "unknown"
 }
 

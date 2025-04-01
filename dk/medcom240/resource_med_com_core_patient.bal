@@ -36,8 +36,8 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
 # + generalPractitioner - Patient's nominated care provider.
 # * generalPractitioner Slicings
 # 1) MedComCorePatientGeneralPractitionerReferencedSORUnit: [DA] Praktiserende læges SOR-id på sundhedsinstistutionsniveau
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # + telecom - Shall contain value, system and use if these information are known.
 # + id - The logical id of the resource, as used in the URL for the resource. Once assigned, this value never changes.
@@ -46,16 +46,16 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
 # + identifier - An identifier for this patient.
 # * identifier Slicings
 # 1) MedComCorePatientIdentifierCpr: Unique identification number for all citizens in Denmark, called civil person register (CPR-number).
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 2) MedComCorePatientIdentifierD_ecpr: An identifier intended for computation
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 3) MedComCorePatientIdentifierX_ecpr: An identifier intended for computation
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # + address - Shall contain all known, relevant addresses of the patient
 # + multipleBirthBoolean - Indicates whether the patient is part of a multiple (boolean) or indicates the actual birth order (integer).
@@ -70,8 +70,8 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
 # + name - A name associated with the individual.
 # * name Slicings
 # 1) MedComCorePatientNameOfficial: [DA] Officielt navn, som det fremgår af CPR registeret
-#       - min = 1
-#       - max = 1
+# - min = 1
+# - max = 1
 #
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + maritalStatus - This field contains a patient's most recent marital (civil) status.
@@ -80,7 +80,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
     baseType: r4:DomainResource,
     profile: "http://medcomfhir.dk/ig/core/StructureDefinition/medcom-core-patient",
     elements: {
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -88,7 +88,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.extension"
         },
-        "gender" : {
+        "gender": {
             name: "gender",
             dataType: MedComCorePatientGender,
             min: 0,
@@ -97,7 +97,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             path: "Patient.gender",
             valueSet: "http://hl7.org/fhir/ValueSet/administrative-gender|4.0.1"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -105,7 +105,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.modifierExtension"
         },
-        "link" : {
+        "link": {
             name: "link",
             dataType: MedComCorePatientLink,
             min: 0,
@@ -113,7 +113,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.link"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -122,7 +122,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             path: "Patient.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "contact" : {
+        "contact": {
             name: "contact",
             dataType: MedComCorePatientContact,
             min: 0,
@@ -130,7 +130,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.contact"
         },
-        "deceasedDateTime" : {
+        "deceasedDateTime": {
             name: "deceasedDateTime",
             dataType: r4:dateTime,
             min: 0,
@@ -138,7 +138,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.deceased[x]"
         },
-        "generalPractitioner" : {
+        "generalPractitioner": {
             name: "generalPractitioner",
             dataType: r4:Reference,
             min: 0,
@@ -146,7 +146,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.generalPractitioner"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: r4:ContactPoint,
             min: 0,
@@ -154,7 +154,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.telecom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -162,7 +162,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -170,7 +170,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.text"
         },
-        "communication" : {
+        "communication": {
             name: "communication",
             dataType: MedComCorePatientCommunication,
             min: 0,
@@ -178,7 +178,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.communication"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 1,
@@ -186,7 +186,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.identifier"
         },
-        "address" : {
+        "address": {
             name: "address",
             dataType: MedComCorePatientAddress,
             min: 0,
@@ -194,7 +194,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.address"
         },
-        "multipleBirthBoolean" : {
+        "multipleBirthBoolean": {
             name: "multipleBirthBoolean",
             dataType: boolean,
             min: 0,
@@ -202,7 +202,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.multipleBirth[x]"
         },
-        "active" : {
+        "active": {
             name: "active",
             dataType: boolean,
             min: 0,
@@ -210,7 +210,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.active"
         },
-        "photo" : {
+        "photo": {
             name: "photo",
             dataType: r4:Attachment,
             min: 0,
@@ -218,7 +218,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.photo"
         },
-        "birthDate" : {
+        "birthDate": {
             name: "birthDate",
             dataType: r4:date,
             min: 0,
@@ -226,7 +226,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.birthDate"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -234,7 +234,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.contained"
         },
-        "deceasedBoolean" : {
+        "deceasedBoolean": {
             name: "deceasedBoolean",
             dataType: boolean,
             min: 0,
@@ -242,7 +242,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.deceased[x]"
         },
-        "managingOrganization" : {
+        "managingOrganization": {
             name: "managingOrganization",
             dataType: r4:Reference,
             min: 0,
@@ -250,7 +250,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.managingOrganization"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -258,7 +258,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.meta"
         },
-        "multipleBirthInteger" : {
+        "multipleBirthInteger": {
             name: "multipleBirthInteger",
             dataType: r4:integer,
             min: 0,
@@ -266,7 +266,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.multipleBirth[x]"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: r4:HumanName,
             min: 1,
@@ -274,7 +274,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: true,
             path: "Patient.name"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -282,7 +282,7 @@ public const RESOURCE_NAME_MEDCOMCOREPATIENT = "Patient";
             isArray: false,
             path: "Patient.implicitRules"
         },
-        "maritalStatus" : {
+        "maritalStatus": {
             name: "maritalStatus",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -348,31 +348,31 @@ public type MedComCorePatient record {|
     r4:HumanName[] name;
     r4:uri implicitRules?;
     r4:CodeableConcept maritalStatus?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # MedComCorePatientGender enum
 public enum MedComCorePatientGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
+    CODE_GENDER_OTHER = "other",
+    CODE_GENDER_FEMALE = "female",
+    CODE_GENDER_MALE = "male",
+    CODE_GENDER_UNKNOWN = "unknown"
 }
 
 # MedComCorePatientAddressUse enum
 public enum MedComCorePatientAddressUse {
-   CODE_USE_TEMP = "temp",
-   CODE_USE_WORK = "work",
-   CODE_USE_OLD = "old",
-   CODE_USE_HOME = "home",
-   CODE_USE_BILLING = "billing"
+    CODE_USE_TEMP = "temp",
+    CODE_USE_WORK = "work",
+    CODE_USE_OLD = "old",
+    CODE_USE_HOME = "home",
+    CODE_USE_BILLING = "billing"
 }
 
 # MedComCorePatientAddressType enum
 public enum MedComCorePatientAddressType {
-   CODE_TYPE_POSTAL = "postal",
-   CODE_TYPE_PHYSICAL = "physical",
-   CODE_TYPE_BOTH = "both"
+    CODE_TYPE_POSTAL = "postal",
+    CODE_TYPE_PHYSICAL = "physical",
+    CODE_TYPE_BOTH = "both"
 }
 
 # FHIR MedComCorePatientIdentifierX_ecpr datatype record.
@@ -510,13 +510,13 @@ public type MedComCorePatientNameOfficial record {|
 
 # MedComCorePatientNameUse enum
 public enum MedComCorePatientNameUse {
-   CODE_USE_MAIDEN = "maiden",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_NICKNAME = "nickname",
-   CODE_USE_OFFICIAL = "official",
-   CODE_USE_ANONYMOUS = "anonymous"
+    CODE_USE_MAIDEN = "maiden",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_NICKNAME = "nickname",
+    CODE_USE_OFFICIAL = "official",
+    CODE_USE_ANONYMOUS = "anonymous"
 }
 
 # FHIR MedComCorePatientLink datatype record.
@@ -809,18 +809,18 @@ public type MedComCorePatientIdentifierCpr record {|
 
 # MedComCorePatientLinkType enum
 public enum MedComCorePatientLinkType {
-   CODE_TYPE_REFER = "refer",
-   CODE_TYPE_REPLACES = "replaces",
-   CODE_TYPE_SEEALSO = "seealso",
-   CODE_TYPE_REPLACED_BY = "replaced-by"
+    CODE_TYPE_REFER = "refer",
+    CODE_TYPE_REPLACES = "replaces",
+    CODE_TYPE_SEEALSO = "seealso",
+    CODE_TYPE_REPLACED_BY = "replaced-by"
 }
 
 # MedComCorePatientContactGender enum
 public enum MedComCorePatientContactGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
+    CODE_GENDER_OTHER = "other",
+    CODE_GENDER_FEMALE = "female",
+    CODE_GENDER_MALE = "male",
+    CODE_GENDER_UNKNOWN = "unknown"
 }
 
 # FHIR MedComCorePatientAddress datatype record.

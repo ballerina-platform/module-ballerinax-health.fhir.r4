@@ -28,16 +28,16 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
 # + identifier - Identifier for a person within a particular scope.
 # * identifier Slicings
 # 1) DkCoreRelatedPersonIdentifierCpr: [DA] cpr-nummer, som det fremgår af CPR registeret
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 2) DkCoreRelatedPersonIdentifierD_ecpr: [DA] D-eCPR, decentral eCPR
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 3) DkCoreRelatedPersonIdentifierX_ecpr: [DA] X-eCPR, tildelt fra den nationale eCPR service
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + period - The period of time during which this relationship is or was active. If there are no dates defined, then the interval is unknown.
@@ -54,8 +54,8 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
 # + name - A name associated with the person.
 # * name Slicings
 # 1) DkCoreRelatedPersonNameOfficial: [DA] Officielt navn, som det fremgår af CPR registeret
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # + implicitRules - A reference to a set of rules that were followed when the resource was constructed, and which must be understood when processing the content. Often, this is a reference to an implementation guide that defines the special rules along with other profiles etc.
 # + telecom - A contact detail for the person, e.g. a telephone number or an email address.
@@ -68,7 +68,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
     baseType: r4:DomainResource,
     profile: "http://hl7.dk/fhir/core/StructureDefinition/dk-core-related-person",
     elements: {
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -76,7 +76,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: true,
             path: "RelatedPerson.identifier"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -84,7 +84,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: true,
             path: "RelatedPerson.extension"
         },
-        "period" : {
+        "period": {
             name: "period",
             dataType: r4:Period,
             min: 0,
@@ -92,7 +92,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: false,
             path: "RelatedPerson.period"
         },
-        "address" : {
+        "address": {
             name: "address",
             dataType: r4:Address,
             min: 0,
@@ -100,7 +100,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: true,
             path: "RelatedPerson.address"
         },
-        "gender" : {
+        "gender": {
             name: "gender",
             dataType: DkCoreRelatedPersonGender,
             min: 0,
@@ -109,7 +109,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             path: "RelatedPerson.gender",
             valueSet: "http://hl7.org/fhir/ValueSet/administrative-gender|4.0.1"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -117,7 +117,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: true,
             path: "RelatedPerson.modifierExtension"
         },
-        "active" : {
+        "active": {
             name: "active",
             dataType: boolean,
             min: 0,
@@ -125,7 +125,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: false,
             path: "RelatedPerson.active"
         },
-        "photo" : {
+        "photo": {
             name: "photo",
             dataType: r4:Attachment,
             min: 0,
@@ -133,7 +133,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: true,
             path: "RelatedPerson.photo"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -142,7 +142,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             path: "RelatedPerson.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "birthDate" : {
+        "birthDate": {
             name: "birthDate",
             dataType: r4:date,
             min: 0,
@@ -150,7 +150,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: false,
             path: "RelatedPerson.birthDate"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -158,7 +158,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: true,
             path: "RelatedPerson.contained"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -166,7 +166,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: false,
             path: "RelatedPerson.meta"
         },
-        "patient" : {
+        "patient": {
             name: "patient",
             dataType: r4:Reference,
             min: 1,
@@ -174,7 +174,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: false,
             path: "RelatedPerson.patient"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: r4:HumanName,
             min: 0,
@@ -182,7 +182,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: true,
             path: "RelatedPerson.name"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -190,7 +190,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: false,
             path: "RelatedPerson.implicitRules"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: r4:ContactPoint,
             min: 0,
@@ -198,7 +198,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: true,
             path: "RelatedPerson.telecom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -206,7 +206,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: false,
             path: "RelatedPerson.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -214,7 +214,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: false,
             path: "RelatedPerson.text"
         },
-        "communication" : {
+        "communication": {
             name: "communication",
             dataType: DkCoreRelatedPersonCommunication,
             min: 0,
@@ -222,7 +222,7 @@ public const RESOURCE_NAME_DKCORERELATEDPERSON = "RelatedPerson";
             isArray: true,
             path: "RelatedPerson.communication"
         },
-        "relationship" : {
+        "relationship": {
             name: "relationship",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -262,7 +262,7 @@ public type DkCoreRelatedPerson record {|
     r4:Narrative text?;
     DkCoreRelatedPersonCommunication[] communication?;
     r4:CodeableConcept[] relationship?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR DkCoreRelatedPersonCommunication datatype record.
@@ -356,10 +356,10 @@ public type DkCoreRelatedPersonIdentifierX_ecpr record {|
 
 # DkCoreRelatedPersonGender enum
 public enum DkCoreRelatedPersonGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
+    CODE_GENDER_OTHER = "other",
+    CODE_GENDER_FEMALE = "female",
+    CODE_GENDER_MALE = "male",
+    CODE_GENDER_UNKNOWN = "unknown"
 }
 
 # FHIR DkCoreRelatedPersonIdentifierCpr datatype record.
@@ -381,13 +381,13 @@ public type DkCoreRelatedPersonIdentifierCpr record {|
 
 # DkCoreRelatedPersonNameUse enum
 public enum DkCoreRelatedPersonNameUse {
-   CODE_USE_MAIDEN = "maiden",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_NICKNAME = "nickname",
-   CODE_USE_OFFICIAL = "official",
-   CODE_USE_ANONYMOUS = "anonymous"
+    CODE_USE_MAIDEN = "maiden",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_NICKNAME = "nickname",
+    CODE_USE_OFFICIAL = "official",
+    CODE_USE_ANONYMOUS = "anonymous"
 }
 
 # FHIR DkCoreRelatedPersonIdentifierD_ecpr datatype record.

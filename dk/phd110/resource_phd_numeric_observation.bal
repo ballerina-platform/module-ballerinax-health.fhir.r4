@@ -45,8 +45,8 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
 # + identifier - A unique identifier assigned to this observation.
 # * identifier Slicings
 # 1) PhdNumericObservationIdentifierConditionalCreate: Unique identifier of this measurement for a given patient and device
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # + performer - Who was responsible for asserting the observed value as 'true'.
 # + effectivePeriod - The time or time-period the observed value is asserted as being true. It is a time period if a Measure-Active-Period (duration) attribute is part of the metric measurement sent by the PHD. Otherwise it is the time stamp sent by the PHD or the time of reception by the PHG if the PHD sent no time stamp.
@@ -57,40 +57,40 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
 # + component - Some observations have multiple component observations. These component observations are expressed as separate code value pairs that share the same attributes. Examples include systolic and diastolic component observations for blood pressure measurement and multiple component observations for genetics observations.
 # * component Slicings
 # 1) PhdNumericObservationComponentRelativeTimeComponent: Relative time stamp of the measurement reported by the PHD.
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 2) PhdNumericObservationComponentMeasurementConfidence95Component: The Measurement-Confidence-95 range
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 3) PhdNumericObservationComponentAlertOpTextStringComponent: The Alert-Op-Text human readable strings
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 4) PhdNumericObservationComponentAccuracyComponent: The accuracy of the measurement
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 5) PhdNumericObservationComponentHiresRelativeTimeComponent: Hi-Resolution Relative time stamp of the measurement reported by the PHD.
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 6) PhdNumericObservationComponentSupplementalTypesComponent: Supplemental Type: A further description of the measurement type.
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # 7) PhdNumericObservationComponentCurrentLimitsComponent: The Current-Limits values
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 8) PhdNumericObservationComponentThresholdNotificationTextStringComponent: The Threshold-Notification-Text-String attribute value entry
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 9) PhdNumericObservationComponentAlertOpStateComponent: The Alert Operations State component
-#       - min = 0
-#       - max = *
+# - min = 0
+# - max = *
 #
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
 # + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range. Multiple reference ranges are interpreted as an 'OR'. In other words, to represent two distinct target populations, two `referenceRange` elements would be used.
@@ -105,7 +105,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/uv/phd/StructureDefinition/PhdNumericObservation",
     elements: {
-        "dataAbsentReason" : {
+        "dataAbsentReason": {
             name: "dataAbsentReason",
             dataType: PhdNumericObservationDataAbsentReason,
             min: 0,
@@ -114,7 +114,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             path: "Observation.dataAbsentReason",
             valueSet: "http://hl7.org/fhir/ValueSet/data-absent-reason"
         },
-        "note" : {
+        "note": {
             name: "note",
             dataType: r4:Annotation,
             min: 0,
@@ -122,7 +122,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.note"
         },
-        "partOf" : {
+        "partOf": {
             name: "partOf",
             dataType: r4:Reference,
             min: 0,
@@ -130,7 +130,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.partOf"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -138,7 +138,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.extension"
         },
-        "code" : {
+        "code": {
             name: "code",
             dataType: PhdNumericObservationCode,
             min: 1,
@@ -147,7 +147,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             path: "Observation.code",
             valueSet: "http://hl7.org/fhir/ValueSet/observation-codes"
         },
-        "subject" : {
+        "subject": {
             name: "subject",
             dataType: r4:Reference,
             min: 1,
@@ -155,7 +155,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.subject"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -163,7 +163,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.modifierExtension"
         },
-        "focus" : {
+        "focus": {
             name: "focus",
             dataType: r4:Reference,
             min: 0,
@@ -171,7 +171,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.focus"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -180,7 +180,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             path: "Observation.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "specimen" : {
+        "specimen": {
             name: "specimen",
             dataType: r4:Reference,
             min: 0,
@@ -188,7 +188,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.specimen"
         },
-        "derivedFrom" : {
+        "derivedFrom": {
             name: "derivedFrom",
             dataType: r4:Reference,
             min: 0,
@@ -196,7 +196,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.derivedFrom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -204,7 +204,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -212,7 +212,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.text"
         },
-        "issued" : {
+        "issued": {
             name: "issued",
             dataType: r4:instant,
             min: 0,
@@ -220,7 +220,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.issued"
         },
-        "basedOn" : {
+        "basedOn": {
             name: "basedOn",
             dataType: r4:Reference,
             min: 0,
@@ -228,7 +228,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.basedOn"
         },
-        "valueQuantity" : {
+        "valueQuantity": {
             name: "valueQuantity",
             dataType: PhdNumericObservationValue,
             min: 0,
@@ -236,7 +236,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.value[x]"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -244,7 +244,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.identifier"
         },
-        "performer" : {
+        "performer": {
             name: "performer",
             dataType: r4:Reference,
             min: 0,
@@ -252,7 +252,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.performer"
         },
-        "effectivePeriod" : {
+        "effectivePeriod": {
             name: "effectivePeriod",
             dataType: r4:Period,
             min: 1,
@@ -260,7 +260,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.effective[x]"
         },
-        "method" : {
+        "method": {
             name: "method",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -269,7 +269,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             path: "Observation.method",
             valueSet: "http://hl7.org/fhir/ValueSet/observation-methods"
         },
-        "hasMember" : {
+        "hasMember": {
             name: "hasMember",
             dataType: r4:Reference,
             min: 0,
@@ -277,7 +277,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.hasMember"
         },
-        "encounter" : {
+        "encounter": {
             name: "encounter",
             dataType: r4:Reference,
             min: 0,
@@ -285,7 +285,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.encounter"
         },
-        "bodySite" : {
+        "bodySite": {
             name: "bodySite",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -294,7 +294,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             path: "Observation.bodySite",
             valueSet: "http://hl7.org/fhir/ValueSet/body-site"
         },
-        "component" : {
+        "component": {
             name: "component",
             dataType: PhdNumericObservationComponent,
             min: 0,
@@ -302,7 +302,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.component"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -310,7 +310,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.contained"
         },
-        "referenceRange" : {
+        "referenceRange": {
             name: "referenceRange",
             dataType: PhdNumericObservationReferenceRange,
             min: 0,
@@ -318,7 +318,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: true,
             path: "Observation.referenceRange"
         },
-        "effectiveDateTime" : {
+        "effectiveDateTime": {
             name: "effectiveDateTime",
             dataType: r4:dateTime,
             min: 1,
@@ -326,7 +326,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.effective[x]"
         },
-        "interpretation" : {
+        "interpretation": {
             name: "interpretation",
             dataType: PhdNumericObservationInterpretation,
             min: 0,
@@ -335,7 +335,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             path: "Observation.interpretation",
             valueSet: "http://hl7.org/fhir/ValueSet/observation-interpretation"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: PhdNumericObservationMeta,
             min: 1,
@@ -343,7 +343,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.meta"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -351,7 +351,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.implicitRules"
         },
-        "device" : {
+        "device": {
             name: "device",
             dataType: r4:Reference,
             min: 1,
@@ -359,7 +359,7 @@ public const RESOURCE_NAME_PHDNUMERICOBSERVATION = "Observation";
             isArray: false,
             path: "Observation.device"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: PhdNumericObservationStatus,
             min: 1,
@@ -418,7 +418,7 @@ public type PhdNumericObservation record {|
     r4:uri implicitRules?;
     r4:Reference device;
     PhdNumericObservationStatus status;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR PhdNumericObservationComponentAlertOpTextStringComponent datatype record.
@@ -683,10 +683,10 @@ public type PhdNumericObservationInterpretationCodingMsmtStatusInterpretation re
 
 # PhdNumericObservationStatus enum
 public enum PhdNumericObservationStatus {
-   CODE_STATUS_AMENDED = "amended",
-   CODE_STATUS_FINAL = "final",
-   CODE_STATUS_REGISTERED = "registered",
-   CODE_STATUS_PRELIMINARY = "preliminary"
+    CODE_STATUS_AMENDED = "amended",
+    CODE_STATUS_FINAL = "final",
+    CODE_STATUS_REGISTERED = "registered",
+    CODE_STATUS_PRELIMINARY = "preliminary"
 }
 
 # FHIR PhdNumericObservationComponentAlertOpStateComponent datatype record.
@@ -2086,11 +2086,11 @@ public type PhdNumericObservationComponentMeasurementConfidence95Component recor
 
 # PhdNumericObservationIdentifierUse enum
 public enum PhdNumericObservationIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # FHIR PhdNumericObservationMetaSecurityPhdHtest datatype record.
@@ -2602,10 +2602,10 @@ public type PhdNumericObservationComponentCodeCoding record {|
 
 # PhdNumericObservationValueComparator enum
 public enum PhdNumericObservationValueComparator {
-   CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
-   CODE_COMPARATOR_LESS_THAN = "<",
-   CODE_COMPARATOR_GREATER_THAN = ">",
-   CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
+    CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
+    CODE_COMPARATOR_LESS_THAN = "<",
+    CODE_COMPARATOR_GREATER_THAN = ">",
+    CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
 }
 
 # FHIR PhdNumericObservationDataAbsentReasonCodingFhirDefault datatype record.

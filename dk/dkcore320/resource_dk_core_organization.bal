@@ -30,36 +30,36 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
 # + identifier - Identifier for the organization that is used to identify the organization across multiple disparate systems.
 # * identifier Slicings
 # 1) DkCoreOrganizationIdentifierKOMBIT_ORG_ID: [DA] Organisationsenheds-id som specificeret af FK-ORG
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 2) DkCoreOrganizationIdentifierYdernummer: [DA] Ydernummer
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 3) DkCoreOrganizationIdentifierProducentID: [DA] Producent Id
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 4) DkCoreOrganizationIdentifierCVR_ID: VAT identification number, [DA] CVR-nummer
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 5) DkCoreOrganizationIdentifierEAN_ID: GLN identifier, [DA] EAN-nummer
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 6) DkCoreOrganizationIdentifierKommunekode: [DA] Kommunekode
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 7) DkCoreOrganizationIdentifierRegionskode: [DA] Regionskode
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 8) DkCoreOrganizationIdentifierSOR_ID: [DA] SOR-id
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - An address for the organization.
@@ -82,7 +82,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
     baseType: r4:DomainResource,
     profile: "http://hl7.dk/fhir/core/StructureDefinition/dk-core-organization",
     elements: {
-        "partOf" : {
+        "partOf": {
             name: "partOf",
             dataType: r4:Reference,
             min: 0,
@@ -90,7 +90,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.partOf"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 1,
@@ -98,7 +98,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.identifier"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -106,7 +106,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.extension"
         },
-        "address" : {
+        "address": {
             name: "address",
             dataType: r4:Address,
             min: 0,
@@ -114,7 +114,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.address"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -122,7 +122,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.modifierExtension"
         },
-        "active" : {
+        "active": {
             name: "active",
             dataType: boolean,
             min: 0,
@@ -130,7 +130,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.active"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -139,7 +139,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             path: "Organization.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "type" : {
+        "type": {
             name: "type",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -148,7 +148,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             path: "Organization.type",
             valueSet: "http://hl7.dk/fhir/core/ValueSet/sor-organization-type"
         },
-        "endpoint" : {
+        "endpoint": {
             name: "endpoint",
             dataType: r4:Reference,
             min: 0,
@@ -156,7 +156,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.endpoint"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -164,7 +164,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.contained"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -172,7 +172,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.meta"
         },
-        "contact" : {
+        "contact": {
             name: "contact",
             dataType: DkCoreOrganizationContact,
             min: 0,
@@ -180,7 +180,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.contact"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: string,
             min: 0,
@@ -188,7 +188,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.name"
         },
-        "alias" : {
+        "alias": {
             name: "alias",
             dataType: string,
             min: 0,
@@ -196,7 +196,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.alias"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -204,7 +204,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.implicitRules"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: r4:ContactPoint,
             min: 0,
@@ -212,7 +212,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.telecom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -220,7 +220,7 @@ public const RESOURCE_NAME_DKCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -267,7 +267,7 @@ public type DkCoreOrganization record {|
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR DkCoreOrganizationIdentifierProducentID datatype record.
@@ -499,11 +499,11 @@ public type DkCoreOrganizationIdentifierRegionskode record {|
 
 # DkCoreOrganizationIdentifierUse enum
 public enum DkCoreOrganizationIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # FHIR DkCoreOrganizationIdentifierSOR_ID datatype record.
@@ -619,11 +619,11 @@ public type DkCoreOrganizationContact record {|
 
 # DkCoreOrganizationIdentifierUseTwo enum
 public enum DkCoreOrganizationIdentifierUseTwo {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # FHIR DkCoreOrganizationIdentifierKOMBIT_ORG_ID datatype record.
@@ -784,10 +784,10 @@ public type DkCoreOrganizationIdentifierEAN_ID record {|
 
 # DkCoreOrganizationIdentifierUseOne enum
 public enum DkCoreOrganizationIdentifierUseOne {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 

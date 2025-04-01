@@ -57,7 +57,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
     baseType: r4:DomainResource,
     profile: "http://medcomfhir.dk/ig/core/StructureDefinition/medcom-core-diagnosticreport",
     elements: {
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -65,7 +65,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.extension"
         },
-        "code" : {
+        "code": {
             name: "code",
             dataType: r4:CodeableConcept,
             min: 1,
@@ -74,7 +74,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             path: "DiagnosticReport.code",
             valueSet: "http://medcomfhir.dk/ig/terminology/ValueSet/MedComDiagnosticReportCodesValueset"
         },
-        "subject" : {
+        "subject": {
             name: "subject",
             dataType: r4:Reference,
             min: 1,
@@ -82,7 +82,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.subject"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -90,7 +90,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.modifierExtension"
         },
-        "presentedForm" : {
+        "presentedForm": {
             name: "presentedForm",
             dataType: r4:Attachment,
             min: 0,
@@ -98,7 +98,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.presentedForm"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -107,7 +107,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             path: "DiagnosticReport.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "media" : {
+        "media": {
             name: "media",
             dataType: MedComCoreDiagnosticReportMedia,
             min: 0,
@@ -115,7 +115,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.media"
         },
-        "conclusion" : {
+        "conclusion": {
             name: "conclusion",
             dataType: string,
             min: 0,
@@ -123,7 +123,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.conclusion"
         },
-        "result" : {
+        "result": {
             name: "result",
             dataType: r4:Reference,
             min: 0,
@@ -131,7 +131,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.result"
         },
-        "specimen" : {
+        "specimen": {
             name: "specimen",
             dataType: r4:Reference,
             min: 0,
@@ -139,7 +139,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.specimen"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -147,7 +147,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -155,7 +155,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.text"
         },
-        "issued" : {
+        "issued": {
             name: "issued",
             dataType: r4:instant,
             min: 1,
@@ -163,7 +163,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.issued"
         },
-        "basedOn" : {
+        "basedOn": {
             name: "basedOn",
             dataType: r4:Reference,
             min: 0,
@@ -171,7 +171,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.basedOn"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -179,7 +179,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.identifier"
         },
-        "performer" : {
+        "performer": {
             name: "performer",
             dataType: r4:Reference,
             min: 0,
@@ -187,7 +187,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.performer"
         },
-        "effectivePeriod" : {
+        "effectivePeriod": {
             name: "effectivePeriod",
             dataType: r4:Period,
             min: 0,
@@ -195,7 +195,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.effective[x]"
         },
-        "resultsInterpreter" : {
+        "resultsInterpreter": {
             name: "resultsInterpreter",
             dataType: r4:Reference,
             min: 0,
@@ -203,7 +203,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.resultsInterpreter"
         },
-        "conclusionCode" : {
+        "conclusionCode": {
             name: "conclusionCode",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -212,7 +212,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             path: "DiagnosticReport.conclusionCode",
             valueSet: "http://hl7.org/fhir/ValueSet/clinical-findings"
         },
-        "encounter" : {
+        "encounter": {
             name: "encounter",
             dataType: r4:Reference,
             min: 0,
@@ -220,7 +220,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.encounter"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -228,7 +228,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.contained"
         },
-        "effectiveDateTime" : {
+        "effectiveDateTime": {
             name: "effectiveDateTime",
             dataType: r4:dateTime,
             min: 0,
@@ -236,7 +236,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.effective[x]"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -244,7 +244,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.meta"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -252,7 +252,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: false,
             path: "DiagnosticReport.implicitRules"
         },
-        "category" : {
+        "category": {
             name: "category",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -261,7 +261,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             path: "DiagnosticReport.category",
             valueSet: "http://hl7.org/fhir/ValueSet/diagnostic-service-sections"
         },
-        "imagingStudy" : {
+        "imagingStudy": {
             name: "imagingStudy",
             dataType: r4:Reference,
             min: 0,
@@ -269,7 +269,7 @@ public const RESOURCE_NAME_MEDCOMCOREDIAGNOSTICREPORT = "DiagnosticReport";
             isArray: true,
             path: "DiagnosticReport.imagingStudy"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: MedComCoreDiagnosticReportStatus,
             min: 1,
@@ -316,18 +316,18 @@ public type MedComCoreDiagnosticReport record {|
     r4:CodeableConcept[] category?;
     r4:Reference[] imagingStudy?;
     MedComCoreDiagnosticReportStatus status;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # MedComCoreDiagnosticReportStatus enum
 public enum MedComCoreDiagnosticReportStatus {
-   CODE_STATUS_FINAL = "final",
-   CODE_STATUS_REGISTERED = "registered",
-   CODE_STATUS_CANCELLED = "cancelled",
-   CODE_STATUS_PRELIMINARY = "preliminary",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
-   CODE_STATUS_PARTIAL = "partial",
-   CODE_STATUS_CORRECTED = "corrected"
+    CODE_STATUS_FINAL = "final",
+    CODE_STATUS_REGISTERED = "registered",
+    CODE_STATUS_CANCELLED = "cancelled",
+    CODE_STATUS_PRELIMINARY = "preliminary",
+    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+    CODE_STATUS_PARTIAL = "partial",
+    CODE_STATUS_CORRECTED = "corrected"
 }
 
 # FHIR MedComCoreDiagnosticReportMedia datatype record.

@@ -23,7 +23,7 @@ import ballerinax/health.fhir.r4;
     name: "CVRIdentifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -32,7 +32,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -41,7 +41,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: DkCoreCvrIdentifierUse,
@@ -50,7 +50,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -59,7 +59,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -68,7 +68,7 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -77,7 +77,8 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -106,12 +107,11 @@ public enum DkCoreCvrIdentifierUse {
     CODE_DKCORECVRIDENTIFIERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "KombitOrgIdentifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -120,7 +120,7 @@ public enum DkCoreCvrIdentifierUse {
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -129,7 +129,7 @@ public enum DkCoreCvrIdentifierUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: DkCoreKombitOrgIdentifierUse,
@@ -138,7 +138,7 @@ public enum DkCoreCvrIdentifierUse {
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -147,7 +147,7 @@ public enum DkCoreCvrIdentifierUse {
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -156,7 +156,7 @@ public enum DkCoreCvrIdentifierUse {
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -165,7 +165,8 @@ public enum DkCoreCvrIdentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -194,12 +195,11 @@ public enum DkCoreKombitOrgIdentifierUse {
     CODE_DKCOREKOMBITORGIDENTIFIERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "DkCoreCprIdentifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -208,7 +208,7 @@ public enum DkCoreKombitOrgIdentifierUse {
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -217,7 +217,7 @@ public enum DkCoreKombitOrgIdentifierUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: DkCoreCprIdentifierUse,
@@ -226,7 +226,7 @@ public enum DkCoreKombitOrgIdentifierUse {
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -235,7 +235,7 @@ public enum DkCoreKombitOrgIdentifierUse {
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -244,7 +244,7 @@ public enum DkCoreKombitOrgIdentifierUse {
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -253,7 +253,8 @@ public enum DkCoreKombitOrgIdentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -282,12 +283,11 @@ public enum DkCoreCprIdentifierUse {
     CODE_DKCORECPRIDENTIFIERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "ProducentId",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -296,7 +296,7 @@ public enum DkCoreCprIdentifierUse {
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -305,7 +305,7 @@ public enum DkCoreCprIdentifierUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: DkCoreProducentIdUse,
@@ -314,7 +314,7 @@ public enum DkCoreCprIdentifierUse {
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -323,7 +323,7 @@ public enum DkCoreCprIdentifierUse {
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -332,7 +332,7 @@ public enum DkCoreCprIdentifierUse {
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -341,7 +341,8 @@ public enum DkCoreCprIdentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -370,12 +371,11 @@ public enum DkCoreProducentIdUse {
     CODE_DKCOREPRODUCENTIDUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "GLNIdentifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -384,7 +384,7 @@ public enum DkCoreProducentIdUse {
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -393,7 +393,7 @@ public enum DkCoreProducentIdUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: DkCoreGlnIdentifierUse,
@@ -402,7 +402,7 @@ public enum DkCoreProducentIdUse {
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -411,7 +411,7 @@ public enum DkCoreProducentIdUse {
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -420,7 +420,7 @@ public enum DkCoreProducentIdUse {
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -429,7 +429,8 @@ public enum DkCoreProducentIdUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -458,12 +459,11 @@ public enum DkCoreGlnIdentifierUse {
     CODE_DKCOREGLNIDENTIFIERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "AuthorizationIdentifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -472,7 +472,7 @@ public enum DkCoreGlnIdentifierUse {
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -481,7 +481,7 @@ public enum DkCoreGlnIdentifierUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: DkCoreAuthorizationIdentifierUse,
@@ -490,7 +490,7 @@ public enum DkCoreGlnIdentifierUse {
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -499,7 +499,7 @@ public enum DkCoreGlnIdentifierUse {
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -508,7 +508,7 @@ public enum DkCoreGlnIdentifierUse {
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -517,7 +517,8 @@ public enum DkCoreGlnIdentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -546,12 +547,11 @@ public enum DkCoreAuthorizationIdentifierUse {
     CODE_DKCOREAUTHORIZATIONIDENTIFIERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "DkCoreXeCprIdentifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -560,7 +560,7 @@ public enum DkCoreAuthorizationIdentifierUse {
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -569,7 +569,7 @@ public enum DkCoreAuthorizationIdentifierUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: DkCoreXEcprIdentifierUse,
@@ -578,7 +578,7 @@ public enum DkCoreAuthorizationIdentifierUse {
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -587,7 +587,7 @@ public enum DkCoreAuthorizationIdentifierUse {
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -596,7 +596,7 @@ public enum DkCoreAuthorizationIdentifierUse {
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -605,7 +605,8 @@ public enum DkCoreAuthorizationIdentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -634,12 +635,11 @@ public enum DkCoreXEcprIdentifierUse {
     CODE_DKCOREXECPRIDENTIFIERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "DkCoreDeCprIdentifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -648,7 +648,7 @@ public enum DkCoreXEcprIdentifierUse {
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -657,7 +657,7 @@ public enum DkCoreXEcprIdentifierUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: DkCoreDEcprIdentifierUse,
@@ -666,7 +666,7 @@ public enum DkCoreXEcprIdentifierUse {
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -675,7 +675,7 @@ public enum DkCoreXEcprIdentifierUse {
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -684,7 +684,7 @@ public enum DkCoreXEcprIdentifierUse {
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -693,7 +693,8 @@ public enum DkCoreXEcprIdentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -722,12 +723,11 @@ public enum DkCoreDEcprIdentifierUse {
     CODE_DKCOREDECPRIDENTIFIERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "SORIdentifier",
     baseType: (),
     elements: {
-    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -736,7 +736,7 @@ public enum DkCoreDEcprIdentifierUse {
             isArray: false,
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
-        },    
+        },
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -745,7 +745,7 @@ public enum DkCoreDEcprIdentifierUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
-        },    
+        },
         "use": {
             name: "use",
             dataType: DkCoreSorIdentifierUse,
@@ -754,7 +754,7 @@ public enum DkCoreDEcprIdentifierUse {
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -763,7 +763,7 @@ public enum DkCoreDEcprIdentifierUse {
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
+        },
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -772,7 +772,7 @@ public enum DkCoreDEcprIdentifierUse {
             isArray: false,
             description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
             path: "Identifier.type"
-        },    
+        },
         "value": {
             name: "value",
             dataType: string,
@@ -781,7 +781,8 @@ public enum DkCoreDEcprIdentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -809,5 +810,4 @@ public enum DkCoreSorIdentifierUse {
     CODE_DKCORESORIDENTIFIERUSE_OLD = "old",
     CODE_DKCORESORIDENTIFIERUSE_OFFICIAL = "official"
 };
-
 

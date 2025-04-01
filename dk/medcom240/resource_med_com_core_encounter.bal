@@ -38,8 +38,8 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
 # + episodeOfCare - Where a specific encounter should be classified as a part of a specific episode(s) of care this field should be used. This association can facilitate grouping of related encounters together for a specific purpose, such as government reporting, issue tracking, association via a common problem. The association is recorded on the encounter as these are typically created after the episode of care and grouped on entry rather than editing the episode of care to append another encounter to it (the episode of care could span years).
 # * episodeOfCare Slicings
 # 1) MedComCoreEncounterEpisodeOfCareLpr3identifier: Episode(s) of care that this encounter should be recorded against
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # + id - The logical id of the resource, as used in the URL for the resource. Once assigned, this value never changes.
 # + reasonCode - Reason the encounter takes place, expressed as a code. For admissions, this can be used for a coded admission diagnosis.
@@ -66,7 +66,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
     baseType: r4:DomainResource,
     profile: "http://medcomfhir.dk/ig/core/StructureDefinition/medcom-core-encounter",
     elements: {
-        "serviceType" : {
+        "serviceType": {
             name: "serviceType",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -75,7 +75,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             path: "Encounter.serviceType",
             valueSet: "http://hl7.org/fhir/ValueSet/service-type"
         },
-        "partOf" : {
+        "partOf": {
             name: "partOf",
             dataType: r4:Reference,
             min: 0,
@@ -83,7 +83,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.partOf"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -91,7 +91,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.extension"
         },
-        "subject" : {
+        "subject": {
             name: "subject",
             dataType: r4:Reference,
             min: 1,
@@ -99,7 +99,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.subject"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -107,7 +107,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.modifierExtension"
         },
-        "reasonReference" : {
+        "reasonReference": {
             name: "reasonReference",
             dataType: r4:Reference,
             min: 0,
@@ -115,7 +115,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.reasonReference"
         },
-        "appointment" : {
+        "appointment": {
             name: "appointment",
             dataType: r4:Reference,
             min: 0,
@@ -123,7 +123,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.appointment"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -132,7 +132,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             path: "Encounter.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "type" : {
+        "type": {
             name: "type",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -141,7 +141,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             path: "Encounter.type",
             valueSet: "http://hl7.org/fhir/ValueSet/encounter-type"
         },
-        "participant" : {
+        "participant": {
             name: "participant",
             dataType: MedComCoreEncounterParticipant,
             min: 0,
@@ -149,7 +149,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.participant"
         },
-        "episodeOfCare" : {
+        "episodeOfCare": {
             name: "episodeOfCare",
             dataType: MedComCoreEncounterEpisodeOfCare,
             min: 0,
@@ -157,7 +157,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.episodeOfCare"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -165,7 +165,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.id"
         },
-        "reasonCode" : {
+        "reasonCode": {
             name: "reasonCode",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -174,7 +174,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             path: "Encounter.reasonCode",
             valueSet: "http://hl7.org/fhir/ValueSet/encounter-reason"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -182,7 +182,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.text"
         },
-        "class" : {
+        "class": {
             name: "class",
             dataType: r4:Coding,
             min: 1,
@@ -191,7 +191,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             path: "Encounter.class",
             valueSet: "http://medcomfhir.dk/ig/terminology/ValueSet/medcom-core-encounter-class"
         },
-        "basedOn" : {
+        "basedOn": {
             name: "basedOn",
             dataType: r4:Reference,
             min: 0,
@@ -199,7 +199,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.basedOn"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -207,7 +207,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.identifier"
         },
-        "period" : {
+        "period": {
             name: "period",
             dataType: r4:Period,
             min: 0,
@@ -215,7 +215,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.period"
         },
-        "classHistory" : {
+        "classHistory": {
             name: "classHistory",
             dataType: MedComCoreEncounterClassHistory,
             min: 0,
@@ -223,7 +223,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.classHistory"
         },
-        "hospitalization" : {
+        "hospitalization": {
             name: "hospitalization",
             dataType: MedComCoreEncounterHospitalization,
             min: 0,
@@ -231,7 +231,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.hospitalization"
         },
-        "length" : {
+        "length": {
             name: "length",
             dataType: r4:Duration,
             min: 0,
@@ -239,7 +239,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.length"
         },
-        "diagnosis" : {
+        "diagnosis": {
             name: "diagnosis",
             dataType: MedComCoreEncounterDiagnosis,
             min: 0,
@@ -247,7 +247,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.diagnosis"
         },
-        "priority" : {
+        "priority": {
             name: "priority",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -256,7 +256,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             path: "Encounter.priority",
             valueSet: "http://terminology.hl7.org/ValueSet/v3-ActPriority"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -264,7 +264,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.contained"
         },
-        "statusHistory" : {
+        "statusHistory": {
             name: "statusHistory",
             dataType: MedComCoreEncounterStatusHistory,
             min: 0,
@@ -272,7 +272,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.statusHistory"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -280,7 +280,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.meta"
         },
-        "serviceProvider" : {
+        "serviceProvider": {
             name: "serviceProvider",
             dataType: r4:Reference,
             min: 0,
@@ -288,7 +288,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.serviceProvider"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -296,7 +296,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: false,
             path: "Encounter.implicitRules"
         },
-        "location" : {
+        "location": {
             name: "location",
             dataType: MedComCoreEncounterLocation,
             min: 0,
@@ -304,7 +304,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.location"
         },
-        "account" : {
+        "account": {
             name: "account",
             dataType: r4:Reference,
             min: 0,
@@ -312,7 +312,7 @@ public const RESOURCE_NAME_MEDCOMCOREENCOUNTER = "Encounter";
             isArray: true,
             path: "Encounter.account"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: MedComCoreEncounterStatus,
             min: 1,
@@ -363,7 +363,7 @@ public type MedComCoreEncounter record {|
     MedComCoreEncounterLocation[] location?;
     r4:Reference[] account?;
     MedComCoreEncounterStatus status;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR MedComCoreEncounterStatusHistory datatype record.
@@ -440,13 +440,13 @@ public type MedComCoreEncounterStatusHistory record {|
 
 # MedComCoreEncounterStatus enum
 public enum MedComCoreEncounterStatus {
-   CODE_STATUS_TRIAGED = "triaged",
-   CODE_STATUS_ARRIVED = "arrived",
-   CODE_STATUS_ONLEAVE = "onleave",
-   CODE_STATUS_CANCELLED = "cancelled",
-   CODE_STATUS_FINISHED = "finished",
-   CODE_STATUS_PLANNED = "planned",
-   CODE_STATUS_IN_PROGRESS = "in-progress"
+    CODE_STATUS_TRIAGED = "triaged",
+    CODE_STATUS_ARRIVED = "arrived",
+    CODE_STATUS_ONLEAVE = "onleave",
+    CODE_STATUS_CANCELLED = "cancelled",
+    CODE_STATUS_FINISHED = "finished",
+    CODE_STATUS_PLANNED = "planned",
+    CODE_STATUS_IN_PROGRESS = "in-progress"
 }
 
 # FHIR MedComCoreEncounterHospitalization datatype record.
@@ -600,10 +600,10 @@ public type MedComCoreEncounterHospitalization record {|
 
 # MedComCoreEncounterLocationStatus enum
 public enum MedComCoreEncounterLocationStatus {
-   CODE_STATUS_RESERVED = "reserved",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_PLANNED = "planned",
-   CODE_STATUS_COMPLETED = "completed"
+    CODE_STATUS_RESERVED = "reserved",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_PLANNED = "planned",
+    CODE_STATUS_COMPLETED = "completed"
 }
 
 # FHIR MedComCoreEncounterDiagnosis datatype record.
@@ -691,13 +691,13 @@ public type MedComCoreEncounterDiagnosis record {|
 
 # MedComCoreEncounterStatusHistoryStatus enum
 public enum MedComCoreEncounterStatusHistoryStatus {
-   CODE_STATUS_TRIAGED = "triaged",
-   CODE_STATUS_ARRIVED = "arrived",
-   CODE_STATUS_ONLEAVE = "onleave",
-   CODE_STATUS_CANCELLED = "cancelled",
-   CODE_STATUS_FINISHED = "finished",
-   CODE_STATUS_PLANNED = "planned",
-   CODE_STATUS_IN_PROGRESS = "in-progress"
+    CODE_STATUS_TRIAGED = "triaged",
+    CODE_STATUS_ARRIVED = "arrived",
+    CODE_STATUS_ONLEAVE = "onleave",
+    CODE_STATUS_CANCELLED = "cancelled",
+    CODE_STATUS_FINISHED = "finished",
+    CODE_STATUS_PLANNED = "planned",
+    CODE_STATUS_IN_PROGRESS = "in-progress"
 }
 
 # FHIR MedComCoreEncounterEpisodeOfCareLpr3identifier datatype record.

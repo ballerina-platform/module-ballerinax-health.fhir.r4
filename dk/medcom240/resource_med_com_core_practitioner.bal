@@ -37,8 +37,8 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
 # + qualification - The official certifications, training, and licenses that authorize or otherwise pertain to the provision of care by the practitioner. For example, a medical license issued by a medical board authorizing the practitioner to practice medicine within a certian locality.
 # * qualification Slicings
 # 1) MedComCorePractitionerQualificationOfficialHealthAuthorization: Certification, licenses, or training pertaining to the provision of care
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
 # + meta - The metadata about the resource. This is content that is maintained by the infrastructure. Changes to the content might not always be associated with version changes to the resource.
@@ -53,7 +53,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
     baseType: r4:DomainResource,
     profile: "http://medcomfhir.dk/ig/core/StructureDefinition/medcom-core-practitioner",
     elements: {
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -61,7 +61,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: true,
             path: "Practitioner.identifier"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -69,7 +69,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: true,
             path: "Practitioner.extension"
         },
-        "address" : {
+        "address": {
             name: "address",
             dataType: r4:Address,
             min: 0,
@@ -77,7 +77,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: true,
             path: "Practitioner.address"
         },
-        "gender" : {
+        "gender": {
             name: "gender",
             dataType: MedComCorePractitionerGender,
             min: 0,
@@ -86,7 +86,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             path: "Practitioner.gender",
             valueSet: "http://hl7.org/fhir/ValueSet/administrative-gender|4.0.1"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -94,7 +94,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: true,
             path: "Practitioner.modifierExtension"
         },
-        "active" : {
+        "active": {
             name: "active",
             dataType: boolean,
             min: 0,
@@ -102,7 +102,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: false,
             path: "Practitioner.active"
         },
-        "photo" : {
+        "photo": {
             name: "photo",
             dataType: r4:Attachment,
             min: 0,
@@ -110,7 +110,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: true,
             path: "Practitioner.photo"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -119,7 +119,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             path: "Practitioner.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "birthDate" : {
+        "birthDate": {
             name: "birthDate",
             dataType: r4:date,
             min: 0,
@@ -127,7 +127,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: false,
             path: "Practitioner.birthDate"
         },
-        "qualification" : {
+        "qualification": {
             name: "qualification",
             dataType: MedComCorePractitionerQualification,
             min: 0,
@@ -135,7 +135,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: true,
             path: "Practitioner.qualification"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -143,7 +143,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: true,
             path: "Practitioner.contained"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -151,7 +151,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: false,
             path: "Practitioner.meta"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: r4:HumanName,
             min: 0,
@@ -159,7 +159,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: true,
             path: "Practitioner.name"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -167,7 +167,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: false,
             path: "Practitioner.implicitRules"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: r4:ContactPoint,
             min: 0,
@@ -175,7 +175,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: true,
             path: "Practitioner.telecom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -183,7 +183,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: false,
             path: "Practitioner.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -191,7 +191,7 @@ public const RESOURCE_NAME_MEDCOMCOREPRACTITIONER = "Practitioner";
             isArray: false,
             path: "Practitioner.text"
         },
-        "communication" : {
+        "communication": {
             name: "communication",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -229,7 +229,7 @@ public type MedComCorePractitioner record {|
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept[] communication?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR MedComCorePractitionerQualification datatype record.
@@ -328,10 +328,10 @@ public type MedComCorePractitionerQualification record {|
 
 # MedComCorePractitionerGender enum
 public enum MedComCorePractitionerGender {
-   CODE_GENDER_OTHER = "other",
-   CODE_GENDER_FEMALE = "female",
-   CODE_GENDER_MALE = "male",
-   CODE_GENDER_UNKNOWN = "unknown"
+    CODE_GENDER_OTHER = "other",
+    CODE_GENDER_FEMALE = "female",
+    CODE_GENDER_MALE = "male",
+    CODE_GENDER_UNKNOWN = "unknown"
 }
 
 # FHIR MedComCorePractitionerQualificationOfficialHealthAuthorization datatype record.

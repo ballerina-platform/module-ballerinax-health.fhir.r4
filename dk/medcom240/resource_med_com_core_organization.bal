@@ -30,36 +30,36 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
 # + identifier - Identifier for the organization that is used to identify the organization across multiple disparate systems.
 # * identifier Slicings
 # 1) MedComCoreOrganizationIdentifierKOMBIT_ORG_ID: [DA] Organisationsenheds-id som specificeret af FK-ORG
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 2) MedComCoreOrganizationIdentifierYdernummer: [DA] Ydernummer
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 3) MedComCoreOrganizationIdentifierProducentID: [DA] Producent Id
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 4) MedComCoreOrganizationIdentifierCVR_ID: VAT identification number, [DA] CVR-nummer
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 5) MedComCoreOrganizationIdentifierEAN_ID: GLN identifier, [DA] EAN-nummer
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 6) MedComCoreOrganizationIdentifierKommunekode: [DA] Kommunekode
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 7) MedComCoreOrganizationIdentifierRegionskode: [DA] Regionskode
-#       - min = 0
-#       - max = 1
+# - min = 0
+# - max = 1
 #
 # 8) MedComCoreOrganizationIdentifierSOR_ID: Sundhedsvæsenets Organisationsregister (SOR) identifier
-#       - min = 1
-#       - max = 1
+# - min = 1
+# - max = 1
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + address - An address for the organization.
@@ -82,7 +82,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
     baseType: r4:DomainResource,
     profile: "http://medcomfhir.dk/ig/core/StructureDefinition/medcom-core-organization",
     elements: {
-        "partOf" : {
+        "partOf": {
             name: "partOf",
             dataType: r4:Reference,
             min: 0,
@@ -90,7 +90,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.partOf"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 1,
@@ -98,7 +98,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.identifier"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -106,7 +106,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.extension"
         },
-        "address" : {
+        "address": {
             name: "address",
             dataType: r4:Address,
             min: 0,
@@ -114,7 +114,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.address"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -122,7 +122,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.modifierExtension"
         },
-        "active" : {
+        "active": {
             name: "active",
             dataType: boolean,
             min: 0,
@@ -130,7 +130,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.active"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -139,7 +139,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             path: "Organization.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "type" : {
+        "type": {
             name: "type",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -148,7 +148,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             path: "Organization.type",
             valueSet: "http://hl7.dk/fhir/core/ValueSet/sor-organization-type"
         },
-        "endpoint" : {
+        "endpoint": {
             name: "endpoint",
             dataType: r4:Reference,
             min: 0,
@@ -156,7 +156,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.endpoint"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -164,7 +164,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.contained"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -172,7 +172,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.meta"
         },
-        "contact" : {
+        "contact": {
             name: "contact",
             dataType: MedComCoreOrganizationContact,
             min: 0,
@@ -180,7 +180,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.contact"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: string,
             min: 0,
@@ -188,7 +188,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.name"
         },
-        "alias" : {
+        "alias": {
             name: "alias",
             dataType: string,
             min: 0,
@@ -196,7 +196,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.alias"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -204,7 +204,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.implicitRules"
         },
-        "telecom" : {
+        "telecom": {
             name: "telecom",
             dataType: r4:ContactPoint,
             min: 0,
@@ -212,7 +212,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: true,
             path: "Organization.telecom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -220,7 +220,7 @@ public const RESOURCE_NAME_MEDCOMCOREORGANIZATION = "Organization";
             isArray: false,
             path: "Organization.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -267,7 +267,7 @@ public type MedComCoreOrganization record {|
     r4:ContactPoint[] telecom?;
     string id?;
     r4:Narrative text?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # FHIR MedComCoreOrganizationContact datatype record.
@@ -383,11 +383,11 @@ public type MedComCoreOrganizationIdentifierProducentID record {|
 
 # MedComCoreOrganizationIdentifierUseOne enum
 public enum MedComCoreOrganizationIdentifierUseOne {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # FHIR MedComCoreOrganizationIdentifierYdernummer datatype record.
@@ -497,11 +497,11 @@ public type MedComCoreOrganizationIdentifierYdernummer record {|
 
 # MedComCoreOrganizationIdentifierUse enum
 public enum MedComCoreOrganizationIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # FHIR MedComCoreOrganizationIdentifierRegionskode datatype record.
@@ -645,11 +645,11 @@ public type MedComCoreOrganizationIdentifierSOR_ID record {|
 
 # MedComCoreOrganizationIdentifierUseTwo enum
 public enum MedComCoreOrganizationIdentifierUseTwo {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
 }
 
 # FHIR MedComCoreOrganizationIdentifierCVR_ID datatype record.
