@@ -21,7 +21,7 @@ import ballerina/test;
 import ballerina/http;
 
 @test:Config{}
-function testValidate() {
+function testValidate1() {
     json body = {
       "resourceType": "Patient",
       "id": "591841",
@@ -49,6 +49,73 @@ function testValidate() {
     if validationResult is r4:FHIRValidationError {
         test:assertFail(msg = "Validation failed");
     }
+}
+
+@test:Config{}
+function testValidate2() {
+  json body = {
+    "resourceType": "AllergyIntolerance",
+    "id": "example",
+    "text": {
+      "status": "generated",
+      "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative: AllergyIntolerance</b><a name=\"example\"> </a><a name=\"hcexample\"> </a></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource AllergyIntolerance &quot;example&quot; </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-us-core-allergyintolerance.html\">US Core AllergyIntolerance Profile (version 7.0.0)</a></p></div><p><b>clinicalStatus</b>: Active <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/5.5.0/CodeSystem-allergyintolerance-clinical.html\">AllergyIntolerance Clinical Status Codes</a>#active)</span></p><p><b>verificationStatus</b>: Confirmed <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/5.5.0/CodeSystem-allergyintolerance-verification.html\">AllergyIntolerance Verification Status</a>#confirmed)</span></p><p><b>category</b>: medication</p><p><b>criticality</b>: high</p><p><b>code</b>: sulfonamide antibacterial <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT[US]</a>#763875007 &quot;Product containing sulfonamide (product)&quot;)</span></p><p><b>patient</b>: <a href=\"Patient-example.html\">Patient/example: Amy V. Shaw</a> &quot; SHAW&quot;</p><h3>Reactions</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Manifestation</b></td><td><b>Severity</b></td></tr><tr><td style=\"display: none\">*</td><td>skin rash <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"https://browser.ihtsdotools.org/\">SNOMED CT[US]</a>#271807003)</span></td><td>mild</td></tr></table></div>"
+    },
+    "clinicalStatus": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+          "code": "active"
+        }
+      ]
+    },
+    "verificationStatus": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+          "code": "confirmed"
+        }
+      ]
+    },
+    "category": ["medication"],
+    "criticality": "high",
+    "code": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "version": "http://snomed.info/sct/731000124108",
+          "code": "763875007",
+          "display": "Product containing sulfonamide (product)"
+        }
+      ],
+      "text": "sulfonamide antibacterial"
+    },
+    "patient": {
+      "reference": "Patient/example",
+      "display": "Amy V. Shaw"
+    },
+    "reaction": [
+      {
+        "manifestation": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "version": "http://snomed.info/sct/731000124108",
+                "code": "271807003",
+                "display": "skin rash"
+              }
+            ],
+            "text": "skin rash"
+          }
+        ],
+        "severity": "mild"
+      }
+    ]
+  };
+  r4:FHIRValidationError? validationResult = validate(body);
+  if validationResult is r4:FHIRValidationError {
+    test:assertFail(msg = "Validation failed");
+  }
 }
 
 @test:Config{}

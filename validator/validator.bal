@@ -121,8 +121,18 @@ public isolated function validate(anydata data, typedesc<anydata>? targetFHIRMod
         string[] errors = parseConstraintErrors(validationResult.message());
         return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, validationResult.message(),
                                                 errorType = r4:VALIDATION_ERROR, cause = validationResult, parsedErrors = errors, httpStatusCode = http:STATUS_BAD_REQUEST);
-    }
+    } else {
+        // terminology validation
+        string[]|error? validationErrors = validateTerminologies(validationResult);
 
+        if validationErrors is string[] {
+            foreach string errorString in validationErrors {
+                log:printDebug("Validation Error: " + errorString);
+            }
+        } else if validationErrors is error {
+            log:printDebug("Error during validation: " + validationErrors.message());
+        }
+    }
 }
 
 isolated function parseConstraintErrors(string message) returns string[] {
