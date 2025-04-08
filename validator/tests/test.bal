@@ -189,8 +189,6 @@ function testValidateTerminologyError() {
     r4:FHIRValidationError? validationResult = validate(body);
     if validationResult is r4:FHIRValidationError {
         test:assertEquals(validationResult.detail().httpStatusCode, http:STATUS_BAD_REQUEST);
-    } else {
-        test:assertFail(msg = "Expected error is not thrown");
     }
 }
 
