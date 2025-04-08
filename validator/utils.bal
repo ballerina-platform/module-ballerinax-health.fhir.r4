@@ -81,9 +81,9 @@ isolated function extractFromR4Coding(anydata data) returns Term[] {
 }
 
 isolated function checkTerminologyValidity(Term[] terms) returns string[]|error? {
-    string[] errors = [];
-
     http:Client termClient = check new (TERMINOLOFY_SERVICE_API);
+
+    string[] errors = [];
 
     foreach Term term in terms {
         string queryParams = string `?system=${term.system}&code=${term.code}${(term.version is string ? "&version=" + <string>term.version : "")}`;
@@ -118,7 +118,25 @@ isolated function checkTerminologyValidity(Term[] terms) returns string[]|error?
     return errors;
 }
 
+isolated function isTerminologyService() returns boolean|error? {
+    http:Client termClient = check new (TERMINOLOFY_SERVICE_API);
+    http:Response|http:Error healthCheckResponse = termClient->head("/");
+
+    if healthCheckResponse is http:Error {
+        return false;
+    }
+
+    return true;
+}
+
 public isolated function validateTerminologies(anydata data) returns string[]|error? {
+    boolean|error? isService = isTerminologyService();
+    if isService is error {
+        return isService;
+    } else if isService is boolean && !isService {
+        return;
+    }
+
     Term[] result = extractCodesAndSystems(data);
 
     return checkTerminologyValidity(result);
