@@ -92,10 +92,6 @@ isolated function checkTerminologyValidity(Term[] terms) returns string[]|error?
         http:Response|http:Error valuesetResponse = termClient->get(VALUESET_VALIDATE_CODE + queryParams);
 
         if valuesetResponse is http:Response {
-            // response is 200 is valid code in the system
-            // response is 400 is not defined terminology
-            // response is 404 is not found terminology
-
             if valuesetResponse.statusCode == 404 {
                 // Send GET request to CodeSystem lookup API
                 http:Response|http:Error codesystemResponse = termClient->get(CODESYSTEM_LOOKUP + queryParams);
@@ -104,18 +100,12 @@ isolated function checkTerminologyValidity(Term[] terms) returns string[]|error?
                     if codesystemResponse.statusCode == 404 {
                         errors.push("Invalid code: " + term.code + " in system: " + term.system);
                     }
-
-                    // skip not defined terminologies (statusCode == 400)
                 }
             }
         }
     }
 
-    if errors.length() == 0 {
-        return;
-    }
-
-    return errors;
+    return errors.length() == 0 ? null : errors;
 }
 
 isolated function isTerminologyService() returns boolean|error? {
