@@ -121,9 +121,11 @@ public isolated function validate(anydata data, typedesc<anydata>? targetFHIRMod
         string[] errors = parseConstraintErrors(validationResult.message());
         return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, validationResult.message(),
                                                 errorType = r4:VALIDATION_ERROR, cause = validationResult, parsedErrors = errors, httpStatusCode = http:STATUS_BAD_REQUEST);
-    } else {
-        // terminology validation
-        string[]|error? validationErrors = validateTerminologies(validationResult);
+    } 
+    
+    // terminology validation
+    if terminologyConfig?.isTerminologyValidationEnabled == true {
+        string[]|error? validationErrors = validateTerminologyData(validationResult);
 
         if validationErrors is string[] {    
             return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed, due to terminology validation failed", r4:ERROR, r4:INVALID, "Terminology validation failed", 
