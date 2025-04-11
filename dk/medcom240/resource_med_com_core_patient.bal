@@ -309,7 +309,7 @@ public type MedComCorePatient record {|
     r4:code language?;
     MedComCorePatientContact[] contact?;
     r4:dateTime deceasedDateTime?;
-    r4:Reference[] generalPractitioner?;
+    (r4:Reference|MedComCorePatientGeneralPractitionerReferencedSORUnit)[] generalPractitioner?;
     MedcomMessagingContactpoint[] telecom?;
     string id?;
     r4:Narrative text?;
@@ -324,7 +324,7 @@ public type MedComCorePatient record {|
             message: "Validation failed for $.Patient.identifier constraint. This field must be an array containing at most one item."
         }
     }
-    r4:Identifier[] identifier;
+    (r4:Identifier|MedComCorePatientIdentifierCpr|MedComCorePatientIdentifierD_ecpr|MedComCorePatientIdentifierX_ecpr)[] identifier;
     MedComCorePatientAddress[] address?;
     boolean multipleBirthBoolean?;
     boolean active?;
@@ -345,7 +345,7 @@ public type MedComCorePatient record {|
             message: "Validation failed for $.Patient.name constraint. This field must be an array containing at most one item."
         }
     }
-    r4:HumanName[] name;
+    (r4:HumanName|MedComCorePatientNameOfficial)[] name;
     r4:uri implicitRules?;
     r4:CodeableConcept maritalStatus?;
     r4:Element...;
@@ -792,10 +792,19 @@ public type MedComCorePatientContact record {|
 
 # FHIR MedComCorePatientIdentifierCpr datatype record.
 #
+# + system - The namespace for the identifier value
 @r4:DataTypeDefinition {
     name: "MedComCorePatientIdentifierCpr",
     baseType: (),
     elements: {
+        "system": {
+            name: "system",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The namespace for the identifier value"
+        }
     },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
@@ -804,6 +813,7 @@ public type MedComCorePatientContact record {|
 }
 public type MedComCorePatientIdentifierCpr record {|
     *r4:Identifier;
+    r4:uri system = "urn:oid:1.2.208.176.1.2";
 
 |};
 
@@ -1071,4 +1081,3 @@ public type MedComCorePatientIdentifierD_ecpr record {|
     *r4:Identifier;
 
 |};
-

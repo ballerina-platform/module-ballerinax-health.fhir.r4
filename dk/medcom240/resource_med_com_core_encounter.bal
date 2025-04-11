@@ -342,7 +342,7 @@ public type MedComCoreEncounter record {|
     r4:code language?;
     r4:CodeableConcept[] 'type?;
     MedComCoreEncounterParticipant[] participant?;
-    MedComCoreEncounterEpisodeOfCare[] episodeOfCare?;
+    (MedComCoreEncounterEpisodeOfCare|MedComCoreEncounterEpisodeOfCareLpr3identifier)[] episodeOfCare?;
     string id?;
     r4:CodeableConcept[] reasonCode?;
     r4:Narrative text?;

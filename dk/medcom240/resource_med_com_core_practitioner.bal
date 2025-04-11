@@ -220,7 +220,7 @@ public type MedComCorePractitioner record {|
     r4:Attachment[] photo?;
     r4:code language?;
     r4:date birthDate?;
-    MedComCorePractitionerQualification[] qualification?;
+    (MedComCorePractitionerQualification|MedComCorePractitionerQualificationOfficialHealthAuthorization)[] qualification?;
     r4:Resource[] contained?;
     r4:Meta meta?;
     r4:HumanName[] name?;

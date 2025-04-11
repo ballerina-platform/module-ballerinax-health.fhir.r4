@@ -250,7 +250,14 @@ public type MedComCoreOrganization record {|
             message: "Validation failed for $.Organization.identifier constraint. This field must be an array containing at most one item."
         }
     }
-    r4:Identifier[] identifier;
+    (r4:Identifier|
+    MedComCoreOrganizationIdentifierCVR_ID|
+    MedComCoreOrganizationIdentifierEAN_ID|
+    MedComCoreOrganizationIdentifierKOMBIT_ORG_ID|
+    MedComCoreOrganizationIdentifierKommunekode|
+    MedComCoreOrganizationIdentifierProducentID|
+    MedComCoreOrganizationIdentifierRegionskode
+    )[] identifier;
     r4:Extension[] extension?;
     r4:Address[] address?;
     r4:Extension[] modifierExtension?;
