@@ -389,8 +389,22 @@ modules = [
 
 [[package]]
 org = "ballerinax"
+name = "health.fhir.r4.uscore700"
+version = "2.0.0"
+scope = "testOnly"
+dependencies = [
+	{org = "ballerina", name = "constraint"},
+	{org = "ballerina", name = "log"},
+	{org = "ballerinax", name = "health.fhir.r4"}
+]
+modules = [
+	{org = "ballerinax", packageName = "health.fhir.r4.uscore700", moduleName = "health.fhir.r4.uscore700"}
+]
+
+[[package]]
+org = "ballerinax"
 name = "health.fhir.r4.validator"
-version = "5.0.1"
+version = "5.0.2"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
@@ -399,7 +413,8 @@ dependencies = [
 	{org = "ballerina", name = "test"},
 	{org = "ballerinax", name = "health.fhir.r4"},
 	{org = "ballerinax", name = "health.fhir.r4.international401"},
-	{org = "ballerinax", name = "health.fhir.r4.parser"}
+	{org = "ballerinax", name = "health.fhir.r4.parser"},
+	{org = "ballerinax", name = "health.fhir.r4.uscore700"}
 ]
 modules = [
 	{org = "ballerinax", packageName = "health.fhir.r4.validator", moduleName = "health.fhir.r4.validator"}
