@@ -1,25 +1,34 @@
 import ballerina/http;
-import ballerinax/health.clients.fhir;
 import ballerina/log;
 
 const string CODESYSTEM_LOOKUP = "/CodeSystem/%24lookup";
 const string VALUESET_VALIDATE_CODE = "/ValueSet/%24validate-code";
 
-// configurable string TERMINOLOGY_SERVICE_API = "http://localhost:9090/fhir/r4";
-// configurable boolean IS_TERMINOLOGY_VALIDATION_ENABLED = false;
-
 configurable TerminologyConfig? terminologyConfig = ();
 
-// Create a FHIR client configuration
-final fhir:FHIRConnectorConfig fhirConnectorConfig = {
-    baseURL: terminologyConfig?.terminologyServiceApi ?: "http://localhost:9089/fhir/r4",
-    mimeType: fhir:FHIR_JSON,
-    authConfig: {
-        tokenUrl: terminologyConfig?.tokenUrl ?: "",
-        clientId: terminologyConfig?.clientId ?: "",
-        clientSecret: terminologyConfig?.clientSecret ?: ""
+# Retrieve an HTTP client configured for the terminology service.
+#
+# This function creates and returns an `http:Client` instance to interact with the terminology service API.
+# If authentication details (token URL, client ID, and client secret) are provided in the `terminologyConfig`,
+# the client is configured with authentication. Otherwise, a basic client is created without authentication.
+#
+# + return - An `http:Client` instance if successful, or an `error` if the client creation fails
+isolated function getTerminologyClient() returns http:Client|error {
+    http:ClientAuthConfig? authConfig;
+
+    if terminologyConfig?.tokenUrl is () || terminologyConfig?.clientId is () || terminologyConfig?.clientSecret is () ||
+        terminologyConfig?.tokenUrl == "" || terminologyConfig?.clientId == "" || terminologyConfig?.clientSecret == "" {
+        return check new (<string>terminologyConfig?.terminologyServiceApi);
+    } else {
+        authConfig = {
+            tokenUrl: <string>terminologyConfig?.tokenUrl,
+            clientId: <string>terminologyConfig?.clientId,
+            clientSecret: <string>terminologyConfig?.clientSecret
+        };
+
+        return check new (<string>terminologyConfig?.terminologyServiceApi, auth = authConfig);
     }
-};
+}
 
 # Extract terminology codes from the given data.
 #
@@ -104,7 +113,7 @@ isolated function extractCodesFromCodingElement(anydata data) returns Term[] {
 # + terms - Array of `Term` records to validate
 # + return - An array of error messages if validation fails, or `null` if validation succeeds
 isolated function validateTerminologyCodes(Term[] terms) returns string[]|error? {
-    http:Client termClient = check new (<string>terminologyConfig?.terminologyServiceApi);
+    http:Client termClient = check getTerminologyClient();
 
     string[] errors = [];
 
