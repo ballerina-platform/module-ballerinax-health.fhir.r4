@@ -21,6 +21,7 @@
 import ballerina/log;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
+import ballerina/uuid;
 
 # Map CCDA Procedure Activity to FHIR Procedure
 #
@@ -127,6 +128,8 @@ isolated function ccdaToProcedure(xml procedureElement) returns uscore501:USCore
             }
         }
         procedure.reasonCode = observationCodes;
+        //generate id for procedure
+        procedure.id = uuid:createRandomUuid();
         return procedure;
     }
     return ();

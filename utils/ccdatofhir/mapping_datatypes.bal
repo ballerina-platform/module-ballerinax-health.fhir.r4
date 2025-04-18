@@ -31,51 +31,51 @@ xmlns "urn:hl7-org:v3" as v3;
 public isolated function mapCcdaIdToFhirIdentifier(xml idElement) returns uscore501:USCorePatientProfileIdentifier? {
     string|error? extensionVal = idElement.extension;
     string|error? rootVal = idElement.root;
+    string|error? assigningAuthorityName = idElement.assigningAuthorityName;
+    
     if rootVal !is string {
         log:printDebug("Mandatory field root not available", rootVal);
         return ();
     }
 
+    // Handle known OID mappings
     string? system = ();
     match (rootVal) {
-        "2.16.840.1.113883.4.1" => {
-            system = "http://hl7.org/fhir/sid/us-ssn";
-        }
-        "2.16.840.1.113883.4.336" => {
-            system = "http://terminology.hl7.org/NamingSystem/CMSCertificationNumber";
-        }
-        "2.16.840.1.113883.4.6" => {
-            system = "http://hl7.org/fhir/sid/us-npi";
-        }
-        "2.16.840.1.113883.4.572" => {
-            system = "http://hl7.org/fhir/sid/us-medicare";
-        }
-        _=> {
+        "2.16.840.1.113883.4.1" => { system = "http://hl7.org/fhir/sid/us-ssn"; }
+        "2.16.840.1.113883.4.336" => { system = "http://terminology.hl7.org/NamingSystem/CMSCertificationNumber"; }
+        "2.16.840.1.113883.4.6" => { system = "http://hl7.org/fhir/sid/us-npi"; }
+        "2.16.840.1.113883.4.572" => { system = "http://hl7.org/fhir/sid/us-medicare"; }
+        _ => {
+            // Check if root is UUID format
+            if rootVal.startsWith("urn:uuid:") || re `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`.isFullMatch(rootVal) {
+                return mapCcdaUuidToFhirIdentifier(idElement);
+            }
             system = ();
         }
     }
 
+    uscore501:USCorePatientProfileIdentifier identifier = {system: "", value: ""};
+    
+    // Handle system and value based on extension presence
     if system is string && extensionVal is string {
-        return {
-            system,
-            value: extensionVal
-        };
-    } 
-    
-    if system is () && extensionVal is string {
-        return {
-            system: string `urn:oid:${rootVal}`,
-            value: extensionVal
-        };
-    } 
-    
-    if extensionVal is () || extensionVal is error {
-        return {
-            system: "urn:ietf:rfc:3986",
-            value: string `urn:oid:${rootVal}`	
-        };
+        identifier.system = system;
+        identifier.value = extensionVal;
+    } else if system is () && extensionVal is string {
+        identifier.system = string `urn:oid:${rootVal}`;
+        identifier.value = extensionVal;
+    } else if extensionVal is () || extensionVal is error {
+        identifier.system = "urn:ietf:rfc:3986";
+        identifier.value = string `urn:oid:${rootVal}`;
+    } else {
+        return ();
     }
-    return ();
+    
+    // Handle assigning authority if present
+    if assigningAuthorityName is string {
+        identifier.assigner = { display: assigningAuthorityName };
+    }
+    
+    return identifier;
 }
 
 # Map C-CDA address to FHIR Address.
@@ -340,6 +340,7 @@ public isolated function mapCcdaCodingToFhirCodeableConcept(xml codingElement) r
             text: textVal
         };
     }
+    
     log:printDebug("codeableConcept not available");
     return ();
 }
@@ -459,6 +460,9 @@ public isolated function mapCcdaDateTimeToFhirDateTime(xml dateTimeElement) retu
         17 => {
             return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(8, 10)}:${dateTimeVal.substring(10, 15)}:${dateTimeVal.substring(15, 17)}`;
         }
+        19 => {
+            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(8, 10)}:${dateTimeVal.substring(10, 15)}:${dateTimeVal.substring(15, 17)}`;
+        }
         _ => {
             log:printDebug("Invalid dateTime length");
             return ();
@@ -509,4 +513,87 @@ public isolated function mapOidToUri(string oid) returns string {
             return string `urn:oid:${oid}`;
         }
     }
+}
+
+# Map C-CDA II with UUID root to FHIR Identifier
+#
+# + idElement - C-CDA id element
+# + return - Return FHIR Identifier
+public isolated function mapCcdaUuidToFhirIdentifier(xml idElement) returns uscore501:USCorePatientProfileIdentifier? {
+    string|error? rootVal = idElement.root;
+    if rootVal !is string {
+        log:printDebug("Mandatory field root not available", rootVal);
+        return ();
+    }
+    
+    return {
+        system: "urn:ietf:rfc:3986",
+        value: string `urn:oid:${rootVal}`
+    };
+}
+
+# Map C-CDA assigningAuthorityName to FHIR Identifier assigner.display
+#
+# + idElement - C-CDA id element
+# + return - Return FHIR Identifier assigner.display
+public isolated function mapCcdaAssigningAuthorityToFhirAssigner(xml idElement) returns string? {
+    string|error? assigningAuthorityName = idElement.assigningAuthorityName;
+    if assigningAuthorityName is string {
+        return assigningAuthorityName;
+    }
+    return ();
+}
+
+# Map C-CDA timestamp to FHIR dateTime
+#
+# + tsElement - C-CDA timestamp element
+# + return - Return FHIR dateTime
+public isolated function mapCcdaTimestampToFhirDateTime(xml tsElement) returns r4:dateTime? {
+    string|error? valueVal = tsElement.value;
+    if valueVal is string {
+        return mapCcdaDateTimeToFhirDateTime(tsElement);
+    }
+    return ();
+}
+
+# Map C-CDA interval timestamp to FHIR Period
+#
+# + ivlTsElement - C-CDA interval timestamp element
+# + return - Return FHIR Period
+public isolated function mapCcdaIntervalToFhirPeriod(xml ivlTsElement) returns r4:Period? {
+    xml lowElement = ivlTsElement/<v3:low|low>;
+    xml highElement = ivlTsElement/<v3:high|high>;
+    
+    r4:dateTime? low = mapCcdaDateTimeToFhirDateTime(lowElement);
+    r4:dateTime? high = mapCcdaDateTimeToFhirDateTime(highElement);
+    
+    if low is string || high is string {
+        return {
+            'start: low,
+            end: high
+        };
+    }
+    return ();
+}
+
+# Map C-CDA periodic interval to FHIR Timing
+#
+# + pivlTsElement - C-CDA periodic interval element
+# + return - Return FHIR Timing
+public isolated function mapCcdaPeriodicIntervalToFhirTiming(xml pivlTsElement) returns r4:Timing?|error {
+    xml periodValueElement = pivlTsElement/<v3:period|period>/<v3:value|value>;
+    xml periodUnitElement = pivlTsElement/<v3:period|period>/<v3:unit|unit>;
+    
+    string|error? value = periodValueElement.data();
+    string|error? unit = periodUnitElement.data();
+
+    if value is string && unit is string {
+        return {
+            repeat: {
+                period: check decimal:fromString(value),
+                periodUnit: <r4:Timecode>unit.toLowerAscii()
+            }
+        };
+    }
+    return ();
 }

@@ -21,6 +21,7 @@
 import ballerina/log;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
+import ballerina/uuid;
 
 # Map CCDA Allergy to FHIR AllergyIntolerance.
 #
@@ -158,6 +159,8 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
             }
             allergyIntolerance.reaction = [reaction];
         }
+        //generate the id for the allergyIntolerance
+        allergyIntolerance.id = uuid:createRandomUuid();
         return allergyIntolerance;
     } else {
         log:printDebug("AllergyIntolerance not available");

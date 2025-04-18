@@ -49,6 +49,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
     }
 
     r4:BundleEntry[] entries = [];
+    string patientId = "";
     foreach var xmlPayload in xmlDocument {
         xml childElements = xmlPayload/<v3:recordTarget|recordTarget>;
         if childElements.length() > 0 {
@@ -57,6 +58,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
             CcdaToPatient ccdaToPatient = mapper.ccdaToPatient;
             uscore501:USCorePatientProfile? mapCCDAToFHIRPatientResult = ccdaToPatient(patientRoleElement);
             if mapCCDAToFHIRPatientResult is uscore501:USCorePatientProfile {
+                patientId = <string>mapCCDAToFHIRPatientResult.id;
                 entries.push({'resource: mapCCDAToFHIRPatientResult});
             }
         }
@@ -90,6 +92,9 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         CcdaToAllergyIntolerance ccdaToAllergyIntolerance = mapper.ccdaToAllergyIntolerance;
                         mapCCDAToFHIRResult = ccdaToAllergyIntolerance(actElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreAllergyIntolerance {
+                            if patientId != "" {
+                                mapCCDAToFHIRResult.patient = {reference: "Patient/" + patientId};
+                            }
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
@@ -97,6 +102,9 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         CcdaToCondition ccdaToCondition = mapper.ccdaToCondition;
                         mapCCDAToFHIRResult = ccdaToCondition(sectionElement, actElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreCondition {
+                            if patientId != "" {
+                                mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
+                            }
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
@@ -104,6 +112,9 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         CcdaToImmunization ccdaToImmunization = mapper.ccdaToImmunization;
                         mapCCDAToFHIRResult = ccdaToImmunization(substanceAdministrationElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreImmunizationProfile {
+                            if patientId != "" {
+                                mapCCDAToFHIRResult.patient = {reference: "Patient/" + patientId};
+                            }
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
@@ -111,6 +122,9 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         CcdaToMedication ccdaToMedication = mapper.ccdaToMedication;
                         mapCCDAToFHIRResult = ccdaToMedication(substanceAdministrationElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreMedicationRequestProfile {
+                            if patientId != "" {
+                                mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
+                            }
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
@@ -118,6 +132,9 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         CcdaToProcedure ccdaToProcedure = mapper.ccdaToProcedure;
                         mapCCDAToFHIRResult = ccdaToProcedure(procedureElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreProcedureProfile {
+                            if patientId != "" {
+                                mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
+                            }
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
@@ -125,6 +142,9 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         CcdaToDiagnosticReport ccdaToDiagnosticReport = mapper.ccdaToDiagnosticReport;
                         mapCCDAToFHIRResult = ccdaToDiagnosticReport(organizerElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreDiagnosticReportProfileLaboratoryReporting {
+                            if patientId != "" {
+                                mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
+                            }
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
@@ -133,7 +153,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
         }
     }
     return {
-        'type: "searchset",
+        'type: "collection",
         entry: entries
     };
 }

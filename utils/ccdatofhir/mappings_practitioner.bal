@@ -57,7 +57,11 @@ isolated function ccdaToPractitioner(xml authorElement) returns uscore501:USCore
         if mapCcdaAddressToFhirAddressResult is r4:Address[] {
             practitioner.address = mapCcdaAddressToFhirAddressResult;
         }
-
+        
+        if (practitioner.identifier.length() == 0 && practitioner.name.length() == 0) {
+            log:printDebug("Practitioner has no identifier or name");
+            return ();
+        }
         return practitioner;
     }
     return ();
