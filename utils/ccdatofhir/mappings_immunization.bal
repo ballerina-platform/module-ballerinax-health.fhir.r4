@@ -21,6 +21,7 @@
 import ballerina/log;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
+import ballerina/uuid;
 
 # Map CCDA Immunization Activity to FHIR Immunization.
 #
@@ -28,8 +29,7 @@ import ballerinax/health.fhir.r4.uscore501;
 # + return - FHIR Immunization Resource
 isolated function ccdaToImmunization(xml substanceAdministrationElement) returns uscore501:USCoreImmunizationProfile? {
     if isXMLElementNotNull(substanceAdministrationElement) {
-        uscore501:USCoreImmunizationProfile immunization = {patient: {}, occurrenceDateTime: "", occurrenceString: "", vaccineCode: {}, 
-        status: "not-done",primarySource: false};
+        uscore501:USCoreImmunizationProfile immunization = {primarySource: false, patient: {}, occurrenceDateTime: "", occurrenceString: "", vaccineCode: {}, status: "not-done"};
 
         xml idElement = substanceAdministrationElement/<v3:id|id>;
         xml statusCodeElement = substanceAdministrationElement/<v3:statusCode|statusCode>;
@@ -159,7 +159,8 @@ isolated function ccdaToImmunization(xml substanceAdministrationElement) returns
                 immunization.note = [{text: text}];
             }
         }
-
+        //generate the id for the immunization
+        immunization.id = uuid:createRandomUuid();
         return immunization;
     }
     return ();

@@ -20,6 +20,7 @@
 
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
+import ballerina/uuid;
 
 # Map CCDA Problem Observation to FHIR Condition.
 #
@@ -104,7 +105,8 @@ isolated function ccdaToCondition(xml sectionElement, xml actElement) returns us
                 }]
             };
         }
-
+        //generate id for condition
+        condition.id = uuid:createRandomUuid();
         return condition;
     } else {
         return ();

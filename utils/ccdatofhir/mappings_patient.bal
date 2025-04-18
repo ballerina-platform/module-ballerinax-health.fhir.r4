@@ -21,6 +21,7 @@
 import ballerina/log;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
+import ballerina/uuid;
 
 # Map CCDA Patient Role to FHIR Patient
 #
@@ -151,6 +152,13 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
         if extensions.length() > 0 {
             patient.extension = extensions;
         }
+
+        if (patient.identifier.length() == 0 && patient.name.length() == 0) {
+            log:printDebug("Patient has no identifier or name");
+            return ();
+        }
+        //generate the id
+        patient.id = uuid:createRandomUuid();
 
         return patient;
     }

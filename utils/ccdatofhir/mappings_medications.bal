@@ -20,6 +20,7 @@
 
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
+import ballerina/uuid;
 
 # Map CCDA Medication Activity to FHIR MedicationRequest
 #
@@ -169,7 +170,8 @@ isolated function ccdaToMedication(xml substanceAdministrationElement) returns u
             };
             medication.note = ['annotation];
         }
-
+        //generate the id for the medication
+        medication.id = uuid:createRandomUuid();
         return medication;
     }
     return ();
