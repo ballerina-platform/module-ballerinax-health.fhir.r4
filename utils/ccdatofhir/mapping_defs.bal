@@ -21,7 +21,7 @@ import ballerinax/health.fhir.r4.uscore501;
 # ####################################################################################################
 
 # Mapping function type for C-CDA Allergy Intolerance Activity to USCore Allergy Intolerance FHIR resource.
-public type CcdaToAllergyIntolerance isolated function (xml document) returns uscore501:USCoreAllergyIntolerance?;
+public type CcdaToAllergyIntolerance isolated function (xml document) returns [uscore501:USCoreAllergyIntolerance, uscore501:USCoreProvenance?]?;
 
 # Mapping function type for C-CDA Immunization Activity to USCore Immunization FHIR resource.
 public type CcdaToImmunization isolated function (xml document) returns uscore501:USCoreImmunizationProfile?;

@@ -26,7 +26,7 @@ function testCcdaDocumentToFhirImmunization() returns error? {
     if (transformed is r4:Bundle) {
         json jsonBundle = transformed.toJson();
         json[] entries = <json[]>check jsonBundle.entry;
-        json 'resource = check entries[4].'resource;
+        json 'resource = check entries[5].'resource;
         test:assertEquals('resource.resourceType, "Immunization", "Incorrect resource type from the conversion!");
         test:assertEquals('resource.status, "completed", "Incorrect status from the conversion!");
         json[] immunizationIdentifier = <json[]>check 'resource.identifier;

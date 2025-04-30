@@ -25,7 +25,7 @@ function testCcdaToDiagnosticReport() returns error? {
     if (transformed is r4:Bundle) {
         json jsonBundle = transformed.toJson();
         json[] entries = <json[]>check jsonBundle.entry;
-        json 'resource = check entries[7].'resource;
+        json 'resource = check entries[8].'resource;
         test:assertEquals('resource.resourceType, "DiagnosticReport", "Incorrect resource type from the conversion!");
         test:assertEquals('resource.status, "partial", "Incorrect status from the conversion!");
         json[] codings = <json[]> check 'resource.code.coding;

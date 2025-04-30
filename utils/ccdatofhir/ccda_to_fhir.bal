@@ -91,11 +91,15 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                     CCDA_ALLERGY_CODE => {
                         CcdaToAllergyIntolerance ccdaToAllergyIntolerance = mapper.ccdaToAllergyIntolerance;
                         mapCCDAToFHIRResult = ccdaToAllergyIntolerance(actElement);
-                        if mapCCDAToFHIRResult is uscore501:USCoreAllergyIntolerance {
+                        if mapCCDAToFHIRResult is [uscore501:USCoreAllergyIntolerance, uscore501:USCoreProvenance?] {
+                            [uscore501:USCoreAllergyIntolerance, uscore501:USCoreProvenance?] result = mapCCDAToFHIRResult;
                             if patientId != "" {
-                                mapCCDAToFHIRResult.patient = {reference: "Patient/" + patientId};
+                                result[0].patient = {reference: "Patient/" + patientId};
                             }
-                            entries.push({'resource: mapCCDAToFHIRResult});
+                            entries.push({'resource: result[0]});
+                            if result[1] is uscore501:USCoreProvenance {
+                                entries.push({'resource: result[1]});
+                            }
                         }
                     }
                     CCDA_CONDITION_CODE => {
