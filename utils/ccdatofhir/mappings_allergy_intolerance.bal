@@ -28,7 +28,7 @@ import ballerinax/health.fhir.r4.uscore501;
 #
 # + actElement - xml content of the CCDA Allergy Activity
 # + return - FHIR Allergy Intolerance
-isolated function ccdaToAllergyIntolerance(xml actElement) returns [uscore501:USCoreAllergyIntolerance, uscore501:USCoreProvenance?]? {
+isolated function ccdaToAllergyIntolerance(xml actElement, xml parentDocument) returns [uscore501:USCoreAllergyIntolerance, uscore501:USCoreProvenance?]? {
     uscore501:USCoreAllergyIntolerance allergyIntolerance = {patient: {}, code: {}};
 
     if isXMLElementNotNull(actElement) {
@@ -91,7 +91,7 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns [uscore501:US
         xml playingEntityCodeElement = playingEntityElement/<v3:code|code>;
 
         string|error? playingEntityCodeNullFlavor = playingEntityCodeElement.nullFlavor;
-        r4:CodeableConcept? playingEntityCodeableConcept = mapCcdaCodingToFhirCodeableConcept(playingEntityCodeElement);
+        r4:CodeableConcept? playingEntityCodeableConcept = mapCcdaCodingToFhirCodeableConcept(playingEntityCodeElement, parentDocument);
 
         if (negationInd is string && negationInd == "true") && playingEntityCodeNullFlavor is string {
             if playingEntityCodeableConcept is r4:CodeableConcept {
@@ -123,7 +123,7 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns [uscore501:US
             allergyIntolerance.code = playingEntityCodeableConcept;
         }
 
-        r4:CodeableConcept? clinicalStatus = mapCcdaCodingToFhirCodeableConcept(statusCodeElements);
+        r4:CodeableConcept? clinicalStatus = mapCcdaCodingToFhirCodeableConcept(statusCodeElements, parentDocument);
         if clinicalStatus is r4:CodeableConcept {
             r4:Coding[]? coding = clinicalStatus.coding;
             if coding is r4:Coding[] {
@@ -138,7 +138,7 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns [uscore501:US
         xml observationValueElement = observationElement/<v3:value|value>;
         xml observationIdElement = observationElement/<v3:id|id>;
 
-        r4:CodeableConcept? manifestation = mapCcdaCodingToFhirCodeableConcept(observationValueElement);
+        r4:CodeableConcept? manifestation = mapCcdaCodingToFhirCodeableConcept(observationValueElement, parentDocument);
         if manifestation is r4:CodeableConcept {
             uscore501:USCoreAllergyIntoleranceReaction reaction = {
                 manifestation: [manifestation]

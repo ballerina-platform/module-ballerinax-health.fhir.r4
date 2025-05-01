@@ -26,7 +26,7 @@ import ballerina/uuid;
 #
 # + organizerElement - organizer element of the CCDA Diagnostic Report
 # + return - FHIR Diagnostic Report
-isolated function ccdaToDiagnosticReport(xml organizerElement) returns uscore501:USCoreDiagnosticReportProfileLaboratoryReporting? {
+isolated function ccdaToDiagnosticReport(xml organizerElement, xml parentDocument) returns uscore501:USCoreDiagnosticReportProfileLaboratoryReporting? {
     if isXMLElementNotNull(organizerElement) {
         uscore501:USCoreDiagnosticReportProfileLaboratoryReporting diagnosticReport = {code: {}, subject: {}, category: [], status: "partial"};
 
@@ -49,11 +49,11 @@ isolated function ccdaToDiagnosticReport(xml organizerElement) returns uscore501
 
         diagnosticReport.status = mapCcdatoFhirDiagnosticReportStatus(statusCodeElement);
 
-        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(translationElement);
+        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(translationElement, parentDocument);
         if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
             diagnosticReport.code = mapCcdaCodingtoFhirCodeableConceptResult;
         } else {
-            mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(codeElement);
+            mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(codeElement, parentDocument);
             if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
                 diagnosticReport.code = mapCcdaCodingtoFhirCodeableConceptResult;
             }

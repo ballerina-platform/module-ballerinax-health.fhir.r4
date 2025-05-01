@@ -27,7 +27,7 @@ import ballerina/uuid;
 # + sectionElement - sectionElement for CCDA Problem Observation
 # + actElement - actElement for CCDA Problem Observation
 # + return - FHIR Condition
-isolated function ccdaToCondition(xml sectionElement, xml actElement) returns uscore501:USCoreCondition? {
+isolated function ccdaToCondition(xml sectionElement, xml actElement, xml parentDocument) returns uscore501:USCoreCondition? {
     if isXMLElementNotNull(actElement) {
         uscore501:USCoreCondition condition = {subject: {}, code: {}, category: []};
 
@@ -79,7 +79,7 @@ isolated function ccdaToCondition(xml sectionElement, xml actElement) returns us
             condition.abatementDateTime = mapCCDAHighEffectiveTimetoFHIRDateTimeResult;
         }
 
-        r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(valueElement);
+        r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(valueElement, parentDocument);
         if codeableConcept is r4:CodeableConcept {
             condition.code = codeableConcept;
         }

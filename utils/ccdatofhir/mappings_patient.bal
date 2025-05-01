@@ -27,7 +27,7 @@ import ballerinax/health.fhir.r4.uscore501;
 #
 # + xmlContent - xml content of the CCDA Patient Role
 # + return - FHIR Patient
-isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientProfile? {
+isolated function ccdaToPatient(xml xmlContent, xml parentDocument) returns uscore501:USCorePatientProfile? {
     if isXMLElementNotNull(xmlContent) {
         uscore501:USCorePatientProfile patient = {identifier: [], gender: "unknown", name: []};
 
@@ -86,7 +86,7 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
             patient.birthDate = mapCCDABirthTimetoFHIRBirthDateResult;
         }
 
-        r4:CodeableConcept? mapCCDAMaritalStatusCodetoFHIRMaritalStatusResult = mapCcdaCodingToFhirCodeableConcept(maritalStatusCodeElement);
+        r4:CodeableConcept? mapCCDAMaritalStatusCodetoFHIRMaritalStatusResult = mapCcdaCodingToFhirCodeableConcept(maritalStatusCodeElement, parentDocument);
         if mapCCDAMaritalStatusCodetoFHIRMaritalStatusResult is r4:CodeableConcept {
             patient.maritalStatus = mapCCDAMaritalStatusCodetoFHIRMaritalStatusResult;
         }
@@ -251,7 +251,7 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
             xml guardianAddrElement = guardianElement/<v3:addr|addr>;
 
             r4:HumanName[]?|error guardianName = mapCcdaNameToFhirName(guardianNameElement);
-            r4:CodeableConcept? guardianRelationship = mapCcdaCodingToFhirCodeableConcept(guardianCodeElement);
+            r4:CodeableConcept? guardianRelationship = mapCcdaCodingToFhirCodeableConcept(guardianCodeElement, parentDocument);
             r4:Address[]?|error guardianAddress = mapCcdaAddressToFhirAddress(guardianAddrElement);
 
             if guardianName is r4:HumanName[] && guardianRelationship is r4:CodeableConcept {

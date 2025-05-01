@@ -27,7 +27,7 @@ xmlns "urn:hl7-org:sdtc" as sdtc;
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
 # + return - Mapped USCore Encounter Profile or () if mapping fails
-public isolated function ccdaToEncounter(xml document) returns uscore501:USCoreEncounterProfile? {
+public isolated function ccdaToEncounter(xml document, xml parentDocument) returns uscore501:USCoreEncounterProfile? {
     if !isXMLElementNotNull(document) {
         return ();
     }
@@ -35,16 +35,16 @@ public isolated function ccdaToEncounter(xml document) returns uscore501:USCoreE
     uscore501:USCoreEncounterProfile encounter = {
         resourceType: "Encounter",
         status: mapEncounterStatus(document),
-        'class: mapEncounterClass(document),
-        'type: mapEncounterType(document),
+        'class: mapEncounterClass(document, parentDocument),
+        'type: mapEncounterType(document, parentDocument),
         subject: {
             reference: "Patient/unknown"
         },
         period: mapEncounterPeriod(document),
-        hospitalization: mapHospitalization(document),
-        participant: mapEncounterParticipants(document),
+        hospitalization: mapHospitalization(document, parentDocument),
+        participant: mapEncounterParticipants(document, parentDocument),
         location: mapEncounterLocations(document),
-        reasonCode: mapEncounterReasonCode(document),
+        reasonCode: mapEncounterReasonCode(document, parentDocument),
         diagnosis: mapEncounterDiagnosis(document)
     };
 
@@ -109,7 +109,7 @@ isolated function mapStatusCodeToStatus(string code) returns uscore501:USCoreEnc
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
 # + return - FHIR encounter class
-isolated function mapEncounterClass(xml document) returns r4:Coding {
+isolated function mapEncounterClass(xml document, xml parentDocument) returns r4:Coding {
     xml? code = document/<v3:code|code>;
     if (code !is xml || code.length() == 0) {
         return {
@@ -124,7 +124,7 @@ isolated function mapEncounterClass(xml document) returns r4:Coding {
     }
 
     // Check for V3 ActCode in root or translations
-    r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(code);
+    r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(code, parentDocument);
     if (codeableConcept is r4:CodeableConcept && codeableConcept.coding is r4:Coding[]) {
         r4:Coding[] codings = <r4:Coding[]>codeableConcept.coding;
         foreach r4:Coding coding in codings {
@@ -149,14 +149,14 @@ isolated function mapEncounterClass(xml document) returns r4:Coding {
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
 # + return - FHIR encounter type
-isolated function mapEncounterType(xml document) returns r4:CodeableConcept[] {
+isolated function mapEncounterType(xml document, xml parentDocument) returns r4:CodeableConcept[] {
     xml? code = document/<v3:code|code>;
     if (code !is xml || code.length() == 0) {
         return [];
     }
 
     r4:CodeableConcept[] types = [];
-    r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(code);
+    r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(code, parentDocument);
     if (codeableConcept is r4:CodeableConcept) {
         if codeableConcept.coding is r4:Coding[] {
             r4:Coding[] codings = <r4:Coding[]>codeableConcept.coding;
@@ -192,7 +192,7 @@ isolated function mapEncounterPeriod(xml document) returns r4:Period? {
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
 # + return - FHIR hospitalization
-isolated function mapHospitalization(xml document) returns uscore501:USCoreEncounterProfileHospitalization? {
+isolated function mapHospitalization(xml document, xml parentDocument) returns uscore501:USCoreEncounterProfileHospitalization? {
     uscore501:USCoreEncounterProfileHospitalization hospitalization = {};
 
     // Check both possible locations of dischargeDispositionCode
@@ -202,7 +202,7 @@ isolated function mapHospitalization(xml document) returns uscore501:USCoreEncou
     }
 
     if (dischargeCode is xml && dischargeCode.length() > 0) {
-        r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(dischargeCode);
+        r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(dischargeCode, parentDocument);
         if (codeableConcept is r4:CodeableConcept) {
             hospitalization.dischargeDisposition = codeableConcept;
         }
@@ -218,7 +218,7 @@ isolated function mapHospitalization(xml document) returns uscore501:USCoreEncou
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
 # + return - FHIR encounter participants
-isolated function mapEncounterParticipants(xml document) returns uscore501:USCoreEncounterProfileParticipant[]? {
+isolated function mapEncounterParticipants(xml document, xml parentDocument) returns uscore501:USCoreEncounterProfileParticipant[]? {
     uscore501:USCoreEncounterProfileParticipant[] participants = [];
 
     // Map performers (body)
@@ -227,7 +227,7 @@ isolated function mapEncounterParticipants(xml document) returns uscore501:USCor
     foreach xml performer in performers {
         xml? functionCode = performer/<sdtc:functionCode>;
         if (functionCode is xml) {
-            r4:CodeableConcept? functionCodeConcept = mapCcdaFunctionCodeToFhirFunctionCode(functionCode);
+            r4:CodeableConcept? functionCodeConcept = mapCcdaFunctionCodeToFhirFunctionCode(functionCode, parentDocument);
             if functionCodeConcept is r4:CodeableConcept {
                 uscore501:USCoreEncounterProfileParticipant participant = {
                     'type: [functionCodeConcept],
@@ -297,7 +297,7 @@ isolated function mapEncounterLocations(xml document) returns uscore501:USCoreEn
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
 # + return - FHIR encounter reasonCode
-isolated function mapEncounterReasonCode(xml document) returns r4:CodeableConcept[]? {
+isolated function mapEncounterReasonCode(xml document, xml parentDocument) returns r4:CodeableConcept[]? {
     r4:CodeableConcept[] reasons = [];
 
     xml<xml:Element>[] indications = from xml item in document/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>
@@ -308,7 +308,7 @@ isolated function mapEncounterReasonCode(xml document) returns r4:CodeableConcep
             if typeCode == "RSON" {
                 xml? value = indication/<v3:value|value>;
                 if (value is xml && value.length() > 0) {
-                    r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(value);
+                    r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(value, parentDocument);
                     if (codeableConcept is r4:CodeableConcept) {
                         reasons.push(codeableConcept);
                     }

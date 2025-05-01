@@ -30,7 +30,7 @@ import ballerina/log;
 #
 # + authorElement - CCDA Author Element
 # + return - Return FHIR Practitioner resource
-isolated function ccdaToPractitioner(xml authorElement) returns uscore501:USCorePractitionerProfile? {
+isolated function ccdaToPractitioner(xml authorElement, xml parentDocument) returns uscore501:USCorePractitionerProfile? {
     if isXMLElementNotNull(authorElement) {
         uscore501:USCorePractitionerProfile practitioner = {identifier: [], name: []};
 
@@ -39,7 +39,7 @@ isolated function ccdaToPractitioner(xml authorElement) returns uscore501:USCore
         xml assignedPersonElement = assignedAuthorElement/<v3:assignedPerson|assignedPerson>;
         xml assignedAuthorAddressElement = assignedAuthorElement/<v3:addr|addr>;
 
-        r4:CodeableConcept? qualificationCode = mapCcdaCodingToFhirCodeableConcept(assignedAuthorCodeElement);
+        r4:CodeableConcept? qualificationCode = mapCcdaCodingToFhirCodeableConcept(assignedAuthorCodeElement, parentDocument);
         if qualificationCode is r4:CodeableConcept {
             uscore501:USCorePractitionerProfileQualification qualification = {
                 code: qualificationCode

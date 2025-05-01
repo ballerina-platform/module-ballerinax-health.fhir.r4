@@ -2,7 +2,7 @@ import ballerina/uuid;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
 
-public isolated function ccdaToDocumentReference(xml actElement) returns uscore501:USCoreDocumentReferenceProfile? {
+public isolated function ccdaToDocumentReference(xml actElement, xml parentDocument) returns uscore501:USCoreDocumentReferenceProfile? {
     if !isXMLElementNotNull(actElement) {
         return ();
     }
@@ -34,8 +34,8 @@ public isolated function ccdaToDocumentReference(xml actElement) returns uscore5
     // Map type
     xml codeElement = actElement/<v3:code|code>;
     if (codeElement.length() > 0) {
-        r4:CodeableConcept? 'type = mapCcdaCodingToFhirCodeableConcept(codeElement);
-        if ('type  is r4:CodeableConcept) {
+        r4:CodeableConcept? 'type = mapCcdaCodingToFhirCodeableConcept(codeElement, parentDocument);
+        if ('type is r4:CodeableConcept) {
             documentReference.'type = 'type;
         }
     }
@@ -60,14 +60,29 @@ public isolated function ccdaToDocumentReference(xml actElement) returns uscore5
             if (reference is xml) {
                 string|error? value = reference.value;
                 if (value is string) {
-                    documentReference.content = [
-                        {
-                            attachment: {
-                                contentType: "application/xhtml+xml",
-                                data: value
-                            }
+                    if value.startsWith("#") {
+                        xml? referenceElement = getElementByID(parentDocument, value.substring(1));
+                        if (referenceElement is xml) {
+                            string content = referenceElement.data();
+                            documentReference.content = [
+                                {
+                                    attachment: {
+                                        contentType: "application/xhtml+xml",
+                                        data: content
+                                    }
+                                }
+                            ];
                         }
-                    ];
+                    } else {
+                        documentReference.content = [
+                            {
+                                attachment: {
+                                    contentType: "application/xhtml+xml",
+                                    data: value
+                                }
+                            }
+                        ];
+                    }
                 }
             }
         }
@@ -107,7 +122,7 @@ public isolated function ccdaToDocumentReference(xml actElement) returns uscore5
 
     // Map author time
     xml authorTimeElement = authorElement/<v3:time|time>;
-    if (authorTimeElement is xml && authorTimeElement.length() > 0) {
+    if (authorTimeElement.length() > 0) {
         r4:dateTime? date = mapCcdaDateTimeToFhirDateTime(authorTimeElement);
         if (date is r4:dateTime) {
             documentReference.date = date;
@@ -120,9 +135,9 @@ public isolated function ccdaToDocumentReference(xml actElement) returns uscore5
         foreach xml entryRel in entryRelationshipElement {
             string|error? typeCode = entryRel.typeCode;
             if (typeCode is string && typeCode == "COMP") {
-                xml encounterElement = entryRel/<v3:encounter|encounter>;
+                xml? encounterElement = entryRel/<v3:encounter|encounter>;
                 if (encounterElement is xml) {
-                    xml encounterIdElement = encounterElement/<v3:id|id>;
+                    xml? encounterIdElement = encounterElement/<v3:id|id>;
                     if (encounterIdElement is xml) {
                         r4:Identifier? identifier = mapCcdaIdToFhirIdentifier(encounterIdElement);
                         if (identifier is r4:Identifier) {
@@ -141,9 +156,9 @@ public isolated function ccdaToDocumentReference(xml actElement) returns uscore5
     // Map relatesTo
     xml referenceElement = actElement/<v3:reference|reference>;
     if (referenceElement.length() > 0) {
-        xml externalDocumentElement = referenceElement/<v3:externalDocument|externalDocument>;
+        xml? externalDocumentElement = referenceElement/<v3:externalDocument|externalDocument>;
         if (externalDocumentElement is xml) {
-            xml externalDocIdElement = externalDocumentElement/<v3:id|id>;
+            xml? externalDocIdElement = externalDocumentElement/<v3:id|id>;
             if (externalDocIdElement is xml) {
                 r4:Identifier? identifier = mapCcdaIdToFhirIdentifier(externalDocIdElement);
                 if (identifier is r4:Identifier) {

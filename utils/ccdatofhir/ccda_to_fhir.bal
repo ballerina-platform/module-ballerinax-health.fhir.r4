@@ -56,7 +56,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
             xml xmlContent = childElements.get(0);
             xml patientRoleElement = xmlContent/<v3:patientRole|patientRole>;
             CcdaToPatient ccdaToPatient = mapper.ccdaToPatient;
-            uscore501:USCorePatientProfile? mapCCDAToFHIRPatientResult = ccdaToPatient(patientRoleElement);
+            uscore501:USCorePatientProfile? mapCCDAToFHIRPatientResult = ccdaToPatient(patientRoleElement, xmlDocument);
             if mapCCDAToFHIRPatientResult is uscore501:USCorePatientProfile {
                 patientId = <string>mapCCDAToFHIRPatientResult.id;
                 entries.push({'resource: mapCCDAToFHIRPatientResult});
@@ -65,7 +65,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
 
         xml authorElement = xmlPayload/<v3:author|author>;
         CcdaToPractitioner ccdaToPractitioner = mapper.ccdaToPractitioner;
-        uscore501:USCorePractitionerProfile? mapCCDAToFHIRPractitionerResult = ccdaToPractitioner(authorElement);
+        uscore501:USCorePractitionerProfile? mapCCDAToFHIRPractitionerResult = ccdaToPractitioner(authorElement, xmlDocument);
         if mapCCDAToFHIRPractitionerResult is uscore501:USCorePractitionerProfile {
             entries.push({'resource: mapCCDAToFHIRPractitionerResult});
         }
@@ -95,7 +95,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                 if actCodeVal is string {
                     if actCodeVal == CCDA_DOCUMENT_REFERENCE_CODE {
                         CcdaToDocumentReference ccdaToDocumentReference = mapper.ccdaToDocumentReference;
-                        mapCCDAToFHIRResult = ccdaToDocumentReference(actElement);
+                        mapCCDAToFHIRResult = ccdaToDocumentReference(actElement, xmlDocument);
                         if mapCCDAToFHIRResult is uscore501:USCoreDocumentReferenceProfile {
                             if patientId != "" {
                                 mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
@@ -108,7 +108,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                 match codeVal {
                     CCDA_ALLERGY_CODE => {
                         CcdaToAllergyIntolerance ccdaToAllergyIntolerance = mapper.ccdaToAllergyIntolerance;
-                        mapCCDAToFHIRResult = ccdaToAllergyIntolerance(actElement);
+                        mapCCDAToFHIRResult = ccdaToAllergyIntolerance(actElement, xmlDocument);
                         if mapCCDAToFHIRResult is [uscore501:USCoreAllergyIntolerance, uscore501:USCoreProvenance?] {
                             [uscore501:USCoreAllergyIntolerance, uscore501:USCoreProvenance?] result = mapCCDAToFHIRResult;
                             if patientId != "" {
@@ -122,7 +122,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                     }
                     CCDA_CONDITION_CODE => {
                         CcdaToCondition ccdaToCondition = mapper.ccdaToCondition;
-                        mapCCDAToFHIRResult = ccdaToCondition(sectionElement, actElement);
+                        mapCCDAToFHIRResult = ccdaToCondition(sectionElement, actElement, xmlDocument);
                         if mapCCDAToFHIRResult is uscore501:USCoreCondition {
                             if patientId != "" {
                                 mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
@@ -132,7 +132,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                     }
                     CCDA_IMMUNIZATION_CODE => {
                         CcdaToImmunization ccdaToImmunization = mapper.ccdaToImmunization;
-                        mapCCDAToFHIRResult = ccdaToImmunization(substanceAdministrationElement);
+                        mapCCDAToFHIRResult = ccdaToImmunization(substanceAdministrationElement, xmlDocument);
                         if mapCCDAToFHIRResult is uscore501:USCoreImmunizationProfile {
                             if patientId != "" {
                                 mapCCDAToFHIRResult.patient = {reference: "Patient/" + patientId};
@@ -142,7 +142,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                     }
                     CCDA_MEDICATION_CODE => {
                         CcdaToMedication ccdaToMedication = mapper.ccdaToMedication;
-                        mapCCDAToFHIRResult = ccdaToMedication(substanceAdministrationElement);
+                        mapCCDAToFHIRResult = ccdaToMedication(substanceAdministrationElement, xmlDocument);
                         if mapCCDAToFHIRResult is uscore501:USCoreMedicationRequestProfile {
                             if patientId != "" {
                                 mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
@@ -152,7 +152,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                     }
                     CCDA_PROCEDURE_CODE => {
                         CcdaToProcedure ccdaToProcedure = mapper.ccdaToProcedure;
-                        mapCCDAToFHIRResult = ccdaToProcedure(procedureElement);
+                        mapCCDAToFHIRResult = ccdaToProcedure(procedureElement, xmlDocument);
                         if mapCCDAToFHIRResult is uscore501:USCoreProcedureProfile {
                             if patientId != "" {
                                 mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
@@ -162,7 +162,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                     }
                     CCDA_DIAGNOSTIC_REPORT_CODE => {
                         CcdaToDiagnosticReport ccdaToDiagnosticReport = mapper.ccdaToDiagnosticReport;
-                        mapCCDAToFHIRResult = ccdaToDiagnosticReport(organizerElement);
+                        mapCCDAToFHIRResult = ccdaToDiagnosticReport(organizerElement, xmlDocument);
                         if mapCCDAToFHIRResult is uscore501:USCoreDiagnosticReportProfileLaboratoryReporting {
                             if patientId != "" {
                                 mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
@@ -172,7 +172,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                     }
                     CCDA_ENCOUNTER_CODE => {
                         CcdaToEncounter ccdaToEncounter = mapper.ccdaToEncounter;
-                        mapCCDAToFHIRResult = ccdaToEncounter(encounterElement);
+                        mapCCDAToFHIRResult = ccdaToEncounter(encounterElement, xmlDocument);
                         if mapCCDAToFHIRResult is uscore501:USCoreEncounterProfile {
                             if patientId != "" {
                                 mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};

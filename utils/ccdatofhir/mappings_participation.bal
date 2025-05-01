@@ -183,8 +183,8 @@ public isolated function mapCcdaParticipantTypeToFhirType(string typeCode) retur
 # Maps C-CDA participant function code to FHIR function code
 # + functionCodeElement - The C-CDA function code element
 # + return - The mapped FHIR function code
-public isolated function mapCcdaFunctionCodeToFhirFunctionCode(xml functionCodeElement) returns r4:CodeableConcept? {
-    r4:CodeableConcept? result = mapCcdaCodingToFhirCodeableConcept(functionCodeElement);
+public isolated function mapCcdaFunctionCodeToFhirFunctionCode(xml functionCodeElement, xml parentDocument) returns r4:CodeableConcept? {
+    r4:CodeableConcept? result = mapCcdaCodingToFhirCodeableConcept(functionCodeElement, parentDocument);
     if result is r4:CodeableConcept {
         return result;
     }
