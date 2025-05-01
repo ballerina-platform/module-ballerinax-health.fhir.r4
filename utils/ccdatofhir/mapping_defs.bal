@@ -41,8 +41,14 @@ public type CcdaToProcedure isolated function (xml document) returns uscore501:U
 # Mapping function type for C-CDA Diagnostic Imaging Report to USCore DiagnosticReport FHIR resource.
 public type CcdaToDiagnosticReport isolated function (xml document) returns uscore501:USCoreDiagnosticReportProfileLaboratoryReporting?;
 
+# Mapping function type for C-CDA Encounter Activity to USCore Encounter FHIR resource.
+public type CcdaToEncounter isolated function (xml document) returns uscore501:USCoreEncounterProfile?;
+
 # Mapping function type for C-CDA Author Header to USCore Practitioner FHIR resource.
 public type CcdaToPractitioner isolated function (xml document) returns uscore501:USCorePractitionerProfile?;
+
+# Mapping function type for C-CDA Document Reference Activity to USCore DocumentReference FHIR resource.
+public type CcdaToDocumentReference isolated function (xml document) returns uscore501:USCoreDocumentReferenceProfile?;
 
 # CcdaToFhir Mapper function implementation holder record.
 #
@@ -54,6 +60,7 @@ public type CcdaToPractitioner isolated function (xml document) returns uscore50
 # + ccdaToProcedure - C-CDA Procedure Acitivity to USCore Procedure function.
 # + ccdaToDiagnosticReport - C-CDA Diagnostic Imaging Report to USCore DiagnosticReport function.
 # + ccdaToPractitioner - C-CDA Author Header to USCore Practitioner function
+# + ccdaToEncounter - C-CDA Encounter Activity to USCore Encounter function
 public type CcdaToFhirMapper record {
     CcdaToAllergyIntolerance ccdaToAllergyIntolerance;
     CcdaToImmunization ccdaToImmunization;
@@ -63,6 +70,8 @@ public type CcdaToFhirMapper record {
     CcdaToProcedure ccdaToProcedure;
     CcdaToDiagnosticReport ccdaToDiagnosticReport;
     CcdaToPractitioner ccdaToPractitioner;
+    CcdaToEncounter ccdaToEncounter;
+    CcdaToDocumentReference ccdaToDocumentReference;
 };
 
 // Record initialized with the default mapping functions.
@@ -74,6 +83,8 @@ final readonly & CcdaToFhirMapper defaultMapper = {
     ccdaToCondition,
     ccdaToProcedure,
     ccdaToDiagnosticReport,
-    ccdaToPractitioner
+    ccdaToPractitioner,
+    ccdaToEncounter,
+    ccdaToDocumentReference
 };
 

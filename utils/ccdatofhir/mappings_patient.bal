@@ -40,10 +40,17 @@ isolated function ccdaToPatient(xml xmlContent) returns uscore501:USCorePatientP
         xml maritalStatusCodeElement = patientElement/<v3:maritalStatusCode|maritalStatusCode>;
         xml languageCommunicationElement = patientElement/<v3:languageCommunication|languageCommunication>;
         xml providerOrganizationElement = xmlContent/<v3:providerOrganization|providerOrganization>;
+        
+        uscore501:USCorePatientProfileIdentifier[] identifiers = [];
+        foreach xml idInstance in idElement {
+            uscore501:USCorePatientProfileIdentifier?|error mapCcdaIdToFhirIdentifierResult = mapCcdaIdToFhirIdentifier(idInstance);
+            if mapCcdaIdToFhirIdentifierResult is r4:Identifier {
+                identifiers.push(mapCcdaIdToFhirIdentifierResult);
+            }
+        }
 
-        uscore501:USCorePatientProfileIdentifier?|error mapCcdaIdToFhirIdentifierResult = mapCcdaIdToFhirIdentifier(idElement);
-        if mapCcdaIdToFhirIdentifierResult is r4:Identifier {
-            patient.identifier = [mapCcdaIdToFhirIdentifierResult];
+        if identifiers.length() > 0 {
+            patient.identifier = identifiers;
         }
 
         r4:Address[]?|error mapCcdaAddressToFhirAddressResult = mapCcdaAddressToFhirAddress(addrElement);

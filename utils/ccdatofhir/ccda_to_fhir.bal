@@ -85,8 +85,26 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                 xml substanceAdministrationElement = entryElement/<v3:substanceAdministration|substanceAdministration>;
                 xml procedureElement = entryElement/<v3:procedure|procedure>;
                 xml organizerElement = entryElement/<v3:organizer|organizer>;
+                xml encounterElement = entryElement/<v3:encounter|encounter>;
 
                 anydata mapCCDAToFHIRResult;
+
+                //actElement code
+                xml actCodeElement = actElement/<v3:code|code>;
+                string|error? actCodeVal = actCodeElement.code;
+                if actCodeVal is string {
+                    if actCodeVal == CCDA_DOCUMENT_REFERENCE_CODE {
+                        CcdaToDocumentReference ccdaToDocumentReference = mapper.ccdaToDocumentReference;
+                        mapCCDAToFHIRResult = ccdaToDocumentReference(actElement);
+                        if mapCCDAToFHIRResult is uscore501:USCoreDocumentReferenceProfile {
+                            if patientId != "" {
+                                mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
+                            }
+                            entries.push({'resource: mapCCDAToFHIRResult});
+                        }
+                    }
+                }
+                
                 match codeVal {
                     CCDA_ALLERGY_CODE => {
                         CcdaToAllergyIntolerance ccdaToAllergyIntolerance = mapper.ccdaToAllergyIntolerance;
@@ -146,6 +164,16 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         CcdaToDiagnosticReport ccdaToDiagnosticReport = mapper.ccdaToDiagnosticReport;
                         mapCCDAToFHIRResult = ccdaToDiagnosticReport(organizerElement);
                         if mapCCDAToFHIRResult is uscore501:USCoreDiagnosticReportProfileLaboratoryReporting {
+                            if patientId != "" {
+                                mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
+                            }
+                            entries.push({'resource: mapCCDAToFHIRResult});
+                        }
+                    }
+                    CCDA_ENCOUNTER_CODE => {
+                        CcdaToEncounter ccdaToEncounter = mapper.ccdaToEncounter;
+                        mapCCDAToFHIRResult = ccdaToEncounter(encounterElement);
+                        if mapCCDAToFHIRResult is uscore501:USCoreEncounterProfile {
                             if patientId != "" {
                                 mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
                             }

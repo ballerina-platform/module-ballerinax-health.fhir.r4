@@ -333,10 +333,17 @@ public isolated function mapCcdaNameToFhirName(xml nameElements) returns r4:Huma
 # + return - Return FHIR CodeableConcept
 public isolated function mapCcdaCodingToFhirCodeableConcept(xml codingElement) returns r4:CodeableConcept? {
     r4:Coding[]? mapCcdaCodingtoFhirCodeResult = mapCcdaCodingsToFhirCodings(codingElement);
-    string textVal = codingElement.data().trim();
+    //if reference is not present, get data from originalText
+    xml|error? referenceVal = codingElement/<v3:originalText|originalText>/<v3:reference|reference>;    
+    string|error? textVal = referenceVal is xml ? referenceVal.value:();
     if mapCcdaCodingtoFhirCodeResult is r4:Coding[] {
         return {
             coding: mapCcdaCodingtoFhirCodeResult,
+            text: textVal is string ? textVal:()
+        };
+    }
+    if textVal is string {
+        return {
             text: textVal
         };
     }
