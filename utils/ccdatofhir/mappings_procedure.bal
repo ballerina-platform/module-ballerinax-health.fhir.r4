@@ -26,6 +26,7 @@ import ballerina/uuid;
 # Map CCDA Procedure Activity to FHIR Procedure
 #
 # + procedureElement - CCDA Procedure Activity Element
+# + parentDocument - CCDA Document
 # + return - FHIR Procedure Resource
 isolated function ccdaToProcedure(xml procedureElement, xml parentDocument) returns uscore501:USCoreProcedureProfile? {
     if isXMLElementNotNull(procedureElement) {

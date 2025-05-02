@@ -1,7 +1,28 @@
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
+
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+
+// http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 import ballerina/uuid;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
 
+# Map CCDA DocumentReference to FHIR DocumentReference
+#
+# + actElement - CCDA activity element
+# + parentDocument - CCDA document
+# + return - FHIR DocumentReference
 public isolated function ccdaToDocumentReference(xml actElement, xml parentDocument) returns uscore501:USCoreDocumentReferenceProfile? {
     if !isXMLElementNotNull(actElement) {
         return ();
@@ -89,7 +110,7 @@ public isolated function ccdaToDocumentReference(xml actElement, xml parentDocum
     }
 
     // Map effectiveTime
-    xml effectiveTimeElement = actElement/<v3:effectiveTime|effectiveTime>;
+    xml? effectiveTimeElement = actElement/<v3:effectiveTime|effectiveTime>;
     if (effectiveTimeElement is xml && effectiveTimeElement.length() > 0) {
         r4:Period? period = mapCcdaIntervalToFhirPeriod(effectiveTimeElement);
         if (period is r4:Period) {
@@ -100,13 +121,13 @@ public isolated function ccdaToDocumentReference(xml actElement, xml parentDocum
     }
 
     // Map author
-    xml authorElement = actElement/<v3:author|author>;
+    xml? authorElement = actElement/<v3:author|author>;
     if (authorElement is xml && authorElement.length() > 0) {
         r4:Reference[] authors = [];
         foreach xml author in authorElement {
-            xml assignedAuthorElement = author/<v3:assignedAuthor|assignedAuthor>;
+            xml? assignedAuthorElement = author/<v3:assignedAuthor|assignedAuthor>;
             if (assignedAuthorElement is xml) {
-                xml assignedAuthorIdElement = assignedAuthorElement/<v3:id|id>;
+                xml? assignedAuthorIdElement = assignedAuthorElement/<v3:id|id>;
                 if (assignedAuthorIdElement is xml) {
                     string|error? id = assignedAuthorIdElement.extension;
                     if (id is string) {
@@ -118,14 +139,14 @@ public isolated function ccdaToDocumentReference(xml actElement, xml parentDocum
         if (authors.length() > 0) {
             documentReference.author = authors;
         }
-    }
 
-    // Map author time
-    xml authorTimeElement = authorElement/<v3:time|time>;
-    if (authorTimeElement.length() > 0) {
-        r4:dateTime? date = mapCcdaDateTimeToFhirDateTime(authorTimeElement);
-        if (date is r4:dateTime) {
-            documentReference.date = date;
+        // Map author time
+        xml authorTimeElement = authorElement/<v3:time|time>;
+        if (authorTimeElement.length() > 0) {
+            r4:dateTime? date = mapCcdaDateTimeToFhirDateTime(authorTimeElement);
+            if (date is r4:dateTime) {
+                documentReference.date = date;
+            }
         }
     }
 

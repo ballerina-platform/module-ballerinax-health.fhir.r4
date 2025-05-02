@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerinax/health.fhir.r4.uscore501;
-
+import ballerinax/health.fhir.r4;
 # ####################################################################################################
 # Mapping function definitions for C-CDA to FHIR
 # ####################################################################################################
@@ -42,7 +42,7 @@ public type CcdaToProcedure isolated function (xml document, xml parentDocument)
 public type CcdaToDiagnosticReport isolated function (xml document, xml parentDocument) returns uscore501:USCoreDiagnosticReportProfileLaboratoryReporting?;
 
 # Mapping function type for C-CDA Encounter Activity to USCore Encounter FHIR resource.
-public type CcdaToEncounter isolated function (xml document, xml parentDocument) returns uscore501:USCoreEncounterProfile?;
+public type CcdaToEncounter isolated function (xml document, xml parentDocument) returns r4:Resource[];
 
 # Mapping function type for C-CDA Author Header to USCore Practitioner FHIR resource.
 public type CcdaToPractitioner isolated function (xml document, xml parentDocument) returns uscore501:USCorePractitionerProfile?;
@@ -61,6 +61,7 @@ public type CcdaToDocumentReference isolated function (xml document, xml parentD
 # + ccdaToDiagnosticReport - C-CDA Diagnostic Imaging Report to USCore DiagnosticReport function.
 # + ccdaToPractitioner - C-CDA Author Header to USCore Practitioner function
 # + ccdaToEncounter - C-CDA Encounter Activity to USCore Encounter function
+# + ccdaToDocumentReference - C-CDA Document Reference Activity to USCore DocumentReference function
 public type CcdaToFhirMapper record {
     CcdaToAllergyIntolerance ccdaToAllergyIntolerance;
     CcdaToImmunization ccdaToImmunization;

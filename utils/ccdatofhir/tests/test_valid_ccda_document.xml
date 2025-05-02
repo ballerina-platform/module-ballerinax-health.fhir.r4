@@ -59,7 +59,9 @@
                     <languageCode code="en" />
                     <preferenceInd value="true" />
                 </languageCommunication>
-                <maritalStatusCode code="D" codeSystem="2.16.840.1.113883.4.642.3.29" displayName="Divorced">Divorced 2 years ago</maritalStatusCode>
+                <maritalStatusCode code="D" codeSystem="2.16.840.1.113883.4.642.3.29" displayName="Divorced">
+                <originalText>Divorced 2 years ago</originalText>
+                </maritalStatusCode>
             </patient>
             <providerOrganization>
                 <id extension="3" root="1.3.6.1.4.1.22812.3.2009316.3" />

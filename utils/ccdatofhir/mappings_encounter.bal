@@ -26,12 +26,15 @@ xmlns "urn:hl7-org:sdtc" as sdtc;
 # Maps C-CDA Encounter Activity or EncompassingEncounter to FHIR Encounter resource.
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
+# + parentDocument - C-CDA document XML element
 # + return - Mapped USCore Encounter Profile or () if mapping fails
-public isolated function ccdaToEncounter(xml document, xml parentDocument) returns uscore501:USCoreEncounterProfile? {
+public isolated function ccdaToEncounter(xml document, xml parentDocument) returns r4:Resource[] {
     if !isXMLElementNotNull(document) {
-        return ();
+        return [];
     }
-
+    r4:Resource[] resources = [];
+    [uscore501:USCoreEncounterProfileDiagnosis[], uscore501:USCoreCondition[]] mapEncounterDiagnosisResult = mapEncounterDiagnosis(document, parentDocument);
+    [uscore501:USCoreEncounterProfileParticipant[], uscore501:USCorePractitionerProfile[]] mapEncounterParticipantsResult = mapEncounterParticipants(document, parentDocument);
     uscore501:USCoreEncounterProfile encounter = {
         resourceType: "Encounter",
         status: mapEncounterStatus(document),
@@ -42,11 +45,25 @@ public isolated function ccdaToEncounter(xml document, xml parentDocument) retur
         },
         period: mapEncounterPeriod(document),
         hospitalization: mapHospitalization(document, parentDocument),
-        participant: mapEncounterParticipants(document, parentDocument),
-        location: mapEncounterLocations(document),
+        participant: mapEncounterParticipantsResult[0],
+        location: mapEncounterLocationsForEncounterActivity(document),
         reasonCode: mapEncounterReasonCode(document, parentDocument),
-        diagnosis: mapEncounterDiagnosis(document)
+        diagnosis: mapEncounterDiagnosisResult[0]
     };
+
+    if (mapEncounterDiagnosisResult[1].length() > 0) {
+        uscore501:USCoreCondition[] conditions = mapEncounterDiagnosisResult[1];
+        foreach uscore501:USCoreCondition condition in conditions {
+            resources.push(condition);
+        }
+    }
+
+    if (mapEncounterParticipantsResult[1].length() > 0) {
+        uscore501:USCorePractitionerProfile[] practitioners = mapEncounterParticipantsResult[1];
+        foreach uscore501:USCorePractitionerProfile practitioner in practitioners {
+            resources.push(practitioner);
+        }
+    }
 
     // Map identifier
     xml? id = document/<v3:id|id>;
@@ -55,9 +72,57 @@ public isolated function ccdaToEncounter(xml document, xml parentDocument) retur
         if (identifier is uscore501:USCorePatientProfileIdentifier) {
             encounter.identifier = [identifier];
         }
-    }
 
-    return encounter;
+        // Check for encompassingEncounter in parentDocument with matching ID
+        xml? encompassingEncounter = parentDocument/<v3:componentOf|componentOf>/<v3:encompassingEncounter|encompassingEncounter>;
+        if (encompassingEncounter is xml && encompassingEncounter.length() > 0) {
+            xml? encompassingId = encompassingEncounter/<v3:id|id>;
+            if (encompassingId is xml && encompassingId.length() > 0) {
+                string|error docId = id.toString();
+                string|error encId = encompassingId.toString();
+                if (docId is string && encId is string && docId == encId) {
+                    // Merge additional details from encompassingEncounter
+                    // Update period if not already set
+                    if (encounter.period is ()) {
+                        encounter.period = mapEncounterPeriod(encompassingEncounter);
+                    }
+
+                    // Merge participants
+                    [uscore501:USCoreEncounterProfileParticipant[], uscore501:USCorePractitionerProfile[]] encParticipants = mapEncounterParticipants(encompassingEncounter, parentDocument);
+                    if (encounter.participant is uscore501:USCoreEncounterProfileParticipant[]) {
+                        uscore501:USCoreEncounterProfileParticipant[] existingParticipants = <uscore501:USCoreEncounterProfileParticipant[]>encounter.participant;
+                        encounter.participant = [...existingParticipants, ...encParticipants[0]];
+                    } else {
+                        encounter.participant = encParticipants[0];
+                    }
+
+                    // Merge locations
+                    uscore501:USCoreEncounterProfileLocation[] encLocations = mapEncounterLocationsForEncompassingEncounter(encompassingEncounter);
+                    if (encLocations.length() > 0) {
+                        uscore501:USCoreEncounterProfileLocation[] existingLocations = [];
+                        if (encounter.location is uscore501:USCoreEncounterProfileLocation[]) {
+                            existingLocations = <uscore501:USCoreEncounterProfileLocation[]>encounter.location;
+                        }
+                        encounter.location = [...existingLocations, ...encLocations];
+                    }
+
+                    // Merge reason codes
+                    r4:CodeableConcept[]? encReasons = mapEncounterReasonCode(encompassingEncounter, parentDocument);
+                    if (encReasons is r4:CodeableConcept[]) {
+                        if (encounter.reasonCode is r4:CodeableConcept[]) {
+                            r4:CodeableConcept[] existingReasons = <r4:CodeableConcept[]>encounter.reasonCode;
+                            encounter.reasonCode = [...existingReasons, ...encReasons];
+                        } else {
+                            encounter.reasonCode = encReasons;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    resources.push(encounter);
+
+    return resources;
 }
 
 # Maps C-CDA statusCode or effectiveTime to FHIR encounter status
@@ -108,6 +173,7 @@ isolated function mapStatusCodeToStatus(string code) returns uscore501:USCoreEnc
 # Maps C-CDA code to FHIR encounter class
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
+# + parentDocument - C-CDA document XML element
 # + return - FHIR encounter class
 isolated function mapEncounterClass(xml document, xml parentDocument) returns r4:Coding {
     xml? code = document/<v3:code|code>;
@@ -148,6 +214,7 @@ isolated function mapEncounterClass(xml document, xml parentDocument) returns r4
 # Maps C-CDA code to FHIR encounter type
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
+# + parentDocument - C-CDA document XML element
 # + return - FHIR encounter type
 isolated function mapEncounterType(xml document, xml parentDocument) returns r4:CodeableConcept[] {
     xml? code = document/<v3:code|code>;
@@ -191,6 +258,7 @@ isolated function mapEncounterPeriod(xml document) returns r4:Period? {
 # Maps C-CDA dischargeDispositionCode to FHIR hospitalization
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
+# + parentDocument - C-CDA document XML element
 # + return - FHIR hospitalization
 isolated function mapHospitalization(xml document, xml parentDocument) returns uscore501:USCoreEncounterProfileHospitalization? {
     uscore501:USCoreEncounterProfileHospitalization hospitalization = {};
@@ -217,23 +285,34 @@ isolated function mapHospitalization(xml document, xml parentDocument) returns u
 # Maps C-CDA performer/encounterParticipant to FHIR encounter participants
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
+# + parentDocument - C-CDA document XML element
 # + return - FHIR encounter participants
-isolated function mapEncounterParticipants(xml document, xml parentDocument) returns uscore501:USCoreEncounterProfileParticipant[]? {
+isolated function mapEncounterParticipants(xml document, xml parentDocument) returns [uscore501:USCoreEncounterProfileParticipant[], uscore501:USCorePractitionerProfile[]] {
     uscore501:USCoreEncounterProfileParticipant[] participants = [];
+    uscore501:USCorePractitionerProfile[] practitioners = [];
 
     // Map performers (body)
     xml<xml:Element>[] performers = from xml item in document/<v3:performer|performer>
         select item;
     foreach xml performer in performers {
-        xml? functionCode = performer/<sdtc:functionCode>;
-        if (functionCode is xml) {
-            r4:CodeableConcept? functionCodeConcept = mapCcdaFunctionCodeToFhirFunctionCode(functionCode, parentDocument);
-            if functionCodeConcept is r4:CodeableConcept {
-                uscore501:USCoreEncounterProfileParticipant participant = {
-                    'type: [functionCodeConcept],
-                    individual: mapCcdaParticipantToFhirPractitioner(performer)
-                };
-                participants.push(participant);
+        string|error typeCode = performer.typeCode;
+        if typeCode is string && typeCode == "PRF" {
+            xml? assignedEntity = performer/<v3:assignedEntity>;
+            if assignedEntity is xml {
+                string|error classCode = assignedEntity.classCode;
+                if classCode is string && classCode == "ASSIGNED" {
+                    uscore501:USCorePractitionerProfile? practitioner = ccdaToPractitioner(performer, parentDocument);
+                    if practitioner is uscore501:USCorePractitionerProfile {
+                        uscore501:USCoreEncounterProfileParticipant participant = {
+                            individual: {
+                                'type: "Practitioner",
+                                reference: string `Practitioner/${<string>practitioner.id}`
+                            }
+                        };
+                        participants.push(participant);
+                        practitioners.push(practitioner);
+                    }
+                }
             }
         }
     }
@@ -254,17 +333,14 @@ isolated function mapEncounterParticipants(xml document, xml parentDocument) ret
             }
         }
     }
-    if (participants.length() > 0) {
-        return participants;
-    }
-    return ();
+    return [participants, practitioners];
 }
 
 # Maps C-CDA location to FHIR encounter locations
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
 # + return - FHIR encounter locations
-isolated function mapEncounterLocations(xml document) returns uscore501:USCoreEncounterProfileLocation[] {
+isolated function mapEncounterLocationsForEncounterActivity(xml document) returns uscore501:USCoreEncounterProfileLocation[] {
     uscore501:USCoreEncounterProfileLocation[] locations = [];
 
     // Map locations from body
@@ -293,9 +369,29 @@ isolated function mapEncounterLocations(xml document) returns uscore501:USCoreEn
     return locations;
 }
 
+# Maps C-CDA location to FHIR encounter locations for encompassingEncounter
+#
+# + document - C-CDA EncompassingEncounter XML element
+# + return - FHIR encounter locations
+isolated function mapEncounterLocationsForEncompassingEncounter(xml document) returns uscore501:USCoreEncounterProfileLocation[] {
+    uscore501:USCoreEncounterProfileLocation[] locations = [];
+
+    // Map locations from body
+    xml<xml:Element>[] bodyLocations = from xml item in document/<v3:location|location>
+        select item;
+    foreach xml location in bodyLocations {
+        locations.push({
+            location: mapCcdaParticipantToFhirLocation(location)
+        });
+    }
+
+    return locations;
+}
+
 # Maps C-CDA indication to FHIR encounter reasonCode
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
+# + parentDocument - C-CDA document XML element
 # + return - FHIR encounter reasonCode
 isolated function mapEncounterReasonCode(xml document, xml parentDocument) returns r4:CodeableConcept[]? {
     r4:CodeableConcept[] reasons = [];
@@ -325,32 +421,44 @@ isolated function mapEncounterReasonCode(xml document, xml parentDocument) retur
 # Maps C-CDA encounter diagnosis to FHIR encounter diagnosis
 #
 # + document - C-CDA Encounter Activity or EncompassingEncounter XML element
+# + parentDocument - C-CDA document XML element
 # + return - FHIR encounter diagnosis
-isolated function mapEncounterDiagnosis(xml document) returns uscore501:USCoreEncounterProfileDiagnosis[]? {
+isolated function mapEncounterDiagnosis(xml document, xml parentDocument) returns [uscore501:USCoreEncounterProfileDiagnosis[], uscore501:USCoreCondition[]] {
     uscore501:USCoreEncounterProfileDiagnosis[] diagnoses = [];
+    uscore501:USCoreCondition[] conditions = [];
 
     xml<xml:Element>[] diagnosisActs = from xml item in document/<v3:entryRelationship|entryRelationship>/<v3:act|act>
         select item;
     foreach xml diagnosisAct in diagnosisActs {
-        string|error code = diagnosisAct.code;
-        if code is string {
-            if code == "29308-4" {
-                xml? observation = diagnosisAct/<v3:observation|observation>;
-                if (observation is xml && observation.length() > 0) {
-                    string|error id = observation.id;
-                    if id is string {
-                        diagnoses.push({
-                            condition: {
-                                reference: id
+        xml? xmlResult = diagnosisAct/<v3:code|code>;
+        if xmlResult is xml && xmlResult.length() > 0 {
+            string|error code = xmlResult.code;
+            if code is string {
+                if code == "29308-4" {
+                    xml? observation = diagnosisAct/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>;
+                    if (observation is xml && observation.length() > 0) {
+                        xml? idElement = observation/<v3:id|id>;
+                        if idElement is xml && idElement.length() > 0 {
+                            string|error id = idElement.extension;
+                            if id is string {
+                                diagnoses.push({
+                                    condition: {
+                                        reference: id
+                                    }
+                                });
+                                xml sectionElement = xml `<section>
+                                    <code code="46240-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+                                </section>`;
+                                uscore501:USCoreCondition? condition = ccdaToCondition(sectionElement, diagnosisAct, parentDocument);
+                                if condition is uscore501:USCoreCondition {
+                                    conditions.push(condition);
+                                }
                             }
-                        });
+                        }
                     }
                 }
             }
         }
     }
-    if (diagnoses.length() > 0) {
-        return diagnoses;
-    }
-    return ();
+    return [diagnoses, conditions];
 }

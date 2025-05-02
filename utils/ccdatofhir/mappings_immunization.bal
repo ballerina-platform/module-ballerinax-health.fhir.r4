@@ -26,6 +26,7 @@ import ballerina/uuid;
 # Map CCDA Immunization Activity to FHIR Immunization.
 #
 # + substanceAdministrationElement - CCDA Immunization Activity Element
+# + parentDocument - CCDA Document
 # + return - FHIR Immunization Resource
 isolated function ccdaToImmunization(xml substanceAdministrationElement, xml parentDocument) returns uscore501:USCoreImmunizationProfile? {
     if isXMLElementNotNull(substanceAdministrationElement) {

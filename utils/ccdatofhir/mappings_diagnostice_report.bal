@@ -25,6 +25,7 @@ import ballerina/uuid;
 # Map CCDA Diagnostic Report to FHIR Diagnostic Report.
 #
 # + organizerElement - organizer element of the CCDA Diagnostic Report
+# + parentDocument - original CCDA document
 # + return - FHIR Diagnostic Report
 isolated function ccdaToDiagnosticReport(xml organizerElement, xml parentDocument) returns uscore501:USCoreDiagnosticReportProfileLaboratoryReporting? {
     if isXMLElementNotNull(organizerElement) {

@@ -25,19 +25,24 @@
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
 import ballerina/log;
+import ballerina/uuid;
 
 # Map CCDA Practitioner to FHIR Practitioner.
 #
 # + authorElement - CCDA Author Element
+# + parentDocument - CCDA Document
 # + return - Return FHIR Practitioner resource
 isolated function ccdaToPractitioner(xml authorElement, xml parentDocument) returns uscore501:USCorePractitionerProfile? {
     if isXMLElementNotNull(authorElement) {
         uscore501:USCorePractitionerProfile practitioner = {identifier: [], name: []};
 
-        xml assignedAuthorElement = authorElement/<v3:assignedAuthor|assignedAuthor>;
-        xml assignedAuthorCodeElement = assignedAuthorElement/<v3:code|code>;
-        xml assignedPersonElement = assignedAuthorElement/<v3:assignedPerson|assignedPerson>;
-        xml assignedAuthorAddressElement = assignedAuthorElement/<v3:addr|addr>;
+        xml assignedElement = authorElement/<v3:assignedAuthor|assignedAuthor>;
+        if !isXMLElementNotNull(assignedElement) {
+            assignedElement = authorElement/<v3:assignedEntity|assignedEntity>;
+        }
+        xml assignedAuthorCodeElement = assignedElement/<v3:code|code>;
+        xml assignedPersonElement = assignedElement/<v3:assignedPerson|assignedPerson>;
+        xml assignedAuthorAddressElement = assignedElement/<v3:addr|addr>;
 
         r4:CodeableConcept? qualificationCode = mapCcdaCodingToFhirCodeableConcept(assignedAuthorCodeElement, parentDocument);
         if qualificationCode is r4:CodeableConcept {
@@ -62,6 +67,7 @@ isolated function ccdaToPractitioner(xml authorElement, xml parentDocument) retu
             log:printDebug("Practitioner has no identifier or name");
             return ();
         }
+        practitioner.id = uuid:createRandomUuid();
         return practitioner;
     }
     return ();

@@ -330,6 +330,7 @@ public isolated function mapCcdaNameToFhirName(xml nameElements) returns r4:Huma
 # Map C-CDA code to FHIR CodeableConcept.
 #
 # + codingElement - C-CDA code element
+# + parentDocument - original C-CDA document
 # + return - Return FHIR CodeableConcept
 public isolated function mapCcdaCodingToFhirCodeableConcept(xml codingElement, xml parentDocument) returns r4:CodeableConcept? {
     r4:Coding[]? mapCcdaCodingtoFhirCodeResult = mapCcdaCodingsToFhirCodings(codingElement);
@@ -355,7 +356,7 @@ public isolated function mapCcdaCodingToFhirCodeableConcept(xml codingElement, x
             text: textVal is string ? textVal:()
         };
     }
-    if textVal is string {
+    if textVal is string && textVal != "" {
         return {
             text: textVal
         };

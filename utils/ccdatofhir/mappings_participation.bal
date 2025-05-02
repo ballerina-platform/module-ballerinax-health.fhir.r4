@@ -182,6 +182,7 @@ public isolated function mapCcdaParticipantTypeToFhirType(string typeCode) retur
 
 # Maps C-CDA participant function code to FHIR function code
 # + functionCodeElement - The C-CDA function code element
+# + parentDocument - The parent document of the C-CDA
 # + return - The mapped FHIR function code
 public isolated function mapCcdaFunctionCodeToFhirFunctionCode(xml functionCodeElement, xml parentDocument) returns r4:CodeableConcept? {
     r4:CodeableConcept? result = mapCcdaCodingToFhirCodeableConcept(functionCodeElement, parentDocument);
@@ -211,6 +212,69 @@ public isolated function mapCcdaParticipantTimeToFhirPeriod(xml timeElement) ret
     }
     if period.'start is r4:dateTime || period.end is r4:dateTime {
         return period;
+    }
+    return ();
+}
+
+# Maps C-CDA mode code to FHIR mode code
+# + modeCodeElement - The C-CDA mode code element
+# + parentDocument - The parent document of the C-CDA
+# + return - The mapped FHIR mode code
+public isolated function mapCcdaModeCodeToFhirModeCode(xml modeCodeElement, xml parentDocument) returns r4:CodeableConcept? {
+    r4:CodeableConcept? result = mapCcdaCodingToFhirCodeableConcept(modeCodeElement, parentDocument);
+    if result is r4:CodeableConcept {
+        return result;
+    }
+    return ();
+}
+
+# Maps C-CDA awareness code to FHIR awareness code
+# + awarenessCodeElement - The C-CDA awareness code element
+# + parentDocument - The parent document of the C-CDA
+# + return - The mapped FHIR awareness code
+public isolated function mapCcdaAwarenessCodeToFhirAwarenessCode(xml awarenessCodeElement, xml parentDocument) returns r4:CodeableConcept? {
+    r4:CodeableConcept? result = mapCcdaCodingToFhirCodeableConcept(awarenessCodeElement, parentDocument);
+    if result is r4:CodeableConcept {
+        return result;
+    }
+    return ();
+}
+
+# Maps C-CDA patient relationship to FHIR relationship
+# + relationshipElement - The C-CDA patient relationship element
+# + parentDocument - The parent document of the C-CDA
+# + return - The mapped FHIR relationship
+public isolated function mapCcdaPatientRelationshipToFhirRelationship(xml relationshipElement, xml parentDocument) returns r4:CodeableConcept? {
+    r4:CodeableConcept? result = mapCcdaCodingToFhirCodeableConcept(relationshipElement, parentDocument);
+    if result is r4:CodeableConcept {
+        return result;
+    }
+    return ();
+}
+
+# Maps C-CDA organization part-of to FHIR organization part-of
+# + partOfElement - The C-CDA organization part-of element
+# + return - The mapped FHIR organization part-of reference
+public isolated function mapCcdaOrganizationPartOfToFhirPartOf(xml partOfElement) returns r4:Reference? {
+    xml idElement = partOfElement/<v3:id|id>;
+    string|error? id = idElement.root;
+    if id is string {
+        return {
+            'type: "Organization",
+            reference: string `Organization/${id}`
+        };
+    }
+    return ();
+}
+
+# Maps C-CDA standard industry class code to FHIR organization type
+# + standardIndustryClassCodeElement - The C-CDA standard industry class code element
+# + parentDocument - The parent document of the C-CDA
+# + return - The mapped FHIR organization type
+public isolated function mapCcdaStandardIndustryClassCodeToFhirType(xml standardIndustryClassCodeElement, xml parentDocument) returns r4:CodeableConcept? {
+    r4:CodeableConcept? result = mapCcdaCodingToFhirCodeableConcept(standardIndustryClassCodeElement, parentDocument);
+    if result is r4:CodeableConcept {
+        return result;
     }
     return ();
 } 

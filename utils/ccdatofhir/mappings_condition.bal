@@ -26,6 +26,7 @@ import ballerina/uuid;
 #
 # + sectionElement - sectionElement for CCDA Problem Observation
 # + actElement - actElement for CCDA Problem Observation
+# + parentDocument - original CCDA Document
 # + return - FHIR Condition
 isolated function ccdaToCondition(xml sectionElement, xml actElement, xml parentDocument) returns uscore501:USCoreCondition? {
     if isXMLElementNotNull(actElement) {
@@ -41,6 +42,7 @@ isolated function ccdaToCondition(xml sectionElement, xml actElement, xml parent
         xml observationValueElement = observationElement/<v3:value|value>;
         string|error? negationIndVal = observationElement.negationInd;
 
+        // Map identifiers
         int index = 0;
         foreach xml idElem in idElement {
             r4:Identifier? mapCcdaIdToFhirIdentifierResult = mapCcdaIdToFhirIdentifier(idElem);
@@ -50,25 +52,29 @@ isolated function ccdaToCondition(xml sectionElement, xml actElement, xml parent
             }
         }
 
+        // Map category based on section code
         string|error? sectionCodeVal = sectionCodeElement.code;
-
         r4:CodeableConcept[] category = [];
         match sectionCodeVal {
             "11450-4" => {
-                category = [{coding: [{code: "problem-list-item"}]}];
+                category = [{coding: [{code: "problem-list-item", system: "http://terminology.hl7.org/CodeSystem/condition-category"}]}];
             }
             "46240-8" => {
-                category = [{coding: [{code: "encounter-diagnosis"}]}];
+                category = [{coding: [{code: "encounter-diagnosis", system: "http://terminology.hl7.org/CodeSystem/condition-category"}]}];
             }
             "75310-3" => {
-                category = [{coding: [{code: "health-concern"}]}];
+                category = [{coding: [{code: "health-concern", system: "http://terminology.hl7.org/CodeSystem/condition-category"}]}];
+            }
+            "86744-0" => {
+                category = [{coding: [{code: "problem-list-item", system: "http://terminology.hl7.org/CodeSystem/condition-category"}]}];
             }
             _ => {
-                category = [{coding: [{code: ""}]}];
+                category = [{coding: [{code: "problem-list-item", system: "http://terminology.hl7.org/CodeSystem/condition-category"}]}];
             }
         }
         condition.category = category;
 
+        // Map onset and abatement times
         r4:dateTime? mapCCDALowEffectiveTimetoFHIRDateTimeResult = mapCcdaDateTimeToFhirDateTime(effectiveTimeLowElement);
         if mapCCDALowEffectiveTimetoFHIRDateTimeResult is r4:dateTime {
             condition.onsetDateTime = mapCCDALowEffectiveTimetoFHIRDateTimeResult;
@@ -79,11 +85,13 @@ isolated function ccdaToCondition(xml sectionElement, xml actElement, xml parent
             condition.abatementDateTime = mapCCDAHighEffectiveTimetoFHIRDateTimeResult;
         }
 
+        // Map condition code
         r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(valueElement, parentDocument);
         if codeableConcept is r4:CodeableConcept {
             condition.code = codeableConcept;
         }
 
+        // Map author/provenance
         xml assignedAuthorElement = authorElement/<v3:assignedAuthor|assignedAuthor>;
         xml assignedAuthorIdElement = assignedAuthorElement/<v3:id|id>;
 
@@ -92,20 +100,73 @@ isolated function ccdaToCondition(xml sectionElement, xml actElement, xml parent
             condition.recorder = {reference: string `Provenance/${assignedAuthorIdVal}`};
         }
 
+        // Map clinical status
         r4:code? mapCcdatoFhirProblemStatusResult = mapCcdatoFhirProblemStatus(observationValueElement);
         if mapCcdatoFhirProblemStatusResult is r4:code {
-            r4:CodeableConcept observationCodeableConcept = {coding: [{code: mapCcdatoFhirProblemStatusResult}]};
+            r4:CodeableConcept observationCodeableConcept = {
+                coding: [{
+                    code: mapCcdatoFhirProblemStatusResult,
+                    system: "http://terminology.hl7.org/CodeSystem/condition-clinical"
+                }]
+            };
             condition.clinicalStatus = observationCodeableConcept;
         }
 
+        // Handle negation
         if negationIndVal is string && negationIndVal.trim() == "true" {
             condition.verificationStatus = {
                 coding: [{
-                    code: "refuted"
+                    code: "refuted",
+                    system: "http://terminology.hl7.org/CodeSystem/condition-ver-status"
                 }]
             };
         }
-        //generate id for condition
+
+        // Map evidence from Entry Reference and Assessment Scale Observation
+        r4:Reference[] evidenceDetails = [];
+        xml<xml:Element>[] entryReferences = from xml item in observationElement/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>
+            where item.typecode == "SPRT"
+            select item;
+        
+        foreach xml entryRef in entryReferences {
+            string|error? id = entryRef.id;
+            if id is string {
+                evidenceDetails.push({reference: string `Observation/${id}`});
+            }
+        }
+
+        xml<xml:Element>[] assessmentScales = from xml item in observationElement/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>
+            where item.typecode == "COMP"
+            select item;
+        
+        foreach xml assessment in assessmentScales {
+            string|error? id = assessment.id;
+            if id is string {
+                evidenceDetails.push({reference: string `Observation/${id}`});
+            }
+        }
+
+        if evidenceDetails.length() > 0 {
+            condition.evidence = [{detail: evidenceDetails}];
+        }
+
+        // Map date of diagnosis
+        xml<xml:Element>[] diagnosisDates = from xml item in observationElement/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>
+            where item.typecode == "DIAG"
+            select item;
+        
+        foreach xml diagnosisDate in diagnosisDates {
+            xml? effectiveTime = diagnosisDate/<v3:effectiveTime|effectiveTime>;
+            if effectiveTime is xml {
+                r4:dateTime? recordedDate = mapCcdaDateTimeToFhirDateTime(effectiveTime);
+                if recordedDate is r4:dateTime {
+                    condition.recordedDate = recordedDate;
+                    break;
+                }
+            }
+        }
+
+        // Generate UUID for condition
         condition.id = uuid:createRandomUuid();
         return condition;
     } else {

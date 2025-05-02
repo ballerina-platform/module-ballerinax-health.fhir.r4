@@ -27,6 +27,7 @@ import ballerinax/health.fhir.r4.uscore501;
 # Map CCDA Allergy to FHIR AllergyIntolerance.
 #
 # + actElement - xml content of the CCDA Allergy Activity
+# + parentDocument - original CCDA document
 # + return - FHIR Allergy Intolerance
 isolated function ccdaToAllergyIntolerance(xml actElement, xml parentDocument) returns [uscore501:USCoreAllergyIntolerance, uscore501:USCoreProvenance?]? {
     uscore501:USCoreAllergyIntolerance allergyIntolerance = {patient: {}, code: {}};

@@ -41,6 +41,11 @@ isolated function logAndThrowError(error err) returns error {
     return err;
 }
 
+# Retrieves an XML element by its ID attribute.
+#
+# + xmlElement - the XML element to search within
+# + id - the ID of the element to find
+# + return - the XML element with the specified ID, or null if not found
 public isolated function getElementByID(xml xmlElement, string id) returns xml? {
     // First check immediate children
     xml filter = xmlElement.filter(x => x is xml:Element && x.getAttributes().hasKey("ID") && x.getAttributes().get("ID") == id);

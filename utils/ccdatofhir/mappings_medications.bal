@@ -18,18 +18,26 @@
 // Source C-CDA to FHIR - Resource Mappings
 // --------------------------------------------------------------------------------------------#
 
+import ballerina/uuid;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
-import ballerina/uuid;
 
 # Map CCDA Medication Activity to FHIR MedicationRequest
 #
 # + substanceAdministrationElement - CCDA Medication Activity Element
+# + parentDocument - CCDA Document
 # + return - FHIR MedicationRequest
 isolated function ccdaToMedication(xml substanceAdministrationElement, xml parentDocument) returns uscore501:USCoreMedicationRequestProfile? {
     if isXMLElementNotNull(substanceAdministrationElement) {
-        uscore501:USCoreMedicationRequestProfile medication = {medicationReference: {}, subject: {}, medicationCodeableConcept: {}, 
-        intent: "option", status: "unknown", requester: {}, authoredOn: ""};
+        uscore501:USCoreMedicationRequestProfile medication = {
+            medicationReference: {},
+            subject: {},
+            medicationCodeableConcept: {},
+            intent: "option",
+            status: "unknown",
+            requester: {},
+            authoredOn: ""
+        };
 
         string|error? negationId = substanceAdministrationElement.negationInd;
         xml idElement = substanceAdministrationElement/<v3:id|id>;
@@ -159,7 +167,20 @@ isolated function ccdaToMedication(xml substanceAdministrationElement, xml paren
 
         string|error? codeCode = codeElement.code;
         if codeCode == "76662-6" {
-            dosageInstruction.patientInstruction = substanceAdministrationTextElement.data();
+            // First try to get text from reference
+            xml? referenceVal = substanceAdministrationTextElement/<v3:reference|reference>;
+            string|error? textVal = referenceVal is xml ? referenceVal.value : ();
+
+            // If reference is not present, try to get data from originalText directly
+            if textVal is () || textVal is error {
+                dosageInstruction.patientInstruction = substanceAdministrationTextElement.data();
+            } else {
+                if textVal.startsWith("#") {
+                    xml? referenceElement = getElementByID(parentDocument, textVal.substring(1));
+                    textVal = referenceElement is xml ? referenceElement.data() : ();
+                    dosageInstruction.patientInstruction = textVal is string ? textVal : ();
+                }
+            }
         }
         medication.dosageInstruction = [dosageInstruction];
 

@@ -140,7 +140,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
                     }
-                    CCDA_MEDICATION_CODE => {
+                    CCDA_MEDICATION_CODE|CCDA_PRESCRIBED_MEDICATION_CODE => {
                         CcdaToMedication ccdaToMedication = mapper.ccdaToMedication;
                         mapCCDAToFHIRResult = ccdaToMedication(substanceAdministrationElement, xmlDocument);
                         if mapCCDAToFHIRResult is uscore501:USCoreMedicationRequestProfile {
@@ -173,12 +173,15 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                     CCDA_ENCOUNTER_CODE => {
                         CcdaToEncounter ccdaToEncounter = mapper.ccdaToEncounter;
                         mapCCDAToFHIRResult = ccdaToEncounter(encounterElement, xmlDocument);
-                        if mapCCDAToFHIRResult is uscore501:USCoreEncounterProfile {
-                            if patientId != "" {
-                                mapCCDAToFHIRResult.subject = {reference: "Patient/" + patientId};
+                        if mapCCDAToFHIRResult is r4:Resource[] {
+                            foreach r4:Resource 'resource in mapCCDAToFHIRResult {
+                                if patientId != "" && 'resource is uscore501:USCoreEncounterProfile {
+                                    'resource.subject = {reference: "Patient/" + patientId};
+                                }
+                                entries.push({'resource: 'resource});
                             }
-                            entries.push({'resource: mapCCDAToFHIRResult});
                         }
+
                     }
                 }
             }

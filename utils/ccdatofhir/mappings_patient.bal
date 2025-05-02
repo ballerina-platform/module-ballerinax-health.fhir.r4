@@ -26,6 +26,7 @@ import ballerinax/health.fhir.r4.uscore501;
 # Map CCDA Patient Role to FHIR Patient
 #
 # + xmlContent - xml content of the CCDA Patient Role
+# + parentDocument - parent document of the CCDA
 # + return - FHIR Patient
 isolated function ccdaToPatient(xml xmlContent, xml parentDocument) returns uscore501:USCorePatientProfile? {
     if isXMLElementNotNull(xmlContent) {
