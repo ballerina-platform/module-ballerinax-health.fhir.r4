@@ -26,8 +26,9 @@ import ballerina/uuid;
 # Map CCDA Procedure Activity to FHIR Procedure
 #
 # + procedureElement - CCDA Procedure Activity Element
+# + parentDocument - CCDA Document
 # + return - FHIR Procedure Resource
-isolated function ccdaToProcedure(xml procedureElement) returns uscore501:USCoreProcedureProfile? {
+isolated function ccdaToProcedure(xml procedureElement, xml parentDocument) returns uscore501:USCoreProcedureProfile? {
     if isXMLElementNotNull(procedureElement) {
         uscore501:USCoreProcedureProfile procedure = {subject: {}, status: "unknown",code: {}, performedDateTime: "", performedPeriod: {}};
 
@@ -52,7 +53,7 @@ isolated function ccdaToProcedure(xml procedureElement) returns uscore501:USCore
             }
         }
 
-        r4:CodeableConcept? mapCcdaCodeCodingtoFhirCodeCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(codeElement);
+        r4:CodeableConcept? mapCcdaCodeCodingtoFhirCodeCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(codeElement, parentDocument);
         if mapCcdaCodeCodingtoFhirCodeCodeableConceptResult is r4:CodeableConcept {
             procedure.code = mapCcdaCodeCodingtoFhirCodeCodeableConceptResult;
         }
@@ -72,7 +73,7 @@ isolated function ccdaToProcedure(xml procedureElement) returns uscore501:USCore
         r4:dateTime? mapCCDAEffectiveHighTimetoFHIRDateTimeResult = mapCcdaDateTimeToFhirDateTime(effectiveTimeHighElement);
         procedure.performedPeriod.end = mapCCDAEffectiveHighTimetoFHIRDateTimeResult;
 
-        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(targetSiteCodeElement);
+        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(targetSiteCodeElement, parentDocument);
         if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
             procedure.bodySite = [mapCcdaCodingtoFhirCodeableConceptResult];
         }
@@ -122,7 +123,7 @@ isolated function ccdaToProcedure(xml procedureElement) returns uscore501:USCore
             xml obervationElement = entryRelationshipElement/<v3:observation|observation>;
             xml obervationCodeElement = obervationElement/<v3:code|code>;
 
-            r4:CodeableConcept? observationCode = mapCcdaCodingToFhirCodeableConcept(obervationCodeElement);
+            r4:CodeableConcept? observationCode = mapCcdaCodingToFhirCodeableConcept(obervationCodeElement, parentDocument);
             if observationCode is r4:CodeableConcept {
                 observationCodes.push(observationCode);
             }
