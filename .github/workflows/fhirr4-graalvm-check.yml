@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  BALLERINA_VERSION: 2201.8.0
+  BALLERINA_VERSION: 2201.12.3
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
         with:
           version: 'latest'
           distribution: 'graalvm-community'
-          java-version: '17'
+          java-version: '21'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -36,7 +36,7 @@ jobs:
       - name: Setup Java and Maven
         uses: actions/setup-java@v2
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Create settings.xml
