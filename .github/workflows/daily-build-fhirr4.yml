@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  BALLERINA_VERSION: 2201.8.6
+  BALLERINA_VERSION: 2201.12.3
 
 jobs:
   build:
