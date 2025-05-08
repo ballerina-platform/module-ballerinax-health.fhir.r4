@@ -78,24 +78,47 @@ public isolated function findConceptsInValueSetFromCodeValue(r4:code|r4:Coding|r
 isolated function findConceptInCodeSystem(r4:CodeSystem codeSystem, r4:code code) returns CodeConceptDetails|r4:FHIRError {
     r4:CodeSystemConcept[]? concepts = codeSystem.concept;
     r4:uri? url = codeSystem.url;
+
     if concepts != () && url != () {
-        foreach r4:CodeSystemConcept concept in concepts {
-            if concept.code == code {
-                CodeConceptDetails codeConcept = {
-                    url: url,
-                    concept: concept
-                };
-                return codeConcept;
+        CodeConceptDetails? result = findConceptRecursively(concepts, code, url);
+        if result != () {
+            return result;
+        }
+    }
+
+    return r4:createFHIRError(
+        string `Code: ${code.toString()} was not found in the CodeSystem: ${codeSystem.url.toString()}`,
+        r4:ERROR,
+        r4:PROCESSING_NOT_FOUND,
+        errorType = r4:PROCESSING_ERROR,
+        httpStatusCode = http:STATUS_NOT_FOUND
+    );
+}
+
+# Recursive function to search for a concept in nested CodeSystemConcept arrays.
+# This function traverses through the provided `concepts` array and its nested arrays
+# to find a concept that matches the given `code`. If a match is found, it returns
+# the `CodeConceptDetails` containing the concept and its associated `url`.
+# + concepts - The array of `CodeSystemConcept` to search within.
+# + code - The code to search for in the `CodeSystemConcept` array.
+# + url - The URL of the CodeSystem associated with the concepts.
+# + return - Returns `CodeConceptDetails` if a matching concept is found, otherwise `()` (nil).
+isolated function findConceptRecursively(r4:CodeSystemConcept[] concepts, r4:code code, r4:uri url) returns CodeConceptDetails? {
+    foreach r4:CodeSystemConcept concept in concepts {
+        if concept.code == code {
+            return {
+                url: url,
+                concept: concept
+            };
+        }
+        if concept.concept != () {
+            CodeConceptDetails? nestedResult = findConceptRecursively(concept.concept ?: [], code, url);
+            if nestedResult != () {
+                return nestedResult;
             }
         }
     }
-    return r4:createFHIRError(
-                            string `Code: ${code.toString()} was not found in the CodeSystem: ${codeSystem.url.toString()}`,
-                            r4:ERROR,
-                            r4:PROCESSING_NOT_FOUND,
-                            errorType = r4:PROCESSING_ERROR,
-                            httpStatusCode = http:STATUS_NOT_FOUND
-                        );
+    return ();
 }
 
 # Function to find concept in a ValueSet by passing code data type parameter.
