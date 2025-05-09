@@ -101,6 +101,18 @@ public isolated function validate(anydata data) returns r4:FHIRValidationError? 
             return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, validationResult.message(),
                     errorType = r4:VALIDATION_ERROR, cause = validationResult, parsedErrors = errors, httpStatusCode = http:STATUS_BAD_REQUEST);
         }
+
+        // terminology validation
+        string[]|error? validationErrors = validateTerminologies(validationResult);
+
+        if validationErrors is string[] {    
+            return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed, due to terminology validation failed", r4:ERROR, r4:INVALID, "Terminology validation failed", 
+                errorType = r4:VALIDATION_ERROR, parsedErrors = validationErrors, httpStatusCode = http:STATUS_BAD_REQUEST);
+        } else if validationErrors is error {
+            log:printDebug("Error during validation: " + validationErrors.message());
+            return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, "Terminology validation failed", 
+                errorType = r4:VALIDATION_ERROR, cause = validationErrors, httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
     } else {
         return <r4:FHIRValidationError>r4:createFHIRError("FHIR resource validation failed", r4:ERROR, r4:INVALID,
                 "Invalid FHIR resource type", errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
