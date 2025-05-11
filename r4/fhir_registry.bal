@@ -40,6 +40,16 @@ public isolated class FHIRRegistry {
             url: "http://hl7.org/fhir/StructureDefinition/ValueSet",
             resourceType: "ValueSet",
             modelType: ValueSet
+        },
+        "http://hl7.org/fhir/StructureDefinition/shareablecodesystem": {
+            url: "http://hl7.org/fhir/StructureDefinition/shareablecodesystem",
+            resourceType: "CodeSystem",
+            modelType: CodeSystem
+        },
+        "http://hl7.org/fhir/StructureDefinition/shareablevalueset": {
+            url: "http://hl7.org/fhir/StructureDefinition/shareablevalueset",
+            resourceType: "ValueSet",
+            modelType: ValueSet
         }
     };
 
