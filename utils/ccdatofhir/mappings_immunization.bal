@@ -26,8 +26,9 @@ import ballerina/uuid;
 # Map CCDA Immunization Activity to FHIR Immunization.
 #
 # + substanceAdministrationElement - CCDA Immunization Activity Element
+# + parentDocument - CCDA Document
 # + return - FHIR Immunization Resource
-isolated function ccdaToImmunization(xml substanceAdministrationElement) returns uscore501:USCoreImmunizationProfile? {
+isolated function ccdaToImmunization(xml substanceAdministrationElement, xml parentDocument) returns uscore501:USCoreImmunizationProfile? {
     if isXMLElementNotNull(substanceAdministrationElement) {
         uscore501:USCoreImmunizationProfile immunization = {primarySource: false, patient: {}, occurrenceDateTime: "", occurrenceString: "", vaccineCode: {}, status: "not-done"};
 
@@ -71,8 +72,8 @@ isolated function ccdaToImmunization(xml substanceAdministrationElement) returns
             log:printDebug("Repeat Number is not available");
         }
 
-        immunization.route = mapCcdaCodingToFhirCodeableConcept(routeCodeElement);
-        immunization.site = mapCcdaCodingToFhirCodeableConcept(approachSiteCodeElement);
+        immunization.route = mapCcdaCodingToFhirCodeableConcept(routeCodeElement, parentDocument);
+        immunization.site = mapCcdaCodingToFhirCodeableConcept(approachSiteCodeElement, parentDocument);
 
         string|error? doseQuantityUnit = doseQuantityElement.unit;
         r4:Quantity immunizationDoseQuantity = {};
@@ -95,7 +96,7 @@ isolated function ccdaToImmunization(xml substanceAdministrationElement) returns
             log:printDebug("Dose Quantity Value is not available", doseQuantityValue);
         }
 
-        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(vaccineCodeElement);
+        r4:CodeableConcept? mapCcdaCodingtoFhirCodeableConceptResult = mapCcdaCodingToFhirCodeableConcept(vaccineCodeElement, parentDocument);
         if mapCcdaCodingtoFhirCodeableConceptResult is r4:CodeableConcept {
             immunization.vaccineCode = mapCcdaCodingtoFhirCodeableConceptResult;
         }

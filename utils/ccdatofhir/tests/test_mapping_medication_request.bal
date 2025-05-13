@@ -26,7 +26,7 @@ function testCcdaDocumentToFhirMedicationRequest() returns error? {
     if (transformed is r4:Bundle) {
         json jsonBundle = transformed.toJson();
         json[] entries = <json[]>check jsonBundle.entry;
-        json 'resource = check entries[3].'resource;
+        json 'resource = check entries[4].'resource;
         test:assertEquals('resource.resourceType, "MedicationRequest", "Incorrect resource type from the conversion!");
     }
 }

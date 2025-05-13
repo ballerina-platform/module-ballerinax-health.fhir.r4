@@ -27,7 +27,7 @@ function testCcdaDocumentToFhirPatient() returns error? {
         test:assertEquals(jsonBundle.resourceType, "Bundle", "Transformed resource type is not equal to Bundle!");
         
         json[] entries = <json[]>check jsonBundle.entry;
-        test:assertEquals(entries.length(), 8, "Incorrect number of bundle entries from the conversion!");
+        test:assertEquals(entries.length(), 9, "Incorrect number of bundle entries from the conversion!");
         json 'resource = check entries[0].'resource;
         test:assertEquals(check entries[0].'resource.resourceType, "Patient", "Incorrect resource type from the conversion!");
 
