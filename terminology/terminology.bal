@@ -551,7 +551,13 @@ public isolated function addCodeSystemsAsJson(json[] codeSystemJsonArray, Termin
             codeSystems.push(result);
         }
     }
-    _ = codeSystems.length() > 0 ? errors.push(...<r4:FHIRError[]>addCodeSystems(codeSystems, terminology)) : "";
+    
+    if codeSystems.length() > 0 {
+        r4:FHIRError[]? addResult = addCodeSystems(codeSystems, terminology);
+        if addResult is r4:FHIRError[] {
+            errors.push(...addResult);
+        }
+    }
 
     if errors.length() > 0 {
         return errors;
@@ -598,7 +604,13 @@ public isolated function addValueSetsAsJson(json[] valueSetJsonArray, Terminolog
             valueSets.push(result);
         }
     }
-    _ = valueSets.length() > 0 ? errors.push(...<r4:FHIRError[]>addValueSets(valueSets, terminology)) : "";
+    
+    if valueSets.length() > 0 {
+        r4:FHIRError[]? addResult = addValueSets(valueSets, terminology);
+        if addResult is r4:FHIRError[] {
+            errors.push(...addResult);
+        }
+    }
 
     if errors.length() > 0 {
         return errors;
