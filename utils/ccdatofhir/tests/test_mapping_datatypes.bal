@@ -208,9 +208,14 @@ function testCcdaToNameToFhirName() returns error? {
 @test:Config {}
 function testCcdaToCodingToFhirCodeableConcept() returns error? {
     xml ccdaCoding = xml 
-        `<code code="1234567890" codeSystem="2.16.840.1.113883.6.1" displayName="Test Code">Test Code System</code>`;
+        `<code code="1234567890" codeSystem="2.16.840.1.113883.6.1" displayName="Test Code">
+        <originalText>Test Code System</originalText></code>`;
+    xml parentDocument = xml `<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ../xsd/ccda.xsd">
+        <id root="2.16.840.1.113883.4.500" extension="1234567890V123456"/>
+        <code code="1234567890" codeSystem="2.16.840.1.113883.6.1" displayName="Test Code"><originalText>Test Code System</originalText></code>
+    </ClinicalDocument>`;
 
-    r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(ccdaCoding);
+    r4:CodeableConcept? codeableConcept = mapCcdaCodingToFhirCodeableConcept(ccdaCoding, parentDocument);
     test:assertTrue(codeableConcept is r4:CodeableConcept, "CodeableConcept is not of type r4:CodeableConcept");
     r4:Coding[]? coding = codeableConcept?.coding;
     test:assertTrue(coding is r4:Coding[], "Coding is not of type r4:Coding[]");

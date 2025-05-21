@@ -19,15 +19,17 @@
 // --------------------------------------------------------------------------------------------#
 
 import ballerina/log;
+import ballerina/time;
+import ballerina/uuid;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.uscore501;
-import ballerina/uuid;
 
 # Map CCDA Allergy to FHIR AllergyIntolerance.
 #
 # + actElement - xml content of the CCDA Allergy Activity
+# + parentDocument - original CCDA document
 # + return - FHIR Allergy Intolerance
-isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USCoreAllergyIntolerance? {
+isolated function ccdaToAllergyIntolerance(xml actElement, xml parentDocument) returns [uscore501:USCoreAllergyIntolerance, uscore501:USCoreProvenance?]? {
     uscore501:USCoreAllergyIntolerance allergyIntolerance = {patient: {}, code: {}};
 
     if isXMLElementNotNull(actElement) {
@@ -79,10 +81,10 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
 
         xml assignedAuthorElement = authorElement/<v3:assignedAuthor|assignedAuthor>;
         xml assignedAuthorIdElement = assignedAuthorElement/<v3:id|id>;
-
-        string|error? assignedAuthorIdVal = assignedAuthorIdElement.root;
+        // id value is in the extension
+        string|error? assignedAuthorIdVal = assignedAuthorIdElement.extension;
         if assignedAuthorIdVal is string && assignedAuthorIdVal.trim() != "" {
-            allergyIntolerance.recorder = {reference: string `Patient/${assignedAuthorIdVal}`};
+            allergyIntolerance.recorder = {reference: string `Practitioner/${assignedAuthorIdVal}`};
         }
 
         xml participantRoleElement = participantElement/<v3:participantRole|participantRole>;
@@ -90,7 +92,7 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
         xml playingEntityCodeElement = playingEntityElement/<v3:code|code>;
 
         string|error? playingEntityCodeNullFlavor = playingEntityCodeElement.nullFlavor;
-        r4:CodeableConcept? playingEntityCodeableConcept = mapCcdaCodingToFhirCodeableConcept(playingEntityCodeElement);
+        r4:CodeableConcept? playingEntityCodeableConcept = mapCcdaCodingToFhirCodeableConcept(playingEntityCodeElement, parentDocument);
 
         if (negationInd is string && negationInd == "true") && playingEntityCodeNullFlavor is string {
             if playingEntityCodeableConcept is r4:CodeableConcept {
@@ -122,8 +124,7 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
             allergyIntolerance.code = playingEntityCodeableConcept;
         }
 
-
-        r4:CodeableConcept? clinicalStatus = mapCcdaCodingToFhirCodeableConcept(statusCodeElements);
+        r4:CodeableConcept? clinicalStatus = mapCcdaCodingToFhirCodeableConcept(statusCodeElements, parentDocument);
         if clinicalStatus is r4:CodeableConcept {
             r4:Coding[]? coding = clinicalStatus.coding;
             if coding is r4:Coding[] {
@@ -138,7 +139,7 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
         xml observationValueElement = observationElement/<v3:value|value>;
         xml observationIdElement = observationElement/<v3:id|id>;
 
-        r4:CodeableConcept? manifestation = mapCcdaCodingToFhirCodeableConcept(observationValueElement);
+        r4:CodeableConcept? manifestation = mapCcdaCodingToFhirCodeableConcept(observationValueElement, parentDocument);
         if manifestation is r4:CodeableConcept {
             uscore501:USCoreAllergyIntoleranceReaction reaction = {
                 manifestation: [manifestation]
@@ -146,6 +147,18 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
 
             string|error? typeCode = entryRelationshipElement.typeCode;
             if typeCode == "MFST" {
+                // Find Severity Observation entryRelationship
+                xml severityObservationCodeElement = entryRelationshipElement/<v3:observation|observation>/<v3:entryRelationship|entryRelationship>/<v3:observation|observation>/<v3:code|code>;
+                if isXMLElementNotNull(severityObservationCodeElement) {
+                    string|error? severityCode = severityObservationCodeElement.code;
+                    if severityCode is string && severityCode == "SEV" {
+                        xml severityValueElement = severityObservationCodeElement/<v3:value|value>;
+                        uscore501:USCoreAllergyIntoleranceReactionSeverity? severity = mapCcdaSeverityToFhirSeverity(severityValueElement);
+                        if severity is uscore501:USCoreAllergyIntoleranceReactionSeverity {
+                            reaction.severity = severity;
+                        }
+                    }
+                }
                 string|error? reactionId = observationIdElement.root;
                 if reactionId is string {
                     reaction.id = reactionId;
@@ -161,7 +174,25 @@ isolated function ccdaToAllergyIntolerance(xml actElement) returns uscore501:USC
         }
         //generate the id for the allergyIntolerance
         allergyIntolerance.id = uuid:createRandomUuid();
-        return allergyIntolerance;
+
+        // Provenance mapping
+        uscore501:USCoreProvenance? provenance = ();
+        if isXMLElementNotNull(assignedAuthorElement) {
+            if assignedAuthorIdVal is string && assignedAuthorIdVal.trim() != "" {
+                provenance = {
+                    target: [{reference: string `AllergyIntolerance/${<string>allergyIntolerance.id}`}],
+                    agent: [
+                        {
+                            who: {reference: string `Practitioner/${assignedAuthorIdVal}`}
+                        }
+                    ],
+                    //add time now
+                    recorded: time:utcNow().toString()
+                };
+            }
+        }
+
+        return [allergyIntolerance, provenance];
     } else {
         log:printDebug("AllergyIntolerance not available");
         return ();
@@ -227,4 +258,108 @@ isolated function mapCcdaValueToFhirAllergyIntoleranceType(xml valueElement) ret
             return ();
         }
     }
+}
+
+isolated function mapCcdaSeverityToFhirSeverity(xml valueElement) returns uscore501:USCoreAllergyIntoleranceReactionSeverity? {
+    string|error? codeVal = valueElement.code;
+    if codeVal !is string {
+        log:printDebug("severity code value not available", codeVal);
+        return ();
+    }
+    match codeVal {
+        "255604002" => { // Mild
+            return uscore501:CODE_SEVERITY_MILD;
+        }
+        "6736007" => { // Moderate
+            return uscore501:CODE_SEVERITY_MODERATE;
+        }
+        "24484000" => { // Severe
+            return uscore501:CODE_SEVERITY_SEVERE;
+        }
+        _ => {
+            log:printDebug("matching severity code value not available");
+            return ();
+        }
+    }
+}
+
+# Map C-CDA telecom to FHIR ContactPoint.
+#
+# + telecomElement - C-CDA telecom element
+# + return - Return FHIR ContactPoint
+public isolated function mapCcdaTelecomToFhirContactPoint(xml telecomElement) returns r4:ContactPoint? {
+    string|error? telecomUse = telecomElement.use;
+    string|error? telecomValue = telecomElement.value;
+
+    string? systemVal = ();
+    string? valueVal = ();
+    if telecomValue is string {
+        string[] valTokens = re `:`.split(telecomValue);
+        if valTokens.length() == 1 {
+            systemVal = r4:other;
+            valueVal = telecomValue;
+        } else {
+            systemVal = valTokens[0];
+            valueVal = valTokens[1];
+            
+            match (systemVal) {
+                "tel" => {
+                    systemVal = r4:phone;
+                }
+                "mailto" => {
+                    systemVal = r4:email;
+                }
+                "fax" => {
+                    systemVal = r4:fax;
+                }
+                "http" => {
+                    systemVal = r4:url;
+                }
+                "x-text-fax" => {
+                    systemVal = r4:sms;
+                }
+                _ => {
+                    systemVal = r4:other;
+                }
+            }
+        }
+    } else {
+        log:printDebug("Telecom value not available", telecomValue);
+    }
+
+    r4:ContactPointUse? useVal = ();
+    if telecomUse is string {
+        match telecomUse {
+            "HP" => {
+                useVal = "home";
+            }
+            "WP" => {
+                useVal = "work";
+            }
+            "MC" => {
+                useVal = "mobile";
+            }
+            "OP" => {
+                useVal = "old";
+            }
+            "TP" => {
+                useVal = "temp";
+            }
+            "PG" => {
+                useVal = "work";
+            }
+        }
+    } else {
+        log:printDebug("Telecom use not available", telecomUse);
+    }
+
+    if systemVal is string && valueVal is string {
+        return {
+            system: <r4:ContactPointSystem> systemVal,
+            value: valueVal,
+            use: useVal
+        };
+    }
+    log:printDebug("telecom fields not available");
+    return ();
 }

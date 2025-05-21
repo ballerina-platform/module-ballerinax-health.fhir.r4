@@ -40,3 +40,28 @@ isolated function logAndThrowError(error err) returns error {
     log:printError("Error occurred while converting CCDA document.", err, stackTrace = err.stackTrace());
     return err;
 }
+
+# Retrieves an XML element by its ID attribute.
+#
+# + xmlElement - the XML element to search within
+# + id - the ID of the element to find
+# + return - the XML element with the specified ID, or null if not found
+public isolated function getElementByID(xml xmlElement, string id) returns xml? {
+    // First check immediate children
+    xml filter = xmlElement.filter(x => x is xml:Element && x.getAttributes().hasKey("ID") && x.getAttributes().get("ID") == id);
+    if (filter.length() > 0) {
+        return filter[0];
+    }
+    
+    // If not found in immediate children, recursively check all child elements
+    xml children = xmlElement.children();
+    foreach xml child in children {
+        if (child is xml:Element) {
+            xml? result = getElementByID(child, id);
+            if (result is xml) {
+                return result;
+            }
+        }
+    }
+    return ();
+}

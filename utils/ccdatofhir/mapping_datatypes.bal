@@ -330,13 +330,34 @@ public isolated function mapCcdaNameToFhirName(xml nameElements) returns r4:Huma
 # Map C-CDA code to FHIR CodeableConcept.
 #
 # + codingElement - C-CDA code element
+# + parentDocument - original C-CDA document
 # + return - Return FHIR CodeableConcept
-public isolated function mapCcdaCodingToFhirCodeableConcept(xml codingElement) returns r4:CodeableConcept? {
+public isolated function mapCcdaCodingToFhirCodeableConcept(xml codingElement, xml parentDocument) returns r4:CodeableConcept? {
     r4:Coding[]? mapCcdaCodingtoFhirCodeResult = mapCcdaCodingsToFhirCodings(codingElement);
-    string textVal = codingElement.data().trim();
+    
+    // First try to get text from reference
+    xml? referenceVal = codingElement/<v3:originalText|originalText>/<v3:reference|reference>;    
+    string|error? textVal = referenceVal is xml ? referenceVal.value:();
+    
+    // If reference is not present, try to get data from originalText directly
+    if textVal is () || textVal is error {
+        xml? originalTextElement = codingElement/<v3:originalText|originalText>;
+        textVal = originalTextElement is xml ? originalTextElement.data():();
+    } else {
+        if textVal.startsWith("#") {
+            xml? referenceElement = getElementByID(parentDocument, textVal.substring(1));
+            textVal = referenceElement is xml ? referenceElement.data():();
+        }
+    }
+
     if mapCcdaCodingtoFhirCodeResult is r4:Coding[] {
         return {
             coding: mapCcdaCodingtoFhirCodeResult,
+            text: textVal is string ? textVal:()
+        };
+    }
+    if textVal is string && textVal != "" {
+        return {
             text: textVal
         };
     }

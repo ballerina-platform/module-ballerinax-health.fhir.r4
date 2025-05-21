@@ -20,7 +20,6 @@ import ballerinax/health.fhir.r4;
 @test:Config {}
 function testGetOperationOutcome() returns error? {
     r4:OperationOutcome operationOutcome = getOperationOutcome("This is test error message");
-    test:assertTrue(operationOutcome is r4:OperationOutcome, "OperationOutcome is not of type r4:OperationOutcome");
     test:assertEquals(operationOutcome.issue[0].severity, "error", "OperationOutcome severity is not equal to error");
     test:assertEquals(operationOutcome.issue[0].details?.text, "This is test error message", "OperationOutcome message is not equal to message");
 }
