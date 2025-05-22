@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.12.3"
+distribution-version = "2201.12.2"
 
 [[package]]
 org = "ballerina"
@@ -373,7 +373,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.ccdatofhir"
-version = "3.0.2"
+version = "3.0.3"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "log"},
