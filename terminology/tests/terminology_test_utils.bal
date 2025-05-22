@@ -64,6 +64,66 @@ isolated class TestTerminology {
     private map<r4:ValueSet> valueSetMap = {};
 
     function init() {
+        // Add a CodeSystem object for http://xyz.org
+        r4:CodeSystem csXyz = {
+            id: "cs-xyz",
+            status: "active",
+            url: "http://xyz.org",
+            version: "2.36",
+            content: "complete",
+            concept: [
+                {code: "1", display: "Cholesterol xyz [Moles/Volume]"},
+                {code: "2", display: "Cholesterol xyz [Mass/Volume]"}
+            ]
+        };
+        // Add a CodeSystem object with the given concepts and extra concepts
+        r4:CodeSystem csLoinc = {
+            id: "loinc",
+            status: "active",
+            url: "http://loinc.org",
+            version: "2.36",
+            content: "complete",
+            concept: [
+                {code: "1", display: "Cholesterol [Moles/Volume]"},
+                {code: "2", display: "Cholesterol [Mass/Volume]"},
+                {code: "3", display: "Triglyceride [Moles/Volume]"},
+                {code: "4", display: "Triglyceride [Mass/Volume]"},
+                {code: "5", display: "HDL Cholesterol [Moles/Volume]"}
+            ]
+        };
+        r4:CodeSystem csRecursive = {
+            id: "cs-recursive",
+            status: "active",
+            url: "http://example.org/recursive-codesystem",
+            version: "1.0.0",
+            content: "complete",
+            concept: [
+                {
+                    code: "A",
+                    display: "Parent A",
+                    concept: [
+                        {
+                            code: "A1",
+                            display: "Child A1",
+                            concept: [
+                                {
+                                    code: "A1a",
+                                    display: "Grandchild A1a"
+                                }
+                            ]
+                        },
+                        {
+                            code: "A2",
+                            display: "Child A2"
+                        }
+                    ]
+                },
+                {
+                    code: "B",
+                    display: "Parent B"
+                }
+            ]
+        };
         r4:ValueSet vs1 = {id: "vs1", status: "active", url: "http://example.org/vs1", version: "1.0.0", compose: {include: []}};
         vs1.compose.include = [{valueSet: ["http://example.org/vs2"]}];
         r4:ValueSet vs2 = {id: "vs2", status: "active", url: "http://example.org/vs2", version: "1.0.0", compose: {include: []}};
@@ -124,6 +184,9 @@ isolated class TestTerminology {
             self.valueSetMap["http://example.org/vs2"] = vs2.clone();
             self.valueSetMap["http://example.org/vs3"] = vs3.clone();
             self.valueSetMap["http://example.org/vs4"] = vs4.clone();
+            self.codeSystemMap["http://loinc.org"] = csLoinc.clone();
+            self.codeSystemMap["http://xyz.org"] = csXyz.clone();
+            self.codeSystemMap["http://example.org/recursive-codesystem"] = csRecursive.clone();
         }
     }
 

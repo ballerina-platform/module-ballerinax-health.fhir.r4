@@ -451,11 +451,30 @@ public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding 
     r4:CodeSystemConcept? conceptDetailsB = check retrieveCodeSystemConcept(codeSystem, conceptB.clone());
 
     if conceptDetailsA != () && conceptDetailsB != () {
-        if conceptDetailsA.code == conceptDetailsB.code && conceptDetailsA.display == conceptDetailsB.display {
+        if conceptDetailsA.code == conceptDetailsB.code {
             return {'parameter: [{name: OUTCOME, valueCode: EQUIVALENT}]};
         } else {
+            // check is conceptA is subsumed by conceptB
+            r4:CodeSystemConcept[]? conceptDetailsAConcepts = conceptDetailsA.concept;
+            if conceptDetailsAConcepts is r4:CodeSystemConcept[] {
+                // check whether the concept B in the concept A's concept list
+                if isAChildConcept(conceptDetailsB.code, conceptDetailsAConcepts) {
+                    return {'parameter: [{name: OUTCOME, valueCode: SUBSUMED}]};
+                }
+            }
+
+            // check is conceptB is subsumed by conceptA
+            r4:CodeSystemConcept[]? conceptDetailsBConcepts = conceptDetailsB.concept;
+            if conceptDetailsBConcepts is r4:CodeSystemConcept[] {
+                // check whether the concept A in the concept B's concept list
+                if isAChildConcept(conceptDetailsA.code, conceptDetailsBConcepts) {
+                    return {'parameter: [{name: OUTCOME, valueCode: SUBSUMED_BY}]};
+                }
+            }
+
             return {'parameter: [{name: OUTCOME, valueCode: NOT_SUBSUMED}]};
         }
+        
     } else if conceptDetailsA is () {
         return r4:createFHIRError(
                     string `Code/ Coding: ${conceptA.toString()} is not included in the provided CodeSystem`,
