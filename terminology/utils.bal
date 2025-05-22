@@ -16,37 +16,39 @@ import ballerina/log;
 import ballerina/time;
 import ballerinax/health.fhir.r4;
 
-public isolated function findConceptsInValueSetFromCodeValue(r4:code|r4:Coding|r4:CodeableConcept codeValue, r4:ValueSet valueSet, Terminology? terminology = inMemoryTerminology) returns r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError {
-    r4:code code;
-    r4:uri url;
+public isolated function findConceptsInValueSetFromCodeValue(r4:code|r4:Coding|r4:CodeableConcept codeValue, r4:uri system, string? version, Terminology? terminology = inMemoryTerminology) returns r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError {
     r4:CodeSystemConcept[] codeConceptDetailsList = [];
+    CodeConceptDetails|r4:FHIRError result;
 
     if codeValue is r4:code {
-        code = codeValue;
-        return findConceptFromCode(valueSet, code, (), terminology = terminology);
+        result = (<Terminology>terminology).findConcept(system, codeValue, version);
+        if result is CodeConceptDetails {
+            return result.concept;
+        } else {
+            return result;
+        }
     } else if codeValue is r4:Coding {
-        code = <r4:code>codeValue.code;
-        url = <r4:uri>codeValue.system;
-        return findConceptFromCode(valueSet, code, url, terminology = terminology);
+        result = (<Terminology>terminology).findConcept(<r4:uri>codeValue.system, <r4:code>codeValue.code, codeValue.version);
+        if result is CodeConceptDetails {
+            return result.concept;
+        } else {
+            return result;
+        }
     } else {
         r4:Coding[]? codings = (<r4:CodeableConcept>codeValue).coding.clone();
         if codings != () && codings.length() > 0 {
             r4:FHIRError[] errors = [];
             foreach r4:Coding c in codings {
-                code = <r4:code>c.code;
-                url = <r4:uri>c.system;
-                r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError result = findConceptFromCode(valueSet, code, url, terminology = terminology);
-                if result is r4:CodeSystemConcept[] {
-                    codeConceptDetailsList.push(...result);
-                } else if result is r4:CodeSystemConcept {
-                    codeConceptDetailsList.push(result);
+                result = (<Terminology>terminology).findConcept(<r4:uri>c.system, <r4:code>c.code, c.'version);
+                if result is CodeConceptDetails {
+                    codeConceptDetailsList.push(result.concept);
                 } else {
                     errors.push(result);
                 }
             }
-            if codeConceptDetailsList.length() < 1 {
+            if codeConceptDetailsList.length() < 1 || errors.length() > 0 {
                 return r4:createFHIRError(
-                                string `Cannot find any valid concepts for the CodeableConcept: ${codeValue.toString()} in the ValueSet: ${valueSet.url.toString()}`,
+                                string `Cannot find any valid concepts for the CodeableConcept: ${codeValue.toString()} in the ValueSet: ${system.toString()}`,
                                 r4:ERROR,
                                 r4:PROCESSING_NOT_FOUND,
                                 errorType = r4:PROCESSING_ERROR,
@@ -78,24 +80,47 @@ public isolated function findConceptsInValueSetFromCodeValue(r4:code|r4:Coding|r
 isolated function findConceptInCodeSystem(r4:CodeSystem codeSystem, r4:code code) returns CodeConceptDetails|r4:FHIRError {
     r4:CodeSystemConcept[]? concepts = codeSystem.concept;
     r4:uri? url = codeSystem.url;
+
     if concepts != () && url != () {
-        foreach r4:CodeSystemConcept concept in concepts {
-            if concept.code == code {
-                CodeConceptDetails codeConcept = {
-                    url: url,
-                    concept: concept
-                };
-                return codeConcept;
+        CodeConceptDetails? result = findConceptRecursively(concepts, code, url);
+        if result != () {
+            return result;
+        }
+    }
+
+    return r4:createFHIRError(
+        string `Code: ${code.toString()} was not found in the CodeSystem: ${codeSystem.url.toString()}`,
+        r4:ERROR,
+        r4:PROCESSING_NOT_FOUND,
+        errorType = r4:PROCESSING_ERROR,
+        httpStatusCode = http:STATUS_NOT_FOUND
+    );
+}
+
+# Recursive function to search for a concept in nested CodeSystemConcept arrays.
+# This function traverses through the provided `concepts` array and its nested arrays
+# to find a concept that matches the given `code`. If a match is found, it returns
+# the `CodeConceptDetails` containing the concept and its associated `url`.
+# + concepts - The array of `CodeSystemConcept` to search within.
+# + code - The code to search for in the `CodeSystemConcept` array.
+# + url - The URL of the CodeSystem associated with the concepts.
+# + return - Returns `CodeConceptDetails` if a matching concept is found, otherwise `()` (nil).
+isolated function findConceptRecursively(r4:CodeSystemConcept[] concepts, r4:code code, r4:uri url) returns CodeConceptDetails? {
+    foreach r4:CodeSystemConcept concept in concepts {
+        if concept.code == code {
+            return {
+                url: url,
+                concept: concept
+            };
+        }
+        if concept.concept != () {
+            CodeConceptDetails? nestedResult = findConceptRecursively(concept.concept ?: [], code, url);
+            if nestedResult != () {
+                return nestedResult;
             }
         }
     }
-    return r4:createFHIRError(
-                            string `Code: ${code.toString()} was not found in the CodeSystem: ${codeSystem.url.toString()}`,
-                            r4:ERROR,
-                            r4:PROCESSING_NOT_FOUND,
-                            errorType = r4:PROCESSING_ERROR,
-                            httpStatusCode = http:STATUS_NOT_FOUND
-                        );
+    return ();
 }
 
 # Function to find concept in a ValueSet by passing code data type parameter.
@@ -153,7 +178,7 @@ isolated function findConceptInValueSetOrReturnValueSetURIs(r4:ValueSet valueSet
         }
     }
     return r4:createFHIRError(
-                            string `Code: ${code.toString()} was not found in the ValueSet: ${valueSet.url.toString()}`,
+                            "Concept not found in the ValueSet",
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
                             errorType = r4:PROCESSING_ERROR,
@@ -205,60 +230,6 @@ isolated function findConceptInValueSet(r4:ValueSet valueSet, r4:code code) retu
                             errorType = r4:PROCESSING_ERROR,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
-}
-
-isolated function findConceptFromCode(r4:ValueSet valueSet, r4:code codeValue, r4:uri? codeUrl, Terminology? terminology) returns r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError {
-    r4:CodeSystemConcept[] codeConceptList = [];
-    CodeConceptDetails[]|r4:canonical[]|CodeSystemMetadata[]|r4:FHIRError result = findConceptInValueSetOrReturnValueSetURIs(valueSet, codeValue);
-
-    if result is CodeConceptDetails[] {
-        foreach CodeConceptDetails codeConcept in result {
-            if codeUrl == () || codeConcept.url == codeUrl {
-                codeConceptList.push(codeConcept.concept.clone());
-            }
-        }
-    } else if result is CodeSystemMetadata[] {
-        foreach CodeSystemMetadata metadata in result {
-            CodeConceptDetails|r4:FHIRError findConcept = (<Terminology>terminology).findConcept(<r4:uri>metadata.url, codeValue, version = metadata.version);
-            if findConcept is CodeConceptDetails {
-                if codeUrl == () || metadata.url == codeUrl {
-                    codeConceptList.push(findConcept.concept.clone());
-                }
-            }
-        }
-    }
-    else if result is r4:canonical[] {
-        foreach r4:uri valusetUrl in result {
-            r4:ValueSet|r4:FHIRError subValueSet = (<Terminology>terminology).findValueSet(system = valusetUrl);
-            if subValueSet is r4:ValueSet {
-                CodeConceptDetails[]|r4:FHIRError subResult = findConceptInValueSet(subValueSet, codeValue);
-                if subResult is CodeConceptDetails[] {
-                    foreach CodeConceptDetails codeConcept in subResult {
-                        if codeUrl == () || codeConcept.url == codeUrl {
-                            codeConceptList.push(codeConcept.concept.clone());
-                        }
-                    }
-                }
-            }
-            // ignore all other cases as this is the second level
-        }
-    }
-    else {
-        return <r4:FHIRError>result;
-    }
-    if codeConceptList.length() < 1 {
-        return r4:createFHIRError(
-                        string `Cannot find any valid concepts for the code: ${codeValue.toString()} in the ValueSet: ${valueSet.url.toString()}`,
-                        r4:ERROR,
-                        r4:PROCESSING_NOT_FOUND,
-                        errorType = r4:PROCESSING_ERROR,
-                        httpStatusCode = http:STATUS_NOT_FOUND);
-    }
-    if codeConceptList.length() == 1 {
-        return codeConceptList[0].clone();
-    } else {
-        return codeConceptList.clone();
-    }
 }
 
 isolated function getAllConceptInValueSet(r4:ValueSet valueSet) returns (ValueSetExpansionDetails)? {
@@ -343,28 +314,26 @@ isolated function conceptToCoding(CodeConceptDetails conceptDetails) returns r4:
     return codingValue;
 }
 
-//Only for in-memory opertaions
-isolated function retrieveCodeSystemConcept(r4:CodeSystem codeSystem, r4:code|r4:Coding concept) returns r4:CodeSystemConcept|r4:FHIRError {
+isolated function retrieveCodeSystemConcept(r4:uri url, string? version, r4:code|r4:Coding concept, Terminology? terminology = inMemoryTerminology) returns r4:CodeSystemConcept|r4:FHIRError {
     if concept is r4:code {
-        CodeConceptDetails|r4:FHIRError conceptDetails = findConceptInCodeSystem(codeSystem.clone(), concept.clone());
+        CodeConceptDetails|r4:FHIRError conceptDetails = (<Terminology>terminology).findConcept(url, concept, version);
         if conceptDetails is CodeConceptDetails {
-            r4:CodeSystemConcept codeConcept = conceptDetails.concept;
-            if codeConcept is r4:CodeSystemConcept {
-                return codeConcept.clone();
-            }
+            return conceptDetails.concept;
         }
         return conceptDetails;
     } else {
-        CodeConceptDetails|r4:FHIRError conceptDetails = findConceptInCodeSystemFromCoding(
-                codeSystem.clone(), concept.clone());
+        if concept.code is r4:code {
+            CodeConceptDetails|r4:FHIRError conceptDetails = (<Terminology>terminology).findConcept(url, <r4:code>concept.code, version);        
 
-        if conceptDetails is CodeConceptDetails {
-            r4:CodeSystemConcept|r4:ValueSetComposeIncludeConcept temp = conceptDetails.concept;
-            if temp is r4:CodeSystemConcept {
-                return temp.clone();
+            if conceptDetails is CodeConceptDetails {
+                return conceptDetails.concept;
             }
+            return conceptDetails;
+        } else {
+            string msg = "No valid code found in the Coding";
+            log:printDebug(r4:createFHIRError(msg, r4:ERROR, r4:PROCESSING_NOT_FOUND).toBalString());
+            return r4:createFHIRError(msg, r4:ERROR, r4:PROCESSING_NOT_FOUND);
         }
-        return conceptDetails;
     }
 }
 
@@ -446,6 +415,20 @@ isolated function modifySearchParamsWithPagination(map<r4:RequestSearchParameter
         count: count,
         offset: offset
     };
+}
+
+isolated function isAChildConcept(r4:code targetCode, r4:CodeSystemConcept[] conceptsInCurrentConcept) returns boolean {
+    foreach r4:CodeSystemConcept currentConcept in conceptsInCurrentConcept {
+        if currentConcept.code == targetCode {
+            return true;
+        }
+        if currentConcept.concept is r4:CodeSystemConcept[] {
+            if isAChildConcept(targetCode, <r4:CodeSystemConcept[]>currentConcept.concept) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 type PaginationSearchParamsResponse record {
