@@ -303,7 +303,7 @@ function parseWithValidationSuccessTest() returns r4:FHIRParseError|r4:FHIRValid
 
 @test:Config {}
 function validateTerminologyTest() {
-    string[]|error? validationErrors = validateTerminologies(TEST_FHIR_RESOURCE_JSON_PATIENT_02);
+    string[]|error? validationErrors = validateTerminologyData(TEST_FHIR_RESOURCE_JSON_PATIENT_02);
     if validationErrors is string[] {
         test:assertEquals(validationErrors.length(), 0, "Terminology validation failed with errors");
     } else if validationErrors is error {
@@ -313,7 +313,7 @@ function validateTerminologyTest() {
 
 @test:Config {}
 function validateTerminologyNegativeTest() {
-    string[]|error? validationErrors = validateTerminologies(TEST_FHIR_RESOURCE_JSON_PATIENT_02_INVALID_TERMINOLOGY);
+    string[]|error? validationErrors = validateTerminologyData(TEST_FHIR_RESOURCE_JSON_PATIENT_02_INVALID_TERMINOLOGY);
     if validationErrors is string[] {
         test:assertTrue(validationErrors.length() > 0, "Expected terminology validation errors but none found");
         test:assertTrue(validationErrors[0].startsWith("Invalid code:"), "Unexpected error message: " + validationErrors[0]);

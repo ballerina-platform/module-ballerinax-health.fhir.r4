@@ -1,16 +1,40 @@
 import ballerina/http;
+import ballerina/log;
 
-const string TERMINOLOFY_SERVICE_API = "http://localhost:9090/fhir/r4";
-const string CODESYSTEM_LOOKUP = "/Codesystem/%24lookup";
-const string VALUESET_VALIDATE_CODE = "/Valueset/%24validate-code";
+const string CODESYSTEM_LOOKUP = "/CodeSystem/%24lookup";
+const string VALUESET_VALIDATE_CODE = "/ValueSet/%24validate-code";
 
-type Term record {
-    string code;
-    string system;
-    string version?;
-};
+configurable TerminologyConfig? terminologyConfig = ();
 
-isolated function extractCodesAndSystems(anydata data) returns Term[] {
+# Retrieve an HTTP client configured for the terminology service.
+#
+# This function creates and returns an `http:Client` instance to interact with the terminology service API.
+# If authentication details (token URL, client ID, and client secret) are provided in the `terminologyConfig`,
+# the client is configured with authentication. Otherwise, a basic client is created without authentication.
+#
+# + return - An `http:Client` instance if successful, or an `error` if the client creation fails
+isolated function getTerminologyClient() returns http:Client|error {
+    http:ClientAuthConfig? authConfig;
+
+    if terminologyConfig?.tokenUrl is () || terminologyConfig?.clientId is () || terminologyConfig?.clientSecret is () ||
+        terminologyConfig?.tokenUrl == "" || terminologyConfig?.clientId == "" || terminologyConfig?.clientSecret == "" {
+        return check new (<string>terminologyConfig?.terminologyServiceApi);
+    } else {
+        authConfig = {
+            tokenUrl: <string>terminologyConfig?.tokenUrl,
+            clientId: <string>terminologyConfig?.clientId,
+            clientSecret: <string>terminologyConfig?.clientSecret
+        };
+
+        return check new (<string>terminologyConfig?.terminologyServiceApi, auth = authConfig);
+    }
+}
+
+# Extract terminology codes from the given data.
+#
+# + data - Input data to extract terminology codes from
+# + return - An array of extracted `Term` records
+isolated function extractTerminologyCodes(anydata data) returns Term[] {
     Term[] result = [];
 
     if data is map<anydata> {
@@ -28,19 +52,19 @@ isolated function extractCodesAndSystems(anydata data) returns Term[] {
 
         foreach var [key, value] in data.entries() {
             if key == "valueCoding" && value is map<anydata> {
-                Term[] codingResult = extractFromR4Coding(value);
+                Term[] codingResult = extractCodesFromCodingElement(value);
                 foreach Term item in codingResult {
                     result.push(item);
                 }
             } else if key == "coding" && value is anydata[] {
                 foreach anydata item in value {
-                    Term[] codeableResult = extractFromR4Coding(item);
+                    Term[] codeableResult = extractCodesFromCodingElement(item);
                     foreach Term codeableItem in codeableResult {
                         result.push(codeableItem);
                     }
                 }
             } else if value is map<anydata> || value is anydata[] {
-                Term[] nestedResult = extractCodesAndSystems(value);
+                Term[] nestedResult = extractTerminologyCodes(value);
                 foreach Term item in nestedResult {
                     result.push(item);
                 }
@@ -48,7 +72,7 @@ isolated function extractCodesAndSystems(anydata data) returns Term[] {
         }
     } else if data is anydata[] {
         foreach anydata item in data {
-            Term[] arrayResult = extractCodesAndSystems(item);
+            Term[] arrayResult = extractTerminologyCodes(item);
             foreach Term arrayItem in arrayResult {
                 result.push(arrayItem);
             }
@@ -58,7 +82,11 @@ isolated function extractCodesAndSystems(anydata data) returns Term[] {
     return result;
 }
 
-isolated function extractFromR4Coding(anydata data) returns Term[] {
+# Extract codes from a coding element in the given data.
+#
+# + data - Input data containing coding elements
+# + return - An array of extracted `Term` records
+isolated function extractCodesFromCodingElement(anydata data) returns Term[] {
     Term[] result = [];
 
     if data is map<anydata> {
@@ -70,7 +98,7 @@ isolated function extractFromR4Coding(anydata data) returns Term[] {
             });
         }
         if data.hasKey("extension") {
-            Term[] extensionResult = extractCodesAndSystems(data["extension"]);
+            Term[] extensionResult = extractTerminologyCodes(data["extension"]);
             foreach Term item in extensionResult {
                 result.push(item);
             }
@@ -80,13 +108,17 @@ isolated function extractFromR4Coding(anydata data) returns Term[] {
     return result;
 }
 
-isolated function checkTerminologyValidity(Term[] terms) returns string[]|error? {
-    http:Client termClient = check new (TERMINOLOFY_SERVICE_API);
+# Validate terminology codes using a terminology service.
+#
+# + terms - Array of `Term` records to validate
+# + return - An array of error messages if validation fails, or `null` if validation succeeds
+isolated function validateTerminologyCodes(Term[] terms) returns string[]|error? {
+    http:Client termClient = check getTerminologyClient();
 
     string[] errors = [];
 
     foreach Term term in terms {
-        string queryParams = string `?system=${term.system}&code=${term.code}${(term.version is string ? "&version=" + <string>term.version : "")}`;
+        string queryParams = string `?system=${term.system}&code=${term.code}${(term.version is string ? "&version=" + <string>term.version : "")}&_format=json`;
 
         // Send GET request to ValueSet validate-code API
         http:Response|http:Error valuesetResponse = termClient->get(VALUESET_VALIDATE_CODE + queryParams);
@@ -108,26 +140,38 @@ isolated function checkTerminologyValidity(Term[] terms) returns string[]|error?
     return errors.length() == 0 ? null : errors;
 }
 
-isolated function isTerminologyService() returns boolean|error? {
-    http:Client termClient = check new (TERMINOLOFY_SERVICE_API);
+# Check if the terminology service is available.
+#
+# + return - `true` if the service is available, `false` otherwise, or an error if the check fails
+isolated function isTerminologyServiceAvailable() returns boolean|error? {
+    if terminologyConfig?.terminologyServiceApi is () {
+        log:printDebug("Terminology service API is not configured.");
+        return false;
+    }
+    http:Client termClient = check new (<string>terminologyConfig?.terminologyServiceApi);
     http:Response|http:Error healthCheckResponse = termClient->head("/");
 
     if healthCheckResponse is http:Error {
+        log:printError("Terminology service is not available: " + healthCheckResponse.message());
         return false;
     }
 
     return true;
 }
 
-public isolated function validateTerminologies(anydata data) returns string[]|error? {
-    boolean|error? isService = isTerminologyService();
+# Validate terminology data by extracting and validating terminology codes.
+#
+# + data - Input data to validate
+# + return - An array of error messages if validation fails, or `null` if validation succeeds
+isolated function validateTerminologyData(anydata data) returns string[]|error? {
+    boolean|error? isService = isTerminologyServiceAvailable();
     if isService is error {
         return isService;
     } else if isService is boolean && !isService {
         return;
     }
 
-    Term[] result = extractCodesAndSystems(data);
+    Term[] result = extractTerminologyCodes(data);
 
-    return checkTerminologyValidity(result);
+    return validateTerminologyCodes(result);
 }
