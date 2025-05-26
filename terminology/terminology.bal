@@ -12,7 +12,6 @@
 // under the License.
 import ballerina/http;
 import ballerina/lang.'int as langint;
-import ballerina/lang.regexp;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401 as i4;
 import ballerinax/health.fhir.r4.validator;
@@ -373,65 +372,7 @@ public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]>? sea
                 );
     }
 
-    ValueSetExpansionDetails? details = getAllConceptInValueSet(valueSet);
-
-    if details is ValueSetExpansionDetails {
-        r4:CodeSystemConcept[]|r4:ValueSetComposeIncludeConcept[] concepts = details.concepts;
-
-        if concepts is r4:ValueSetComposeIncludeConcept[] {
-            if searchParameters.hasKey(FILTER) {
-                string filter = searchParameters.get(FILTER)[0].value;
-                r4:ValueSetComposeIncludeConcept[] result = from r4:ValueSetComposeIncludeConcept entry in concepts
-                    where entry[DISPLAY] is string && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`,
-                            (<string>entry[DISPLAY]).toUpperAscii())
-                    select entry;
-                concepts = result;
-            }
-
-            int totalCount = concepts.length();
-
-            if totalCount > offset + count {
-                concepts = concepts.slice(offset, offset + count);
-            } else if totalCount >= offset {
-                concepts = concepts.slice(offset);
-            } else {
-                r4:CodeSystemConcept[] temp = [];
-                concepts = temp;
-            }
-
-            r4:ValueSetExpansion expansion = createExpandedValueSet(valueSet, concepts);
-            expansion.offset = offset;
-            expansion.total = totalCount;
-            valueSet.expansion = expansion.clone();
-
-        } else {
-            if searchParameters.hasKey(FILTER) {
-                string filter = searchParameters.get(FILTER)[0].value;
-                r4:CodeSystemConcept[] result = from r4:CodeSystemConcept entry in concepts
-                    where entry[DISPLAY] is string
-                            && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, (<string>entry[DISPLAY]).toUpperAscii())
-                        || entry[DEFINITION] is string
-                            && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, (<string>entry[DEFINITION]).toUpperAscii())
-                    select entry;
-                concepts = result;
-            }
-
-            int totalCount = concepts.length();
-            if totalCount > offset + count {
-                concepts = concepts.slice(offset, offset + count);
-            } else if totalCount >= offset {
-                concepts = concepts.slice(offset);
-            } else {
-                r4:CodeSystemConcept[] temp = [];
-                concepts = temp;
-            }
-            r4:ValueSetExpansion expansion = createExpandedValueSet(valueSet, concepts);
-            expansion.offset = offset;
-            expansion.total = totalCount;
-            valueSet.expansion = expansion.clone();
-        }
-    }
-    return valueSet.clone();
+    return (<Terminology>terminology).expandValueSet(searchParameters, valueSet, offset = offset, count = count);
 }
 
 # This method with compare concepts.

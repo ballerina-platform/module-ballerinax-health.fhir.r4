@@ -474,6 +474,68 @@ isolated class InMemoryTerminology {
 
         return result;
     }
+
+    public isolated function expandValueSet(map<r4:RequestSearchParameter[]> searchParameters, r4:ValueSet valueSet, int offset, int count) returns r4:ValueSet|r4:FHIRError {
+        ValueSetExpansionDetails? details = getAllConceptInValueSet(valueSet);
+
+        if details is ValueSetExpansionDetails {
+            r4:CodeSystemConcept[]|r4:ValueSetComposeIncludeConcept[] concepts = details.concepts;
+
+            if concepts is r4:ValueSetComposeIncludeConcept[] {
+                if searchParameters.hasKey(FILTER) {
+                    string filter = searchParameters.get(FILTER)[0].value;
+                    r4:ValueSetComposeIncludeConcept[] result = from r4:ValueSetComposeIncludeConcept entry in concepts
+                        where entry[DISPLAY] is string && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`,
+                                (<string>entry[DISPLAY]).toUpperAscii())
+                        select entry;
+                    concepts = result;
+                }
+
+                int totalCount = concepts.length();
+
+                if totalCount > offset + count {
+                    concepts = concepts.slice(offset, offset + count);
+                } else if totalCount >= offset {
+                    concepts = concepts.slice(offset);
+                } else {
+                    r4:CodeSystemConcept[] temp = [];
+                    concepts = temp;
+                }
+
+                r4:ValueSetExpansion expansion = createExpandedValueSet(valueSet, concepts);
+                expansion.offset = offset;
+                expansion.total = totalCount;
+                valueSet.expansion = expansion.clone();
+
+            } else {
+                if searchParameters.hasKey(FILTER) {
+                    string filter = searchParameters.get(FILTER)[0].value;
+                    r4:CodeSystemConcept[] result = from r4:CodeSystemConcept entry in concepts
+                        where entry[DISPLAY] is string
+                                && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, (<string>entry[DISPLAY]).toUpperAscii())
+                            || entry[DEFINITION] is string
+                                && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, (<string>entry[DEFINITION]).toUpperAscii())
+                        select entry;
+                    concepts = result;
+                }
+
+                int totalCount = concepts.length();
+                if totalCount > offset + count {
+                    concepts = concepts.slice(offset, offset + count);
+                } else if totalCount >= offset {
+                    concepts = concepts.slice(offset);
+                } else {
+                    r4:CodeSystemConcept[] temp = [];
+                    concepts = temp;
+                }
+                r4:ValueSetExpansion expansion = createExpandedValueSet(valueSet, concepts);
+                expansion.offset = offset;
+                expansion.total = totalCount;
+                valueSet.expansion = expansion.clone();
+            }
+        }
+        return valueSet.clone();
+    }
 }
 
 isolated function getKey(string url, string version) returns string {

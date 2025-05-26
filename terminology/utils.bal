@@ -186,52 +186,6 @@ isolated function findConceptInValueSetOrReturnValueSetURIs(r4:ValueSet valueSet
                         );
 }
 
-# Function to find concept in a ValueSet by passing code data type parameter.
-# This method disregards `.expansion` and focus only on `.compose`.
-# `.compose`: A definition of which codes are intended to be in the value set ("intension")
-# |- `.include`: Include one or more codes from a code system or other value set(s).
-# |- if the codes are not defined inline, we will return the system urls of the code system(s) or value set(s).
-# + valueSet - ValueSet resource
-# + code - code to find in the ValueSet
-# + return - CodeConceptDetails or FHIRError or canonical[] or uri
-isolated function findConceptInValueSet(r4:ValueSet valueSet, r4:code code) returns CodeConceptDetails[]|r4:FHIRError {
-    r4:ValueSetCompose? composeBBE = valueSet.clone().compose;
-    if composeBBE != () {
-        CodeConceptDetails[] codeConcepts = [];
-        foreach r4:ValueSetComposeInclude includeBBE in composeBBE.include {
-            // Include one or more codes from a code system or other value set(s).
-            r4:uri? systemValue = includeBBE.system;
-            //+ Rule: A value set include/exclude SHALL have a value set or a system
-            if systemValue != () {
-                r4:ValueSetComposeIncludeConcept[]? includeConcepts = includeBBE.concept;
-                if includeConcepts != () {
-                    foreach r4:ValueSetComposeIncludeConcept includeConcept in includeConcepts {
-                        if includeConcept.code == code {
-                            // found the code
-                            codeConcepts.push(
-                                {
-                                url: systemValue,
-                                concept: includeConcept
-                            }.clone()
-                            );
-                        }
-                    }
-                }
-            }
-        }
-        if codeConcepts.length() > 0 {
-            return codeConcepts;
-        }
-    }
-    return r4:createFHIRError(
-                            string `Code: ${code.toString()} was not found in the ValueSet: ${valueSet.toString()}`,
-                            r4:ERROR,
-                            r4:PROCESSING_NOT_FOUND,
-                            errorType = r4:PROCESSING_ERROR,
-                            httpStatusCode = http:STATUS_NOT_FOUND
-                        );
-}
-
 isolated function getAllConceptInValueSet(r4:ValueSet valueSet) returns (ValueSetExpansionDetails)? {
     r4:ValueSetCompose? composeBBE = valueSet.clone().compose;
     if composeBBE != () {
@@ -514,4 +468,16 @@ public type Terminology isolated object {
     # + count - Count value for the search.
     # + return - ValueSet array if found or else FHIRError.
     public isolated function searchValueSet(map<r4:RequestSearchParameter[]> params, int? offset = (), int? count = ()) returns r4:ValueSet[]|r4:FHIRError;
+
+    # Expands a ValueSet with the given search parameters, offset, and count.
+    #
+    # This function applies filtering and pagination to the concepts in the provided ValueSet,
+    # returning a ValueSetExpansion or an FHIRError if the operation fails.
+    #
+    # + searchParams - Map of search parameters to filter concepts (e.g., filter by display or definition).
+    # + valueSet - The ValueSet record to be expanded.
+    # + offset - The starting index for pagination (optional).
+    # + count - The maximum number of concepts to return (optional).
+    # + return - Returns a ValueSetExpansion if successful, or an FHIRError if the operation fails.
+    public isolated function expandValueSet(map<r4:RequestSearchParameter[]> searchParams, r4:ValueSet valueSet, int offset, int count) returns r4:ValueSet|r4:FHIRError;
 };
