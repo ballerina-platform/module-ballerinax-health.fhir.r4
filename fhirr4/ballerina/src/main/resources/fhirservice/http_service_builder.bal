@@ -177,7 +177,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                     if payload is json || payload is http:NoContentError {
                         // An operation with no parameters but affects the state is invoked using an empty body
                         json? operationPayload = payload is http:NoContentError ? () : payload;
-                        string operation = paths[path.length() - 1].substring(1);
+                        string operation = paths[paths.length() - 1].substring(1);
                         r4:FHIRInteractionLevel operationScope = getRequestOperationScope(operation,
                                 fhirResource, paths);
                         if isHavingPathParam(resourceMethod) { // Instance level operation 
