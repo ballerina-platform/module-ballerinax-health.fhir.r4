@@ -224,63 +224,37 @@ isolated class InMemoryTerminology {
     }
 
     public isolated function findConcept(r4:uri system, r4:code code, string? version = ()) returns CodeConceptDetails|r4:FHIRError {
-        CodeConceptDetails|r4:FHIRError? result = ();
-        r4:ValueSet|r4:FHIRError findValueSetResult = self.findValueSet(system, (), version);
-        if findValueSetResult is r4:ValueSet {
-            CodeConceptDetails[]|r4:canonical[]|r4:FHIRError|CodeSystemMetadata[] conceptResults = findConceptInValueSetOrReturnValueSetURIs(findValueSetResult, code);
-            if conceptResults is r4:canonical[] {
-                r4:FHIRError? lastError = ();
-                foreach r4:canonical refValueSetUrl in conceptResults {
-                    r4:ValueSet|r4:FHIRError refValueSet = self.findValueSet(refValueSetUrl, (), ());
-                    if refValueSet is r4:ValueSet {
-                        CodeConceptDetails[]|r4:canonical[]|CodeSystemMetadata[]|r4:FHIRError? concept = findConceptInValueSetOrReturnValueSetURIs(refValueSet, code);
-                        if concept is CodeConceptDetails[] {
-                            foreach CodeConceptDetails codeConceptDetails in concept {
-                                result = codeConceptDetails;
-                                break;
-                            }
-                        } else if concept is r4:FHIRError {
-                            lastError = concept.clone();
-                        } else if concept is CodeSystemMetadata[] {
-                            foreach CodeSystemMetadata codeSystemMetadata in concept {
-                                CodeConceptDetails|r4:FHIRError findConceptResult = self.findConcept(<r4:uri>codeSystemMetadata.url, version = codeSystemMetadata.version, code = code);
-                                if findConceptResult is CodeConceptDetails {
-                                    return findConceptResult;
-                                }
-                            }
-                        }
-                        // ignore other possibilities
-                    }
-                }
-                if result == () && lastError != () {
-                    result = lastError;
-                }
-            } else if conceptResults is CodeSystemMetadata[] {
-                foreach CodeSystemMetadata codeSystemMetadata in conceptResults {
-                    CodeConceptDetails|r4:FHIRError findConceptResult = self.findConcept(<r4:uri>codeSystemMetadata.url, version = codeSystemMetadata.version, code = code);
-                    if findConceptResult is CodeConceptDetails {
-                        return findConceptResult;
-                    }
-                }
-            } else {
-                result = <r4:FHIRError>conceptResults;
-            }
-        } else {
-            r4:CodeSystem|r4:FHIRError findCodeSystemResult = self.findCodeSystem(system, (), version);
-            if findCodeSystemResult is r4:CodeSystem {
-                result = findConceptInCodeSystem(findCodeSystemResult, code);
-            }
+        CodeConceptDetails|r4:FHIRError? valuesetConceptDetails = self.findConceptInValueSet(system, code, version);
+        if valuesetConceptDetails is CodeConceptDetails {
+            return valuesetConceptDetails;
         }
-        if result is () {
+
+        CodeConceptDetails|r4:FHIRError? conceptDetails = self.findConceptInCodeSystem(system, code, version);
+        if conceptDetails is CodeConceptDetails {
+            return conceptDetails;
+        } 
+
+        if conceptDetails is () && valuesetConceptDetails is () {
             return r4:createFHIRError(
                 string `Unknown ValueSet or CodeSystem : ${system}${version == () ? "" : "|" + version}`,
                 r4:ERROR,
                 r4:INVALID_REQUIRED,
                 errorType = r4:PROCESSING_ERROR,
-                httpStatusCode = http:STATUS_BAD_REQUEST
+                httpStatusCode = 404
             );
+        } else if conceptDetails is r4:FHIRError {
+            return conceptDetails.clone();
+        } else if valuesetConceptDetails is r4:FHIRError {
+            return valuesetConceptDetails.clone();
         }
-        return result.clone();
+
+        return r4:createFHIRError(
+            "Concept not found",
+            r4:ERROR,
+            r4:PROCESSING_NOT_FOUND,
+            errorType = r4:PROCESSING_ERROR,
+            httpStatusCode = 404
+        );
     }
 
     public isolated function findValueSet(r4:uri? system, string? id, string? version) returns r4:ValueSet|r4:FHIRError {
@@ -444,6 +418,62 @@ isolated class InMemoryTerminology {
         }
     }
 
+    private isolated function findConceptInCodeSystem(r4:uri system, r4:code code, string? version) returns CodeConceptDetails|r4:FHIRError? {
+        r4:CodeSystem|r4:FHIRError findCodeSystemResult = self.findCodeSystem(system, (), version);
+        if findCodeSystemResult is r4:CodeSystem {
+            return findConceptInCodeSystem(findCodeSystemResult, code);
+        }
+        return;
+    }
+
+    private isolated function findConceptInValueSet(r4:uri system, r4:code code, string? version) returns CodeConceptDetails|r4:FHIRError? {
+        CodeConceptDetails|r4:FHIRError? result = ();
+        r4:ValueSet|r4:FHIRError findValueSetResult = self.findValueSet(system, (), version);
+        if findValueSetResult is r4:ValueSet {
+            CodeConceptDetails[]|r4:canonical[]|r4:FHIRError|CodeSystemMetadata[] conceptResults = findConceptInValueSetOrReturnValueSetURIs(findValueSetResult, code);
+            if conceptResults is r4:canonical[] {
+                r4:FHIRError? lastError = ();
+                foreach r4:canonical refValueSetUrl in conceptResults {
+                    r4:ValueSet|r4:FHIRError refValueSet = self.findValueSet(refValueSetUrl, (), ());
+                    if refValueSet is r4:ValueSet {
+                        CodeConceptDetails[]|r4:canonical[]|CodeSystemMetadata[]|r4:FHIRError? concept = findConceptInValueSetOrReturnValueSetURIs(refValueSet, code);
+                        if concept is CodeConceptDetails[] {
+                            foreach CodeConceptDetails codeConceptDetails in concept {
+                                result = codeConceptDetails;
+                                break;
+                            }
+                        } else if concept is r4:FHIRError {
+                            lastError = concept.clone();
+                        } else if concept is CodeSystemMetadata[] {
+                            foreach CodeSystemMetadata codeSystemMetadata in concept {
+                                CodeConceptDetails|r4:FHIRError findConceptResult = self.findConcept(<r4:uri>codeSystemMetadata.url, version = codeSystemMetadata.version, code = code);
+                                if findConceptResult is CodeConceptDetails {
+                                    return findConceptResult;
+                                }
+                            }
+                        }
+                        // ignore other possibilities
+                    }
+                }
+                if result == () && lastError != () {
+                    result = lastError;
+                }
+            } else if conceptResults is CodeSystemMetadata[] {
+                foreach CodeSystemMetadata codeSystemMetadata in conceptResults {
+                    CodeConceptDetails|r4:FHIRError findConceptResult = self.findConcept(<r4:uri>codeSystemMetadata.url, version = codeSystemMetadata.version, code = code);
+                    if findConceptResult is CodeConceptDetails {
+                        return findConceptResult;
+                    }
+                }
+            } else if conceptResults is CodeConceptDetails[] {
+                return conceptResults[0];
+            } else {
+                result = <r4:FHIRError>conceptResults;
+            }
+        }
+
+        return result;
+    }
 }
 
 isolated function getKey(string url, string version) returns string {
