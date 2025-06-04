@@ -20,22 +20,22 @@ import ballerina/log;
 import ballerina/time;
 import ballerinax/health.fhir.r4;
 
-configurable boolean analytics_enabled = false;
+configurable boolean analyticsEnabled = false;
 
 // OpenSearch configuration
-configurable string opensearch_url = "http://localhost:9200";
-configurable string opensearch_index = "healthcare-logs";
-configurable string opensearch_username = "";
-configurable string opensearch_password = "";
+configurable string opensearchUrl = "http://localhost:9200";
+configurable string opensearchIndex = "healthcare-logs";
+configurable string opensearchUsername = "";
+configurable string opensearchPassword = "";
 
 // Configs to read from x-jwt-assertion header
-configurable string[] x_jwt_attributes = ["fhirUser", "client_id", "iss"];
+configurable string[] requiredAttributes = ["fhirUser", "client_id", "iss"];
 
 // Configs to get more information about the patient
-configurable boolean get_more_info = false;
-configurable string more_info_url = "";
-configurable string more_info_username = "";
-configurable string more_info_password = "";
+configurable boolean moreInfoRequired = false;
+configurable string moreInfoUrl = "";
+configurable string moreInfoUsername = "";
+configurable string moreInfoPassword = "";
 
 const X_JWT_HEADER = "x-jwt-assertion";
 
@@ -48,107 +48,96 @@ isolated service class AnalyticsRequestInterceptor {
     }
 
     isolated function sendToOpenSearch(json logData) returns error? {
-
-        string url = opensearch_url + "/" + opensearch_index + "/_doc";
-        log:printDebug("[AnalyticsRequestInterceptor] Sending log to: " + url + " with index: " + opensearch_index);
+        string url = opensearchUrl + "/" + opensearchIndex + "/_doc";
+        log:printDebug(`[AnalyticsRequestInterceptor] Sending log to: ${url} with index: ${opensearchIndex}`);
 
         http:Client openSearchClient;
-        if opensearch_username != "" && opensearch_password != "" {
+        if opensearchUsername != "" && opensearchPassword != "" {
             openSearchClient = check new (url, auth = {
-                username: opensearch_username,
-                password: opensearch_password
+                username: opensearchUsername,
+                password: opensearchPassword
             });
         } else {
             openSearchClient = check new (url);
         }
 
-        http:Response result = check openSearchClient->post("", logData);
+        http:Response result = check openSearchClient->/.post(logData);
         if result.statusCode < 200 || result.statusCode >= 300 {
-            log:printError("[AnalyticsRequestInterceptor] Failed publishing log to " + url + " with Index: " + opensearch_index + " \nError: " + result.reasonPhrase);
-        }
-        else {
-            log:printInfo("[AnalyticsRequestInterceptor] Log published successfully to " + url + " with Index: " + opensearch_index);
+            log:printError(`[AnalyticsRequestInterceptor] Failed publishing log to ${url} with Index: ${opensearchIndex}. ${"\n"}Error: ${result.reasonPhrase}`);
+        } else {
+            log:printInfo(`[AnalyticsRequestInterceptor] Log published successfully to ${url} with Index: ${opensearchIndex}`);
         }
     }
 
     isolated function getMoreInfo(string patientId) returns json|error {
         http:Client moreInfoClient;
-        if more_info_username != "" && more_info_password != "" {
-            moreInfoClient = check new (more_info_url, auth = {
-                username: more_info_username,
-                password: more_info_password
+        if moreInfoUsername != "" && moreInfoPassword != "" {
+            moreInfoClient = check new (moreInfoUrl, auth = {
+                username: moreInfoUsername,
+                password: moreInfoPassword
             });
         } else {
-            moreInfoClient = check new (more_info_url);
+            moreInfoClient = check new (moreInfoUrl);
         }
-        json moreInfoResponse = check moreInfoClient->get("?patientId=" + patientId);
+        json moreInfoResponse = check moreInfoClient->/.get(patientId = patientId);
         return moreInfoResponse;
     }
 
     isolated function publishAnalyticsData(string jwt) returns error? {
-
         [jwt:Header, jwt:Payload]|error decodedJWT = jwt:decode(jwt);
         if decodedJWT is [jwt:Header, jwt:Payload] {
             [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
 
             // Filter logData to include only keys in x_jwt_attributes
-            map<string> filteredLogData = {};
-            foreach string attr in x_jwt_attributes {
-                if payload[attr] !== () {
-                    filteredLogData[attr] = payload[attr].toString();
-                }
-            }
+            map<string> filteredLogData = map from string attrKey in requiredAttributes
+                where payload[attrKey] !== ()
+                select [attrKey, payload[attrKey].toString()];
 
             filteredLogData["timestamp"] = time:utcToString(time:utcNow());
-
             filteredLogData["resourceType"] = self.resourceType;
 
             // Get more information of fhirUser
-            if get_more_info {
+            if moreInfoRequired {
                 string? fhirUser = filteredLogData["fhirUser"];
                 if fhirUser is string {
                     json|error moreInfo = self.getMoreInfo(fhirUser);
                     if moreInfo is json {
-                        log:printDebug("[AnalyticsRequestInterceptor] More info fetched for fhirUser: " + fhirUser);
+                        log:printDebug(`[AnalyticsRequestInterceptor] More info fetched for fhirUser: ${fhirUser}`);
                         foreach var [key, value] in (<map<json>>moreInfo).entries() {
                             filteredLogData[key] = value.toString();
                         }
                     } else {
-                        log:printError("[AnalyticsRequestInterceptor] Failed to fetch more info for fhirUser: " + fhirUser + ". Error: " + moreInfo.toString());
+                        log:printError(`[AnalyticsRequestInterceptor] Failed to fetch more info for fhirUser: ${fhirUser}. ${"\n"}Error: ${moreInfo.toString()}`);
                     }
-                }
-                else {
-                    log:printDebug("[AnalyticsRequestInterceptor] No fhirUser found in JWT, skipping more info fetch.");
+                } else {
+                    log:printDebug(`[AnalyticsRequestInterceptor] No fhirUser found in JWT, skipping more info fetch.`);
                 }
             }
 
-            log:printDebug("[AnalyticsRequestInterceptor] Publishing log" + filteredLogData.toString());
+            log:printDebug(`[AnalyticsRequestInterceptor] Publishing log: ${"\n"} ${filteredLogData.toString()}`);
             check self.sendToOpenSearch(filteredLogData.toJson());
         } else {
-            log:printError("[AnalyticsRequestInterceptor] Error decoding x-jwt-assertion header.");
+            log:printError(`[AnalyticsRequestInterceptor] Error decoding x-jwt-assertion header.`);
         }
 
     }
 
     isolated resource function 'default [string... path](http:RequestContext ctx, http:Request req) returns http:NextService|error? {
-
-        if !analytics_enabled {
-            log:printDebug("[AnalyticsRequestInterceptor] Analytics is disabled. Skipping analytics data publishing.");
+        if !analyticsEnabled {
+            log:printDebug(`[AnalyticsRequestInterceptor] Analytics is disabled. Skipping analytics data publishing.`);
             return ctx.next();
         }
 
         string|error xJWT = req.getHeader(X_JWT_HEADER);
         if (xJWT is error) {
-            log:printError("[AnalyticsRequestInterceptor] Failed publishing logs. Error: Missing x-jwt-assertion header.");
+            log:printError(`[AnalyticsRequestInterceptor] Failed publishing logs. Error: Missing x-jwt-assertion header.`);
             return ctx.next();
         }
 
-        log:printDebug("[AnalyticsRequestInterceptor] Publishing analytics data.");
+        log:printDebug(`[AnalyticsRequestInterceptor] Publishing analytics data.`);
         future<error?> _ = start self.publishAnalyticsData(xJWT);
 
         // Returns the next interceptor in the pipeline.
         return ctx.next();
     }
-
 }
-
