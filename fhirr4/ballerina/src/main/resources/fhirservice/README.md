@@ -6,22 +6,22 @@ Ballerina FHIR service type can be used for developing FHIR APIs. It provides a 
 
 ## Capabilitites and features
 
-* Validating search parameters.
-* Parsing and validating the request payload when creating FHIR resources.
-* Validating content-related headers.
-* Executing post-processing logic that can be plugged in.
-* Handling errors in all these validations and responding an operation outcome.
+- Validating search parameters.
+- Parsing and validating the request payload when creating FHIR resources.
+- Validating content-related headers.
+- Executing post-processing logic that can be plugged in.
+- Handling errors in all these validations and responding an operation outcome.
 
 ## Sample Usage
 
-* Import the required packages.
+- Import the required packages.
 
 ```ballerina
-import ballerinax/health.fhirr4; 
-import ballerinax/health.fhir.r4; 
+import ballerinax/health.fhirr4;
+import ballerinax/health.fhir.r4;
 ```
 
-* Create a `ResourceAPIConfig` record similar to the following.
+- Create a `ResourceAPIConfig` record similar to the following.
 
 ```ballerina
 final r4:ResourceAPIConfig apiConfig = {
@@ -65,7 +65,7 @@ final r4:ResourceAPIConfig apiConfig = {
 };
 ```
 
-* Define a FHIR service similar to the following by passing the api-config record created in the previous step.
+- Define a FHIR service similar to the following by passing the api-config record created in the previous step.
 
 ```ballerina
 service / on new fhirr4:Listener(9090, apiConfig) {
@@ -76,3 +76,7 @@ service / on new fhirr4:Listener(9090, apiConfig) {
     }
 }
 ```
+
+## Analytics with FHIR R4 service
+
+Refer to `resources/analytics_README.md`

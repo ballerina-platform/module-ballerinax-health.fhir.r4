@@ -1,0 +1,27 @@
+openapi: 3.0.3
+info:
+  title: More Info API
+  version: 1.0.0
+  description: 'More Info API to get more information to publish for analytics.'
+paths:
+  /more_info:
+    post:
+      summary: Accepts and returns a JSON object with arbitrary string fields.
+      requestBody:
+        description: JSON input with arbitrary keys and string values
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        '200':
+          description: JSON output with arbitrary keys and string values
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
