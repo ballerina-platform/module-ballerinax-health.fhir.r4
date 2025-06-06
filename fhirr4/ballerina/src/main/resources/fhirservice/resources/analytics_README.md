@@ -8,15 +8,15 @@ This is achieved through the `AnalyticsRequestInterceptor` which can intercept t
 
 Inside the module which imports `ballerinax.health.fhirr4`, we need to have a `Config.toml` at the same level as `Ballerina.toml` including the necessary configs. A sample Config.toml can be found in `sample_config.toml`. Following is a clarification on those configs.
 
-> `analyticsEnabled` : To enable publishing logs to the configured analytics server
-> `analyticsRequiredAttributes` : Only the attributes listed here are taken from the jwt (`x-jwt-assertion` header value) to publish
-> `analyticsServerUrl` : Hosted analytics server url
-> `analyticsServerUsername` : BasicAuth username for the analytics server
-> `analyticsServerPassword` : BasicAuth password for the analytics server
-> `analyticsMoreInfoRequired` : Whether more information is required
-> `analyticsMoreInfoUrl` : An api to fetch more information required for analytics
-> `analyticsMoreInfoUsername` : BasicAuth username for more info api
-> `analyticsMoreInfoPassword` : BasicAuth password for more info api
+> - `analyticsEnabled` : To enable publishing logs to the configured analytics server
+> - `analyticsRequiredAttributes` : Only the attributes listed here are taken from the jwt (`x-jwt-assertion` header value) to publish
+> - `analyticsServerUrl` : Hosted analytics server url
+> - `analyticsServerUsername` : BasicAuth username for the analytics server
+> - `analyticsServerPassword` : BasicAuth password for the analytics server
+> - `analyticsMoreInfoRequired` : Whether more information is required
+> - `analyticsMoreInfoUrl` : An api to fetch more information required for analytics
+> - `analyticsMoreInfoUsername` : BasicAuth username for more info api
+> - `analyticsMoreInfoPassword` : BasicAuth password for more info api
 
 ### x-jwt-assertion Header :
 
