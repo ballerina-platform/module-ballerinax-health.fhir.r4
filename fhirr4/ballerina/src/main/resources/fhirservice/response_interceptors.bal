@@ -189,7 +189,7 @@ public isolated service class FHIRResponseErrorInterceptor {
     *http:ResponseErrorInterceptor;
 
     isolated remote function interceptResponseError(error err) returns http:NotFound|http:BadRequest|http:UnsupportedMediaType
-            |http:NotAcceptable|http:Unauthorized|http:NotImplemented|http:MethodNotAllowed|http:InternalServerError {
+            |http:NotAcceptable|http:Unauthorized|http:NotImplemented|http:MethodNotAllowed|http:InternalServerError|http:PreconditionFailed|http:Ok {
         log:printDebug("Execute: FHIR Response Error Interceptor");
         if err is r4:FHIRError {
             match err.detail().httpStatusCode {
@@ -241,6 +241,22 @@ public isolated service class FHIRResponseErrorInterceptor {
                         mediaType: r4:FHIR_MIME_TYPE_JSON
                     };
                     return methodNotAllowed;
+                }
+                http:STATUS_PRECONDITION_FAILED => {
+                    http:PreconditionFailed preconditionFailed = {
+                        body: r4:handleErrorResponse(err),
+                        mediaType: r4:FHIR_MIME_TYPE_JSON
+                    };
+                    return preconditionFailed;
+                }
+                http:STATUS_OK => {
+                    // This is a special case where the operation is successful but the response is an error.
+                    // This can happen in cases like conditional search where the resource already exists.
+                    http:Ok response = {
+                        body: r4:handleErrorResponse(err),
+                        mediaType: r4:FHIR_MIME_TYPE_JSON
+                    };
+                    return response;
                 }
                 _ => {
                     http:InternalServerError internalServerError = {

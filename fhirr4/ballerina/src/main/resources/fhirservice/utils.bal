@@ -11,6 +11,8 @@
 // specific language governing permissions and limitations
 // under the License.
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.parser;
+import ballerina/http;
 
 isolated function addPagination(r4:PaginationContext paginationContext, map<r4:RequestSearchParameter[]> requestSearchParameters,
         r4:Bundle bundle, string path) returns r4:Bundle {
@@ -81,4 +83,61 @@ isolated function handleBundleInfo(r4:Bundle bundle, r4:FHIRContext fhirCtx, str
         }
     }
     return bundle;
+}
+
+isolated function handleConditionalHeader(string conditionalUrl) returns r4:FHIRError? {
+    final string baseUrl = conditionalUrl.substring(0, <int>conditionalUrl.lastIndexOf("/"));
+    final string resourcePath = conditionalUrl.substring(<int>conditionalUrl.lastIndexOf("/"));
+
+    do {
+	    //create a new HTTP client
+	    http:Client conditionalClient = check new (baseUrl);
+
+        // send a http request to the resourcePath
+        http:Response response = check conditionalClient->get(resourcePath);
+
+        if response.statusCode == 404 {
+            // allow to create a new resource if no entries are found
+            return;
+        } 
+
+        // Extract the entity and decode to r4:Bundle
+        r4:Bundle bundle = check parser:parse(check response.getJsonPayload()).ensureType();
+
+        r4:BundleEntry[]? entries = bundle.entry;
+        if entries is r4:BundleEntry[] {
+            // check the bundle entry count
+            if entries.length() == 0 {
+                // allow to create a new resource if no entries are found
+                return;
+            } else if entries.length() == 1 {
+                // exising resource found, return the first entry
+                return r4:createFHIRError(
+                        "Resource already exists for the given search criteria",
+                        r4:INFORMATION,
+                        r4:PROCESSING_DUPLICATE,
+                        httpStatusCode = http:STATUS_OK);
+            } else {
+                // return 412 Precondition Failed if more than one entry is found
+                return r4:createFHIRError(
+                        "Multiple resources found for the given search criteria",
+                        r4:ERROR,
+                        r4:INVALID,
+                        httpStatusCode = http:STATUS_PRECONDITION_FAILED);
+            }
+        } else {
+            return r4:createFHIRError(
+                    "Invalid response received from the server",
+                    r4:ERROR,
+                    r4:INVALID,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+    } on fail var e {
+        // log the error and return a FHIR error
+    	return r4:createFHIRError(
+            "Error while handling conditional search: " + e.message(),
+            r4:ERROR,
+            r4:INVALID);
+    }
 }
