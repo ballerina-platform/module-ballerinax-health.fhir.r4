@@ -22,8 +22,8 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
         private final Holder holder = h;
         private final FHIRPreprocessor preprocessor = new (apiConfig);
 
-        public function createInterceptors() returns [FHIRResponseErrorInterceptor, FHIRResponseInterceptor] {
-            return [new FHIRResponseErrorInterceptor(), new FHIRResponseInterceptor(apiConfig)];
+        public function createInterceptors() returns [FHIRResponseErrorInterceptor, FHIRResponseInterceptor, AnalyticsRequestInterceptor] {
+            return [new FHIRResponseErrorInterceptor(), new FHIRResponseInterceptor(apiConfig), new AnalyticsRequestInterceptor(apiConfig)];
         }
 
         isolated resource function get [string... path](http:Request req, http:RequestContext ctx) returns any|error {
