@@ -126,18 +126,10 @@ isolated function handleConditionalHeader(string conditionalUrl) returns r4:FHIR
                         httpStatusCode = http:STATUS_PRECONDITION_FAILED);
             }
         } else {
-            return r4:createFHIRError(
-                    "Invalid response received from the server",
-                    r4:ERROR,
-                    r4:INVALID,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+            return r4:createFHIRError("Invalid response received while handling conditional search", r4:ERROR, r4:INVALID);
         }
-
     } on fail var e {
         // log the error and return a FHIR error
-    	return r4:createFHIRError(
-            "Error while handling conditional search: " + e.message(),
-            r4:ERROR,
-            r4:INVALID);
+    	return r4:createFHIRError("Error while handling conditional search: " + e.message(), r4:ERROR, r4:INVALID);
     }
 }
