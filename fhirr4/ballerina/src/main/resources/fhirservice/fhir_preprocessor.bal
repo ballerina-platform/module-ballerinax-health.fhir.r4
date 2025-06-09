@@ -218,6 +218,7 @@ public isolated class FHIRPreprocessor {
             // conditional create
             // Implemented according to the https://hl7.org/fhir/R4/http.html#ccreate FHIR specification
             log:printDebug("Conditional create interaction.");
+            log:printDebug(string `Conditional header (If-None-Exist): ${isNoneExistHeader}`);
             _ = check handleConditionalHeader(isNoneExistHeader);
         }
 

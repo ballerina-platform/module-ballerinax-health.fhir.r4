@@ -13,6 +13,7 @@
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.parser;
 import ballerina/http;
+import ballerina/log;
 
 isolated function addPagination(r4:PaginationContext paginationContext, map<r4:RequestSearchParameter[]> requestSearchParameters,
         r4:Bundle bundle, string path) returns r4:Bundle {
@@ -98,6 +99,7 @@ isolated function handleConditionalHeader(string conditionalUrl) returns r4:FHIR
 
         if response.statusCode == 404 {
             // allow to create a new resource if no entries are found
+            log:printDebug("No existing resource found for the given search criteria, allowing creation of a new resource");
             return;
         } 
 
@@ -109,9 +111,11 @@ isolated function handleConditionalHeader(string conditionalUrl) returns r4:FHIR
             // check the bundle entry count
             if entries.length() == 0 {
                 // allow to create a new resource if no entries are found
+                log:printDebug("No existing resource found for the given search criteria, allowing creation of a new resource");
                 return;
             } else if entries.length() == 1 {
-                // exising resource found, return the first entry
+                // exising resource found, return 200
+                log:printDebug("Existing resource found for the given search criteria, returning 200 OK");
                 return r4:createFHIRError(
                         "Resource already exists for the given search criteria",
                         r4:INFORMATION,
@@ -119,6 +123,7 @@ isolated function handleConditionalHeader(string conditionalUrl) returns r4:FHIR
                         httpStatusCode = http:STATUS_OK);
             } else {
                 // return 412 Precondition Failed if more than one entry is found
+                log:printDebug("Multiple resources found for the given search criteria, returning 412 Precondition Failed");
                 return r4:createFHIRError(
                         "Multiple resources found for the given search criteria",
                         r4:ERROR,
