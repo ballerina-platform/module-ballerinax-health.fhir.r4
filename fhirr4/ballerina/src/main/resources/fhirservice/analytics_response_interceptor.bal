@@ -37,14 +37,14 @@ configurable string analyticsMoreInfoPassword = "";
 
 const X_JWT_HEADER = "x-jwt-assertion";
 
-# AnalyticsRequestInterceptor is an HTTP request interceptor that publishes analytics data
-isolated service class AnalyticsRequestInterceptor {
-    *http:RequestInterceptor;
+# AnalyticsResponseInterceptor is an HTTP response interceptor that publishes analytics data
+isolated service class AnalyticsResponseInterceptor {
+    *http:ResponseInterceptor;
     final string resourceType;
     final http:Client|http:ClientError? logPublisherHttpClient;
     final http:Client|http:ClientError? moreInfoHttpClient;
 
-    # Initializes the AnalyticsRequestInterceptor
+    # Initializes the AnalyticsResponseInterceptor
     public function init(r4:ResourceAPIConfig apiConfig) {
         self.resourceType = apiConfig.resourceType;
         // Initialize the log publisher HTTP client
@@ -72,17 +72,17 @@ isolated service class AnalyticsRequestInterceptor {
     # + logData - The log data json to be published
     isolated function publish(json logData) {
         http:Client|http:ClientError? logPublisher = self.logPublisherHttpClient;
-        log:printDebug(`[AnalyticsRequestInterceptor] Sending log to: ${analyticsServerUrl}`);
+        log:printDebug(`[AnalyticsResponseInterceptor] Sending log to: ${analyticsServerUrl}`);
         if logPublisher is () || logPublisher is http:ClientError {
-            log:printError(`[AnalyticsRequestInterceptor] Failed to create Analytics HTTP client`);
+            log:printError(`[AnalyticsResponseInterceptor] Failed to create Analytics HTTP client`);
         } else {
             http:Response|http:ClientError result = logPublisher->/.post(logData);
             if result is http:ClientError {
-                log:printError(`[AnalyticsRequestInterceptor] Failed publishing log to ${analyticsServerUrl} [Error]: ${result.toString()}`);
+                log:printError(`[AnalyticsResponseInterceptor] Failed publishing log to ${analyticsServerUrl} [Error]: ${result.toString()}`);
             } else if result.statusCode < 200 || result.statusCode >= 300 {
-                log:printError(`[AnalyticsRequestInterceptor] Failed publishing log to ${analyticsServerUrl} [Error]: ${result.reasonPhrase}`);
+                log:printError(`[AnalyticsResponseInterceptor] Failed publishing log to ${analyticsServerUrl} [Error]: ${result.reasonPhrase}`);
             } else {
-                log:printInfo(`[AnalyticsRequestInterceptor] Log published successfully to ${analyticsServerUrl}`);
+                log:printInfo(`[AnalyticsResponseInterceptor] Log published successfully to ${analyticsServerUrl}`);
             }
         }
     }
@@ -94,7 +94,7 @@ isolated service class AnalyticsRequestInterceptor {
     isolated function getMoreInfo(json logData) returns json {
         http:Client|http:ClientError? moreInfoClient = self.moreInfoHttpClient;
         if moreInfoClient is () || moreInfoClient is http:ClientError {
-            log:printError(`[AnalyticsRequestInterceptor] Failed to create More Info HTTP client`);
+            log:printError(`[AnalyticsResponseInterceptor] Failed to create More Info HTTP client`);
             return {};
         } else {
             http:Response|http:ClientError result = moreInfoClient->/.post(logData);
@@ -103,11 +103,11 @@ isolated service class AnalyticsRequestInterceptor {
                 if payload is json {
                     return payload;
                 } else {
-                    log:printError(`[AnalyticsRequestInterceptor] Failed to extract JSON payload from More Info response.`);
+                    log:printError(`[AnalyticsResponseInterceptor] Failed to extract JSON payload from More Info response.`);
                     return {};
                 }
             } else {
-                log:printError(`[AnalyticsRequestInterceptor] Failed to fetch more info from ${analyticsMoreInfoUrl} [Error]: ${result.toString()}`);
+                log:printError(`[AnalyticsResponseInterceptor] Failed to fetch more info from ${analyticsMoreInfoUrl} [Error]: ${result.toString()}`);
                 return {};
             }
         }
@@ -115,8 +115,9 @@ isolated service class AnalyticsRequestInterceptor {
 
     # Publishes the analytics data based on the x-jwt-assertion header
     # + jwt - The JWT token from the x-jwt-assertion header
+    # + statusCode - The HTTP status code of the response
     # + return - An error if the publishing fails
-    isolated function publishAnalyticsData(string jwt) returns error? {
+    isolated function publishAnalyticsData(string jwt, int statusCode) returns error? {
         [jwt:Header, jwt:Payload]|error decodedJWT = jwt:decode(jwt);
         if decodedJWT is [jwt:Header, jwt:Payload] {
             [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
@@ -131,41 +132,42 @@ isolated service class AnalyticsRequestInterceptor {
             // Get more information if configured
             if analyticsMoreInfoRequired {
                 json moreInfo = self.getMoreInfo(filteredLogData.toJson());
-                log:printDebug(`[AnalyticsRequestInterceptor] More info fetched from: ${analyticsMoreInfoUrl} [More info]: ${moreInfo.toString()}`);
+                log:printDebug(`[AnalyticsResponseInterceptor] More info fetched from: ${analyticsMoreInfoUrl} [More info]: ${moreInfo.toString()}`);
                 foreach var [key, value] in (<map<json>>moreInfo).entries() {
                     filteredLogData[key] = value.toString();
                 }
             }
 
             filteredLogData["timestamp"] = time:utcToString(time:utcNow());
+            filteredLogData["statusCode"] = statusCode.toString();
 
-            log:printDebug(`[AnalyticsRequestInterceptor] Publishing log: ${filteredLogData.toString()}`);
+            log:printDebug(`[AnalyticsResponseInterceptor] Publishing log: ${filteredLogData.toString()}`);
             self.publish(filteredLogData.toJson());
         } else {
-            log:printError(`[AnalyticsRequestInterceptor] Error decoding x-jwt-assertion header.`);
+            log:printError(`[AnalyticsResponseInterceptor] Error decoding x-jwt-assertion header.`);
         }
 
     }
 
-    # Interceptor function that processes the request and publishes analytics data
-    # + path - The request path
+    # Interceptor function that processes the response and publishes analytics data
     # + ctx - The request context
     # + req - The HTTP request
+    # + res - The HTTP response
     # + return - The next service in the interceptor chain or an error
-    isolated resource function 'default [string... path](http:RequestContext ctx, http:Request req) returns http:NextService|error? {
+    remote isolated function interceptResponse(http:RequestContext ctx, http:Request req, http:Response res) returns http:NextService|error? {
         if !analyticsEnabled {
-            log:printDebug(`[AnalyticsRequestInterceptor] Analytics is disabled. Skipping analytics data publishing.`);
+            log:printDebug(`[AnalyticsResponseInterceptor] Analytics is disabled. Skipping analytics data publishing.`);
             return ctx.next();
         }
 
         string|error xJWT = req.getHeader(X_JWT_HEADER);
         if xJWT is error {
-            log:printError(`[AnalyticsRequestInterceptor] Skipped publishing logs. Error: Missing x-jwt-assertion header.`);
+            log:printError(`[AnalyticsResponseInterceptor] Skipped publishing logs. Error: Missing x-jwt-assertion header.`);
             return ctx.next();
         }
 
-        log:printDebug(`[AnalyticsRequestInterceptor] Publishing analytics data.`);
-        future<error?> _ = start self.publishAnalyticsData(xJWT);
+        log:printDebug(`[AnalyticsResponseInterceptor] Publishing analytics data.`);
+        future<error?> _ = start self.publishAnalyticsData(xJWT, res.statusCode);
 
         // Returns the next interceptor in the pipeline.
         return ctx.next();
