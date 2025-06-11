@@ -47,5 +47,5 @@
 public type Element record {|
     string id?;
     Extension[] extension?;
-    Element...;
+    Element | Element[]...;
 |};
