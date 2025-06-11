@@ -15,6 +15,14 @@ import ballerinax/health.fhir.r4.parser;
 import ballerina/http;
 import ballerina/log;
 
+isolated http:Client? conditionalInvokationClient = ();
+
+isolated function createConditionalInvokationClient(int port) returns error? {
+    lock {
+	    conditionalInvokationClient = check new ("http://localhost:" + port.toBalString());
+    }
+}
+
 isolated function addPagination(r4:PaginationContext paginationContext, map<r4:RequestSearchParameter[]> requestSearchParameters,
         r4:Bundle bundle, string path) returns r4:Bundle {
     r4:BundleLink[] allLinks = [];
@@ -86,25 +94,35 @@ isolated function handleBundleInfo(r4:Bundle bundle, r4:FHIRContext fhirCtx, str
     return bundle;
 }
 
-isolated function handleConditionalHeader(string conditionalUrl) returns r4:FHIRError? {
-    final string baseUrl = conditionalUrl.substring(0, <int>conditionalUrl.lastIndexOf("/"));
-    final string resourcePath = conditionalUrl.substring(<int>conditionalUrl.lastIndexOf("/"));
+isolated function handleConditionalHeader(string conditionalUrl, string resourcePath) returns r4:FHIRError? {
+    int? indexOfSearchParams = conditionalUrl.indexOf("?");
+    string searchParams = indexOfSearchParams is int ? conditionalUrl.substring(indexOfSearchParams) : "";
 
     do {
-	    //create a new HTTP client
-	    http:Client conditionalClient = check new (baseUrl);
+        r4:Bundle bundle;
+        http:Response? response = ();
 
-        // send a http request to the resourcePath
-        http:Response response = check conditionalClient->get(resourcePath);
+        lock {
+            if conditionalInvokationClient is () {
+                return;
+            }
 
-        if response.statusCode == 404 {
-            // allow to create a new resource if no entries are found
-            log:printDebug("No existing resource found for the given search criteria, allowing creation of a new resource");
-            return;
-        } 
+            // send a http request to the resourcePath
+            response = check (<http:Client>conditionalInvokationClient)->get(resourcePath + searchParams);
+        }
 
-        // Extract the entity and decode to r4:Bundle
-        r4:Bundle bundle = check parser:parse(check response.getJsonPayload()).ensureType();
+        if response is http:Response {
+            if response.statusCode == http:STATUS_NOT_FOUND {
+                // allow to create a new resource if no entries are found
+                log:printDebug("No existing resource found for the given search criteria, allowing creation of a new resource");
+                return;
+            } 
+
+            // Extract the entity and decode to r4:Bundle
+            bundle = check parser:parse(check response.getJsonPayload()).ensureType();
+        } else {
+            return r4:createFHIRError("Failed to get a valid HTTP response", r4:ERROR, r4:INVALID);
+        }
 
         r4:BundleEntry[]? entries = bundle.entry;
         if entries is r4:BundleEntry[] {
