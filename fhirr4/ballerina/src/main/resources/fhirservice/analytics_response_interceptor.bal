@@ -20,20 +20,49 @@ import ballerina/log;
 import ballerina/time;
 import ballerinax/health.fhir.r4;
 
-// Analytics Server configuration
-configurable boolean analyticsEnabled = false;
-configurable string analyticsServerUrl = "http://localhost:9200/fhirr4/_doc";
-configurable string analyticsServerUsername = "";
-configurable string analyticsServerPassword = "";
+# AnalyticsConfig Record.
+#
+# + enabled - if analytics is enabled or not
+# + attributes - the list of attributes picked from x-jwt-assertion to publish
+# + url - the URL of the analytics server to publish logs
+# + username - the username for the analytics server
+# + password - the password for the analytics server
+# + moreInfo - configuration for fetching more information
+public type AnalyticsConfig record {|
+    boolean enabled;
+    string[] attributes;
+    string url;
+    string username;
+    string password;
+    MoreInfoConfig moreInfo;
+|};
 
-// Configs to read from x-jwt-assertion header
-configurable string[] analyticsRequiredAttributes = ["fhirUser", "client_id", "iss"];
+# MoreInfoConfig Record.
+#
+# + enabled - if more info fetching is enabled or not
+# + url - the URL to fetch more information
+# + username - the username for the more info server
+# + password - the password for the more info server
+public type MoreInfoConfig record {|
+    boolean enabled;
+    string url;
+    string username;
+    string password;
+|};
 
-// Configs to get more information about the patient
-configurable boolean analyticsMoreInfoRequired = false;
-configurable string analyticsMoreInfoUrl = "";
-configurable string analyticsMoreInfoUsername = "";
-configurable string analyticsMoreInfoPassword = "";
+configurable AnalyticsConfig analytics = {
+    enabled: true,
+    attributes: ["fhirUser", "client_id", "iss"],
+    url: "http://localhost:9200/fhirr4/_doc",
+    username: "",
+    password: "",
+    moreInfo: {
+        enabled: false,
+        url: "",
+        username: "",
+        password: ""
+    }
+};
 
 const X_JWT_HEADER = "x-jwt-assertion";
 
@@ -48,22 +77,25 @@ isolated service class AnalyticsResponseInterceptor {
     public function init(r4:ResourceAPIConfig apiConfig) {
         self.resourceType = apiConfig.resourceType;
         // Initialize the log publisher HTTP client
-        if analyticsServerUsername != "" && analyticsServerPassword != "" {
-            self.logPublisherHttpClient = new (analyticsServerUrl, auth = {
-                username: analyticsServerUsername,
-                password: analyticsServerPassword
-            });
+        if analytics.username is "" {
+            self.logPublisherHttpClient = new (analytics.url);
         } else {
-            self.logPublisherHttpClient = new (analyticsServerUrl);
+            self.logPublisherHttpClient = new (analytics.url, auth = {
+                username: analytics.username,
+                password: analytics.password
+            });
         }
+
         // Initialize the analytics more info HTTP client
-        if analyticsMoreInfoUsername != "" && analyticsMoreInfoPassword != "" {
-            self.moreInfoHttpClient = new (analyticsMoreInfoUrl, auth = {
-                username: analyticsMoreInfoUsername,
-                password: analyticsMoreInfoPassword
-            });
+        if !analytics.moreInfo.enabled {
+            self.moreInfoHttpClient = ();
+        } else if analytics.moreInfo.username is "" {
+            self.moreInfoHttpClient = new (analytics.moreInfo.url);
         } else {
-            self.moreInfoHttpClient = new (analyticsMoreInfoUrl);
+            self.moreInfoHttpClient = new (analytics.moreInfo.url, auth = {
+                username: analytics.moreInfo.username,
+                password: analytics.moreInfo.password
+            });
         }
     }
 
@@ -72,22 +104,22 @@ isolated service class AnalyticsResponseInterceptor {
     # + logData - The log data json to be published
     isolated function publish(json logData) {
         http:Client|http:ClientError? logPublisher = self.logPublisherHttpClient;
-        log:printDebug(`[AnalyticsResponseInterceptor] Sending log to: ${analyticsServerUrl}`);
+        log:printDebug(`[AnalyticsResponseInterceptor] Sending log to: ${analytics.url}`);
         if logPublisher is () || logPublisher is http:ClientError {
             log:printError(`[AnalyticsResponseInterceptor] Failed to create Analytics HTTP client`);
         } else {
             http:Response|http:ClientError result = logPublisher->/.post(logData);
             if result is http:ClientError {
-                log:printError(`[AnalyticsResponseInterceptor] Failed publishing log to ${analyticsServerUrl} [Error]: ${result.toString()}`);
+                log:printError(`[AnalyticsResponseInterceptor] Failed publishing log to ${analytics.url} [Error]: ${result.toString()}`);
             } else if result.statusCode < 200 || result.statusCode >= 300 {
-                log:printError(`[AnalyticsResponseInterceptor] Failed publishing log to ${analyticsServerUrl} [Error]: ${result.reasonPhrase}`);
+                log:printError(`[AnalyticsResponseInterceptor] Failed publishing log to ${analytics.url} [Error]: ${result.reasonPhrase}`);
             } else {
-                log:printInfo(`[AnalyticsResponseInterceptor] Log published successfully to ${analyticsServerUrl}`);
+                log:printInfo(`[AnalyticsResponseInterceptor] Log published successfully to ${analytics.url}`);
             }
         }
     }
 
-    # Retrieves more information about the patient from the configured URL
+    # Retrieves more information from the configured URL
     #
     # + logData - The log data to send to retrieve more information
     # + return - A JSON object containing additional information
@@ -107,7 +139,7 @@ isolated service class AnalyticsResponseInterceptor {
                     return {};
                 }
             } else {
-                log:printError(`[AnalyticsResponseInterceptor] Failed to fetch more info from ${analyticsMoreInfoUrl} [Error]: ${result.toString()}`);
+                log:printError(`[AnalyticsResponseInterceptor] Failed to fetch more info from ${analytics.moreInfo.url} [Error]: ${result.toString()}`);
                 return {};
             }
         }
@@ -123,16 +155,16 @@ isolated service class AnalyticsResponseInterceptor {
             [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
 
             // Filter logData to include only keys in x_jwt_attributes
-            map<string> filteredLogData = map from string attrKey in analyticsRequiredAttributes
+            map<string> filteredLogData = map from string attrKey in analytics.attributes
                 where payload[attrKey] !== ()
                 select [attrKey, payload[attrKey].toString()];
 
             filteredLogData["resourceType"] = self.resourceType;
 
             // Get more information if configured
-            if analyticsMoreInfoRequired {
+            if analytics.moreInfo.enabled {
                 json moreInfo = self.getMoreInfo(filteredLogData.toJson());
-                log:printDebug(`[AnalyticsResponseInterceptor] More info fetched from: ${analyticsMoreInfoUrl} [More info]: ${moreInfo.toString()}`);
+                log:printDebug(`[AnalyticsResponseInterceptor] More info fetched from: ${analytics.moreInfo.url} [More info]: ${moreInfo.toString()}`);
                 foreach var [key, value] in (<map<json>>moreInfo).entries() {
                     filteredLogData[key] = value.toString();
                 }
@@ -155,7 +187,7 @@ isolated service class AnalyticsResponseInterceptor {
     # + res - The HTTP response
     # + return - The next service in the interceptor chain or an error
     remote isolated function interceptResponse(http:RequestContext ctx, http:Request req, http:Response res) returns http:NextService|error? {
-        if !analyticsEnabled {
+        if !analytics.enabled {
             log:printDebug(`[AnalyticsResponseInterceptor] Analytics is disabled. Skipping analytics data publishing.`);
             return ctx.next();
         }
