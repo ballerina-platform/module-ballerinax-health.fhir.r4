@@ -201,6 +201,81 @@ function testCreateInvalidPayload() returns error? {
     }
 }
 
+@test:Config { groups: ["FhirService", "conditional_interactions"] }
+function testCreateConditional412() returns error? {
+    international401:Patient patient = {
+        resourceType: "Patient",
+        name: [
+            {
+                "family": "Smith",
+                "given": ["John"]
+            }
+        ],
+        id: "150"
+    };
+    map<string> headers = {
+        "If-None-Exist": "http://localhost:9292/fhir/r4/Patient" // not ID for 412
+    };
+    http:Response|ServiceTestError response = check fhirClient->post("/Patient", message = patient, headers = headers, mediaType = r4:FHIR_MIME_TYPE_JSON);
+    test:assertTrue(response is http:Response);
+    if response is http:Response {
+        // 412 for multiple resources
+        test:assertEquals(response.statusCode, 412);
+    } else {
+        test:assertFail("Error in service invocation");
+    }
+}
+
+@test:Config { groups: ["FhirService", "conditional_interactions"] }
+function testCreateConditionalExistingResource() returns error? {
+    international401:Patient patient = {
+        resourceType: "Patient",
+        name: [
+            {
+                "family": "Smith",
+                "given": ["John"]
+            }
+        ],
+        id: "1"
+    };
+    map<string> headers = {
+        "If-None-Exist": "http://localhost:9292/fhir/r4/Patient?_id=1"
+    };
+    http:Response|ServiceTestError response = check fhirClient->post("/Patient", message = patient, headers = headers, mediaType = r4:FHIR_MIME_TYPE_JSON);
+    test:assertTrue(response is http:Response);
+    if response is http:Response {
+        // 200 for existing resource
+        test:assertEquals(response.statusCode, 200);
+    } else {
+        test:assertFail("Error in service invocation");
+    }
+}
+
+@test:Config { groups: ["FhirService", "conditional_interactions"] }
+function testCreateConditionalSuccess() returns error? {
+    international401:Patient patient = {
+        resourceType: "Patient",
+        name: [
+            {
+                "family": "Smith",
+                "given": ["John"]
+            }
+        ],
+        id: "1"
+    };
+    map<string> headers = {
+        "If-None-Exist": "http://localhost:9292/fhir/r4/Patient?_id=New"
+    };
+    http:Response|ServiceTestError response = check fhirClient->post("/Patient", message = patient, headers = headers, mediaType = r4:FHIR_MIME_TYPE_JSON);
+    test:assertTrue(response is http:Response);
+    if response is http:Response {
+        // 201 created for new resource
+        test:assertEquals(response.statusCode, 201);
+    } else {
+        test:assertFail("Error in service invocation");
+    }
+}
+
 @test:Config { groups: ["FhirService"] }
 function testPatch() returns error? {
     json patient = {

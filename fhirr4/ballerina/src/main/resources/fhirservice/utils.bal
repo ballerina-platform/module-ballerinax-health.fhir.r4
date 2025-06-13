@@ -11,6 +11,17 @@
 // specific language governing permissions and limitations
 // under the License.
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.parser;
+import ballerina/http;
+import ballerina/log;
+
+isolated http:Client? conditionalInvokationClient = ();
+
+isolated function createConditionalInvokationClient(int port) returns error? {
+    lock {
+	    conditionalInvokationClient = check new ("http://localhost:" + port.toBalString());
+    }
+}
 
 isolated function addPagination(r4:PaginationContext paginationContext, map<r4:RequestSearchParameter[]> requestSearchParameters,
         r4:Bundle bundle, string path) returns r4:Bundle {
@@ -81,4 +92,67 @@ isolated function handleBundleInfo(r4:Bundle bundle, r4:FHIRContext fhirCtx, str
         }
     }
     return bundle;
+}
+
+isolated function handleConditionalHeader(string conditionalUrl, string resourcePath) returns r4:FHIRError? {
+    int? indexOfSearchParams = conditionalUrl.indexOf("?");
+    string searchParams = indexOfSearchParams is int ? conditionalUrl.substring(indexOfSearchParams) : "";
+
+    do {
+        r4:Bundle bundle;
+        http:Response? response = ();
+
+        lock {
+            if conditionalInvokationClient is () {
+                return;
+            }
+
+            // send a http request to the resourcePath
+            response = check (<http:Client>conditionalInvokationClient)->get(resourcePath + searchParams);
+        }
+
+        if response is http:Response {
+            if response.statusCode == http:STATUS_NOT_FOUND {
+                // allow to create a new resource if no entries are found
+                log:printDebug("No existing resource found for the given search criteria, allowing creation of a new resource");
+                return;
+            } 
+
+            // Extract the entity and decode to r4:Bundle
+            bundle = check parser:parse(check response.getJsonPayload()).ensureType();
+        } else {
+            return r4:createFHIRError("Failed to get a valid HTTP response", r4:ERROR, r4:INVALID);
+        }
+
+        r4:BundleEntry[]? entries = bundle.entry;
+        if entries is r4:BundleEntry[] {
+            // check the bundle entry count
+            if entries.length() == 0 {
+                // allow to create a new resource if no entries are found
+                log:printDebug("No existing resource found for the given search criteria, allowing creation of a new resource");
+                return;
+            } else if entries.length() == 1 {
+                // exising resource found, return 200
+                log:printDebug("Existing resource found for the given search criteria, returning 200 OK");
+                return r4:createFHIRError(
+                        "Resource already exists for the given search criteria",
+                        r4:INFORMATION,
+                        r4:PROCESSING_DUPLICATE,
+                        httpStatusCode = http:STATUS_OK);
+            } else {
+                // return 412 Precondition Failed if more than one entry is found
+                log:printDebug("Multiple resources found for the given search criteria, returning 412 Precondition Failed");
+                return r4:createFHIRError(
+                        "Multiple resources found for the given search criteria",
+                        r4:ERROR,
+                        r4:INVALID,
+                        httpStatusCode = http:STATUS_PRECONDITION_FAILED);
+            }
+        } else {
+            return r4:createFHIRError("Invalid response received while handling conditional search", r4:ERROR, r4:INVALID);
+        }
+    } on fail var e {
+        // log the error and return a FHIR error
+    	return r4:createFHIRError("Error while handling conditional search: " + e.message(), r4:ERROR, r4:INVALID);
+    }
 }

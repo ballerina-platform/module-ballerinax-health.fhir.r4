@@ -213,6 +213,15 @@ public isolated class FHIRPreprocessor {
         // Create FHIR context
         r4:FHIRContext fhirCtx = new (fhirRequest, request, fhirSecurity);
 
+        string|error isNoneExistHeader = httpRequest.getHeader("If-None-Exist");
+        if isNoneExistHeader is string {
+            // conditional create
+            // Implemented according to the https://hl7.org/fhir/R4/http.html#ccreate FHIR specification
+            log:printDebug("Conditional create interaction.");
+            log:printDebug(string `Conditional header (If-None-Exist): ${isNoneExistHeader}`);
+            _ = check handleConditionalHeader(isNoneExistHeader, httpRequest.rawPath);
+        }
+
         // Set FHIR context inside HTTP context
         setFHIRContext(fhirCtx, httpCtx);
     }
