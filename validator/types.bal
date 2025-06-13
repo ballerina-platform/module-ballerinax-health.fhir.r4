@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 type Term record {
     string code;
     string system;
@@ -26,3 +27,13 @@ type TerminologyConfig record {|
     string clientId?;
     string clientSecret?;
 |};
+
+enum TerminologyResources {
+    CODE_SYSTEM = "CodeSystem",
+    VALUE_SET = "ValueSet"
+}
+
+enum TerminologyOperation {
+    LOOKUP = "lookup",
+    VALIDATE_CODE = "validate-code"
+}

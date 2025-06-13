@@ -125,15 +125,13 @@ public isolated function validate(anydata data, typedesc<anydata>? targetFHIRMod
     
     // terminology validation
     if terminologyConfig?.isTerminologyValidationEnabled == true {
-        string[]|error? validationErrors = validateTerminologyData(validationResult);
+        string[]? validationErrors = validateTerminologyData(validationResult);
 
         if validationErrors is string[] {    
             return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed, due to terminology validation failed", r4:ERROR, r4:INVALID, "Terminology validation failed", 
                 errorType = r4:VALIDATION_ERROR, parsedErrors = validationErrors, httpStatusCode = http:STATUS_BAD_REQUEST);
-        } else if validationErrors is error {
-            log:printDebug("Error during validation: " + validationErrors.message());
-            return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, "Terminology validation failed", 
-                errorType = r4:VALIDATION_ERROR, cause = validationErrors, httpStatusCode = http:STATUS_BAD_REQUEST);
+        } else {
+            log:printDebug("Successfully validated FHIR resource with terminology validation");
         }
     }
 }
