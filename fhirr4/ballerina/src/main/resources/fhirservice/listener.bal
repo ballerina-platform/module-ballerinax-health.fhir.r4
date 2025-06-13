@@ -46,6 +46,7 @@ public isolated class Listener {
         lock {
             self.httpService = getHttpService(holder, self.config, name is string[] ? name.cloneReadOnly() : []);
             check self.ls.attach(self.httpService, name.cloneReadOnly());
+            check createConditionalInvokationClient(self.ls.getPort());
         }
     }
 
