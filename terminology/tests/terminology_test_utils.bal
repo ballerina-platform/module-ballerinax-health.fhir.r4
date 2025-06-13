@@ -13,6 +13,8 @@
 import ballerina/io;
 import ballerina/test;
 import ballerinax/health.fhir.r4;
+import ballerina/lang.regexp;
+import ballerina/http;
 
 function returnCodeSystemData(string fileName) returns r4:CodeSystem {
     string filePath = string `tests/resources/terminology/code_systems/${fileName}.json`;
@@ -64,6 +66,33 @@ isolated class TestTerminology {
     private map<r4:ValueSet> valueSetMap = {};
 
     function init() {
+        // Add a CodeSystem object for http://xyz.org
+        r4:CodeSystem csXyz = {
+            id: "cs-xyz",
+            status: "active",
+            url: "http://xyz.org",
+            version: "2.36",
+            content: "complete",
+            concept: [
+                {code: "1", display: "Cholesterol xyz [Moles/Volume]"},
+                {code: "2", display: "Cholesterol xyz [Mass/Volume]"}
+            ]
+        };
+        // Add a CodeSystem object with the given concepts and extra concepts
+        r4:CodeSystem csLoinc = {
+            id: "loinc",
+            status: "active",
+            url: "http://loinc.org",
+            version: "2.36",
+            content: "complete",
+            concept: [
+                {code: "1", display: "Cholesterol [Moles/Volume]"},
+                {code: "2", display: "Cholesterol [Mass/Volume]"},
+                {code: "3", display: "Triglyceride [Moles/Volume]"},
+                {code: "4", display: "Triglyceride [Mass/Volume]"},
+                {code: "5", display: "HDL Cholesterol [Moles/Volume]"}
+            ]
+        };
         r4:ValueSet vs1 = {id: "vs1", status: "active", url: "http://example.org/vs1", version: "1.0.0", compose: {include: []}};
         vs1.compose.include = [{valueSet: ["http://example.org/vs2"]}];
         r4:ValueSet vs2 = {id: "vs2", status: "active", url: "http://example.org/vs2", version: "1.0.0", compose: {include: []}};
@@ -124,11 +153,13 @@ isolated class TestTerminology {
             self.valueSetMap["http://example.org/vs2"] = vs2.clone();
             self.valueSetMap["http://example.org/vs3"] = vs3.clone();
             self.valueSetMap["http://example.org/vs4"] = vs4.clone();
+            self.codeSystemMap["http://loinc.org"] = csLoinc.clone();
+            self.codeSystemMap["http://xyz.org"] = csXyz.clone();
         }
     }
 
     public isolated function addCodeSystem(r4:CodeSystem codeSystem) returns r4:FHIRError? {
-        return;
+        return inMemoryTerminology.addCodeSystem(codeSystem);
     }
 
     public isolated function addValueSet(r4:ValueSet valueSet) returns r4:FHIRError? {
@@ -136,13 +167,110 @@ isolated class TestTerminology {
     }
 
     public isolated function findCodeSystem(r4:uri? system, string? id, string? version) returns r4:CodeSystem|r4:FHIRError {
-        r4:CodeSystem codeSystem = {content: "example", status: "unknown"};
-        return codeSystem;
+        lock {
+            // Search by system (URL) if provided
+            if system is r4:uri {
+                string systemKey = system.toString();
+                if self.codeSystemMap.hasKey(systemKey) {
+                    r4:CodeSystem cs = <r4:CodeSystem>self.codeSystemMap[systemKey];
+                    if version is () || (cs.version is string && cs.version == version) {
+                        return cs.clone();
+                    }
+                }
+            }
+            // If not found by system, search by id if provided
+            if id is string {
+                foreach var [_, csValue] in self.codeSystemMap.entries() {
+                    r4:CodeSystem cs = <r4:CodeSystem>csValue;
+                    if cs.id is string && cs.id == id {
+                        if version is () || (cs.version is string && cs.version == version) {
+                            return cs.clone();
+                        }
+                    }
+                }
+            }
+        }
+        return r4:createFHIRError(
+            string `CodeSystem not found for system: ${system is r4:uri ? system.toString() : ""}${id is string ? ", id: " + id : ""}${version == () ? "" : "|" + version}`,
+            r4:ERROR,
+            r4:PROCESSING_NOT_FOUND,
+            errorType = r4:PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_NOT_FOUND
+        );
     }
 
-    public isolated function findConcept(r4:uri system, r4:code code, string? version) returns CodeConceptDetails|r4:FHIRError {
-        r4:CodeSystemConcept concept = {code: "example", display: "example"};
-        return {concept: concept, url: "http://example.org/vs1"};
+    // for the findConcept() use the same implementation which used in inmemory terminology source
+    public isolated function findConcept(r4:uri system, r4:code code, string? version = ()) returns CodeConceptDetails|r4:FHIRError {
+        CodeConceptDetails|r4:FHIRError? result = ();
+        r4:ValueSet|r4:FHIRError findValueSetResult = self.findValueSet(system, (), version);
+        if findValueSetResult is r4:ValueSet {
+            CodeConceptDetails[]|r4:canonical[]|r4:FHIRError|CodeSystemMetadata[] conceptResults = findConceptInValueSetOrReturnValueSetURIs(findValueSetResult, code);
+            if conceptResults is r4:canonical[] {
+                r4:FHIRError? lastError = ();
+                foreach r4:canonical refValueSetUrl in conceptResults {
+                    r4:ValueSet|r4:FHIRError refValueSet = self.findValueSet(refValueSetUrl, (), ());
+                    if refValueSet is r4:ValueSet {
+                        CodeConceptDetails[]|r4:canonical[]|CodeSystemMetadata[]|r4:FHIRError? concept = findConceptInValueSetOrReturnValueSetURIs(refValueSet, code);
+                        if concept is CodeConceptDetails[] {
+                            foreach CodeConceptDetails codeConceptDetails in concept {
+                                result = codeConceptDetails;
+                                break;
+                            }
+                        } else if concept is r4:FHIRError {
+                            lastError = concept.clone();
+                        } else if concept is CodeSystemMetadata[] {
+                            foreach CodeSystemMetadata codeSystemMetadata in concept {
+                                CodeConceptDetails|r4:FHIRError findConceptResult = self.findConcept(<r4:uri>codeSystemMetadata.url, version = codeSystemMetadata.version, code = code);
+                                if findConceptResult is CodeConceptDetails {
+                                    return findConceptResult;
+                                }
+                            }
+                        }
+                        // ignore other possibilities
+                    }
+                }
+                if result == () && lastError != () {
+                    result = lastError;
+                }
+            } else if conceptResults is CodeSystemMetadata[] {
+                foreach CodeSystemMetadata codeSystemMetadata in conceptResults {
+                    CodeConceptDetails|r4:FHIRError findConceptResult = self.findConcept(<r4:uri>codeSystemMetadata.url, version = codeSystemMetadata.version, code = code);
+                    if findConceptResult is CodeConceptDetails {
+                        return findConceptResult;
+                    }
+                }
+            } else if conceptResults is CodeConceptDetails[] {
+                // found the concept in the ValueSet
+                return conceptResults[0];
+            } else {
+                result = <r4:FHIRError>conceptResults;
+            }
+        } else {
+            r4:CodeSystem|r4:FHIRError findCodeSystemResult = self.findCodeSystem(system, (), version);
+            if findCodeSystemResult is r4:CodeSystem {
+                result = findConceptInCodeSystem(findCodeSystemResult, code);
+
+                if result is r4:FHIRError {
+                    result = r4:createFHIRError(
+                        "Concept not found in the ValueSet",
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        errorType = r4:PROCESSING_ERROR,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                    );
+                }
+            } 
+        }
+        if result is () {
+            return r4:createFHIRError(
+                string `Unknown ValueSet or CodeSystem : ${system}${version == () ? "" : "|" + version}`,
+                r4:ERROR,
+                r4:INVALID_REQUIRED,
+                errorType = r4:PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_NOT_FOUND
+            );
+        }
+        return result.clone();
     }
 
     public isolated function findValueSet(r4:uri? system, string? id, string? version) returns r4:ValueSet|r4:FHIRError {
@@ -151,8 +279,14 @@ isolated class TestTerminology {
                 return <r4:ValueSet>self.valueSetMap[system.toString()].clone();
             }
         }
-        r4:ValueSet valueSet = {status: "unknown"};
-        return valueSet;
+        
+        return r4:createFHIRError(
+            string `ValueSet not found`,
+            r4:ERROR,
+            r4:PROCESSING_NOT_FOUND,
+            errorType = r4:PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_NOT_FOUND
+        );
     }
 
     public isolated function isCodeSystemExist(r4:uri system, string version) returns boolean {
@@ -189,5 +323,68 @@ isolated class TestTerminology {
         }
         return valueSetArray;
     }
+
+    // use same implementation which used in inmemory terminology source
+    public isolated function expandValueSet(map<r4:RequestSearchParameter[]> searchParameters, r4:ValueSet valueSet, int offset, int count) returns r4:ValueSet|r4:FHIRError {
+            ValueSetExpansionDetails? details = getAllConceptInValueSet(valueSet);
+
+            if details is ValueSetExpansionDetails {
+                r4:CodeSystemConcept[]|r4:ValueSetComposeIncludeConcept[] concepts = details.concepts;
+
+                if concepts is r4:ValueSetComposeIncludeConcept[] {
+                    if searchParameters.hasKey(FILTER) {
+                        string filter = searchParameters.get(FILTER)[0].value;
+                        r4:ValueSetComposeIncludeConcept[] result = from r4:ValueSetComposeIncludeConcept entry in concepts
+                            where entry[DISPLAY] is string && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`,
+                                    (<string>entry[DISPLAY]).toUpperAscii())
+                            select entry;
+                        concepts = result;
+                    }
+
+                    int totalCount = concepts.length();
+
+                    if totalCount > offset + count {
+                        concepts = concepts.slice(offset, offset + count);
+                    } else if totalCount >= offset {
+                        concepts = concepts.slice(offset);
+                    } else {
+                        r4:CodeSystemConcept[] temp = [];
+                        concepts = temp;
+                    }
+
+                    r4:ValueSetExpansion expansion = createExpandedValueSet(valueSet, concepts);
+                    expansion.offset = offset;
+                    expansion.total = totalCount;
+                    valueSet.expansion = expansion.clone();
+
+                } else {
+                    if searchParameters.hasKey(FILTER) {
+                        string filter = searchParameters.get(FILTER)[0].value;
+                        r4:CodeSystemConcept[] result = from r4:CodeSystemConcept entry in concepts
+                            where entry[DISPLAY] is string
+                                    && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, (<string>entry[DISPLAY]).toUpperAscii())
+                                || entry[DEFINITION] is string
+                                    && regexp:isFullMatch(re `.*${filter.toUpperAscii()}.*`, (<string>entry[DEFINITION]).toUpperAscii())
+                            select entry;
+                        concepts = result;
+                    }
+
+                    int totalCount = concepts.length();
+                    if totalCount > offset + count {
+                        concepts = concepts.slice(offset, offset + count);
+                    } else if totalCount >= offset {
+                        concepts = concepts.slice(offset);
+                    } else {
+                        r4:CodeSystemConcept[] temp = [];
+                        concepts = temp;
+                    }
+                    r4:ValueSetExpansion expansion = createExpandedValueSet(valueSet, concepts);
+                    expansion.offset = offset;
+                    expansion.total = totalCount;
+                    valueSet.expansion = expansion.clone();
+                }
+            }
+            return valueSet.clone();
+        }
 }
 
