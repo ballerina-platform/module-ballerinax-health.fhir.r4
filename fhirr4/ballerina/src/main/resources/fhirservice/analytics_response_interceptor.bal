@@ -28,13 +28,13 @@ import ballerinax/health.fhir.r4;
 # + username - the username for the analytics server
 # + password - the password for the analytics server
 # + moreInfo - configuration for fetching more information
-public type AnalyticsConfig record {|
-    boolean enabled;
-    string[] attributes;
-    string url;
-    string username;
-    string password;
-    MoreInfoConfig moreInfo;
+public type AnalyticsConfig readonly & record {|
+    boolean enabled = false;
+    string[] attributes = ["fhirUser", "client_id", "iss"];
+    string url = "http://localhost:9200/fhirr4/_doc";
+    string username?;
+    string password?;
+    MoreInfoConfig moreInfo = {};
 |};
 
 # MoreInfoConfig Record.
@@ -44,26 +44,15 @@ public type AnalyticsConfig record {|
 # + username - the username for the more info server
 # + password - the password for the more info server
 public type MoreInfoConfig record {|
-    boolean enabled;
-    string url;
-    string username;
-    string password;
+    boolean enabled = false;
+    string url?;
+    string username?;
+    string password?;
 |};
 
-configurable AnalyticsConfig analytics = {
-    enabled: true,
-    attributes: ["fhirUser", "client_id", "iss"],
-    url: "http://localhost:9200/fhirr4/_doc",
-    username: "",
-    password: "",
-    moreInfo: {
-        enabled: false,
-        url: "",
-        username: "",
-        password: ""
-    }
-};
+configurable AnalyticsConfig analytics = {};
 
+# Mandatory header to be present in the request for analytics
 const X_JWT_HEADER = "x-jwt-assertion";
 
 # AnalyticsResponseInterceptor is an HTTP response interceptor that publishes analytics data
@@ -76,26 +65,36 @@ isolated service class AnalyticsResponseInterceptor {
     # Initializes the AnalyticsResponseInterceptor
     public function init(r4:ResourceAPIConfig apiConfig) {
         self.resourceType = apiConfig.resourceType;
+
+        final string? analyticsUsername = analytics?.username;
+        final string? analyticsPassword = analytics?.password;
+
         // Initialize the log publisher HTTP client
-        if analytics.username is "" {
-            self.logPublisherHttpClient = new (analytics.url);
-        } else {
+        if !analytics.enabled {
+            return;
+        } else if analyticsUsername !is () && analyticsPassword !is () {
             self.logPublisherHttpClient = new (analytics.url, auth = {
-                username: analytics.username,
-                password: analytics.password
+                username: analyticsUsername,
+                password: analyticsPassword
             });
+        } else {
+            self.logPublisherHttpClient = new (analytics.url);
         }
 
+        final string? moreInfoUrl = analytics.moreInfo?.url;
+        final string? moreInfoUsername = analytics.moreInfo?.username;
+        final string? moreInfoPassword = analytics.moreInfo?.password;
+
         // Initialize the analytics more info HTTP client
-        if !analytics.moreInfo.enabled {
+        if !analytics.moreInfo.enabled || moreInfoUrl is () {
             self.moreInfoHttpClient = ();
-        } else if analytics.moreInfo.username is "" {
-            self.moreInfoHttpClient = new (analytics.moreInfo.url);
-        } else {
-            self.moreInfoHttpClient = new (analytics.moreInfo.url, auth = {
-                username: analytics.moreInfo.username,
-                password: analytics.moreInfo.password
+        } else if moreInfoUsername !is () && moreInfoPassword !is () {
+            self.moreInfoHttpClient = new (moreInfoUrl, auth = {
+                username: moreInfoUsername,
+                password: moreInfoPassword
             });
+        } else {
+            self.moreInfoHttpClient = new (moreInfoUrl);
         }
     }
 
