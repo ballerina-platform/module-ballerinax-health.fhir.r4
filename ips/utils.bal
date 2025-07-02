@@ -13,10 +13,196 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import ballerina/log;
+import ballerina/regex;
 import ballerina/time;
 import ballerina/uuid;
+import ballerinax/health.clients.fhir;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401;
+
+# Generate an IPS (International Patient Summary) Bundle using the provided IPS Context.
+#
+# + patientId - The ID of the patient for whom the IPS Bundle is being generated.
+# + context - The IPSContext containing all necessary data to construct the IPS Bundle.
+# + return - The constructed FHIR R4 Bundle or an error if generation fails.
+public isolated function generateIps(string patientId, IPSContext context) returns r4:Bundle|error {
+    r4:Resource[] ipsBundleResources = [];
+
+    // 1. Prepare the Composition resource (sections will be filled below)
+    CompositionUvIps composition = {
+        status: <CompositionUvIpsStatus>ips_composition_status,
+        subject: {
+            reference: "Patient/" + patientId
+        },
+        date: time:utcToString(time:utcNow()),
+        author: getIpsAuthorReferences(),
+        custodian: getIpsCustodianReference(),
+        attester: getIpsAttesters(),
+        section: [],
+        title: ips_composition_title,
+        'type: {
+            coding: [
+                {
+                    system: LOINC_SYSTEM,
+                    code: IPS_SECTION_CODE,
+                    display: IPS_SECTION_DISPLAY
+                }
+            ]
+        }
+    };
+
+    // 2. Fetch the Patient resource
+    log:printDebug("Fetching Patient resource for patientId: " + patientId);
+    fhir:FHIRConnector patientClient = check context.getFHIRClient(international401:RESOURCE_NAME_PATIENT);
+    fhir:FHIRResponse patientResp = check patientClient->getById(international401:RESOURCE_NAME_PATIENT, patientId);
+    if patientResp.httpStatusCode != 200 {
+        log:printDebug("Failed to fetch Patient resource for patientId: " + patientId + ", status code: " + patientResp.httpStatusCode.toString());
+        return error("Failed to fetch Patient resource for given patientId: " + patientId);
+    }
+    if patientResp.'resource !is json {
+        log:printDebug("Invalid response format for Patient resource, expected JSON.");
+        return error("Invalid response format for Patient resource, expected JSON.");
+    }
+    r4:Resource patientResource = check patientResp.'resource.cloneWithType();
+
+    // 3. Add the resource to the entries
+    // 3.1 For each IPS section, use context.getSectionConfigs() and fetch resources using section configs
+    r4:code[] sectionCodes = [];
+    SectionConfig[] sectionConfigs = context.getSectionConfigs();
+    foreach SectionConfig sectionConfig in sectionConfigs {
+        // Use LOINC code map for section code/display if available
+        Coding|error sectionCoding = getSectionCoding(sectionConfig.sectionName);
+        if sectionCoding is error {
+            log:printWarn("No LOINC code found for section: " + sectionConfig.sectionName + ", using default title as display.");
+            continue;
+        }
+
+        r4:Reference[] sectionRefs = [];
+        string divContent = "";
+
+        // find the section resources from the section config
+        foreach SectionResourceConfig resourceConfig in sectionConfig.resources {
+            string resourceType = resourceConfig.resourceType;
+
+            // get the search parameters to search the resources
+            map<string[]> searchParams = {};
+            if resourceConfig.searchParams is map<string> {
+                foreach var [k, v] in (<map<string>>resourceConfig.searchParams).entries() {
+                    searchParams[k] = [v];
+                }
+            }
+            // add the patient id as a search parameter
+            searchParams[resourceConfig.patientParam] = [patientId];
+
+            // get the fhir client and fetch resources
+            fhir:FHIRConnector|error clientVal = context.getFHIRClient(resourceType);
+            if clientVal is fhir:FHIRConnector {
+                // request the resources by searching with the search parameters
+                log:printDebug("Fetching resources of type: " + resourceType);
+                fhir:FHIRResponse resp = check clientVal->search(resourceType, searchParams);
+                if resp.httpStatusCode != 200 {
+                    log:printDebug("Failed to fetch resources of type: " + resourceType + ", status code: " + resp.httpStatusCode.toString());
+                    continue;
+                }
+
+                // check if the response contains resources
+                r4:Bundle responseBundle = check resp.'resource.cloneWithType();
+                r4:BundleEntry[]? bundleEntryArr = responseBundle.entry;
+                if bundleEntryArr is () {
+                    log:printDebug("No entries found for resource type: " + resourceType);
+                    continue;
+                }
+                foreach r4:BundleEntry entry in bundleEntryArr {
+                    r4:Resource|error bundleEntryResource = entry["resource"].cloneWithType();
+                    if bundleEntryResource is r4:Resource {
+                        string summary = "";
+
+                        // get the ID and summary from the resource JSON
+                        string? id = bundleEntryResource.id;
+
+                        log:printDebug("Processing resource of type: " + resourceType);
+
+                        summary = extractSectionNarrativeSummary(bundleEntryResource);
+                        if summary != "" {
+                            divContent += summary + ", ";
+                        }
+                        if id is string {
+                            // Add reference to section entry of the composition
+                            sectionRefs.push({reference: resourceType + "/" + id});
+                        }
+
+                        // add the resource to the bundle entries
+                        ipsBundleResources = addIfNotDuplicate(bundleEntryResource, ipsBundleResources);
+                    } else {
+                        log:printDebug("Bundle entry resource is not JSON for resource type: " + resourceType);
+                    }
+                }
+            } else {
+                log:printDebug("Failed to get client for resource type: " + resourceType);
+                continue;
+            }
+        }
+
+        // Add section to Composition if any references found or if section is required by IPS
+        if sectionRefs.length() > 0 {
+            // Clean up divContent (remove trailing comma/space)
+            if divContent.endsWith(", ") {
+                divContent = divContent.substring(0, divContent.length() - 2);
+            }
+            string divHtml = string `<div xmlns=\"http://www.w3.org/1999/xhtml\">${divContent != "" ? divContent : "No information available."}</div>`;
+
+            // ad the section to the Composition
+            CompositionUvIpsSection compSection = {
+                code: {coding: [{system: LOINC_SYSTEM, code: sectionCoding.code, display: sectionCoding.display}]},
+                title: sectionConfig.sectionTitle,
+                text: {status: "generated", div: divHtml},
+                entry: sectionRefs
+            };
+            composition.section.push(compSection);
+            sectionCodes.push(sectionCoding.code);
+        }
+    }
+    // Check whether all required sections are present in the composition
+    foreach r4:code requiredCode in REQUIRED_SECTION_CODES {
+        if !(sectionCodes.indexOf(requiredCode) >= 0) {
+            log:printDebug("Required section with code: " + requiredCode + " is missing from the composition.");
+            return error("Required section with code: " + requiredCode + " is missing from the composition.");
+        }
+    }
+
+    // 3.2 Add the resources in the composition author and custodian if they are not already present
+    foreach r4:Reference authorReference in composition.author {
+        if authorReference.reference is string {
+            r4:Resource? authorResource = fetchAndAddReferencedResource(<string>authorReference.reference, context);
+            if authorResource is r4:Resource {
+                // entries.push(authorEntry);
+                ipsBundleResources = addIfNotDuplicate(authorResource, ipsBundleResources);
+            }
+        }
+    }
+    // Add the custodian reference if not already present
+    if composition.custodian is r4:Reference {
+        if custodian is string {
+            r4:Resource? custodianResource = fetchAndAddReferencedResource(custodian, context);
+            if custodianResource is r4:Resource {
+                ipsBundleResources = addIfNotDuplicate(custodianResource, ipsBundleResources);
+            }
+        }
+    }
+
+    // 4. Add the Composition as the first entry, Patient as the second
+    r4:BundleEntry[] finalEntries = [];
+    finalEntries.push(getBundleEntry(composition)); // Composition entry
+    finalEntries.push(mapFhirResourceToIpsEntry(patientResource, patientId)); // Patient entry
+    foreach r4:BundleEntry entry in mapFhirResourcesToIpsEntryArr(ipsBundleResources, patientId) {
+        finalEntries.push(entry);
+    }
+
+    // 5. Create the IPS Bundle at the end
+    r4:Bundle ipsBundle = {'type: r4:BUNDLE_TYPE_DOCUMENT, entry: finalEntries};
+    return ipsBundle;
+}
 
 # Construct the IPS Bundle from the given IPS Bundle data.
 #
@@ -387,12 +573,8 @@ isolated function constructIpsBundleFromR4Bundle(r4:Bundle fhirBundle) returns r
     }
 
     composition.subject = {reference: string `Patient/${patientId}`};
-    if custodian != "" {
-        composition.custodian = {reference: custodian};
-    }
-    if author != "" {
-        composition.author = [{reference: author}];
-    }
+    composition.custodian = getIpsCustodianReference();
+    composition.author = getIpsAuthorReferences();
 
     ipsBundle.entry = ipsEntries;
     return ipsBundle;
@@ -408,3 +590,280 @@ isolated function getBundleEntry(r4:Resource 'resource) returns r4:BundleEntry {
     return entry;
 }
 
+isolated function getIpsAuthorReferences() returns r4:Reference[] {
+    // should be a reference to Practitioner, Organization, PractitionerRole, Device, Patient, RelatedPerson
+    r4:Reference[] compositionAuthors = [];
+    foreach string author in authors {
+        compositionAuthors.push({reference: author});
+    }
+    return compositionAuthors;
+}
+
+isolated function getIpsCustodianReference() returns r4:Reference? {
+    // should be a Organization reference
+    if custodian != "" {
+        return {reference: custodian};
+    } else {
+        return ();
+    }
+}
+
+isolated function getIpsAttesters() returns CompositionUvIpsAttester[]? {
+    // should be a reference to Practitioner, Organization, PractitionerRole, Device, Patient, RelatedPerson
+    if attesters == [] {
+        return ();
+    }
+    CompositionUvIpsAttester[] compositionAttesters = [];
+    foreach string attester in attesters {
+        compositionAttesters.push({mode: <CompositionUvIpsAttesterMode>attester});
+    }
+    return compositionAttesters;
+}
+
+isolated function addIfNotDuplicate(r4:Resource newResource, r4:Resource[] resourcesArr) returns r4:Resource[] {
+    do {
+        if newResource.id is string {
+            foreach var resourceArrItem in resourcesArr {
+                if resourceArrItem.id is string {
+                    if resourceArrItem.id == newResource.id && resourceArrItem.resourceType == newResource.resourceType {
+                        // Duplicate found, return original array
+                        log:printDebug("Duplicate entry found for resource type: " + newResource.resourceType + " with ID: " + <string>resourceArrItem.id);
+                        return resourcesArr;
+                    }
+                }
+            }
+            // No duplicate found, add new entry
+            resourcesArr.push(newResource);
+        }
+        return resourcesArr;
+    } on fail {
+        log:printDebug("Error occurred while checking for duplicates in the bundle entries.");
+        return resourcesArr;
+    }
+}
+
+isolated function fetchAndAddReferencedResource(string reference, IPSContext context) returns r4:Resource? {
+    string[] referenceSplit = regex:split(reference, "/");
+    if referenceSplit.length() < 2 {
+        log:printDebug("Invalid reference format: " + reference);
+        return ();
+    }
+    fhir:FHIRConnector|error clientVal = context.getFHIRClient(referenceSplit[0]);
+    if clientVal is fhir:FHIRConnector {
+        fhir:FHIRResponse resp = checkpanic clientVal->getById(referenceSplit[0], referenceSplit[1]);
+        if resp.httpStatusCode != 200 {
+            log:printDebug("Failed to fetch referenced resource: " + reference + ", status code: " + resp.httpStatusCode.toString());
+            return ();
+        }
+        r4:Resource referenceResource = checkpanic resp.'resource.cloneWithType();
+        return referenceResource;
+    } else {
+        log:printError("Failed to get client for referenced resource type: " + referenceSplit[0]);
+        return ();
+    }
+}
+
+isolated function extractSectionNarrativeSummary(r4:Resource resourceObj) returns string {
+    // TODO: Implement a more robust HTML to text extraction if needed
+    // For now, extract the narrative summary from the resource JSON.
+    string summary = "";
+    do {
+        json resourceJson = resourceObj.toJson();
+        
+        // First try to extract from existing narrative text if available
+        json|error textField = resourceJson.text;
+        if textField is json {
+            json|error divField = textField.div;
+            if divField is string {
+                // Extract plain text from HTML div (basic extraction)
+                string htmlContent = divField;
+                // Simple HTML tag removal for basic text extraction
+                string plainText = regex:replaceAll(htmlContent, "<[^>]*>", "");
+                plainText = regex:replaceAll(plainText, "\\s+", " ");
+                plainText = plainText.trim();
+                if plainText.length() > 0 && plainText.length() < 200 {
+                    return plainText;
+                }
+            }
+        }
+        // If no narrative text, extract from code field
+        json|error codeField = resourceJson.code;
+        if codeField is json {
+            json|error textValue = codeField.text;
+            if textValue is string && textValue.trim().length() > 0 {
+                summary = textValue.trim();
+            } else {
+                // Extract from coding display
+                json|error codingField = codeField.coding;
+                if codingField is json[] && codingField.length() > 0 {
+                    json|error displayField = codingField[0].display;
+                    if displayField is string && displayField.trim().length() > 0 {
+                        summary = displayField.trim();
+                    }
+                }
+            }
+        }
+    } on fail var e {
+        log:printWarn("Error extracting narrative summary: " + e.message());
+    }
+    return summary;
+}
+
+isolated function mapFhirResourceToIpsEntry(r4:Resource fhirResource, string patientId) returns r4:BundleEntry {
+    r4:BundleEntry[] ipsEntries = mapFhirResourcesToIpsEntryArr([fhirResource], patientId);
+    if ipsEntries.length() > 1 {
+        // this cannot be happend
+        log:printError("Multiple entries found for a single resource, returning the first entry.");
+    }
+    return ipsEntries[0];
+}
+
+isolated function mapFhirResourcesToIpsEntryArr(r4:Resource[] fhirResources, string patientId) returns r4:BundleEntry[] {
+    r4:BundleEntry[] ipsEntries = [];
+    
+    foreach var entry in fhirResources {
+        do {
+            json resourceType = entry.resourceType;
+            match resourceType {
+                "Patient" => {
+                    international401:Patient patient = check entry.cloneWithType();
+                    PatientUvIps ipsPatient = mapPatientToIpsPatient(patient);
+                    ipsEntries.push(getBundleEntry(ipsPatient));
+                }
+                "AllergyIntolerance" => {
+                    international401:AllergyIntolerance allergyIntolerance = check entry.cloneWithType();
+                    AllergyIntoleranceUvIps ipsAllergyIntolerance = mapAllergyIntoleranceToIpsAllergyIntolerance(allergyIntolerance, patientId);
+                    string id = ipsAllergyIntolerance.id ?: uuid:createRandomUuid();
+                    ipsAllergyIntolerance.id = id;
+                    ipsEntries.push(getBundleEntry(ipsAllergyIntolerance));
+                }
+                "Condition" => {
+                    international401:Condition condition = check entry.cloneWithType();
+                    ConditionUvIps ipsCondition = mapConditionToIpsCondition(condition, patientId);
+                    string id = ipsCondition.id ?: uuid:createRandomUuid();
+                    ipsCondition.id = id;
+                    ipsEntries.push(getBundleEntry(ipsCondition));
+                }
+                "MedicationRequest" => {
+                    international401:MedicationRequest medicationRequest = check entry.cloneWithType();
+                    MedicationRequestIPS ipsMedicationRequest = check mapMedicationRequestToIpsMedicationRequest(medicationRequest, patientId);
+                    string id = ipsMedicationRequest.id ?: uuid:createRandomUuid();
+                    ipsMedicationRequest.id = id;
+                    ipsEntries.push(getBundleEntry(ipsMedicationRequest));
+                }
+                "Medication" => {
+                    international401:Medication medication = check entry.cloneWithType();
+                    MedicationIPS ipsMedication = mapMedicationToIpsMedication(medication, patientId);
+                    string id = ipsMedication.id ?: uuid:createRandomUuid();
+                    ipsMedication.id = id;
+                    ipsEntries.push(getBundleEntry(ipsMedication));
+                }
+                "MedicationStatement" => {
+                    international401:MedicationStatement medicationStatement = check entry.cloneWithType();
+                    MedicationStatementIPS ipsMedicationStatement = mapMedicationStatementToIpsMedicationStatement(medicationStatement, patientId);
+                    string id = ipsMedicationStatement.id ?: uuid:createRandomUuid();
+                    ipsMedicationStatement.id = id;
+                    ipsEntries.push(getBundleEntry(ipsMedicationStatement));
+                }
+                "Immunization" => {
+                    international401:Immunization immunization = check entry.cloneWithType();
+                    ImmunizationUvIps ipsImmunization = mapImmunizationToIpsImmunization(immunization, patientId);
+                    string id = ipsImmunization.id ?: uuid:createRandomUuid();
+                    ipsImmunization.id = id;
+                    ipsEntries.push(getBundleEntry(ipsImmunization));
+                }
+                "Procedure" => {
+                    international401:Procedure procedure = check entry.cloneWithType();
+                    ProcedureUvIps ipsProcedure = mapProcedureToIpsProcedure(procedure, patientId);
+                    string id = ipsProcedure.id ?: uuid:createRandomUuid();
+                    ipsProcedure.id = id;
+                    ipsEntries.push(getBundleEntry(ipsProcedure));
+                }
+                "DiagnosticReport" => {
+                    international401:DiagnosticReport diagnosticReport = check entry.cloneWithType();
+                    DiagnosticReportUvIps ipsReport = mapDiagnosticReportToIps(diagnosticReport, patientId);
+                    string id = ipsReport.id ?: uuid:createRandomUuid();
+                    ipsReport.id = id;
+                    ipsEntries.push(getBundleEntry(ipsReport));
+                }
+                "Observation" => {
+                    international401:Observation observation = check entry.cloneWithType();
+                    string? observationCode = ();
+                    r4:CodeableConcept[]? category = observation.category;
+                    if category is r4:CodeableConcept[] {
+                        r4:Coding[]? coding = category[0].coding;
+                        if coding is r4:Coding[] {
+                            observationCode = coding[0].code;
+                        }
+                    }
+                    if observationCode != () && observationCode == "imaging" {
+                        ObservationResultsRadiologyUvIps ipsObservation = mapObservationToIpsRadialogyObservation(observation, patientId);
+                        string id = ipsObservation.id ?: uuid:createRandomUuid();
+                        ipsObservation.id = id;
+                        ipsEntries.push(getBundleEntry(ipsObservation));
+                    } else if observationCode != () && observationCode == "laboratory" {
+                        ObservationResultsLaboratoryUvIps ipsObservation = mapObservationToIpsPathologyObservation(observation, patientId);
+                        string id = ipsObservation.id ?: uuid:createRandomUuid();
+                        ipsObservation.id = id;
+                        ipsEntries.push(getBundleEntry(ipsObservation));
+                    }
+                }
+                "Specimen" => {
+                    international401:Specimen specimen = check entry.cloneWithType();
+                    SpecimenUvIps ipsSpecimen = mapSpecimenToIpsSpecimen(specimen, patientId);
+                    string id = ipsSpecimen.id ?: uuid:createRandomUuid();
+                    ipsSpecimen.id = id;
+                    ipsEntries.push(getBundleEntry(ipsSpecimen));
+                }
+                "Device" => {
+                    international401:Device device = check entry.cloneWithType();
+                    DeviceUvIps ipsDevice = mapDeviceToIpsDevice(device, patientId);
+                    string id = ipsDevice.id ?: uuid:createRandomUuid();
+                    ipsDevice.id = id;
+                    ipsEntries.push(getBundleEntry(ipsDevice));
+                }
+                "DeviceUseStatement" => {
+                    international401:DeviceUseStatement deviceUseStatement = check entry.cloneWithType();
+                    DeviceUseStatementUvIps ipsDeviceUseStatement = mapDeviceUseStatementToIpsDeviceUseStatement(deviceUseStatement, patientId);
+                    string id = ipsDeviceUseStatement.id ?: uuid:createRandomUuid();
+                    ipsDeviceUseStatement.id = id;
+                    ipsEntries.push(getBundleEntry(ipsDeviceUseStatement));
+                }
+                "Organization" => {
+                    international401:Organization organization = check entry.cloneWithType();
+                    OrganizationUvIps ipsOrganization = mapOrganizationToIpsOrganization(organization);
+                    ipsEntries.push(getBundleEntry(ipsOrganization));
+                }
+                "Practitioner" => {
+                    international401:Practitioner practitioner = check entry.cloneWithType();
+                    PractitionerUvIps ipsPractitioner = mapPractitionerToIpsPractitioner(practitioner);
+                    ipsEntries.push(getBundleEntry(ipsPractitioner));
+                }
+                "PractitionerRole" => {
+                    international401:PractitionerRole practitionerRole = check entry.cloneWithType();
+                    PractitionerRoleUvIps ipsPractitionerRole = mapPractitionerRoleToIpsPractitionerRole(practitionerRole);
+                    ipsEntries.push(getBundleEntry(ipsPractitionerRole));
+                }
+                _ => {
+                    log:printDebug("Unsupported resource type: " + resourceType.toString());
+                    ipsEntries.push(getBundleEntry(entry)); // Add the entry as is if unsupported
+                }
+            }
+        } on fail var e {
+            log:printError("Error occurred while processing entry: " + e.message());
+            continue;
+        }
+    }
+    
+    return ipsEntries;
+}
+
+isolated function getSectionCoding(IpsSectionName sectionName) returns Coding|error {
+    if IPS_SECTION_LOINC_CODES.hasKey(sectionName) {
+        Coding? codingOpt = IPS_SECTION_LOINC_CODES[sectionName];
+        if codingOpt is Coding {
+            return codingOpt.clone();
+        }
+    }
+    return error("Coding not found for section resourceType: " + sectionName);
+}
