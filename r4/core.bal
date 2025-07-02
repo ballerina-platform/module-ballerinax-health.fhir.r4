@@ -534,3 +534,14 @@ public type PaginationContext record {|
     readonly int page;
     readonly int pageSize;
 |};
+
+# Record to hold FHIR service information.
+# 
+# + name - The name of the service
+# + serviceUrl - The service URL
+# + status - Service status (active, inactive)
+public type FHIRServiceInfo record {|
+    string name;
+    string serviceUrl;
+    string status = "active";
+|};
