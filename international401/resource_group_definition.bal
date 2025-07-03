@@ -246,7 +246,7 @@ public type Group_Definition record {|
         "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the trait that holds (or does not hold - see 'exclude') for members of the group.",
@@ -255,7 +255,7 @@ public type Group_Definition record {|
         "valueBoolean": {
             name: "valueBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the trait that holds (or does not hold - see 'exclude') for members of the group.",
@@ -291,7 +291,7 @@ public type Group_Definition record {|
         "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the trait that holds (or does not hold - see 'exclude') for members of the group.",
@@ -300,7 +300,7 @@ public type Group_Definition record {|
         "valueRange": {
             name: "valueRange",
             dataType: r4:Range,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the trait that holds (or does not hold - see 'exclude') for members of the group.",
@@ -336,7 +336,7 @@ public type Group_Definition record {|
         "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the trait that holds (or does not hold - see 'exclude') for members of the group.",

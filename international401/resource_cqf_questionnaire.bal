@@ -390,7 +390,7 @@ public enum CQF_QuestionnaireStatus {
         "valueQuestionnaireCoding": {
             name: "valueQuestionnaireCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -426,7 +426,7 @@ public enum CQF_QuestionnaireStatus {
         "valueQuestionnaireInteger": {
             name: "valueQuestionnaireInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -435,7 +435,7 @@ public enum CQF_QuestionnaireStatus {
         "valueQuestionnaireString": {
             name: "valueQuestionnaireString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -444,7 +444,7 @@ public enum CQF_QuestionnaireStatus {
         "valueQuestionnaireDate": {
             name: "valueQuestionnaireDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -453,7 +453,7 @@ public enum CQF_QuestionnaireStatus {
         "valueQuestionnaireTime": {
             name: "valueQuestionnaireTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -462,7 +462,7 @@ public enum CQF_QuestionnaireStatus {
         "valueQuestionnaireReference": {
             name: "valueQuestionnaireReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -745,7 +745,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireReference": {
             name: "answerQuestionnaireReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -754,7 +754,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireDate": {
             name: "answerQuestionnaireDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -781,7 +781,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireDecimal": {
             name: "answerQuestionnaireDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -799,7 +799,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireTime": {
             name: "answerQuestionnaireTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -808,7 +808,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireString": {
             name: "answerQuestionnaireString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -817,7 +817,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireCoding": {
             name: "answerQuestionnaireCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -826,7 +826,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireInteger": {
             name: "answerQuestionnaireInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -835,7 +835,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireQuantity": {
             name: "answerQuestionnaireQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -853,7 +853,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireDateTime": {
             name: "answerQuestionnaireDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -862,7 +862,7 @@ public enum CQF_QuestionnaireItemEnableWhenOperator {
         "answerQuestionnaireBoolean": {
             name: "answerQuestionnaireBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -947,7 +947,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireCoding": {
             name: "valueQuestionnaireCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -965,7 +965,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireUri": {
             name: "valueQuestionnaireUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -974,7 +974,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireBoolean": {
             name: "valueQuestionnaireBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -983,7 +983,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireAttachment": {
             name: "valueQuestionnaireAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -992,7 +992,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireReference": {
             name: "valueQuestionnaireReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -1001,7 +1001,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireDecimal": {
             name: "valueQuestionnaireDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -1010,7 +1010,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireDateTime": {
             name: "valueQuestionnaireDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -1019,7 +1019,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireQuantity": {
             name: "valueQuestionnaireQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -1037,7 +1037,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireInteger": {
             name: "valueQuestionnaireInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -1046,7 +1046,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireString": {
             name: "valueQuestionnaireString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -1055,7 +1055,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireDate": {
             name: "valueQuestionnaireDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -1064,7 +1064,7 @@ public enum CQF_QuestionnaireItemType {
         "valueQuestionnaireTime": {
             name: "valueQuestionnaireTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",

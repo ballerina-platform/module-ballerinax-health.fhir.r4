@@ -53,7 +53,7 @@ public const RESOURCE_NAME_MESSAGEHEADER = "MessageHeader";
         "eventUri" : {
             name: "eventUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MessageHeader.event[x]",
@@ -128,7 +128,7 @@ public const RESOURCE_NAME_MESSAGEHEADER = "MessageHeader";
         "eventCoding" : {
             name: "eventCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MessageHeader.event[x]",
