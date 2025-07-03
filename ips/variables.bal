@@ -30,6 +30,37 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONALPATIENTSUM
     
 };
 
+# IPS summary operation definition (see: https://www.hl7.org/fhir/uv/ips/2024Sep/OperationDefinition-summary.html)
+final map<r4:FHIROperationDefinition[]> & readonly INTERNATIONALPATIENTSUMMERY_OPERATIONS = {
+    "summary": [
+        {
+            name: "summary",
+            instanceLevel: true,
+            typeLevel: true,
+            systemLevel: false,
+            'resource: ["Patient"],
+            'parameter: [
+                {
+                    name: "identifier",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string",
+                    documentation: "When the logical id of the patient is not used, servers MAY choose to support patient selection based on provided identifier. Unless the identifier system is unknown, requestors SHOULD include both the system and value (e.g. 'identifier=https://standards.digital.health.nz/ns/nhi-id|CNNJ9186') when using this parameter."
+                },
+                {
+                    name: "return",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Bundle",
+                    documentation: "The Bundle returned is a document conforming to the specified input Composition profile parameter or the International Patient Summary Composition profile (if not otherwise specified)"
+                }
+            ]
+        }
+    ]
+};
+
 public json[] FHIR_VALUE_SETS = [];
 public json[] FHIR_CODE_SYSTEMS = [];
 

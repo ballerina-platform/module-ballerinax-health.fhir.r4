@@ -12,7 +12,7 @@ public isolated class IPSContext {
     # + serviceResourceMap - Map of FHIR resource types to their corresponding service URLs.
     # + sectionConfigs - (optional) Array of section configuration objects for IPS sections. If not provided, defaults are used.
     # + return - An `error` if initialization fails, otherwise nil.
-    public function init(
+    public isolated function init(
             map<string> serviceResourceMap,
             SectionConfig[]? sectionConfigs = ()
     ) returns error? {

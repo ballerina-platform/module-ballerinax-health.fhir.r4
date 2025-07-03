@@ -178,7 +178,8 @@ function init() returns r4:FHIRError? {
                 modelType: PatientUvIps
             }
         },
-        searchParameters: [INTERNATIONALPATIENTSUMMARYIG_IG_SEARCH_PARAMS_1]
+        searchParameters: [INTERNATIONALPATIENTSUMMARYIG_IG_SEARCH_PARAMS_1],
+        operations: INTERNATIONALPATIENTSUMMERY_OPERATIONS
     };
     r4:FHIRImplementationGuide baseImplementationGuide = new(baseIgRecord);
     check fhirRegistry.addImplementationGuide(baseImplementationGuide);

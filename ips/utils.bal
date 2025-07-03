@@ -100,7 +100,7 @@ public isolated function generateIps(string patientId, IPSContext context) retur
             if clientVal is fhir:FHIRConnector {
                 // request the resources by searching with the search parameters
                 log:printDebug("Fetching resources of type: " + resourceType);
-                fhir:FHIRResponse resp = check clientVal->search(resourceType, searchParams);
+                fhir:FHIRResponse resp = check clientVal->search(resourceType, mode = fhir:GET, searchParameters = searchParams);
                 if resp.httpStatusCode != 200 {
                     log:printDebug("Failed to fetch resources of type: " + resourceType + ", status code: " + resp.httpStatusCode.toString());
                     continue;
