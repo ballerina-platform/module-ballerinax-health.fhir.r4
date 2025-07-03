@@ -511,7 +511,7 @@ public enum TaskPriority {
         "valueTime": {
             name: "valueTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -520,7 +520,7 @@ public enum TaskPriority {
         "valueTriggerDefinition": {
             name: "valueTriggerDefinition",
             dataType: r4:TriggerDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -529,7 +529,7 @@ public enum TaskPriority {
         "valueMoney": {
             name: "valueMoney",
             dataType: r4:Money,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -538,7 +538,7 @@ public enum TaskPriority {
         "valueSignature": {
             name: "valueSignature",
             dataType: r4:Signature,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -565,7 +565,7 @@ public enum TaskPriority {
         "valueUuid": {
             name: "valueUuid",
             dataType: r4:uuid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -574,7 +574,7 @@ public enum TaskPriority {
         "valueRatio": {
             name: "valueRatio",
             dataType: r4:Ratio,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -583,7 +583,7 @@ public enum TaskPriority {
         "valueParameterDefinition": {
             name: "valueParameterDefinition",
             dataType: r4:ParameterDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -601,7 +601,7 @@ public enum TaskPriority {
         "valueInteger": {
             name: "valueInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -610,7 +610,7 @@ public enum TaskPriority {
         "valueUnsignedInt": {
             name: "valueUnsignedInt",
             dataType: r4:unsignedInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -619,7 +619,7 @@ public enum TaskPriority {
         "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -628,7 +628,7 @@ public enum TaskPriority {
         "valueCanonical": {
             name: "valueCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -637,7 +637,7 @@ public enum TaskPriority {
         "valueCount": {
             name: "valueCount",
             dataType: r4:Count,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -646,7 +646,7 @@ public enum TaskPriority {
         "valueId": {
             name: "valueId",
             dataType: r4:id,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -655,7 +655,7 @@ public enum TaskPriority {
         "valueCode": {
             name: "valueCode",
             dataType: r4:code,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -664,7 +664,7 @@ public enum TaskPriority {
         "valueAddress": {
             name: "valueAddress",
             dataType: r4:Address,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -673,7 +673,7 @@ public enum TaskPriority {
         "valueContactPoint": {
             name: "valueContactPoint",
             dataType: r4:ContactPoint,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -682,7 +682,7 @@ public enum TaskPriority {
         "valuePeriod": {
             name: "valuePeriod",
             dataType: r4:Period,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -691,7 +691,7 @@ public enum TaskPriority {
         "valueSampledData": {
             name: "valueSampledData",
             dataType: r4:SampledData,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -700,7 +700,7 @@ public enum TaskPriority {
         "valueTiming": {
             name: "valueTiming",
             dataType: r4:Timing,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -709,7 +709,7 @@ public enum TaskPriority {
         "valueInstant": {
             name: "valueInstant",
             dataType: r4:instant,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -718,7 +718,7 @@ public enum TaskPriority {
         "valueAge": {
             name: "valueAge",
             dataType: r4:Age,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -727,7 +727,7 @@ public enum TaskPriority {
         "valueDosage": {
             name: "valueDosage",
             dataType: r4:Dosage,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -736,7 +736,7 @@ public enum TaskPriority {
         "valueBase64Binary": {
             name: "valueBase64Binary",
             dataType: r4:base64Binary,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -745,7 +745,7 @@ public enum TaskPriority {
         "valueBoolean": {
             name: "valueBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -754,7 +754,7 @@ public enum TaskPriority {
         "valueCoding": {
             name: "valueCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -772,7 +772,7 @@ public enum TaskPriority {
         "valueIdentifier": {
             name: "valueIdentifier",
             dataType: r4:Identifier,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -781,7 +781,7 @@ public enum TaskPriority {
         "valueExpression": {
             name: "valueExpression",
             dataType: r4:Expression,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -790,7 +790,7 @@ public enum TaskPriority {
         "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -799,7 +799,7 @@ public enum TaskPriority {
         "valueRange": {
             name: "valueRange",
             dataType: r4:Range,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -808,7 +808,7 @@ public enum TaskPriority {
         "valueUri": {
             name: "valueUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -817,7 +817,7 @@ public enum TaskPriority {
         "valueDistance": {
             name: "valueDistance",
             dataType: r4:Distance,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -826,7 +826,7 @@ public enum TaskPriority {
         "valueUrl": {
             name: "valueUrl",
             dataType: r4:urlType,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -835,7 +835,7 @@ public enum TaskPriority {
         "valueContactDetail": {
             name: "valueContactDetail",
             dataType: r4:ContactDetail,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -844,7 +844,7 @@ public enum TaskPriority {
         "valueMeta": {
             name: "valueMeta",
             dataType: r4:Meta,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -853,7 +853,7 @@ public enum TaskPriority {
         "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -862,7 +862,7 @@ public enum TaskPriority {
         "valueMarkdown": {
             name: "valueMarkdown",
             dataType: r4:markdown,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -871,7 +871,7 @@ public enum TaskPriority {
         "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -880,7 +880,7 @@ public enum TaskPriority {
         "valueUsageContext": {
             name: "valueUsageContext",
             dataType: r4:UsageContext,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -889,7 +889,7 @@ public enum TaskPriority {
         "valueDateTime": {
             name: "valueDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -898,7 +898,7 @@ public enum TaskPriority {
         "valueHumanName": {
             name: "valueHumanName",
             dataType: r4:HumanName,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -907,7 +907,7 @@ public enum TaskPriority {
         "valueRelatedArtifact": {
             name: "valueRelatedArtifact",
             dataType: r4:RelatedArtifact,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -916,7 +916,7 @@ public enum TaskPriority {
         "valueDecimal": {
             name: "valueDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -925,7 +925,7 @@ public enum TaskPriority {
         "valueDate": {
             name: "valueDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -934,7 +934,7 @@ public enum TaskPriority {
         "valueOid": {
             name: "valueOid",
             dataType: r4:oid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -943,7 +943,7 @@ public enum TaskPriority {
         "valueContributor": {
             name: "valueContributor",
             dataType: r4:Contributor,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -952,7 +952,7 @@ public enum TaskPriority {
         "valueString": {
             name: "valueString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -961,7 +961,7 @@ public enum TaskPriority {
         "valuePositiveInt": {
             name: "valuePositiveInt",
             dataType: r4:positiveInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -970,7 +970,7 @@ public enum TaskPriority {
         "valueDuration": {
             name: "valueDuration",
             dataType: r4:Duration,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -979,7 +979,7 @@ public enum TaskPriority {
         "valueDataRequirement": {
             name: "valueDataRequirement",
             dataType: r4:DataRequirement,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -988,7 +988,7 @@ public enum TaskPriority {
         "valueAnnotation": {
             name: "valueAnnotation",
             dataType: r4:Annotation,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1205,7 +1205,7 @@ public type TaskRestriction record {|
         "valueTime": {
             name: "valueTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1214,7 +1214,7 @@ public type TaskRestriction record {|
         "valueTriggerDefinition": {
             name: "valueTriggerDefinition",
             dataType: r4:TriggerDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1223,7 +1223,7 @@ public type TaskRestriction record {|
         "valueMoney": {
             name: "valueMoney",
             dataType: r4:Money,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1232,7 +1232,7 @@ public type TaskRestriction record {|
         "valueSignature": {
             name: "valueSignature",
             dataType: r4:Signature,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1259,7 +1259,7 @@ public type TaskRestriction record {|
         "valueUuid": {
             name: "valueUuid",
             dataType: r4:uuid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1268,7 +1268,7 @@ public type TaskRestriction record {|
         "valueRatio": {
             name: "valueRatio",
             dataType: r4:Ratio,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1277,7 +1277,7 @@ public type TaskRestriction record {|
         "valueParameterDefinition": {
             name: "valueParameterDefinition",
             dataType: r4:ParameterDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1295,7 +1295,7 @@ public type TaskRestriction record {|
         "valueInteger": {
             name: "valueInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1304,7 +1304,7 @@ public type TaskRestriction record {|
         "valueUnsignedInt": {
             name: "valueUnsignedInt",
             dataType: r4:unsignedInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1313,7 +1313,7 @@ public type TaskRestriction record {|
         "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1322,7 +1322,7 @@ public type TaskRestriction record {|
         "valueCanonical": {
             name: "valueCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1331,7 +1331,7 @@ public type TaskRestriction record {|
         "valueCount": {
             name: "valueCount",
             dataType: r4:Count,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1340,7 +1340,7 @@ public type TaskRestriction record {|
         "valueId": {
             name: "valueId",
             dataType: r4:id,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1349,7 +1349,7 @@ public type TaskRestriction record {|
         "valueCode": {
             name: "valueCode",
             dataType: r4:code,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1358,7 +1358,7 @@ public type TaskRestriction record {|
         "valueAddress": {
             name: "valueAddress",
             dataType: r4:Address,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1367,7 +1367,7 @@ public type TaskRestriction record {|
         "valueContactPoint": {
             name: "valueContactPoint",
             dataType: r4:ContactPoint,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1376,7 +1376,7 @@ public type TaskRestriction record {|
         "valuePeriod": {
             name: "valuePeriod",
             dataType: r4:Period,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1385,7 +1385,7 @@ public type TaskRestriction record {|
         "valueSampledData": {
             name: "valueSampledData",
             dataType: r4:SampledData,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1394,7 +1394,7 @@ public type TaskRestriction record {|
         "valueTiming": {
             name: "valueTiming",
             dataType: r4:Timing,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1403,7 +1403,7 @@ public type TaskRestriction record {|
         "valueInstant": {
             name: "valueInstant",
             dataType: r4:instant,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1412,7 +1412,7 @@ public type TaskRestriction record {|
         "valueAge": {
             name: "valueAge",
             dataType: r4:Age,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1421,7 +1421,7 @@ public type TaskRestriction record {|
         "valueDosage": {
             name: "valueDosage",
             dataType: r4:Dosage,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1430,7 +1430,7 @@ public type TaskRestriction record {|
         "valueBase64Binary": {
             name: "valueBase64Binary",
             dataType: r4:base64Binary,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1439,7 +1439,7 @@ public type TaskRestriction record {|
         "valueBoolean": {
             name: "valueBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1448,7 +1448,7 @@ public type TaskRestriction record {|
         "valueCoding": {
             name: "valueCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1466,7 +1466,7 @@ public type TaskRestriction record {|
         "valueIdentifier": {
             name: "valueIdentifier",
             dataType: r4:Identifier,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1475,7 +1475,7 @@ public type TaskRestriction record {|
         "valueExpression": {
             name: "valueExpression",
             dataType: r4:Expression,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1484,7 +1484,7 @@ public type TaskRestriction record {|
         "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1493,7 +1493,7 @@ public type TaskRestriction record {|
         "valueRange": {
             name: "valueRange",
             dataType: r4:Range,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1502,7 +1502,7 @@ public type TaskRestriction record {|
         "valueUri": {
             name: "valueUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1511,7 +1511,7 @@ public type TaskRestriction record {|
         "valueDistance": {
             name: "valueDistance",
             dataType: r4:Distance,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1520,7 +1520,7 @@ public type TaskRestriction record {|
         "valueUrl": {
             name: "valueUrl",
             dataType: r4:urlType,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1529,7 +1529,7 @@ public type TaskRestriction record {|
         "valueContactDetail": {
             name: "valueContactDetail",
             dataType: r4:ContactDetail,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1538,7 +1538,7 @@ public type TaskRestriction record {|
         "valueMeta": {
             name: "valueMeta",
             dataType: r4:Meta,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1547,7 +1547,7 @@ public type TaskRestriction record {|
         "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1556,7 +1556,7 @@ public type TaskRestriction record {|
         "valueMarkdown": {
             name: "valueMarkdown",
             dataType: r4:markdown,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1565,7 +1565,7 @@ public type TaskRestriction record {|
         "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1574,7 +1574,7 @@ public type TaskRestriction record {|
         "valueUsageContext": {
             name: "valueUsageContext",
             dataType: r4:UsageContext,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1583,7 +1583,7 @@ public type TaskRestriction record {|
         "valueDateTime": {
             name: "valueDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1592,7 +1592,7 @@ public type TaskRestriction record {|
         "valueHumanName": {
             name: "valueHumanName",
             dataType: r4:HumanName,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1601,7 +1601,7 @@ public type TaskRestriction record {|
         "valueRelatedArtifact": {
             name: "valueRelatedArtifact",
             dataType: r4:RelatedArtifact,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1610,7 +1610,7 @@ public type TaskRestriction record {|
         "valueDecimal": {
             name: "valueDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1619,7 +1619,7 @@ public type TaskRestriction record {|
         "valueDate": {
             name: "valueDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1628,7 +1628,7 @@ public type TaskRestriction record {|
         "valueOid": {
             name: "valueOid",
             dataType: r4:oid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1637,7 +1637,7 @@ public type TaskRestriction record {|
         "valueContributor": {
             name: "valueContributor",
             dataType: r4:Contributor,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1646,7 +1646,7 @@ public type TaskRestriction record {|
         "valueString": {
             name: "valueString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1655,7 +1655,7 @@ public type TaskRestriction record {|
         "valuePositiveInt": {
             name: "valuePositiveInt",
             dataType: r4:positiveInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1664,7 +1664,7 @@ public type TaskRestriction record {|
         "valueDuration": {
             name: "valueDuration",
             dataType: r4:Duration,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1673,7 +1673,7 @@ public type TaskRestriction record {|
         "valueDataRequirement": {
             name: "valueDataRequirement",
             dataType: r4:DataRequirement,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1682,7 +1682,7 @@ public type TaskRestriction record {|
         "valueAnnotation": {
             name: "valueAnnotation",
             dataType: r4:Annotation,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",

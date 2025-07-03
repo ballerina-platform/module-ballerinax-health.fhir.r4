@@ -403,7 +403,7 @@ public enum CommunicationRequestPriority {
         "contentReference": {
             name: "contentReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The communicated content (or for multi-part communications, one portion of the communication).",
@@ -412,7 +412,7 @@ public enum CommunicationRequestPriority {
         "contentString": {
             name: "contentString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The communicated content (or for multi-part communications, one portion of the communication).",
@@ -430,7 +430,7 @@ public enum CommunicationRequestPriority {
         "contentAttachment": {
             name: "contentAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The communicated content (or for multi-part communications, one portion of the communication).",

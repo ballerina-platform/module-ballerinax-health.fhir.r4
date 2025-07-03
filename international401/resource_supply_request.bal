@@ -108,7 +108,7 @@ public const RESOURCE_NAME_SUPPLYREQUEST = "SupplyRequest";
         "itemCodeableConcept" : {
             name: "itemCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "SupplyRequest.item[x]",
@@ -207,7 +207,7 @@ public const RESOURCE_NAME_SUPPLYREQUEST = "SupplyRequest";
         "itemReference" : {
             name: "itemReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "SupplyRequest.item[x]",

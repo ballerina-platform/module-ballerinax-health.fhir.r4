@@ -123,7 +123,7 @@ public const RESOURCE_NAME_GUIDANCERESPONSE = "GuidanceResponse";
         "moduleCanonical" : {
             name: "moduleCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "GuidanceResponse.module[x]"
@@ -155,7 +155,7 @@ public const RESOURCE_NAME_GUIDANCERESPONSE = "GuidanceResponse";
         "moduleUri" : {
             name: "moduleUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "GuidanceResponse.module[x]"
@@ -195,7 +195,7 @@ public const RESOURCE_NAME_GUIDANCERESPONSE = "GuidanceResponse";
         "moduleCodeableConcept" : {
             name: "moduleCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "GuidanceResponse.module[x]"

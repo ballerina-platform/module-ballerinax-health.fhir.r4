@@ -579,7 +579,7 @@ public type AuditEventEntity record {|
         "valueAuditEventBase64Binary": {
             name: "valueAuditEventBase64Binary",
             dataType: r4:base64Binary,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the extra detail.",
@@ -597,7 +597,7 @@ public type AuditEventEntity record {|
         "valueAuditEventString": {
             name: "valueAuditEventString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the extra detail.",
