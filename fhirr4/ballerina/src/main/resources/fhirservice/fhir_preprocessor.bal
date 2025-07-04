@@ -15,6 +15,7 @@ import ballerina/jwt;
 import ballerina/lang.regexp;
 import ballerina/log;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.ips;
 import ballerinax/health.fhir.r4.international401;
 import ballerinax/health.fhir.r4.parser;
 
@@ -586,6 +587,131 @@ public isolated class FHIRPreprocessor {
         // Set FHIR context inside HTTP context
         setFHIRContext(fhirCtx, httpCtx);
     }
+
+    # Processes a FHIR IPS generation operation request.
+    # IPS generation is a special Patient-level operation with the following characteristics:
+    # - POST request only
+    # - Operation name: "summary" 
+    # - Resource path: Patient/[id]/$summary or Patient/$summary
+    # - Instance level operation scope
+    #
+    # + fhirResourceType - The FHIR resource type (must be "Patient")
+    # + patientId - The patient ID for which to generate IPS
+    # + payload - The payload of the request
+    # + operationRequestScope - The scope of the operation request
+    # + baseResourcePath - The base resource path for the operation
+    # + httpRequest - The HTTP request
+    # + httpCtx - The HTTP context
+    # + return - A `r4:FHIRError` if an error occurs during the processing, or a `r4:Bundle` containing the generated IPS
+    #            or `()` if the operation is not supported.
+    public isolated function processIPSGenerateOperation(string fhirResourceType, string patientId, json|xml? payload, 
+            r4:FHIRInteractionLevel operationRequestScope, string baseResourcePath, http:Request httpRequest,
+            http:RequestContext httpCtx) returns r4:FHIRError|r4:Bundle? {
+        log:printDebug("Pre-processing FHIR IPS generation operation");
+
+        // Validate that this is a Patient resource request
+        if fhirResourceType != "Patient" {
+            string message = "IPS operation only supported for Patient resources";
+            string diagnostic = "IPS generation operation '$summary' is only supported for Patient resources. " +
+                    "Received resource type: \"" + fhirResourceType + "\".";
+            return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
+
+        r4:FHIRResourceEntity? resourceEntity = ();
+        map<r4:RequestSearchParameter[]> requestOperationSearchParameters = {};
+
+        // Get operation definitions for Patient resource type
+        r4:OperationCollection resourceOperationDefinitions = ips:fhirRegistry.getResourceOperations(fhirResourceType);
+
+        if resourceOperationDefinitions.hasKey(SUMMARY_OPERATION) { // Valid IPS operation for Patient
+            log:printDebug(string `Processing IPS generation operation: ${SUMMARY_OPERATION} for Patient/${patientId}`);
+
+            // Get operation definition and config
+            r4:FHIROperationDefinition resourceOperationDefinition = resourceOperationDefinitions.get(SUMMARY_OPERATION);
+            r4:OperationConfig? resourceOperationConfig = self.operationConfigMap.get(SUMMARY_OPERATION);
+
+            // Process the operation
+            map<r4:RequestSearchParameter[]>|r4:FHIRResourceEntity? processRes =
+                    check preProcessOperation(fhirResourceType, SUMMARY_OPERATION, operationRequestScope,
+                    resourceOperationDefinition, resourceOperationConfig, self.operationConfigMap, self.apiConfig,
+                    payload, httpRequest, httpCtx, clientHeaders);
+
+            if processRes is map<r4:RequestSearchParameter[]> { // For type level operations (POST)
+                requestOperationSearchParameters = processRes;
+            } else if processRes is r4:FHIRResourceEntity { // For instance level operations (POST)
+                resourceEntity = processRes;
+            }
+        } else { // IPS operation not available
+            string diagnostic = "The '$summary' operation for IPS generation is not available for Patient resources. " +
+                    "Please ensure the IPS operation is properly configured.";
+            return r4:createFHIRError("IPS operation not supported", r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+        // Create interaction for IPS operation
+        readonly & r4:FHIROperationInteraction operationInteraction = {operation: SUMMARY_OPERATION};
+
+        // Create FHIR request
+        r4:FHIRRequest fhirRequest = new (operationInteraction, fhirResourceType,
+            resourceEntity, requestOperationSearchParameters.cloneReadOnly(), clientHeaders.acceptType
+        );
+
+        // Populate JWT information in FHIR context
+        readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        // Handle SMART security for Patient resources - use the patient ID from the path
+        _ = check self.handleSmartSecurity(fhirSecurity, patientId);
+
+        // Generate IPS (International Patient Summary) for the patient
+        log:printDebug(string `Generating IPS for Patient/${patientId}`);
+        r4:FHIRServiceInfo? patientServiceInfo = ips:fhirRegistry.getResourceFHIRService(PATIENT_RESOURCE);
+        if patientServiceInfo is () {
+            string diagnostic = "No FHIR service found for Patient resource. Ensure the Patient resource is properly registered.";
+            return r4:createFHIRError("Patient service not found", r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
+                    httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
+        }
+
+        // get all registered FHIR Services from the FHIR registry
+        map<r4:FHIRServiceInfo> fhirServices = r4:fhirRegistry.getAllRegisteredFHIRServices();
+
+        // add the fhir services to the serviceResourceMap
+        map<string> serviceResourceMap = {};
+        foreach string serviceName in fhirServices.keys() {
+            r4:FHIRServiceInfo serviceInfo = fhirServices.get(serviceName);
+            serviceResourceMap[serviceName] = string `${serviceInfo.serviceUrl}/${baseResourcePath}`;
+        }
+
+        r4:Bundle|error? ipsBundle = handleIpsGeneration(patientId, patientServiceInfo, serviceResourceMap);
+
+        if ipsBundle is error {
+            string diagnostic = "Failed to generate IPS bundle: " + ipsBundle.message();
+            return r4:createFHIRError("IPS generation error", r4:ERROR, r4:PROCESSING,
+                    diagnostic = diagnostic, httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
+        }
+
+        r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, payload);
+
+        // Create FHIR context
+        r4:FHIRContext fhirCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Store the generated IPS bundle in the FHIR context for later use
+        // fhirCtx.setProperty("ips_bundle", ipsBundle);
+
+        // Set FHIR context inside HTTP context
+        setFHIRContext(fhirCtx, httpCtx);
+
+        if ipsBundle is r4:Bundle {
+            // Return the generated IPS bundle
+            return ipsBundle;
+        } else {
+            return ();
+        }
+    }
+
 
     isolated function processSearchParameters(string fhirResourceType, http:Request request)
                                                                 returns map<r4:RequestSearchParameter[]>|r4:FHIRError {

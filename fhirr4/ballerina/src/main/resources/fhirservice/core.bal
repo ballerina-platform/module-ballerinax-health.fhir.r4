@@ -23,6 +23,7 @@ const PATIENT_QUERY_PARAM = "patient";
 const HISTORY = "_history";
 const METADATA = "metadata";
 const LOCATION_HEADER = "Location";
+const SUMMARY_OPERATION = "summary";
 
 // FHIR interaction records
 # FHIR Read interaction.

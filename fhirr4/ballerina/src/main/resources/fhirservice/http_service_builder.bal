@@ -180,7 +180,34 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         string operation = paths[paths.length() - 1].substring(1);
                         r4:FHIRInteractionLevel operationScope = getRequestOperationScope(operation,
                                 fhirResource, paths);
-                        if isHavingPathParam(resourceMethod) { // Instance level operation 
+                        
+                        // Check whether IPS generation request
+                        if operation == SUMMARY_OPERATION && fhirResource == PATIENT_RESOURCE {
+                            // Summary operation is a special case (IPS generation request)
+                            log:printDebug("Processing IPS generation request");
+                            
+                            int? resourceTypeIndex = paths.indexOf(fhirResource);
+                            if resourceTypeIndex is () || resourceTypeIndex >= paths.length() - 2 {
+                                // This should not happen if called correctly
+                                return r4:createFHIRError("Invalid path for IPS generation request", 
+                                        r4:ERROR, r4:PROCESSING, httpStatusCode = http:STATUS_BAD_REQUEST);
+                            }
+                            string patientId = paths[resourceTypeIndex + 1];
+                            string baseResourcePath = string:'join("/", ...paths.slice(0, resourceTypeIndex));
+
+                            r4:FHIRError|r4:Bundle? processIps = self.preprocessor.processIPSGenerateOperation(fhirResource, patientId, operationPayload, operationScope, baseResourcePath, req, ctx);
+                            if processIps is r4:FHIRError {
+                                return processIps;
+                            } else if processIps is r4:Bundle {
+                                // If the IPS generation is successful, return the generated bundle
+                                fhirContext = check r4:getFHIRContext(ctx);
+                                executeResourceResult = processIps;
+                            } else {
+                                fhirContext = check r4:getFHIRContext(ctx);
+                                executeResourceResult = executeWithIDAndPayload(patientId, operationPayload, fhirContext,
+                                        fhirService, resourceMethod);
+                            }
+                        } else if isHavingPathParam(resourceMethod) { // Instance level operation 
                             string id = paths[paths.length() - 2];
                             r4:FHIRError? processOperation = self.preprocessor.processOperation(fhirResource,
                                 operation, operationScope, operationPayload, req, ctx);

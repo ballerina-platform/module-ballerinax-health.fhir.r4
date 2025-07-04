@@ -27,6 +27,15 @@ public isolated class Listener {
     public isolated function init(int port, r4:ResourceAPIConfig config) returns error? {
         self.ls = check new (port);
         self.config = config;
+
+        r4:FHIRServiceInfo serviceInfo = {
+            name: config.resourceType + " Service",
+            serviceUrl: "http://localhost:" + port.toString(),
+            apiConfig: config,
+            status: "active"
+        };
+
+        r4:fhirRegistry.addResourceFHIRService(config.resourceType, serviceInfo);
     }
 
     public isolated function 'start() returns error? {
