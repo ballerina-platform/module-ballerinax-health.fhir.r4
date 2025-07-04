@@ -158,49 +158,38 @@ isolated function handleConditionalHeader(string conditionalUrl, string resource
     }
 }
 
-isolated function handleIpsGeneration(string patientId, r4:FHIRServiceInfo patientServiceInfo, map<string> serviceResourceMap) returns r4:Bundle|error? {
+isolated function handleIpsGeneration(string patientId, r4:FHIRServiceInfo patientServiceInfo, map<string> serviceResourceMap) returns r4:Bundle|error {
     log:printDebug("Handling IPS generation for Patient resource with ID: " + patientId);
 
     foreach r4:OperationConfig patientOperation in patientServiceInfo.apiConfig.operations {
         if patientOperation.name == SUMMARY_OPERATION {
             ips:SectionConfig[]|error? ipsSectionConfig = ();
-            boolean|error overrideImplementation = false;
 
             json? otherConfigs = patientOperation?.otherConfigs;
             if otherConfigs is map<json> {
                 ipsSectionConfig = otherConfigs["ipsSectionConfig"].cloneWithType();
-                overrideImplementation = otherConfigs["overrideDefualtImplementation"].cloneWithType();
+            }
+            
+            ips:IPSContext|error ipsContext = new (serviceResourceMap, ipsSectionConfig is ips:SectionConfig[]? ? ipsSectionConfig : ());
+
+            if ipsContext is error {
+                string diagnostic = "Failed to create IPS context: " + ipsContext.message();
+                return r4:createFHIRError("IPS context creation failed", r4:ERROR, r4:PROCESSING,
+                        diagnostic = diagnostic, httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
             }
 
-            if overrideImplementation is boolean && !overrideImplementation {
-                return check generateIpsBundle(patientId, serviceResourceMap, ipsSectionConfig is ips:SectionConfig[]? ? ipsSectionConfig : ());
-            } else {
-                log:printDebug("Override implementation for IPS generation is enabled, skipping the default implementation.");
-                return ();
+            r4:Bundle|error ipsBundle = ips:generateIps(patientId, ipsContext);
+            if ipsBundle is error {
+                string diagnostic = string `Failed to generate International Patient Summary for Patient/${patientId}. Error: ${ipsBundle.message()}`;
+                return r4:createFHIRError("IPS generation failed", r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
+                        httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
             }
+
+            return ipsBundle;
         }
     }
     
     return r4:createFHIRError("IPS operation not supported for Patient resource",
             r4:ERROR, r4:PROCESSING, diagnostic = "The '$summary' operation for IPS generation is not available for Patient resources. Please ensure the IPS operation is properly configured.",
             httpStatusCode = http:STATUS_BAD_REQUEST);
-}
-
-isolated function generateIpsBundle(string patientId, map<string> serviceResourceMap, ips:SectionConfig[]? sectionConfigs = ()) returns r4:Bundle|error {
-    ips:IPSContext|error ipsContext = new (serviceResourceMap, sectionConfigs);
-
-    if ipsContext is error {
-        string diagnostic = "Failed to create IPS context: " + ipsContext.message();
-        return r4:createFHIRError("IPS context creation failed", r4:ERROR, r4:PROCESSING,
-                diagnostic = diagnostic, httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
-    }
-
-    r4:Bundle|error ipsBundle = ips:generateIps(patientId, ipsContext);
-    if ipsBundle is error {
-        string diagnostic = string `Failed to generate International Patient Summary for Patient/${patientId}. Error: ${ipsBundle.message()}`;
-        return r4:createFHIRError("IPS generation failed", r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
-                httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
-    }
-
-    return ipsBundle;
 }

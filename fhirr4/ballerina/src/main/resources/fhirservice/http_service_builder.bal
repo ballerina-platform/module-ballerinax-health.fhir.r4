@@ -180,34 +180,7 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         string operation = paths[paths.length() - 1].substring(1);
                         r4:FHIRInteractionLevel operationScope = getRequestOperationScope(operation,
                                 fhirResource, paths);
-                        
-                        // Check whether IPS generation request
-                        if operation == SUMMARY_OPERATION && fhirResource == PATIENT_RESOURCE {
-                            // Summary operation is a special case (IPS generation request)
-                            log:printDebug("Processing IPS generation request");
-                            
-                            int? resourceTypeIndex = paths.indexOf(fhirResource);
-                            if resourceTypeIndex is () || resourceTypeIndex >= paths.length() - 2 {
-                                // This should not happen if called correctly
-                                return r4:createFHIRError("Invalid path for IPS generation request", 
-                                        r4:ERROR, r4:PROCESSING, httpStatusCode = http:STATUS_BAD_REQUEST);
-                            }
-                            string patientId = paths[resourceTypeIndex + 1];
-                            string baseResourcePath = string:'join("/", ...paths.slice(0, resourceTypeIndex));
-
-                            r4:FHIRError|r4:Bundle? processIps = self.preprocessor.processIPSGenerateOperation(fhirResource, patientId, operationPayload, operationScope, baseResourcePath, req, ctx);
-                            if processIps is r4:FHIRError {
-                                return processIps;
-                            } else if processIps is r4:Bundle {
-                                // If the IPS generation is successful, return the generated bundle
-                                fhirContext = check r4:getFHIRContext(ctx);
-                                executeResourceResult = processIps;
-                            } else {
-                                fhirContext = check r4:getFHIRContext(ctx);
-                                executeResourceResult = executeWithIDAndPayload(patientId, operationPayload, fhirContext,
-                                        fhirService, resourceMethod);
-                            }
-                        } else if isHavingPathParam(resourceMethod) { // Instance level operation 
+                        if isHavingPathParam(resourceMethod) { // Instance level operation 
                             string id = paths[paths.length() - 2];
                             r4:FHIRError? processOperation = self.preprocessor.processOperation(fhirResource,
                                 operation, operationScope, operationPayload, req, ctx);
@@ -267,6 +240,47 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                 }
                 return executeResourceResult;
             } else {
+                // ips generation, if not implemented, handle by the middleware
+                // This is a special case where the operation is not defined in the FHIR service,
+                if isOperationPath(paths) && (payload is json || payload is http:NoContentError) {    
+                    // An operation with no parameters but affects the state is invoked using an empty body
+                    string operation = paths[paths.length() - 1].substring(1);
+                    
+                    // Check whether IPS generation request
+                    if operation == SUMMARY_OPERATION && fhirResource == PATIENT_RESOURCE {
+                        // Summary operation is a special case (IPS generation request)
+                        log:printDebug("Processing IPS generation request");
+                        
+                        json? operationPayload = payload is http:NoContentError ? () : payload;
+                        r4:FHIRInteractionLevel operationScope = getRequestOperationScope(operation, fhirResource, paths);
+                        
+                        int? resourceTypeIndex = paths.indexOf(fhirResource);
+                        if resourceTypeIndex is () || resourceTypeIndex >= paths.length() - 2 {
+                            // This should not happen if called correctly
+                            return r4:createFHIRError("Invalid path for IPS generation request", 
+                                    r4:ERROR, r4:PROCESSING, httpStatusCode = http:STATUS_BAD_REQUEST);
+                        }
+                        
+                        string patientId = paths[resourceTypeIndex + 1];
+                        string baseResourcePath = string:'join("/", ...paths.slice(0, resourceTypeIndex));
+
+                        r4:FHIRError|r4:Bundle processIps = self.preprocessor.processIPSGenerateOperation(patientId, operationPayload, operationScope, baseResourcePath, req, ctx);
+                        if processIps is r4:FHIRError {
+                            return processIps;
+                        } else {
+                            // If the IPS generation is successful, return the generated bundle
+                            log:printDebug("IPS generation successful, returning generated bundle");
+                            fhirContext = check r4:getFHIRContext(ctx);
+                            string? createdId = processIps.id;
+                            if createdId is string {
+                                string location = string `${fhirResource}/${createdId}`;
+                                fhirContext.setProperty(r4:LOCATION_HEADER_PROP_NAME, location);
+                            }
+                            return processIps;
+                        } 
+                    }
+                }
+
                 return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR,
                         r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
             }

@@ -595,7 +595,6 @@ public isolated class FHIRPreprocessor {
     # - Resource path: Patient/[id]/$summary or Patient/$summary
     # - Instance level operation scope
     #
-    # + fhirResourceType - The FHIR resource type (must be "Patient")
     # + patientId - The patient ID for which to generate IPS
     # + payload - The payload of the request
     # + operationRequestScope - The scope of the operation request
@@ -604,19 +603,10 @@ public isolated class FHIRPreprocessor {
     # + httpCtx - The HTTP context
     # + return - A `r4:FHIRError` if an error occurs during the processing, or a `r4:Bundle` containing the generated IPS
     #            or `()` if the operation is not supported.
-    public isolated function processIPSGenerateOperation(string fhirResourceType, string patientId, json|xml? payload, 
+    public isolated function processIPSGenerateOperation(string patientId, json|xml? payload, 
             r4:FHIRInteractionLevel operationRequestScope, string baseResourcePath, http:Request httpRequest,
-            http:RequestContext httpCtx) returns r4:FHIRError|r4:Bundle? {
+            http:RequestContext httpCtx) returns r4:FHIRError|r4:Bundle {
         log:printDebug("Pre-processing FHIR IPS generation operation");
-
-        // Validate that this is a Patient resource request
-        if fhirResourceType != "Patient" {
-            string message = "IPS operation only supported for Patient resources";
-            string diagnostic = "IPS generation operation '$summary' is only supported for Patient resources. " +
-                    "Received resource type: \"" + fhirResourceType + "\".";
-            return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
-        }
 
         // Validate main HTTP headers
         r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
@@ -625,7 +615,7 @@ public isolated class FHIRPreprocessor {
         map<r4:RequestSearchParameter[]> requestOperationSearchParameters = {};
 
         // Get operation definitions for Patient resource type
-        r4:OperationCollection resourceOperationDefinitions = ips:fhirRegistry.getResourceOperations(fhirResourceType);
+        r4:OperationCollection resourceOperationDefinitions = ips:fhirRegistry.getResourceOperations(PATIENT_RESOURCE);
 
         if resourceOperationDefinitions.hasKey(SUMMARY_OPERATION) { // Valid IPS operation for Patient
             log:printDebug(string `Processing IPS generation operation: ${SUMMARY_OPERATION} for Patient/${patientId}`);
@@ -636,7 +626,7 @@ public isolated class FHIRPreprocessor {
 
             // Process the operation
             map<r4:RequestSearchParameter[]>|r4:FHIRResourceEntity? processRes =
-                    check preProcessOperation(fhirResourceType, SUMMARY_OPERATION, operationRequestScope,
+                    check preProcessOperation(PATIENT_RESOURCE, SUMMARY_OPERATION, operationRequestScope,
                     resourceOperationDefinition, resourceOperationConfig, self.operationConfigMap, self.apiConfig,
                     payload, httpRequest, httpCtx, clientHeaders);
 
@@ -656,7 +646,7 @@ public isolated class FHIRPreprocessor {
         readonly & r4:FHIROperationInteraction operationInteraction = {operation: SUMMARY_OPERATION};
 
         // Create FHIR request
-        r4:FHIRRequest fhirRequest = new (operationInteraction, fhirResourceType,
+        r4:FHIRRequest fhirRequest = new (operationInteraction, PATIENT_RESOURCE,
             resourceEntity, requestOperationSearchParameters.cloneReadOnly(), clientHeaders.acceptType
         );
 
@@ -685,7 +675,7 @@ public isolated class FHIRPreprocessor {
             serviceResourceMap[serviceName] = string `${serviceInfo.serviceUrl}/${baseResourcePath}`;
         }
 
-        r4:Bundle|error? ipsBundle = handleIpsGeneration(patientId, patientServiceInfo, serviceResourceMap);
+        r4:Bundle|error ipsBundle = handleIpsGeneration(patientId, patientServiceInfo, serviceResourceMap);
 
         if ipsBundle is error {
             string diagnostic = "Failed to generate IPS bundle: " + ipsBundle.message();
@@ -698,18 +688,10 @@ public isolated class FHIRPreprocessor {
         // Create FHIR context
         r4:FHIRContext fhirCtx = new (fhirRequest, request, fhirSecurity);
 
-        // Store the generated IPS bundle in the FHIR context for later use
-        // fhirCtx.setProperty("ips_bundle", ipsBundle);
-
         // Set FHIR context inside HTTP context
         setFHIRContext(fhirCtx, httpCtx);
 
-        if ipsBundle is r4:Bundle {
-            // Return the generated IPS bundle
-            return ipsBundle;
-        } else {
-            return ();
-        }
+        return ipsBundle;
     }
 
 
