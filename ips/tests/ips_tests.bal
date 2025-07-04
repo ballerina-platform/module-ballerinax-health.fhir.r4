@@ -963,3 +963,68 @@ function testIpsBundleCreationFromR4Bundle() returns error? {
         test:assertFail("Error in parsing the bundle");
     }
 }
+
+@test:Config
+public function testGenerateIpsWithMockServices() returns error? {
+    string patientId = "102";
+
+    final SectionConfig[] sectionConfigs = [
+        {
+            sectionName: PROBLEMS,
+            sectionTitle: "Active Problems",
+            resources: [
+                {resourceType: "Condition", patientParam: "subject"}
+            ]
+        },
+        {
+            sectionName: ALLERGIES,
+            sectionTitle: "Allergies and Intolerances",
+            resources: [
+                {resourceType: "AllergyIntolerance"}
+            ]
+        },
+        {
+            sectionName: MEDICATIONS,
+            sectionTitle: "Medication Summary",
+            resources: [
+                {resourceType: "MedicationStatement", patientParam: "subject"}
+            ]
+        }
+    ];
+
+    map<string> serviceResourceMap = {
+        "Patient": "http://localhost:9090/fhir/r4",
+        "Organization": "http://localhost:9091/fhir/r4",
+        "Condition": "http://localhost:9092/fhir/r4",
+        "AllergyIntolerance": "http://localhost:9093/fhir/r4",
+        "MedicationStatement": "http://localhost:9094/fhir/r4",
+        "Practitioner": "http://localhost:9095/fhir/r4"
+    };
+
+    IPSContext ipsContext = check new (serviceResourceMap, sectionConfigs);
+
+    r4:Bundle bundle = check generateIps(patientId, ipsContext);
+    r4:Bundle expectedBundle = check generatedIpsBundle.cloneWithType();
+
+    r4:BundleEntry[] bundleEntries = bundle.entry is r4:BundleEntry[] ? <r4:BundleEntry[]>bundle.entry : [];
+    r4:BundleEntry[] expectedEntries = expectedBundle.entry is r4:BundleEntry[] ? <r4:BundleEntry[]>expectedBundle.entry : [];
+
+    int index = 0;
+    foreach var item in bundleEntries {
+        r4:Resource bundleResource = check item["resource"].cloneWithType();
+        r4:Resource expectedBundleResource = check expectedEntries[index]["resource"].cloneWithType();
+        
+        if index == 0 {
+            CompositionUvIps composition = check bundleResource.cloneWithType();
+            CompositionUvIps expectedComposition = check expectedBundleResource.cloneWithType();
+
+            expectedComposition.date = composition.date;
+
+            test:assertEquals(composition, expectedComposition, msg = "Composition resource should match expected");
+        } else {
+            test:assertEquals(bundleResource, expectedBundleResource, msg = "Resource at index " + index.toString() + " should match expected");
+        }
+
+        index += 1;
+    }
+}

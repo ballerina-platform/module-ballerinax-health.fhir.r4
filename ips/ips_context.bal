@@ -24,7 +24,7 @@ public isolated class IPSContext {
             string? serviceUrl = serviceMap[resourceType];
             if serviceUrl is string {
                 lock {
-                    fhir:FHIRConnector fhirConnector = check new ({baseURL: serviceUrl});
+                    fhir:FHIRConnector fhirConnector = check new ({baseURL: serviceUrl}, enableCapabilityStatementValidation = false);
                     self.fhirClients[resourceType] = fhirConnector;
                 }
             }

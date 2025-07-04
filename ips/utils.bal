@@ -183,7 +183,7 @@ public isolated function generateIps(string patientId, IPSContext context) retur
     }
     // Add the custodian reference if not already present
     if composition.custodian is r4:Reference {
-        if custodian is string {
+        if custodian != "" {
             r4:Resource? custodianResource = fetchAndAddReferencedResource(custodian, context);
             if custodianResource is r4:Resource {
                 ipsBundleResources = addIfNotDuplicate(custodianResource, ipsBundleResources);
