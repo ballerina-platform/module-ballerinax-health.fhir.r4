@@ -27,14 +27,14 @@ json generatedIpsBundle = {
                 "resourceType": "Composition",
                 "date": "2025-07-04T10:57:33.754807600Z",
                 "custodian": {
-                    "reference": "Practitioner/12345"
+                    "reference": "Organization/50"
                 },
                 "subject": {
                     "reference": "Patient/102"
                 },
                 "author": [
                     {
-                        "reference": "Organization/50"
+                        "reference": "Practitioner/12345"
                     }
                 ],
                 "section": [
@@ -221,18 +221,6 @@ json generatedIpsBundle = {
             }
         },
         {
-            "fullUrl": "urn:uuid:50",
-            "resource": {
-                "resourceType": "Organization",
-                "active": true,
-                "meta": {
-                    "lastUpdated": "2023-10-01T12:00:00Z"
-                },
-                "name": "Example Organization",
-                "id": "50"
-            }
-        },
-        {
             "fullUrl": "urn:uuid:12345",
             "resource": {
                 "resourceType": "Practitioner",
@@ -246,6 +234,18 @@ json generatedIpsBundle = {
                     }
                 ],
                 "id": "12345"
+            }
+        },
+        {
+            "fullUrl": "urn:uuid:50",
+            "resource": {
+                "resourceType": "Organization",
+                "active": true,
+                "meta": {
+                    "lastUpdated": "2023-10-01T12:00:00Z"
+                },
+                "name": "Example Organization",
+                "id": "50"
             }
         }
     ]

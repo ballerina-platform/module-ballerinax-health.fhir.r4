@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 import ballerina/log;
-import ballerina/regex;
 import ballerina/time;
 import ballerina/uuid;
 import ballerinax/health.clients.fhir;
@@ -68,7 +67,7 @@ public isolated function generateIps(string patientId, IPSContext context) retur
 
     // 3. Add the resource to the entries
     // 3.1 For each IPS section, use context.getSectionConfigs() and fetch resources using section configs
-    r4:code[] sectionCodes = [];
+    IpsSectionName[] compositionSectionNames = [];
     SectionConfig[] sectionConfigs = context.getSectionConfigs();
     foreach SectionConfig sectionConfig in sectionConfigs {
         // Use LOINC code map for section code/display if available
@@ -160,14 +159,14 @@ public isolated function generateIps(string patientId, IPSContext context) retur
                 entry: sectionRefs
             };
             composition.section.push(compSection);
-            sectionCodes.push(sectionCoding.code);
+            compositionSectionNames.push(sectionConfig.sectionName);
         }
     }
     // Check whether all required sections are present in the composition
-    foreach r4:code requiredCode in REQUIRED_SECTION_CODES {
-        if !(sectionCodes.indexOf(requiredCode) >= 0) {
-            log:printDebug("Required section with code: " + requiredCode + " is missing from the composition.");
-            return error("Required section with code: " + requiredCode + " is missing from the composition.");
+    foreach IpsSectionName requiredSection in REQUIRED_SECTIONS {
+        if !(compositionSectionNames.indexOf(requiredSection) >= 0) {
+            log:printDebug("Required section '" + requiredSection + "' is missing in the IPS composition.");
+            return error("Required section '" + requiredSection + "' is missing in the IPS composition.");
         }
     }
 
@@ -330,6 +329,47 @@ public isolated function getIpsBundle(r4:Bundle|IpsBundleData bundleData) return
         return bundle;
     }
     return error("Invalid IPS Bundle data");
+}
+
+# Validate the IPS section configurations.
+#
+# + sectionConfig - The array of SectionConfig objects to be validated.
+# + return - Returns true if the IPS section configurations are valid,
+public isolated function validateSectionConfig(SectionConfig[] sectionConfig) returns string[]? {
+    string[] errorMsgs = [];
+    
+    // check sectionConfig contains all required sections
+    IpsSectionName[] sectionNamesInSectionConfig = sectionConfig.map(
+        isolated function(SectionConfig section) returns IpsSectionName {
+            return section.sectionName;
+        }
+    );
+    foreach IpsSectionName requiredSection in REQUIRED_SECTIONS {
+        if sectionNamesInSectionConfig.indexOf(requiredSection) is () {
+            errorMsgs.push("Required section '" + requiredSection.toString() + "' is missing in the section configuration.");
+        }
+    }
+
+    if authors.length() > 0 {
+        // validate the author references
+        if getIpsAuthorReferences().length() == 0 {
+            errorMsgs.push("Invalid author reference is configured.");
+        }
+    } else {
+        errorMsgs.push("At least one author reference is required in the IPS section configuration.");
+    }
+
+    if custodian != "" {
+        if getIpsCustodianReference() is () {
+            errorMsgs.push("Invalid custodian reference is configured.");
+        }
+    }
+
+    if errorMsgs.length() > 0 {
+        return errorMsgs;
+    } 
+
+    return ();
 }
 
 isolated function constructIpsBundleFromR4Bundle(r4:Bundle fhirBundle) returns r4:Bundle|error {
@@ -592,9 +632,17 @@ isolated function getBundleEntry(r4:Resource 'resource) returns r4:BundleEntry {
 
 isolated function getIpsAuthorReferences() returns r4:Reference[] {
     // should be a reference to Practitioner, Organization, PractitionerRole, Device, Patient, RelatedPerson
+    string[] resourceTypes = ["Practitioner", "Organization", "PractitionerRole", "Device", "Patient", "RelatedPerson"];
     r4:Reference[] compositionAuthors = [];
     foreach string author in authors {
-        compositionAuthors.push({reference: author});
+        string[]|error referenceSplit = splitR4Reference(author);
+        if referenceSplit is error {
+            log:printDebug("Invalid reference format: " + author);
+            continue;
+        }
+        if resourceTypes.indexOf(referenceSplit[0]) is int {
+            compositionAuthors.push({reference: author});
+        }
     }
     return compositionAuthors;
 }
@@ -602,10 +650,17 @@ isolated function getIpsAuthorReferences() returns r4:Reference[] {
 isolated function getIpsCustodianReference() returns r4:Reference? {
     // should be a Organization reference
     if custodian != "" {
-        return {reference: custodian};
-    } else {
-        return ();
+        string[]|error referenceSplit = splitR4Reference(custodian);
+        if referenceSplit is string[] {
+            if referenceSplit[0] == "Organization" {
+                return {reference: custodian};
+            }
+        } else {
+            log:printDebug("Invalid custodian reference format: " + custodian);
+        }
     }
+    
+    return ();
 }
 
 isolated function getIpsAttesters() returns CompositionUvIpsAttester[]? {
@@ -643,7 +698,12 @@ isolated function addIfNotDuplicate(r4:Resource newResource, r4:Resource[] resou
 }
 
 isolated function fetchAndAddReferencedResource(string reference, IPSContext context) returns r4:Resource? {
-    string[] referenceSplit = regex:split(reference, "/");
+    string[]|error referenceSplit = splitR4Reference(reference);
+    if referenceSplit is error {
+        log:printDebug("Invalid reference format: " + reference);
+        return ();
+    }
+    
     if referenceSplit.length() < 2 {
         log:printDebug("Invalid reference format: " + reference);
         return ();
@@ -678,8 +738,12 @@ isolated function extractSectionNarrativeSummary(r4:Resource resourceObj) return
                 // Extract plain text from HTML div (basic extraction)
                 string htmlContent = divField;
                 // Simple HTML tag removal for basic text extraction
-                string plainText = regex:replaceAll(htmlContent, "<[^>]*>", "");
-                plainText = regex:replaceAll(plainText, "\\s+", " ");
+                string:RegExp regexHtmlTags = re `<[^>]*>`;
+                string plainText = regexHtmlTags.replaceAll(htmlContent, "");
+                // Replace multiple spaces with a single space and trim the text
+                string:RegExp regexWhiteSpaces = re `\s+`;
+                plainText = regexWhiteSpaces.replaceAll(plainText, " ");
+
                 plainText = plainText.trim();
                 if plainText.length() > 0 && plainText.length() < 200 {
                     return plainText;
@@ -866,4 +930,13 @@ isolated function getSectionCoding(IpsSectionName sectionName) returns Coding|er
         }
     }
     return error("Coding not found for section resourceType: " + sectionName);
+}
+
+isolated function splitR4Reference(string reference) returns string[]|error {
+    string:RegExp slash = re `/`;
+    string[] parts = slash.split(reference);
+    if parts.length() != 2 {
+        return error("Invalid reference format: " + reference);
+    }
+    return parts;
 }

@@ -52,12 +52,14 @@ final map<Coding> & readonly IPS_SECTION_LOINC_CODES = {
     ADVANCE_DIRECTIVES: {code: "42348-3", display: "Advance healthcare directives"}
 };
 
-# Required section codes for the IPS.
+# Required sections for the IPS.
 # These are the mandatory sections that must be included in the IPS as per the HL7 IPS
-final string[] & readonly REQUIRED_SECTION_CODES = [
-    "11450-4", // Problem list
-    "10160-0", // History of Medication Use
-    "48765-2" // Allergies and Adverse Reactions
+# Implementation Guide.
+# See: https://hl7.org/fhir/uv/ips/StructureDefinition-Composition
+final IpsSectionName[] & readonly REQUIRED_SECTIONS = [
+    PROBLEMS,
+    MEDICATIONS,
+    ALLERGIES
 ];
 
 # Mandatory sections and recommended sections for the International Patient Summary (IPS).
