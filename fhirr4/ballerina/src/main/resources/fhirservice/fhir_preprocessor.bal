@@ -678,9 +678,8 @@ public isolated class FHIRPreprocessor {
         r4:Bundle|error ipsBundle = handleIpsGeneration(patientId, patientServiceInfo, serviceResourceMap);
 
         if ipsBundle is error {
-            string diagnostic = "Failed to generate IPS bundle: " + ipsBundle.message();
-            return r4:createFHIRError("IPS generation error", r4:ERROR, r4:PROCESSING,
-                    diagnostic = diagnostic, httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
+            return r4:createFHIRError("IPS generation failed", r4:ERROR, r4:PROCESSING,
+                    diagnostic = ipsBundle.message(), httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR);
         }
 
         r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, payload);

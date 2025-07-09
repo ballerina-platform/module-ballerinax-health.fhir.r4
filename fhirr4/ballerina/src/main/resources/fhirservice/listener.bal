@@ -28,14 +28,13 @@ public isolated class Listener {
         self.ls = check new (port);
         self.config = config;
 
-        r4:FHIRServiceInfo serviceInfo = {
+        r4:fhirRegistry.addResourceFHIRService(config.resourceType, {
             name: config.resourceType + " Service",
             serviceUrl: "http://localhost:" + port.toString(),
             apiConfig: config,
             status: "active"
-        };
-
-        r4:fhirRegistry.addResourceFHIRService(config.resourceType, serviceInfo);
+        });
+        check validateOperationConfigs(config);
     }
 
     public isolated function 'start() returns error? {
