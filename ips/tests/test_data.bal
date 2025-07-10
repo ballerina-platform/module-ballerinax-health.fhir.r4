@@ -35,6 +35,9 @@ json generatedIpsBundle = {
                 "author": [
                     {
                         "reference": "Practitioner/12345"
+                    },
+                    {
+                        "reference": "Organization/50"
                     }
                 ],
                 "section": [
@@ -86,7 +89,7 @@ json generatedIpsBundle = {
                     {
                         "entry": [
                             {
-                                "reference": "MedicationStatement/medication-id-1"
+                                "reference": "MedicationStatement/medication-statement-id-1"
                             }
                         ],
                         "code": {
@@ -103,6 +106,27 @@ json generatedIpsBundle = {
                             "div": "<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">No information available.</div>"
                         },
                         "title": "Medication Summary"
+                    },
+                    {
+                        "entry": [
+                            {
+                                "reference": "Immunization/immunization-id-1"
+                            }
+                        ],
+                        "code": {
+                            "coding": [
+                                {
+                                    "system": "http://loinc.org",
+                                    "code": "11369-6",
+                                    "display": "Immunization"
+                                }
+                            ]
+                        },
+                        "text": {
+                            "status": "generated",
+                            "div": "<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">No information available.</div>"
+                        },
+                        "title": "Immunizations"
                     }
                 ],
                 "title": "International Patient Summary",
@@ -196,7 +220,7 @@ json generatedIpsBundle = {
             }
         },
         {
-            "fullUrl": "urn:uuid:medication-id-1",
+            "fullUrl": "urn:uuid:medication-statement-id-1",
             "resource": {
                 "resourceType": "MedicationStatement",
                 "subject": {
@@ -205,7 +229,7 @@ json generatedIpsBundle = {
                 "medicationReference": {
                     "reference": "Medication/medication-id-1"
                 },
-                "id": "medication-id-1",
+                "id": "medication-statement-id-1",
                 "effectivePeriod": {},
                 "medicationCodeableConcept": {
                     "coding": [
@@ -218,6 +242,28 @@ json generatedIpsBundle = {
                 },
                 "effectiveDateTime": "",
                 "status": "unknown"
+            }
+        },
+        {
+            "fullUrl": "urn:uuid:immunization-id-1",
+            "resource": {
+                "id": "immunization-id-1",
+                "resourceType": "Immunization",
+                "status": "completed",
+                "vaccineCode": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/cvx",
+                            "code": "207",
+                            "display": "COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5 mL dose"
+                        }
+                    ]
+                },
+                "patient": {
+                    "reference": "Patient/102"
+                },
+                "occurrenceDateTime": "2023-09-15",
+                "occurrenceString": "2023-09-15T00:00:00Z"
             }
         },
         {
@@ -246,6 +292,22 @@ json generatedIpsBundle = {
                 },
                 "name": "Example Organization",
                 "id": "50"
+            }
+        },
+        {
+            "fullUrl": "urn:uuid:medication-id-1",
+            "resource": {
+                "resourceType": "Medication",
+                "id": "medication-id-1",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "123456",
+                            "display": "Example Medication"
+                        }
+                    ]
+                }
             }
         }
     ]

@@ -987,7 +987,14 @@ public function testGenerateIpsWithMockServices() returns error? {
             sectionName: MEDICATIONS,
             sectionTitle: "Medication Summary",
             resources: [
-                {resourceType: "MedicationStatement", patientParam: "subject"}
+                {resourceType: "MedicationStatement"}
+            ]
+        },
+        {
+            sectionName: IMMUNIZATIONS,
+            sectionTitle: "Immunizations",
+            resources: [
+                {resourceType: "Immunization"}
             ]
         }
     ];
@@ -998,7 +1005,9 @@ public function testGenerateIpsWithMockServices() returns error? {
         "Condition": "http://localhost:9092/fhir/r4",
         "AllergyIntolerance": "http://localhost:9093/fhir/r4",
         "MedicationStatement": "http://localhost:9094/fhir/r4",
-        "Practitioner": "http://localhost:9095/fhir/r4"
+        "Practitioner": "http://localhost:9095/fhir/r4",
+        "Medication": "http://localhost:9096/fhir/r4",
+        "Immunization": "http://localhost:9097/fhir/r4"
     };
 
     IPSContext ipsContext = check new (serviceResourceMap, sectionConfigs);
@@ -1008,6 +1017,8 @@ public function testGenerateIpsWithMockServices() returns error? {
 
     r4:BundleEntry[] bundleEntries = bundle.entry is r4:BundleEntry[] ? <r4:BundleEntry[]>bundle.entry : [];
     r4:BundleEntry[] expectedEntries = expectedBundle.entry is r4:BundleEntry[] ? <r4:BundleEntry[]>expectedBundle.entry : [];
+
+    test:assertEquals(bundleEntries.length(), expectedEntries.length(), msg = "Bundle should have the same number of entries");
 
     int index = 0;
     foreach var item in bundleEntries {

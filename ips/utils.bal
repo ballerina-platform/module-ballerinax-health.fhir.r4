@@ -37,7 +37,6 @@ public isolated function generateIps(string patientId, IPSContext context) retur
         date: time:utcToString(time:utcNow()),
         author: getIpsAuthorReferences(),
         custodian: getIpsCustodianReference(),
-        attester: getIpsAttesters(),
         section: [],
         title: ips_composition_title,
         'type: {
@@ -173,7 +172,7 @@ public isolated function generateIps(string patientId, IPSContext context) retur
     // 3.2 Add the resources in the composition author and custodian if they are not already present
     foreach r4:Reference authorReference in composition.author {
         if authorReference.reference is string {
-            r4:Resource? authorResource = fetchAndAddReferencedResource(<string>authorReference.reference, context);
+            r4:Resource? authorResource = fetchReferencedResource(<string>authorReference.reference, context);
             if authorResource is r4:Resource {
                 // entries.push(authorEntry);
                 ipsBundleResources = addIfNotDuplicate(authorResource, ipsBundleResources);
@@ -183,12 +182,16 @@ public isolated function generateIps(string patientId, IPSContext context) retur
     // Add the custodian reference if not already present
     if composition.custodian is r4:Reference {
         if custodian != "" {
-            r4:Resource? custodianResource = fetchAndAddReferencedResource(custodian, context);
+            r4:Resource? custodianResource = fetchReferencedResource(custodian, context);
             if custodianResource is r4:Resource {
                 ipsBundleResources = addIfNotDuplicate(custodianResource, ipsBundleResources);
             }
         }
     }
+
+    // 3.3 Add nested resources to the bundle
+    r4:Resource[] nextedResources = fetchNestedResources(ipsBundleResources, context);
+    ipsBundleResources = addIfNotDuplicate(nextedResources, ipsBundleResources);
 
     // 4. Add the Composition as the first entry, Patient as the second
     r4:BundleEntry[] finalEntries = [];
@@ -635,12 +638,12 @@ isolated function getIpsAuthorReferences() returns r4:Reference[] {
     string[] resourceTypes = ["Practitioner", "Organization", "PractitionerRole", "Device", "Patient", "RelatedPerson"];
     r4:Reference[] compositionAuthors = [];
     foreach string author in authors {
-        string[]|error referenceSplit = splitR4Reference(author);
+        ResourceReference|error referenceSplit = splitR4Reference(author);
         if referenceSplit is error {
             log:printDebug("Invalid reference format: " + author);
             continue;
         }
-        if resourceTypes.indexOf(referenceSplit[0]) is int {
+        if resourceTypes.indexOf(referenceSplit.resourceType) is int {
             compositionAuthors.push({reference: author});
         }
     }
@@ -650,9 +653,9 @@ isolated function getIpsAuthorReferences() returns r4:Reference[] {
 isolated function getIpsCustodianReference() returns r4:Reference? {
     // should be a Organization reference
     if custodian != "" {
-        string[]|error referenceSplit = splitR4Reference(custodian);
-        if referenceSplit is string[] {
-            if referenceSplit[0] == "Organization" {
+        ResourceReference|error referenceSplit = splitR4Reference(custodian);
+        if referenceSplit is ResourceReference {
+            if referenceSplit.resourceType == "Organization" {
                 return {reference: custodian};
             }
         } else {
@@ -663,32 +666,27 @@ isolated function getIpsCustodianReference() returns r4:Reference? {
     return ();
 }
 
-isolated function getIpsAttesters() returns CompositionUvIpsAttester[]? {
-    // should be a reference to Practitioner, Organization, PractitionerRole, Device, Patient, RelatedPerson
-    if attesters == [] {
-        return ();
-    }
-    CompositionUvIpsAttester[] compositionAttesters = [];
-    foreach string attester in attesters {
-        compositionAttesters.push({mode: <CompositionUvIpsAttesterMode>attester});
-    }
-    return compositionAttesters;
-}
-
-isolated function addIfNotDuplicate(r4:Resource newResource, r4:Resource[] resourcesArr) returns r4:Resource[] {
+isolated function addIfNotDuplicate(r4:Resource|r4:Resource[] newResource, r4:Resource[] resourcesArr) returns r4:Resource[] {
     do {
-        if newResource.id is string {
-            foreach var resourceArrItem in resourcesArr {
-                if resourceArrItem.id is string {
-                    if resourceArrItem.id == newResource.id && resourceArrItem.resourceType == newResource.resourceType {
-                        // Duplicate found, return original array
-                        log:printDebug("Duplicate entry found for resource type: " + newResource.resourceType + " with ID: " + <string>resourceArrItem.id);
-                        return resourcesArr;
+        r4:Resource[] newResourceClone = (newResource is r4:Resource) ? [newResource] : newResource;
+        foreach r4:Resource newResourceArrItem in newResourceClone {
+            boolean isDuplicateFound = false;
+            if newResourceArrItem.id is string {
+                foreach var resourceArrItem in resourcesArr {
+                    if resourceArrItem.id is string {
+                        if resourceArrItem.id == newResourceArrItem.id && resourceArrItem.resourceType == newResourceArrItem.resourceType {
+                            // Duplicate found, continue to next item
+                            log:printDebug("Duplicate entry found for resource type: " + newResourceArrItem.resourceType + " with ID: " + <string>newResourceArrItem.id);
+                            isDuplicateFound = true;
+                            break;
+                        }
                     }
                 }
+                if !isDuplicateFound {
+                    // No duplicate found, add new entry
+                    resourcesArr.push(newResourceArrItem);
+                }
             }
-            // No duplicate found, add new entry
-            resourcesArr.push(newResource);
         }
         return resourcesArr;
     } on fail {
@@ -697,20 +695,16 @@ isolated function addIfNotDuplicate(r4:Resource newResource, r4:Resource[] resou
     }
 }
 
-isolated function fetchAndAddReferencedResource(string reference, IPSContext context) returns r4:Resource? {
-    string[]|error referenceSplit = splitR4Reference(reference);
+isolated function fetchReferencedResource(string reference, IPSContext context) returns r4:Resource? {
+    ResourceReference|error referenceSplit = splitR4Reference(reference);
     if referenceSplit is error {
         log:printDebug("Invalid reference format: " + reference);
         return ();
     }
     
-    if referenceSplit.length() < 2 {
-        log:printDebug("Invalid reference format: " + reference);
-        return ();
-    }
-    fhir:FHIRConnector|error clientVal = context.getFHIRClient(referenceSplit[0]);
+    fhir:FHIRConnector|error clientVal = context.getFHIRClient(referenceSplit.resourceType);
     if clientVal is fhir:FHIRConnector {
-        fhir:FHIRResponse resp = checkpanic clientVal->getById(referenceSplit[0], referenceSplit[1]);
+        fhir:FHIRResponse resp = checkpanic clientVal->getById(referenceSplit.resourceType, referenceSplit.id);
         if resp.httpStatusCode != 200 {
             log:printDebug("Failed to fetch referenced resource: " + reference + ", status code: " + resp.httpStatusCode.toString());
             return ();
@@ -718,9 +712,73 @@ isolated function fetchAndAddReferencedResource(string reference, IPSContext con
         r4:Resource referenceResource = checkpanic resp.'resource.cloneWithType();
         return referenceResource;
     } else {
-        log:printError("Failed to get client for referenced resource type: " + referenceSplit[0]);
+        log:printError("Failed to get client for referenced resource type: " + referenceSplit.resourceType + " due to: " + clientVal.message());
         return ();
     }
+}
+
+isolated function fetchNestedResources(r4:Resource[] resourcesArr, IPSContext context) returns r4:Resource[] {
+    string[] nestedResourceReferences = [];
+
+    foreach r4:Resource resourceArrItem in resourcesArr {
+        match resourceArrItem.resourceType {
+            "MedicationStatement" => {
+                // Fetch Medication resource for MedicationStatement (medicationReference)
+                international401:MedicationStatement|error medicationStatement = resourceArrItem.cloneWithType();
+                if medicationStatement is international401:MedicationStatement {
+                    string? medicationResourceReference = medicationStatement.medicationReference.reference;
+                    if medicationResourceReference is string && nestedResourceReferences.indexOf(medicationResourceReference) is () {
+                        nestedResourceReferences.push(medicationResourceReference);
+                    }
+                }
+            }
+            "MedicationAdministration" => {
+                // Fetch Medication resource for MedicationAdministration (medicationReference)
+                international401:MedicationAdministration|error medicationAdmin = resourceArrItem.cloneWithType();
+                if medicationAdmin is international401:MedicationAdministration {
+                    string? medicationResourceReference = medicationAdmin.medicationReference.reference;
+                    if medicationResourceReference is string && nestedResourceReferences.indexOf(medicationResourceReference) is () {
+                        nestedResourceReferences.push(medicationResourceReference);
+                    }
+                }
+            }
+            "MedicationRequest" => {
+                // Fetch Medication resource for MedicationRequest (medicationReference)
+                international401:MedicationRequest|error medicationRequest = resourceArrItem.cloneWithType();
+                if medicationRequest is international401:MedicationRequest {
+                    string? medicationResourceReference = medicationRequest.medicationReference.reference;
+                    if medicationResourceReference is string && nestedResourceReferences.indexOf(medicationResourceReference) is () {
+                        nestedResourceReferences.push(medicationResourceReference);
+                    }
+                }
+            }
+            "Observation" => {
+                // Fetch nested Observation resources
+                international401:Observation|error observation = resourceArrItem.cloneWithType();
+                if observation is international401:Observation {
+                    // (hasMember)
+                    r4:Reference[]? observationReferences = observation.hasMember;
+                    if observationReferences is r4:Reference[] {
+                        foreach r4:Reference obsRef in observationReferences {
+                            if obsRef.reference is string && nestedResourceReferences.indexOf(<string>obsRef.reference) is () {
+                                nestedResourceReferences.push(<string>obsRef.reference);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    r4:Resource[] nestedResources = [];
+    foreach string item in nestedResourceReferences {
+        r4:Resource? nestedResource = fetchReferencedResource(item, context);
+        if nestedResource is r4:Resource {
+            nestedResources.push(nestedResource);
+        }
+    }
+
+    return nestedResources;
 }
 
 isolated function extractSectionNarrativeSummary(r4:Resource resourceObj) returns string {
@@ -932,11 +990,14 @@ isolated function getSectionCoding(IpsSectionName sectionName) returns Coding|er
     return error("Coding not found for section resourceType: " + sectionName);
 }
 
-isolated function splitR4Reference(string reference) returns string[]|error {
+isolated function splitR4Reference(string reference) returns ResourceReference|error {
     string:RegExp slash = re `/`;
     string[] parts = slash.split(reference);
     if parts.length() != 2 {
         return error("Invalid reference format: " + reference);
     }
-    return parts;
+    return {
+        resourceType: parts[0],
+        id: parts[1]
+    };
 }

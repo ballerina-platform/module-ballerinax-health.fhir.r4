@@ -85,7 +85,7 @@ final SectionConfig[] & readonly DEFAULT_SECTION_RESOURCE_CONFIG = [
         sectionName: MEDICATIONS,
         sectionTitle: "Medication Summary",
         resources: [
-            {resourceType: "MedicationStatement", patientParam: "subject"}
+            {resourceType: "MedicationStatement"}
         ]
     },
     // Recommended sections
@@ -100,22 +100,22 @@ final SectionConfig[] & readonly DEFAULT_SECTION_RESOURCE_CONFIG = [
         sectionName: RESULTS,
         sectionTitle: "Diagnostic Results",
         resources: [
-            {resourceType: "Observation", patientParam: "subject", searchParams: {"category": "laboratory"}},
-            {resourceType: "DiagnosticReport", patientParam: "subject"}
+            {resourceType: "Observation", searchParams: {"category": "laboratory"}},
+            {resourceType: "DiagnosticReport"}
         ]
     },
     {
         sectionName: PROCEDURE_HISTORY,
         sectionTitle: "History of Procedures",
         resources: [
-            {resourceType: "Procedure", patientParam: "subject"}
+            {resourceType: "Procedure"}
         ]
     },
     {
         sectionName: MEDICAL_DEVICES,
         sectionTitle: "History of Medical Device Use",
         resources: [
-            {resourceType: "DeviceUseStatement", patientParam: "subject"}
+            {resourceType: "DeviceUseStatement"}
         ]
     }
 ];

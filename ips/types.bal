@@ -40,3 +40,7 @@ public type Coding record {|
     string display;
 |};
 
+type ResourceReference record {
+    string resourceType;
+    string id;
+};

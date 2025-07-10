@@ -205,11 +205,11 @@ service http:Service /fhir/r4 on new http:Listener(9093) {
 
 service http:Service /fhir/r4 on new http:Listener(9094) {
     isolated resource function get MedicationStatement(http:Request request) returns http:Response {
-        string? searchParams = request.getQueryParamValue("subject");
+        string? searchParams = request.getQueryParamValue("patient");
 
         international401:MedicationStatement[] medications = [
             {
-                id: "medication-id-1",
+                id: "medication-statement-id-1",
                 resourceType: "MedicationStatement",
                 meta: {
                     lastUpdated: "2023-10-01T12:00:00Z"
@@ -289,6 +289,103 @@ service http:Service /fhir/r4 on new http:Listener(9095) {
 
         r4:Bundle bundle = r4:createFhirBundle(r4:BUNDLE_TYPE_SEARCHSET, practitioner);
         
+        http:Response response = new;
+        response.setPayload(bundle);
+        response.setHeader("Content-Type", "application/fhir+json");
+        response.statusCode = 200;
+        return response;
+    }
+}
+
+service http:Service /fhir/r4 on new http:Listener(9096) {
+    isolated resource function get Medication/[string mid]() returns http:Response {
+        international401:Medication medication = {
+            id: mid,
+            resourceType: "Medication",
+            meta: {
+                lastUpdated: "2023-10-01T12:00:00Z"
+            },
+            code: {
+                coding: [
+                    {
+                        system: "http://www.nlm.nih.gov/research/umls/rxnorm",
+                        code: "123456",
+                        display: "Example Medication"
+                    }
+                ]
+            }
+        };
+
+        http:Response response = new;
+        response.setPayload(medication);
+        response.setHeader("Content-Type", "application/fhir+json");
+        response.statusCode = 200;
+        return response;
+    }    
+}
+
+service http:Service /fhir/r4 on new http:Listener(9097) {
+    isolated resource function get Immunization/[string iid]() returns http:Response {
+        international401:Immunization immunization = {
+            id: iid,
+            resourceType: "Immunization",
+            meta: {
+                lastUpdated: "2023-10-01T12:00:00Z"
+            },
+            status: "completed",
+            vaccineCode: {
+                coding: [
+                    {
+                        system: "http://hl7.org/fhir/sid/cvx",
+                        code: "207",
+                        display: "COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5 mL dose"
+                    }
+                ]
+            },
+            patient: {
+                reference: "Patient/102"
+            },
+            occurrenceDateTime: "2023-09-15",
+            occurrenceString: "2023-09-15T00:00:00Z"
+        };
+
+        http:Response response = new;
+        response.setPayload(immunization);
+        response.setHeader("Content-Type", "application/fhir+json");
+        response.statusCode = 200;
+        return response;
+    }
+
+    isolated resource function get Immunization(http:Request request) returns http:Response {
+        string? patientParam = request.getQueryParamValue("patient");
+
+        international401:Immunization[] immunizations = [
+            {
+                id: "immunization-id-1",
+                resourceType: "Immunization",
+                meta: {
+                    lastUpdated: "2023-10-01T12:00:00Z"
+                },
+                status: "completed",
+                vaccineCode: {
+                    coding: [
+                        {
+                            system: "http://hl7.org/fhir/sid/cvx",
+                            code: "207",
+                            display: "COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5 mL dose"
+                        }
+                    ]
+                },
+                patient: {
+                    reference: "Patient/" + (patientParam is string ? patientParam : "102")
+                },
+                occurrenceDateTime: "2023-09-15",
+                occurrenceString: "2023-09-15T00:00:00Z"
+            }
+        ];
+
+        r4:Bundle bundle = r4:createFhirBundle(r4:BUNDLE_TYPE_SEARCHSET, immunizations);
+
         http:Response response = new;
         response.setPayload(bundle);
         response.setHeader("Content-Type", "application/fhir+json");
