@@ -344,7 +344,7 @@ public enum CoverageStatus {
         "valueMoney": {
             name: "valueMoney",
             dataType: r4:Money,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The amount due from the patient for the cost category.",
@@ -380,7 +380,7 @@ public enum CoverageStatus {
         "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The amount due from the patient for the cost category.",

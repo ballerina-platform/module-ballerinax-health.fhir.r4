@@ -405,7 +405,7 @@ public enum QuestionnaireItemType {
         "valueQuestionnaireCoding": {
             name: "valueQuestionnaireCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -441,7 +441,7 @@ public enum QuestionnaireItemType {
         "valueQuestionnaireInteger": {
             name: "valueQuestionnaireInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -450,7 +450,7 @@ public enum QuestionnaireItemType {
         "valueQuestionnaireString": {
             name: "valueQuestionnaireString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -459,7 +459,7 @@ public enum QuestionnaireItemType {
         "valueQuestionnaireDate": {
             name: "valueQuestionnaireDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -468,7 +468,7 @@ public enum QuestionnaireItemType {
         "valueQuestionnaireTime": {
             name: "valueQuestionnaireTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -477,7 +477,7 @@ public enum QuestionnaireItemType {
         "valueQuestionnaireReference": {
             name: "valueQuestionnaireReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A potential answer that's allowed as the answer to this question.",
@@ -782,7 +782,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireCoding": {
             name: "valueQuestionnaireCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -800,7 +800,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireUri": {
             name: "valueQuestionnaireUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -809,7 +809,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireBoolean": {
             name: "valueQuestionnaireBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -818,7 +818,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireAttachment": {
             name: "valueQuestionnaireAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -827,7 +827,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireReference": {
             name: "valueQuestionnaireReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -836,7 +836,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireDecimal": {
             name: "valueQuestionnaireDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -845,7 +845,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireDateTime": {
             name: "valueQuestionnaireDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -854,7 +854,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireQuantity": {
             name: "valueQuestionnaireQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -872,7 +872,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireInteger": {
             name: "valueQuestionnaireInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -881,7 +881,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireString": {
             name: "valueQuestionnaireString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -890,7 +890,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireDate": {
             name: "valueQuestionnaireDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -899,7 +899,7 @@ public enum QuestionnaireItemEnableWhenOperator {
         "valueQuestionnaireTime": {
             name: "valueQuestionnaireTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual value to for an initial answer.",
@@ -955,7 +955,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireReference": {
             name: "answerQuestionnaireReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -964,7 +964,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireDate": {
             name: "answerQuestionnaireDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -991,7 +991,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireDecimal": {
             name: "answerQuestionnaireDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -1009,7 +1009,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireTime": {
             name: "answerQuestionnaireTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -1018,7 +1018,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireString": {
             name: "answerQuestionnaireString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -1027,7 +1027,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireCoding": {
             name: "answerQuestionnaireCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -1036,7 +1036,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireInteger": {
             name: "answerQuestionnaireInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -1045,7 +1045,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireQuantity": {
             name: "answerQuestionnaireQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -1063,7 +1063,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireDateTime": {
             name: "answerQuestionnaireDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
@@ -1072,7 +1072,7 @@ public type QuestionnaireItemInitial record {|
         "answerQuestionnaireBoolean": {
             name: "answerQuestionnaireBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A value that the referenced question is tested using the specified operator in order for the item to be enabled.",
