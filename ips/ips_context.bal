@@ -18,17 +18,29 @@ public isolated class IPSContext {
     ) returns error? {
         self.sectionConfigs = sectionConfigs is SectionConfig[] ? sectionConfigs.clone() : DEFAULT_SECTION_RESOURCE_CONFIG;
 
-        // Initialize FHIR clients for each service URL
+        // Initialize FHIR clients for each service URL (reuse connectors for duplicate URLs)
         map<string> serviceMap = serviceResourceMap;
+        map<fhir:FHIRConnector> urlToConnector = {};
         foreach string resourceType in serviceMap.keys() {
             string? serviceUrl = serviceMap[resourceType];
             if serviceUrl is string {
                 lock {
+                    if urlToConnector.hasKey(serviceUrl) {
+                        fhir:FHIRConnector? fhirConnector = urlToConnector[serviceUrl];
+                        if fhirConnector is fhir:FHIRConnector {
+                            self.fhirClients[resourceType] = fhirConnector;
+                            continue; // Skip to next resource type if already initialized
+                        } else {
+                            _ = urlToConnector.remove(serviceUrl); // Remove invalid connector
+                        }
+                    }
                     fhir:FHIRConnector fhirConnector = check new ({baseURL: serviceUrl}, enableCapabilityStatementValidation = false);
                     self.fhirClients[resourceType] = fhirConnector;
+                    urlToConnector[serviceUrl] = fhirConnector;
                 }
             }
         }
+        urlToConnector.removeAll();
     }
 
     # Get the section-resource config (section to section configs)
@@ -52,5 +64,15 @@ public isolated class IPSContext {
             }
         }
         return error("FHIR client not found for service: " + resourceType);
+    }
+
+    isolated function createFHIRConnector(string serviceUrl) returns fhir:FHIRConnector|error {
+        fhir:FHIRConnector fhirConnector = check new (
+            {
+                baseURL: serviceUrl
+            }, 
+            enableCapabilityStatementValidation = false
+        );
+        return fhirConnector;
     }
 }
