@@ -609,8 +609,13 @@ public isolated class FHIRPreprocessor {
 
             // Decode search parameter key and seperate name and modifier
             // Refer: http://hl7.org/fhir/search.html#modifiers
+            string[]? paramValues = requestQueryParams[originalParamName];
+            if paramValues is () || paramValues.length() == 0 {
+                return r4:createFHIRError(string `Search parameter ${originalParamName} has no value`, r4:ERROR, r4:PROCESSING,
+                        httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
             r4:RequestQueryParameter queryParam =
-                            check r4:decodeSearchParameterKey(originalParamName, requestQueryParams.get(originalParamName));
+                            check r4:decodeSearchParameterKey(originalParamName, paramValues);
             r4:RequestSearchParameter[] processResult;
             if searchParamDefinitions.hasKey(queryParam.name) {
                 // Processing search parameters bound to resource
