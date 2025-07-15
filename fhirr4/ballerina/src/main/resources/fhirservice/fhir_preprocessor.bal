@@ -622,24 +622,28 @@ public isolated class FHIRPreprocessor {
 
             // Get operation definition and config
             r4:FHIROperationDefinition resourceOperationDefinition = resourceOperationDefinitions.get(SUMMARY_OPERATION);
-            r4:OperationConfig? resourceOperationConfig = self.operationConfigMap.get(SUMMARY_OPERATION);
+            
+            if self.operationConfigMap.hasKey(SUMMARY_OPERATION) {
+                r4:OperationConfig? resourceOperationConfig = self.operationConfigMap.get(SUMMARY_OPERATION);
+                // Process the operation
+                map<r4:RequestSearchParameter[]>|r4:FHIRResourceEntity? processRes =
+                        check preProcessOperation(PATIENT_RESOURCE, SUMMARY_OPERATION, operationRequestScope,
+                        resourceOperationDefinition, resourceOperationConfig, self.operationConfigMap, self.apiConfig,
+                        payload, httpRequest, httpCtx, clientHeaders);
 
-            // Process the operation
-            map<r4:RequestSearchParameter[]>|r4:FHIRResourceEntity? processRes =
-                    check preProcessOperation(PATIENT_RESOURCE, SUMMARY_OPERATION, operationRequestScope,
-                    resourceOperationDefinition, resourceOperationConfig, self.operationConfigMap, self.apiConfig,
-                    payload, httpRequest, httpCtx, clientHeaders);
-
-            if processRes is map<r4:RequestSearchParameter[]> { // For type level operations (POST)
-                requestOperationSearchParameters = processRes;
-            } else if processRes is r4:FHIRResourceEntity { // For instance level operations (POST)
-                resourceEntity = processRes;
+                if processRes is map<r4:RequestSearchParameter[]> { // For type level operations (POST)
+                    requestOperationSearchParameters = processRes;
+                } else if processRes is r4:FHIRResourceEntity { // For instance level operations (POST)
+                    resourceEntity = processRes;
+                }
+            } else {
+                return r4:createFHIRError("IPS operation not supported", r4:ERROR, r4:PROCESSING,
+                        diagnostic = "The '$summary' operation for IPS generation is not available for Patient resources. " +
+                                "Please ensure the IPS operation is properly configured.",
+                        httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
             }
         } else { // IPS operation not available
-            string diagnostic = "The '$summary' operation for IPS generation is not available for Patient resources. " +
-                    "Please ensure the IPS operation is properly configured.";
-            return r4:createFHIRError("IPS operation not supported", r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
-                    httpStatusCode = http:STATUS_BAD_REQUEST);
+            return r4:createFHIRError("IPS operation not supported", r4:ERROR, r4:PROCESSING);
         }
 
         // Create interaction for IPS operation

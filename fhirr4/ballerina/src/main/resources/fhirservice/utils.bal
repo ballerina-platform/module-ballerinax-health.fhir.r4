@@ -208,8 +208,6 @@ isolated function validateOperationConfigs(r4:ResourceAPIConfig apiConfig) retur
                             }
                         }
                     }
-                } else {
-                    return r4:createFHIRError("IPS Section Config is not provided", r4:ERROR, r4:INVALID);
                 }
             }
 
