@@ -37,7 +37,7 @@ public isolated class Listener {
 
         r4:fhirRegistry.addResourceFHIRService(config.resourceType, {
             name: config.resourceType + " Service",
-            serviceUrl: "http://localhost:" + port.toString(),
+            serviceUrl: "http://localhost:" + self.ls.getPort().toString(),
             apiConfig: config,
             status: "active"
         });
