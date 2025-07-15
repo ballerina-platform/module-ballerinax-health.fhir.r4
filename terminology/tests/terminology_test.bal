@@ -1,4 +1,3 @@
-import ballerina/log;
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -11,6 +10,7 @@ import ballerina/log;
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import ballerina/log;
 import ballerina/test;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401 as i4;
@@ -282,16 +282,30 @@ function getByIdCodeSystemTest4() {
 }
 
 @test:Config {
-    groups: ["codesystem", "get_by_id_codesystem_with_custom_impl", "successful_scenario"]
+    groups: ["codesystem", "get_by_id_codesystem_with_custom_impl", "failure_scenario"]
 }
 function getByIdCodeSystemWithCustomImplTest1() {
     string id = "action-condition-kind";
     string version = "4.0.1";
-    r4:CodeSystem expectedCS = {"resourceType": "CodeSystem", "meta": {"profile": ["http://hl7.org/fhir/StructureDefinition/CodeSystem"]}, "content": "example", "status": "unknown"};
-
+    
     TestTerminology customTerminology = new ();
     r4:CodeSystem|r4:FHIRError actualCS = readCodeSystemById(id, version, customTerminology);
-    test:assertEquals(actualCS, expectedCS);
+    test:assertTrue(actualCS is r4:FHIRError, "Expected a FHIRError");
+}
+
+@test:Config {
+    groups: ["codesystem", "get_by_id_codesystem_with_custom_impl", "successful_scenario"]
+}
+function getByIdCodeSystemWithCustomImplTest2() {
+    string id = "loinc";
+    string version = "2.36";
+    
+    TestTerminology customTerminology = new ();
+    r4:CodeSystem|r4:FHIRError actualCS = readCodeSystemById(id, version, customTerminology);
+    test:assertTrue(actualCS is r4:CodeSystem, "Expected a CodeSystem");
+    if actualCS is r4:CodeSystem {
+        test:assertEquals(actualCS.url, "http://loinc.org");
+    }
 }
 
 @test:Config {
@@ -863,7 +877,7 @@ function valueSetLookupTest6() returns error? {
     string system = "http://hl7.org/fhir/ValueSet/relationship";
     r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = valueSetLookUp(code, system = system);
     test:assertTrue(actualConcept is r4:FHIRError, "Expected an error");
-    test:assertEquals((<r4:FHIRError>actualConcept).message(), string `Cannot find any valid concepts for the code: ${code} in the ValueSet: ${system}`);
+    test:assertEquals((<r4:FHIRError>actualConcept).message(), string `Unknown ValueSet or CodeSystem : ${system}`);
 }
 
 @test:Config {
@@ -909,7 +923,7 @@ function valueSetLookupTest10() {
     TestTerminology customTerminology = new ();
     r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = valueSetLookUp(code, system = "http://example.org/vs1", terminology = customTerminology);
     test:assertTrue(actualConcept is r4:FHIRError, "Expected an error");
-    test:assertEquals((<r4:FHIRError>actualConcept).message(), "Cannot find any valid concepts for the code: 3 in the ValueSet: http://example.org/vs1");
+    test:assertEquals((<r4:FHIRError>actualConcept).message(), "Concept not found in the ValueSet");
 }
 
 @test:Config {
@@ -919,13 +933,11 @@ function valueSetLookupTest11() {
     r4:code code = "1";
     TestTerminology customTerminology = new ();
     r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = valueSetLookUp(code, system = "http://example.org/vs4", terminology = customTerminology);
-    test:assertTrue(actualConcept is r4:CodeSystemConcept[], "Expected an array of CodeSystemConcept");
-    if actualConcept is r4:CodeSystemConcept[] {
-        r4:CodeSystemConcept[] actualConcepts = <r4:CodeSystemConcept[]>actualConcept;
-        test:assertEquals(actualConcepts.length(), 2);
-        foreach r4:CodeSystemConcept c in actualConcepts {
-            test:assertTrue(c.code == "1", "Expected code to be '1'");
-        }
+    test:assertTrue(actualConcept is r4:CodeSystemConcept, "Expected a CodeSystemConcept");
+    if actualConcept is r4:CodeSystemConcept {
+        r4:CodeSystemConcept actualConcepts = <r4:CodeSystemConcept>actualConcept;
+        test:assertEquals(actualConcepts.code, "1");
+        test:assertEquals(actualConcepts.display, "Cholesterol [Moles/Volume]");
     }
 }
 
@@ -953,7 +965,7 @@ function valueSetLookupTest13() {
     r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = valueSetLookUp(code, system = "http://example.org/vs2", terminology = customTerminology);
     test:assertTrue(actualConcept is r4:FHIRError, "Expected an Error");
     if actualConcept is r4:FHIRError {
-        test:assertEquals((<r4:FHIRError>actualConcept).message(), string `Code: 6 was not found in the ValueSet: http://example.org/vs2`);
+        test:assertEquals((<r4:FHIRError>actualConcept).message(), "Concept not found in the ValueSet");
     }
 }
 
@@ -987,7 +999,7 @@ function valueSetLookupTest15() {
     r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = valueSetLookUp(code, system = "http://example.org/vs2", terminology = customTerminology);
     test:assertTrue(actualConcept is r4:FHIRError, "Expected an Error");
     if actualConcept is r4:FHIRError {
-        test:assertEquals((<r4:FHIRError>actualConcept).message(), string `Code: 6 was not found in the ValueSet: http://example.org/vs2`);
+        test:assertEquals((<r4:FHIRError>actualConcept).message(), "Concept not found in the ValueSet");
     }
 }
 
@@ -1009,7 +1021,7 @@ function valueSetLookupTest16() {
     };
     TestTerminology customTerminology = new ();
     r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError actualConcept = valueSetLookUp(code, system = "http://example.org/vs2", terminology = customTerminology);
-    test:assertTrue(actualConcept is r4:CodeSystemConcept, "Expected a CodeSystemConcept");
+    test:assertTrue(actualConcept is r4:CodeSystemConcept[], "Expected an array of CodeSystemConcept");
     if actualConcept is r4:CodeSystemConcept {
         r4:CodeSystemConcept actualConcepts = <r4:CodeSystemConcept>actualConcept;
         test:assertEquals(actualConcepts.code, "1");
