@@ -1,6 +1,6 @@
 [terminologyConfig]
 isTerminologyValidationEnabled=true
-terminologyServiceApi="http://localhost:9089/fhir/r4"
+terminologyServiceApi="https://tx.fhir.org/r4"
 tokenUrl=""
 clientId=""
 clientSecret=""
