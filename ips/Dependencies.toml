@@ -283,15 +283,6 @@ dependencies = [
 
 [[package]]
 org = "ballerina"
-name = "regex"
-version = "1.4.3"
-dependencies = [
-	{org = "ballerina", name = "jballerina.java"},
-	{org = "ballerina", name = "lang.string"}
-]
-
-[[package]]
-org = "ballerina"
 name = "task"
 version = "2.10.0"
 dependencies = [
@@ -381,9 +372,6 @@ dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "lang.runtime"},
 	{org = "ballerina", name = "log"},
-	{org = "ballerina", name = "mime"},
-	{org = "ballerina", name = "regex"},
-	{org = "ballerina", name = "task"},
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "url"},
 	{org = "ballerina", name = "uuid"},

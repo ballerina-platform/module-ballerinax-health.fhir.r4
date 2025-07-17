@@ -968,12 +968,12 @@ function testIpsBundleCreationFromR4Bundle() returns error? {
 public function testGenerateIpsWithMockServices() returns error? {
     string patientId = "102";
 
-    final SectionConfig[] sectionConfigs = [
+    final IpsSectionConfig[] sectionConfigs = [
         {
             sectionName: PROBLEMS,
             sectionTitle: "Active Problems",
             resources: [
-                {resourceType: "Condition", patientParam: "subject"}
+                {resourceType: "Condition"}
             ]
         },
         {

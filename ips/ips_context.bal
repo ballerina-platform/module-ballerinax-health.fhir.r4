@@ -1,3 +1,18 @@
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
+
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+
+// http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
 import ballerinax/health.clients.fhir;
 
 public isolated class IPSContext {
@@ -5,18 +20,18 @@ public isolated class IPSContext {
     private map<fhir:FHIRConnector> fhirClients = {};
 
     // Map of IPS section to section config (configurable, with default per IPS IG)
-    private final SectionConfig[] sectionConfigs;
+    private final IpsSectionConfig[] ipsSectionConfig;
 
     # Initializes the `IPSContext` instance with FHIR service-resource mapping, section-resource configuration, and section codes.
     #
     # + serviceResourceMap - Map of FHIR resource types to their corresponding service URLs.
-    # + sectionConfigs - (optional) Array of section configuration objects for IPS sections. If not provided, defaults are used.
+    # + ipsSectionConfig - (optional) Array of section configuration objects for IPS sections. If not provided, defaults are used.
     # + return - An `error` if initialization fails, otherwise nil.
     public isolated function init(
             map<string> serviceResourceMap,
-            SectionConfig[]? sectionConfigs = ()
+            IpsSectionConfig[]? ipsSectionConfig = ()
     ) returns error? {
-        self.sectionConfigs = sectionConfigs is SectionConfig[] ? sectionConfigs.clone() : DEFAULT_SECTION_RESOURCE_CONFIG;
+        self.ipsSectionConfig = ipsSectionConfig is IpsSectionConfig[] ? ipsSectionConfig.clone() : DEFAULT_SECTION_RESOURCE_CONFIG;
 
         // Initialize FHIR clients for each service URL (reuse connectors for duplicate URLs)
         map<string> serviceMap = serviceResourceMap;
@@ -45,9 +60,9 @@ public isolated class IPSContext {
 
     # Get the section-resource config (section to section configs)
     # + return - Map of section names to section config
-    public isolated function getSectionConfigs() returns SectionConfig[] {
+    public isolated function getSectionConfigs() returns IpsSectionConfig[] {
         lock {
-            return self.sectionConfigs.cloneReadOnly();
+            return self.ipsSectionConfig.cloneReadOnly();
         }
     }
 

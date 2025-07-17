@@ -55,24 +55,25 @@ public isolated function generateIps(string patientId, IPSContext context) retur
     fhir:FHIRConnector patientClient = check context.getFHIRClient(international401:RESOURCE_NAME_PATIENT);
     fhir:FHIRResponse patientResp = check patientClient->getById(international401:RESOURCE_NAME_PATIENT, patientId);
     if patientResp.httpStatusCode != 200 {
-        log:printDebug("Failed to fetch Patient resource for patientId: " + patientId + ", status code: " + patientResp.httpStatusCode.toString());
-        return error("Failed to fetch Patient resource for given patientId: " + patientId);
+        return error("Can't generate the IPS. Failed to fetch Patient resource for given patientId: " + patientId + ". HTTP status: " + patientResp.httpStatusCode.toString());
     }
     if patientResp.'resource !is json {
-        log:printDebug("Invalid response format for Patient resource, expected JSON.");
-        return error("Invalid response format for Patient resource, expected JSON.");
+        return error("Invalid response format for Patient resource, expected JSON. patientId: " + patientId);
     }
     r4:Resource patientResource = check patientResp.'resource.cloneWithType();
+    log:printDebug("[generateIps] Successfully fetched Patient resource for patientId: " + patientId);
 
     // 3. Add the resource to the entries
     // 3.1 For each IPS section, use context.getSectionConfigs() and fetch resources using section configs
     IpsSectionName[] compositionSectionNames = [];
-    SectionConfig[] sectionConfigs = context.getSectionConfigs();
-    foreach SectionConfig sectionConfig in sectionConfigs {
+    IpsSectionConfig[] sectionConfigs = context.getSectionConfigs();
+    log:printDebug("[generateIps] Section configs count: " + sectionConfigs.length().toString());
+    foreach IpsSectionConfig sectionConfig in sectionConfigs {
+        log:printDebug("[generateIps] Processing section: " + sectionConfig.sectionName.toString());
         // Use LOINC code map for section code/display if available
         Coding|error sectionCoding = getSectionCoding(sectionConfig.sectionName);
         if sectionCoding is error {
-            log:printWarn("No LOINC code found for section: " + sectionConfig.sectionName + ", using default title as display.");
+            log:printWarn("[generateIps] No LOINC code found for section: " + sectionConfig.sectionName + ", using default title as display. Error: " + sectionCoding.message());
             continue;
         }
 
@@ -97,10 +98,10 @@ public isolated function generateIps(string patientId, IPSContext context) retur
             fhir:FHIRConnector|error clientVal = context.getFHIRClient(resourceType);
             if clientVal is fhir:FHIRConnector {
                 // request the resources by searching with the search parameters
-                log:printDebug("Fetching resources of type: " + resourceType);
+                log:printDebug("[generateIps] Fetching resources of type: " + resourceType + " with searchParams: " + searchParams.toString());
                 fhir:FHIRResponse resp = check clientVal->search(resourceType, mode = fhir:GET, searchParameters = searchParams);
                 if resp.httpStatusCode != 200 {
-                    log:printDebug("Failed to fetch resources of type: " + resourceType + ", status code: " + resp.httpStatusCode.toString());
+                    log:printWarn("[generateIps] Failed to fetch resources of type: " + resourceType + ", status code: " + resp.httpStatusCode.toString());
                     continue;
                 }
 
@@ -108,7 +109,7 @@ public isolated function generateIps(string patientId, IPSContext context) retur
                 r4:Bundle responseBundle = check resp.'resource.cloneWithType();
                 r4:BundleEntry[]? bundleEntryArr = responseBundle.entry;
                 if bundleEntryArr is () {
-                    log:printDebug("No entries found for resource type: " + resourceType);
+                    log:printDebug("[generateIps] No entries found for resource type: " + resourceType);
                     continue;
                 }
                 foreach r4:BundleEntry entry in bundleEntryArr {
@@ -118,8 +119,6 @@ public isolated function generateIps(string patientId, IPSContext context) retur
 
                         // get the ID and summary from the resource JSON
                         string? id = bundleEntryResource.id;
-
-                        log:printDebug("Processing resource of type: " + resourceType);
 
                         summary = extractSectionNarrativeSummary(bundleEntryResource);
                         if summary != "" {
@@ -133,11 +132,11 @@ public isolated function generateIps(string patientId, IPSContext context) retur
                         // add the resource to the bundle entries
                         ipsBundleResources = addIfNotDuplicate(bundleEntryResource, ipsBundleResources);
                     } else {
-                        log:printDebug("Bundle entry resource is not JSON for resource type: " + resourceType);
+                        log:printWarn("[generateIps] Bundle entry resource is not JSON for resource type: " + resourceType);
                     }
                 }
             } else {
-                log:printDebug("Failed to get client for resource type: " + resourceType);
+                log:printError("[generateIps] Failed to get client for resource type: " + resourceType + ". Error: " + clientVal.message());
                 continue;
             }
         }
@@ -159,13 +158,13 @@ public isolated function generateIps(string patientId, IPSContext context) retur
             };
             composition.section.push(compSection);
             compositionSectionNames.push(sectionConfig.sectionName);
+            log:printDebug("[generateIps] Added section '" + sectionConfig.sectionName.toString() + "' with " + sectionRefs.length().toString() + " references.");
         }
     }
     // Check whether all required sections are present in the composition
     foreach IpsSectionName requiredSection in REQUIRED_SECTIONS {
         if !(compositionSectionNames.indexOf(requiredSection) >= 0) {
-            log:printDebug("Required section '" + requiredSection + "' is missing in the IPS composition.");
-            return error("Required section '" + requiredSection + "' is missing in the IPS composition.");
+            return error("Required section '" + requiredSection + "' is missing in the IPS composition. Present sections: " + compositionSectionNames.toString());
         }
     }
 
@@ -174,7 +173,6 @@ public isolated function generateIps(string patientId, IPSContext context) retur
         if authorReference.reference is string {
             r4:Resource? authorResource = fetchReferencedResource(<string>authorReference.reference, context);
             if authorResource is r4:Resource {
-                // entries.push(authorEntry);
                 ipsBundleResources = addIfNotDuplicate(authorResource, ipsBundleResources);
             }
         }
@@ -191,6 +189,7 @@ public isolated function generateIps(string patientId, IPSContext context) retur
 
     // 3.3 Add nested resources to the bundle
     r4:Resource[] nextedResources = fetchNestedResources(ipsBundleResources, context);
+    log:printDebug("[generateIps] Nested resources fetched: " + nextedResources.length().toString());
     ipsBundleResources = addIfNotDuplicate(nextedResources, ipsBundleResources);
 
     // 4. Add the Composition as the first entry, Patient as the second
@@ -200,9 +199,19 @@ public isolated function generateIps(string patientId, IPSContext context) retur
     foreach r4:BundleEntry entry in mapFhirResourcesToIpsEntryArr(ipsBundleResources, patientId) {
         finalEntries.push(entry);
     }
+    log:printDebug("[generateIps] Final bundle entries count: " + finalEntries.length().toString());
 
     // 5. Create the IPS Bundle at the end
-    r4:Bundle ipsBundle = {'type: r4:BUNDLE_TYPE_DOCUMENT, entry: finalEntries};
+    r4:Bundle ipsBundle = {
+        'type: r4:BUNDLE_TYPE_DOCUMENT, 
+        timestamp: time:utcToString(time:utcNow()),
+        identifier: {
+            system: ips_bundle_identifier_system, 
+            value: uuid:createRandomUuid()
+        },
+        entry: finalEntries
+    };
+    log:printDebug("[generateIps] IPS Bundle generation completed for patientId: " + patientId);
     return ipsBundle;
 }
 
@@ -338,12 +347,12 @@ public isolated function getIpsBundle(r4:Bundle|IpsBundleData bundleData) return
 #
 # + sectionConfig - The array of SectionConfig objects to be validated.
 # + return - Returns true if the IPS section configurations are valid,
-public isolated function validateSectionConfig(SectionConfig[] sectionConfig) returns string[]? {
+public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig) returns string[]? {
     string[] errorMsgs = [];
     
     // check sectionConfig contains all required sections
     IpsSectionName[] sectionNamesInSectionConfig = sectionConfig.map(
-        isolated function(SectionConfig section) returns IpsSectionName {
+        isolated function(IpsSectionConfig section) returns IpsSectionName {
             return section.sectionName;
         }
     );
