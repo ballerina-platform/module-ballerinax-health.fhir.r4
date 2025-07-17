@@ -1,0 +1,6 @@
+[terminologyConfig]
+isTerminologyValidationEnabled=true
+terminologyServiceApi="https://tx.fhir.org/r4"
+tokenUrl=""
+clientId=""
+clientSecret=""
