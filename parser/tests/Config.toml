@@ -1,5 +1,5 @@
 [terminologyConfig]
-isTerminologyValidationEnabled=true
+isTerminologyValidationEnabled=false
 terminologyServiceApi="http://localhost:9089/fhir/r4"
 tokenUrl=""
 clientId=""
