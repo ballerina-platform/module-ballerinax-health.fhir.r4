@@ -449,7 +449,7 @@ public enum EvidenceVariableCharacteristicGroupMeasure {
         "definitionCodeableConcept": {
             name: "definitionCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the evidence element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",
@@ -476,7 +476,7 @@ public enum EvidenceVariableCharacteristicGroupMeasure {
         "definitionCanonical": {
             name: "definitionCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the evidence element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",
@@ -494,7 +494,7 @@ public enum EvidenceVariableCharacteristicGroupMeasure {
         "definitionDataRequirement": {
             name: "definitionDataRequirement",
             dataType: r4:DataRequirement,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the evidence element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",
@@ -530,7 +530,7 @@ public enum EvidenceVariableCharacteristicGroupMeasure {
         "definitionReference": {
             name: "definitionReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the evidence element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",
@@ -557,7 +557,7 @@ public enum EvidenceVariableCharacteristicGroupMeasure {
         "definitionExpression": {
             name: "definitionExpression",
             dataType: r4:Expression,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the evidence element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",
@@ -566,7 +566,7 @@ public enum EvidenceVariableCharacteristicGroupMeasure {
         "definitionTriggerDefinition": {
             name: "definitionTriggerDefinition",
             dataType: r4:TriggerDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the evidence element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",

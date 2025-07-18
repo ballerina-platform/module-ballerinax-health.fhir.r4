@@ -209,7 +209,7 @@ public type MedicinalProductInteraction record {|
         "itemReference": {
             name: "itemReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The specific medication, food or laboratory test that interacts.",
@@ -227,7 +227,7 @@ public type MedicinalProductInteraction record {|
         "itemCodeableConcept": {
             name: "itemCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The specific medication, food or laboratory test that interacts.",

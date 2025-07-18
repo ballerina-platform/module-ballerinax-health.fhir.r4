@@ -149,7 +149,7 @@ public const RESOURCE_NAME_DEVICEREQUEST = "DeviceRequest";
         "codeReference" : {
             name: "codeReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "DeviceRequest.code[x]",
@@ -338,7 +338,7 @@ public const RESOURCE_NAME_DEVICEREQUEST = "DeviceRequest";
         "codeCodeableConcept" : {
             name: "codeCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "DeviceRequest.code[x]",

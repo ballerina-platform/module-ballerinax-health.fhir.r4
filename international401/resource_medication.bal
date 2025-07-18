@@ -231,7 +231,7 @@ public enum MedicationStatus {
         "itemReference": {
             name: "itemReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual ingredient - either a substance (simple ingredient) or another medication of a medication.",
@@ -258,7 +258,7 @@ public enum MedicationStatus {
         "itemCodeableConcept": {
             name: "itemCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual ingredient - either a substance (simple ingredient) or another medication of a medication.",
