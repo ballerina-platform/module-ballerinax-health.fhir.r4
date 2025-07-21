@@ -153,7 +153,7 @@ public isolated function getIpsBundle(r4:Bundle|IpsBundleData bundleData) return
 # + sectionConfig - The array of SectionConfig objects to be validated.
 # + ipsMetaData - (Optional) IPS metadata containing authors and custodian references.
 # + return - Returns true if the IPS section configurations are valid,
-public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig, IpsMetaData? ipsMetaData) returns string[]? {
+public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig, IpsMetaData? ipsMetaData = ()) returns string[]? {
     string[] errorMsgs = [];
 
     // check sectionConfig contains all required sections
@@ -165,6 +165,22 @@ public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig,
     foreach IpsSectionName requiredSection in REQUIRED_SECTIONS {
         if sectionNamesInSectionConfig.indexOf(requiredSection) is () {
             errorMsgs.push("Required section '" + requiredSection.toString() + "' is missing in the section configuration.");
+        }
+    }
+
+    // check if the resources in the section config are valid
+    if sectionConfig != DEFAULT_SECTION_CONFIG {
+        foreach IpsSectionConfig section in sectionConfig {
+            string[]|error validResourceTypes = IPS_COMPOSITION_SECTION_RESOURCE_TYPES[section.sectionName].cloneWithType();
+            if validResourceTypes is error {
+                errorMsgs.push("Failed to get valid resource types for section: " + section.sectionName + ". Error: " + validResourceTypes.message());
+                continue;
+            }
+            foreach SectionResourceConfig resourceConfig in section.resources {
+                if validResourceTypes.indexOf(resourceConfig.resourceType) == () {
+                    errorMsgs.push("Invalid resource type '" + resourceConfig.resourceType + "' in section '" + section.sectionName + "'.");
+                }
+            }
         }
     }
 
@@ -205,6 +221,20 @@ public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig,
     return ();
 }
 
+## Generates an IPS (International Patient Summary) Bundle for a given patient using the provided IPSContext.
+#
+# This function follows the IPS Implementation Guide by HL7 FHIR, ensuring that the generated IPS document is compliant with international standards.
+# See the IPS Implementation Guide for more information: https://hl7.org/fhir/uv/ips/
+#
+# It:
+# - Prepares the IPS Composition resource and sections according to IPS IG.
+# - Fetches all required FHIR resources for the patient using the context's FHIR clients and section configs.
+# - Assembles the IPS Bundle with all necessary entries, including patient, authors, custodian, and section resources.
+# - Validates that all required IPS sections are present and populated as per the guideline.
+#
+# + patientId - The ID of the patient for whom the IPS Bundle is being generated.
+# + context - The IPSContext containing all necessary data to construct the IPS Bundle.
+# + return - The constructed FHIR R4 Bundle or an error if generation fails.
 isolated function generateIpsImpl(string patientId, IPSContext context) returns r4:Bundle|error {
     r4:Resource[] ipsBundleResources = [];
     IpsMetaData ipsMetaData = context.getIpsMetaData();

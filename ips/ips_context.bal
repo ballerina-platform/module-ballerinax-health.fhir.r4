@@ -16,14 +16,25 @@
 import ballerinax/health.clients.fhir;
 import ballerinax/health.fhir.r4;
 
+# IPSContext: Overview and Usage
+#
+# The `IPSContext` class encapsulates all necessary details required to generate an International Patient Summary (IPS) document for a particular patient.
+#
+# It serves as the central context for IPS generation, containing:
+# - **Metadata**: Information about the IPS document, such as authors and custodian.
+# - **Service Resource Map**: A mapping to identify which FHIR service endpoint should be used for each resource type.
+# - **FHIR Clients**: A map of initialized FHIR client connectors, used to send requests and fetch resources needed for the IPS document.
+# - **Section Configuration**: Configurable details for each IPS section, allowing customization per IPS Implementation Guide.
+#
+# By maintaining these details, `IPSContext` enables efficient and accurate generation of IPS documents, ensuring that all required patient data is retrieved and organized according to IPS standards.
 public isolated class IPSContext {
-    // Metadata for the IPS document
+    # Metadata for the IPS document
     private final IpsMetaData ipsMetaData;
 
-    // Map of FHIR service URLs to their initialized FHIR clients
+    # Map of FHIR service URLs to their initialized FHIR clients
     private map<fhir:FHIRConnector> fhirClients = {};
 
-    // Map of IPS section to section config (configurable, with default per IPS IG)
+    # Map of IPS section to section config (configurable, with default per IPS IG)
     private final IpsSectionConfig[] ipsSectionConfig;
 
     # Initializes the `IPSContext` instance with FHIR service-resource mapping, section-resource configuration, and section codes.
@@ -52,7 +63,7 @@ public isolated class IPSContext {
         if !isValidAuthorReferences(ipsMetaDataConfig.authors) || !isValidCustodianReference(ipsMetaDataConfig.custodian) {
             return error("Invalid IPS metadata: authors or custodian reference is not valid");
         }
-        self.ipsSectionConfig = ipsSectionConfig is IpsSectionConfig[] ? ipsSectionConfig.clone() : DEFAULT_SECTION_RESOURCE_CONFIG;
+        self.ipsSectionConfig = ipsSectionConfig is IpsSectionConfig[] ? ipsSectionConfig.clone() : DEFAULT_SECTION_CONFIG;
         self.ipsMetaData = ipsMetaDataConfig.clone();
 
         // Initialize FHIR clients for each service URL (reuse connectors for duplicate URLs)

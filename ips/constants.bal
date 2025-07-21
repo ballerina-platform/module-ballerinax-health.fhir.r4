@@ -77,9 +77,32 @@ final IpsSectionName[] & readonly REQUIRED_SECTIONS = [
     ALLERGIES
 ];
 
+## Maps each IPS section to the FHIR resource types that should be included in that section.
+#
+# This constant is used to determine which FHIR resources are relevant for each IPS section when generating the IPS document.
+# The mapping follows the HL7 IPS Implementation Guide, ensuring that each section contains the appropriate resource types for international interoperability.
+final map<string[]> & readonly IPS_COMPOSITION_SECTION_RESOURCE_TYPES = {
+    PROBLEMS: ["Condition"],
+    MEDICATIONS: ["MedicationStatement", "MedicationRequest", "MedicationAdministration", "MedicationDispense"],
+    ALLERGIES: ["AllergyIntolerance"],
+    IMMUNIZATIONS: ["Immunization"],
+    RESULTS: ["Observation", "DiagnosticReport"],
+    PROCEDURE_HISTORY: ["Procedure"],
+    MEDICAL_DEVICES: ["DeviceUseStatement"],
+    VITAL_SIGNS: ["Observation"],
+    PAST_ILLNESS_HISTORY: ["Condition"],
+    FUNCTIONAL_STATUS: ["Condition", "ClinicalImpression"],
+    PLAN_OF_CARE: ["CarePlan"],
+    SOCIAL_HISTORY: ["Observation"],
+    PREGNANCY_HISTORY: ["Observation"],
+    ADVANCE_DIRECTIVES: ["Consent"]
+};
+
 const DEFAULT_IPS_COMPOSITION_TITLE = "International Patient Summary";
 const DEFAULT_IPS_BUNDLE_IDENTIFIER = "urn:oid:2.16.724.4.8.10.200.10";
 
+# Default titles for each IPS section.
+# These titles are used when generating the IPS Bundle and can be overridden in the section configuration.
 final map<string> & readonly DEFAULT_IPS_SECTION_TITLES = {
     PROBLEMS: "Active Problems",
     MEDICATIONS: "Medication Summary",
@@ -100,7 +123,7 @@ final map<string> & readonly DEFAULT_IPS_SECTION_TITLES = {
 # Mandatory sections and recommended sections for the International Patient Summary (IPS).
 # This configuration is based on the IPS Implementation Guide and defines the resources
 # See: https://hl7.org/fhir/uv/ips
-final IpsSectionConfig[] & readonly DEFAULT_SECTION_RESOURCE_CONFIG = [
+final IpsSectionConfig[] & readonly DEFAULT_SECTION_CONFIG = [
     // Required sections as per IPS Implementation Guide
     {
         sectionName: PROBLEMS,
@@ -147,3 +170,4 @@ final IpsSectionConfig[] & readonly DEFAULT_SECTION_RESOURCE_CONFIG = [
         ]
     }
 ];
+

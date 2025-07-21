@@ -965,6 +965,26 @@ function testIpsBundleCreationFromR4Bundle() returns error? {
 }
 
 @test:Config
+public function testNegativeSectionConfig() returns error? {
+    final IpsSectionConfig[] sectionConfigs = [
+        {
+            sectionName: PROBLEMS,
+            sectionTitle: "Active Problems",
+            resources: [
+                {resourceType: "Goal"}
+            ]
+        }
+    ];
+
+    string[]? errorMsgs = validateSectionConfig(sectionConfigs);
+    if errorMsgs is string[] {
+        test:assertEquals(errorMsgs.length(), 4, msg = "Should have one error message");
+    } else {
+        test:assertFail("Section configuration validation did not return expected error messages");
+    }
+}
+
+@test:Config
 public function testGenerateIpsWithMockServices() returns error? {
     string patientId = "102";
 
