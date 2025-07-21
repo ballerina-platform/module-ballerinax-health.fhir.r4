@@ -343,7 +343,7 @@ public const RESOURCE_NAME_IMMUNIZATION = "Immunization";
         "occurrenceDateTime" : {
             name: "occurrenceDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "Immunization.occurrence[x]"
@@ -351,7 +351,7 @@ public const RESOURCE_NAME_IMMUNIZATION = "Immunization";
         "occurrenceString" : {
             name: "occurrenceString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "Immunization.occurrence[x]"
@@ -700,7 +700,7 @@ public type ImmunizationReaction record {|
         "doseNumberString": {
             name: "doseNumberString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Nominal position in a series.",
@@ -745,7 +745,7 @@ public type ImmunizationReaction record {|
         "doseNumberPositiveInt": {
             name: "doseNumberPositiveInt",
             dataType: r4:positiveInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Nominal position in a series.",

@@ -165,7 +165,7 @@ public const RESOURCE_NAME_MEDICATIONREQUEST = "MedicationRequest";
         "medicationReference" : {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MedicationRequest.medication[x]",
@@ -320,7 +320,7 @@ public const RESOURCE_NAME_MEDICATIONREQUEST = "MedicationRequest";
         "medicationCodeableConcept" : {
             name: "medicationCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MedicationRequest.medication[x]",
@@ -721,7 +721,7 @@ public enum MedicationRequestIntent {
         "allowedCodeableConcept": {
             name: "allowedCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "True if the prescriber allows a different drug to be dispensed from what was prescribed.",
@@ -757,7 +757,7 @@ public enum MedicationRequestIntent {
         "allowedBoolean": {
             name: "allowedBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "True if the prescriber allows a different drug to be dispensed from what was prescribed.",

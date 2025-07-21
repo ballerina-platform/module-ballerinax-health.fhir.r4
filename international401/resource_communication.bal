@@ -398,7 +398,7 @@ public enum CommunicationStatus {
         "contentReference": {
             name: "contentReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A communicated content (or for multi-part communications, one portion of the communication).",
@@ -407,7 +407,7 @@ public enum CommunicationStatus {
         "contentString": {
             name: "contentString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A communicated content (or for multi-part communications, one portion of the communication).",
@@ -425,7 +425,7 @@ public enum CommunicationStatus {
         "contentAttachment": {
             name: "contentAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A communicated content (or for multi-part communications, one portion of the communication).",
