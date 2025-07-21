@@ -64,3 +64,8 @@ final map<r4:FHIROperationDefinition[]> & readonly INTERNATIONALPATIENTSUMMERY_O
 public json[] FHIR_VALUE_SETS = [];
 public json[] FHIR_CODE_SYSTEMS = [];
 
+// Provides access to the IPS (International Patient Summary) generation functionality.
+// The `generateIps` variable exposes the implementation of the `GenerateIps` interface,
+// allowing other modules to generate IPS-compliant FHIR Bundles for a given patient.
+public GenerateIps generateIps = generateIpsImpl;
+

@@ -20,12 +20,192 @@ import ballerinax/health.clients.fhir;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401;
 
-# Generate an IPS (International Patient Summary) Bundle using the provided IPS Context.
+# Construct the IPS Bundle from the given IPS Bundle data.
 #
-# + patientId - The ID of the patient for whom the IPS Bundle is being generated.
-# + context - The IPSContext containing all necessary data to construct the IPS Bundle.
-# + return - The constructed FHIR R4 Bundle or an error if generation fails.
-public isolated function generateIps(string patientId, IPSContext context) returns r4:Bundle|error {
+# + bundleData - IPS Bundle data as in standard FHIR Bundle or IPS Bundle data holder.
+# + return - Constructed IPS Bundle.
+public isolated function getIpsBundle(r4:Bundle|IpsBundleData bundleData) returns r4:Bundle|error {
+    if bundleData is r4:Bundle {
+        return constructIpsBundleFromR4Bundle(<r4:Bundle>bundleData);
+    } else if bundleData is IpsBundleData {
+        r4:Bundle bundle = {'type: "document"};
+        r4:BundleEntry[] entries = [];
+        entries.push(getBundleEntry(bundleData.composition));
+        entries.push(getBundleEntry(bundleData.patient));
+        if (bundleData.allergyIntolerance is AllergyIntoleranceUvIps[]) {
+            foreach var allergyIntolerance in <AllergyIntoleranceUvIps[]>bundleData.allergyIntolerance {
+                entries.push(getBundleEntry(allergyIntolerance));
+            }
+        }
+        if (bundleData.condition is ConditionUvIps[]) {
+            foreach var condition in <ConditionUvIps[]>bundleData.condition {
+                entries.push(getBundleEntry(condition));
+            }
+        }
+        if (bundleData.device is DeviceUvIps[]) {
+            foreach var device in <DeviceUvIps[]>bundleData.device {
+                entries.push(getBundleEntry(device));
+            }
+        }
+        if (bundleData.deviceUseStatement is DeviceUseStatementUvIps[]) {
+            foreach var deviceUseStatement in <DeviceUseStatementUvIps[]>bundleData.deviceUseStatement {
+                entries.push(getBundleEntry(deviceUseStatement));
+            }
+        }
+        if (bundleData.diagnosticReport is DiagnosticReportUvIps[]) {
+            foreach var diagnosticReport in <DiagnosticReportUvIps[]>bundleData.diagnosticReport {
+                entries.push(getBundleEntry(diagnosticReport));
+            }
+        }
+        if (bundleData.imagingStudy is ImagingStudyUvIps[]) {
+            foreach var imagingStudy in <ImagingStudyUvIps[]>bundleData.imagingStudy {
+                entries.push(getBundleEntry(imagingStudy));
+            }
+        }
+        if (bundleData.immunization is ImmunizationUvIps[]) {
+            foreach var immunization in <ImmunizationUvIps[]>bundleData.immunization {
+                entries.push(getBundleEntry(immunization));
+            }
+        }
+        if (bundleData.mediaObservation is MediaObservationUvIps[]) {
+            foreach var mediaObservation in <MediaObservationUvIps[]>bundleData.mediaObservation {
+                entries.push(getBundleEntry(mediaObservation));
+            }
+        }
+        if (bundleData.medication is MedicationIPS[]) {
+            foreach var medication in <MedicationIPS[]>bundleData.medication {
+                entries.push(getBundleEntry(medication));
+            }
+        }
+        if (bundleData.medicationRequest is MedicationRequestIPS[]) {
+            foreach var medicationRequest in <MedicationRequestIPS[]>bundleData.medicationRequest {
+                entries.push(getBundleEntry(medicationRequest));
+            }
+        }
+        if (bundleData.medicationStatement is MedicationStatementIPS[]) {
+            foreach var medicationStatement in <MedicationStatementIPS[]>bundleData.medicationStatement {
+                entries.push(getBundleEntry(medicationStatement));
+            }
+        }
+        if (bundleData.practitioner is PractitionerUvIps[]) {
+            foreach var practitioner in <PractitionerUvIps[]>bundleData.practitioner {
+                entries.push(getBundleEntry(practitioner));
+            }
+        }
+        if (bundleData.practitionerRole is PractitionerRoleUvIps[]) {
+            foreach var practitionerRole in <PractitionerRoleUvIps[]>bundleData.practitionerRole {
+                entries.push(getBundleEntry(practitionerRole));
+            }
+        }
+        if (bundleData.procedure is ProcedureUvIps[]) {
+            foreach var procedure in <ProcedureUvIps[]>bundleData.procedure {
+                entries.push(getBundleEntry(procedure));
+            }
+        }
+        if (bundleData.organization is OrganizationUvIps[]) {
+            foreach var organization in <OrganizationUvIps[]>bundleData.organization {
+                entries.push(getBundleEntry(organization));
+            }
+        }
+        if (bundleData.observationPregnancyEdd is ObservationPregnancyEddUvIps[]) {
+            foreach var observationPregnancyEdd in <ObservationPregnancyEddUvIps[]>bundleData.observationPregnancyEdd {
+                entries.push(getBundleEntry(observationPregnancyEdd));
+            }
+        }
+        if (bundleData.observationPregnancyOutcome is ObservationPregnancyOutcomeUvIps[]) {
+            foreach var observationPregnancyOutcome in <ObservationPregnancyOutcomeUvIps[]>bundleData.observationPregnancyOutcome {
+                entries.push(getBundleEntry(observationPregnancyOutcome));
+            }
+        }
+        if (bundleData.observationPregnancyStatus is ObservationPregnancyStatusUvIps[]) {
+            foreach var observationPregnancyStatus in <ObservationPregnancyStatusUvIps[]>bundleData.observationPregnancyStatus {
+                entries.push(getBundleEntry(observationPregnancyStatus));
+            }
+        }
+        if (bundleData.observationAlcoholUse is ObservationAlcoholUseUvIps[]) {
+            foreach var observationAlcoholUse in <ObservationAlcoholUseUvIps[]>bundleData.observationAlcoholUse {
+                entries.push(getBundleEntry(observationAlcoholUse));
+            }
+        }
+        if (bundleData.observationTobaccoUse is ObservationTobaccoUseUvIps[]) {
+            foreach var observationTobaccoUse in <ObservationTobaccoUseUvIps[]>bundleData.observationTobaccoUse {
+                entries.push(getBundleEntry(observationTobaccoUse));
+            }
+        }
+        if (bundleData.observationResults is ObservationResultsUvIps[]) {
+            foreach var observationResults in <ObservationResultsUvIps[]>bundleData.observationResults {
+                entries.push(getBundleEntry(observationResults));
+            }
+        }
+        if (bundleData.specimen is SpecimenUvIps[]) {
+            foreach var specimen in <SpecimenUvIps[]>bundleData.specimen {
+                entries.push(getBundleEntry(specimen));
+            }
+        }
+        bundle.entry = entries;
+        return bundle;
+    }
+    return error("Invalid IPS Bundle data");
+}
+
+# Validate the IPS section configurations.
+#
+# + sectionConfig - The array of SectionConfig objects to be validated.
+# + ipsMetaData - (Optional) IPS metadata containing authors and custodian references.
+# + return - Returns true if the IPS section configurations are valid,
+public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig, IpsMetaData? ipsMetaData) returns string[]? {
+    string[] errorMsgs = [];
+
+    // check sectionConfig contains all required sections
+    IpsSectionName[] sectionNamesInSectionConfig = sectionConfig.map(
+        isolated function(IpsSectionConfig section) returns IpsSectionName {
+        return section.sectionName;
+    }
+    );
+    foreach IpsSectionName requiredSection in REQUIRED_SECTIONS {
+        if sectionNamesInSectionConfig.indexOf(requiredSection) is () {
+            errorMsgs.push("Required section '" + requiredSection.toString() + "' is missing in the section configuration.");
+        }
+    }
+
+    IpsMetaData ipsMetaDataConfig;
+    if ipsMetaData is IpsMetaData {
+        // ips configuration is provided while validating the section config
+        ipsMetaDataConfig = ipsMetaData;
+    } else if ips_meta_data_config is IpsMetaData {
+        // use the default ips configuration from the config file
+        IpsMetaData|error ipsMetaDataConfigClone = ips_meta_data_config.cloneWithType();
+        if ipsMetaDataConfigClone is error {
+            errorMsgs.push("Failed to clone IPS metadata configuration: " + ipsMetaDataConfigClone.message());
+            return errorMsgs;
+        }
+        ipsMetaDataConfig = ipsMetaDataConfigClone;
+    } else {
+        errorMsgs.push("Not enough IPS metadata is provided to validate the section configuration.");
+        return errorMsgs;
+    }
+
+    if !isValidAuthorReferences(ipsMetaDataConfig.authors) {
+        errorMsgs.push("Invalid author reference is configured.");
+    }
+    if ipsMetaDataConfig.authors.length() == 0 {
+        errorMsgs.push("At least one author reference is required in the IPS section configuration.");
+    }
+
+    if ipsMetaDataConfig.custodian != "" {
+        if !isValidCustodianReference(ipsMetaDataConfig.custodian) {
+            errorMsgs.push("Invalid custodian reference is configured.");
+        }
+    }
+
+    if errorMsgs.length() > 0 {
+        return errorMsgs;
+    }
+
+    return ();
+}
+
+isolated function generateIpsImpl(string patientId, IPSContext context) returns r4:Bundle|error {
     r4:Resource[] ipsBundleResources = [];
     IpsMetaData ipsMetaData = context.getIpsMetaData();
 
@@ -214,191 +394,6 @@ public isolated function generateIps(string patientId, IPSContext context) retur
     };
     log:printDebug("[generateIps] IPS Bundle generation completed for patientId: " + patientId);
     return ipsBundle;
-}
-
-# Construct the IPS Bundle from the given IPS Bundle data.
-#
-# + bundleData - IPS Bundle data as in standard FHIR Bundle or IPS Bundle data holder.
-# + return - Constructed IPS Bundle.
-public isolated function getIpsBundle(r4:Bundle|IpsBundleData bundleData) returns r4:Bundle|error {
-    if bundleData is r4:Bundle {
-        return constructIpsBundleFromR4Bundle(<r4:Bundle>bundleData);
-    } else if bundleData is IpsBundleData {
-        r4:Bundle bundle = {'type: "document"};
-        r4:BundleEntry[] entries = [];
-        entries.push(getBundleEntry(bundleData.composition));
-        entries.push(getBundleEntry(bundleData.patient));
-        if (bundleData.allergyIntolerance is AllergyIntoleranceUvIps[]) {
-            foreach var allergyIntolerance in <AllergyIntoleranceUvIps[]>bundleData.allergyIntolerance {
-                entries.push(getBundleEntry(allergyIntolerance));
-            }
-        }
-        if (bundleData.condition is ConditionUvIps[]) {
-            foreach var condition in <ConditionUvIps[]>bundleData.condition {
-                entries.push(getBundleEntry(condition));
-            }
-        }
-        if (bundleData.device is DeviceUvIps[]) {
-            foreach var device in <DeviceUvIps[]>bundleData.device {
-                entries.push(getBundleEntry(device));
-            }
-        }
-        if (bundleData.deviceUseStatement is DeviceUseStatementUvIps[]) {
-            foreach var deviceUseStatement in <DeviceUseStatementUvIps[]>bundleData.deviceUseStatement {
-                entries.push(getBundleEntry(deviceUseStatement));
-            }
-        }
-        if (bundleData.diagnosticReport is DiagnosticReportUvIps[]) {
-            foreach var diagnosticReport in <DiagnosticReportUvIps[]>bundleData.diagnosticReport {
-                entries.push(getBundleEntry(diagnosticReport));
-            }
-        }
-        if (bundleData.imagingStudy is ImagingStudyUvIps[]) {
-            foreach var imagingStudy in <ImagingStudyUvIps[]>bundleData.imagingStudy {
-                entries.push(getBundleEntry(imagingStudy));
-            }
-        }
-        if (bundleData.immunization is ImmunizationUvIps[]) {
-            foreach var immunization in <ImmunizationUvIps[]>bundleData.immunization {
-                entries.push(getBundleEntry(immunization));
-            }
-        }
-        if (bundleData.mediaObservation is MediaObservationUvIps[]) {
-            foreach var mediaObservation in <MediaObservationUvIps[]>bundleData.mediaObservation {
-                entries.push(getBundleEntry(mediaObservation));
-            }
-        }
-        if (bundleData.medication is MedicationIPS[]) {
-            foreach var medication in <MedicationIPS[]>bundleData.medication {
-                entries.push(getBundleEntry(medication));
-            }
-        }
-        if (bundleData.medicationRequest is MedicationRequestIPS[]) {
-            foreach var medicationRequest in <MedicationRequestIPS[]>bundleData.medicationRequest {
-                entries.push(getBundleEntry(medicationRequest));
-            }
-        }
-        if (bundleData.medicationStatement is MedicationStatementIPS[]) {
-            foreach var medicationStatement in <MedicationStatementIPS[]>bundleData.medicationStatement {
-                entries.push(getBundleEntry(medicationStatement));
-            }
-        }
-        if (bundleData.practitioner is PractitionerUvIps[]) {
-            foreach var practitioner in <PractitionerUvIps[]>bundleData.practitioner {
-                entries.push(getBundleEntry(practitioner));
-            }
-        }
-        if (bundleData.practitionerRole is PractitionerRoleUvIps[]) {
-            foreach var practitionerRole in <PractitionerRoleUvIps[]>bundleData.practitionerRole {
-                entries.push(getBundleEntry(practitionerRole));
-            }
-        }
-        if (bundleData.procedure is ProcedureUvIps[]) {
-            foreach var procedure in <ProcedureUvIps[]>bundleData.procedure {
-                entries.push(getBundleEntry(procedure));
-            }
-        }
-        if (bundleData.organization is OrganizationUvIps[]) {
-            foreach var organization in <OrganizationUvIps[]>bundleData.organization {
-                entries.push(getBundleEntry(organization));
-            }
-        }
-        if (bundleData.observationPregnancyEdd is ObservationPregnancyEddUvIps[]) {
-            foreach var observationPregnancyEdd in <ObservationPregnancyEddUvIps[]>bundleData.observationPregnancyEdd {
-                entries.push(getBundleEntry(observationPregnancyEdd));
-            }
-        }
-        if (bundleData.observationPregnancyOutcome is ObservationPregnancyOutcomeUvIps[]) {
-            foreach var observationPregnancyOutcome in <ObservationPregnancyOutcomeUvIps[]>bundleData.observationPregnancyOutcome {
-                entries.push(getBundleEntry(observationPregnancyOutcome));
-            }
-        }
-        if (bundleData.observationPregnancyStatus is ObservationPregnancyStatusUvIps[]) {
-            foreach var observationPregnancyStatus in <ObservationPregnancyStatusUvIps[]>bundleData.observationPregnancyStatus {
-                entries.push(getBundleEntry(observationPregnancyStatus));
-            }
-        }
-        if (bundleData.observationAlcoholUse is ObservationAlcoholUseUvIps[]) {
-            foreach var observationAlcoholUse in <ObservationAlcoholUseUvIps[]>bundleData.observationAlcoholUse {
-                entries.push(getBundleEntry(observationAlcoholUse));
-            }
-        }
-        if (bundleData.observationTobaccoUse is ObservationTobaccoUseUvIps[]) {
-            foreach var observationTobaccoUse in <ObservationTobaccoUseUvIps[]>bundleData.observationTobaccoUse {
-                entries.push(getBundleEntry(observationTobaccoUse));
-            }
-        }
-        if (bundleData.observationResults is ObservationResultsUvIps[]) {
-            foreach var observationResults in <ObservationResultsUvIps[]>bundleData.observationResults {
-                entries.push(getBundleEntry(observationResults));
-            }
-        }
-        if (bundleData.specimen is SpecimenUvIps[]) {
-            foreach var specimen in <SpecimenUvIps[]>bundleData.specimen {
-                entries.push(getBundleEntry(specimen));
-            }
-        }
-        bundle.entry = entries;
-        return bundle;
-    }
-    return error("Invalid IPS Bundle data");
-}
-
-# Validate the IPS section configurations.
-#
-# + sectionConfig - The array of SectionConfig objects to be validated.
-# + ipsMetaData - (Optional) IPS metadata containing authors and custodian references.
-# + return - Returns true if the IPS section configurations are valid,
-public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig, IpsMetaData? ipsMetaData) returns string[]? {
-    string[] errorMsgs = [];
-
-    // check sectionConfig contains all required sections
-    IpsSectionName[] sectionNamesInSectionConfig = sectionConfig.map(
-        isolated function(IpsSectionConfig section) returns IpsSectionName {
-        return section.sectionName;
-    }
-    );
-    foreach IpsSectionName requiredSection in REQUIRED_SECTIONS {
-        if sectionNamesInSectionConfig.indexOf(requiredSection) is () {
-            errorMsgs.push("Required section '" + requiredSection.toString() + "' is missing in the section configuration.");
-        }
-    }
-
-    IpsMetaData ipsMetaDataConfig;
-    if ipsMetaData is IpsMetaData {
-        // ips configuration is provided while validating the section config
-        ipsMetaDataConfig = ipsMetaData;
-    } else if ips_meta_data_config is IpsMetaData {
-        // use the default ips configuration from the config file
-        IpsMetaData|error ipsMetaDataConfigClone = ips_meta_data_config.cloneWithType();
-        if ipsMetaDataConfigClone is error {
-            errorMsgs.push("Failed to clone IPS metadata configuration: " + ipsMetaDataConfigClone.message());
-            return errorMsgs;
-        }
-        ipsMetaDataConfig = ipsMetaDataConfigClone;
-    } else {
-        errorMsgs.push("Not enough IPS metadata is provided to validate the section configuration.");
-        return errorMsgs;
-    }
-
-    if !isValidAuthorReferences(ipsMetaDataConfig.authors) {
-        errorMsgs.push("Invalid author reference is configured.");
-    }
-    if ipsMetaDataConfig.authors.length() == 0 {
-        errorMsgs.push("At least one author reference is required in the IPS section configuration.");
-    }
-
-    if ipsMetaDataConfig.custodian != "" {
-        if !isValidCustodianReference(ipsMetaDataConfig.custodian) {
-            errorMsgs.push("Invalid custodian reference is configured.");
-        }
-    }
-
-    if errorMsgs.length() > 0 {
-        return errorMsgs;
-    }
-
-    return ();
 }
 
 isolated function constructIpsBundleFromR4Bundle(r4:Bundle fhirBundle) returns r4:Bundle|error {

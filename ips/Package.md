@@ -10,7 +10,6 @@ compliant with http://hl7.org/fhir/uv/ips/ implementation guide.
 | FHIR version         | R4                   |
 | Implementation Guide | http://hl7.org/fhir/uv/ips/               |
 
-
 ## Sample usage
 
 ```ballerina
@@ -84,6 +83,36 @@ json bundleJson = {
     } else {
         io:println("Error: " + ipsBundle.toString());
     }
+}
+```
+
+## Customizing IPS Generation
+
+You can override the default IPS generation logic by assigning your own implementation to the `ips:generateIps` function. This allows you to inject custom logic for constructing the IPS Bundle.
+
+### Example
+
+```ballerina
+import ballerinax/health.fhir.r4.ips;
+import ballerina/log;
+import ballerinax/health.fhir.r4;
+
+public isolated function generateIpsCustomImpl(string patientId, ips:IPSContext context) returns r4:Bundle|error {
+    log:printInfo(string `Generating IPS Bundle for patient ID: ${patientId}`);
+    r4:Bundle ipsBundle = {
+        'type: "document",
+        'id: "ips-bundle-" + patientId,
+        'meta: {
+            'profile: ["http://hl7.org/fhir/uv/ips/StructureDefinition/InternationalPatientSummary"]
+        },
+        entry: []
+    };
+    return ipsBundle;
+}
+
+public function init() {
+    // Register the custom implementation for the IPS generation function.
+    ips:generateIps = generateIpsCustomImpl;
 }
 ```
 
