@@ -30,23 +30,22 @@ public type SectionResourceConfig record {
 ## IpsSectionConfig
 # Configuration for an IPS section, containing all resource configs for that section.
 #
-# + sectionName - The IPS section name (see `IpsSectionName`).
-# + sectionTitle - Human-readable title for the section.
+# + sectionName - The IPS section name.
+# + sectionTitle - Human-readable title for the section (optional).
 # + resources - Array of resource configurations for this section.
 public type IpsSectionConfig record {
     IpsSectionName sectionName;
-    string sectionTitle;
+    string sectionTitle?;
     SectionResourceConfig[] resources;
 };
 
 ## Coding
 # Represents a FHIR Coding element specific to IPS (International Patient Summary).
+# This type extends the standard FHIR R4 Coding and is used to represent coded concepts in IPS resources.
 #
 # + system - The code system URI (default: LOINC system).
 # + code - The code value from the code system.
 # + display - The human-readable display for the code.
-#
-# This type extends the standard FHIR R4 Coding and is used to represent coded concepts in IPS resources.
 public type Coding record {|
     *r4:Coding;
 
@@ -54,6 +53,24 @@ public type Coding record {|
     r4:code code;
     string display;
 |};
+
+## IpsMetaData
+# Represents metadata for an International Patient Summary (IPS) document.
+#
+# + compositionStatus - The status of the IPS composition (default: `CODE_STATUS_FINAL`).
+# + ipsBundleIdentifier - The identifier system for the IPS bundle (default: `DEFAULT_IPS_BUNDLE_IDENTIFIER`).
+# + compositionTitle - The title of the IPS composition (default: `DEFAULT_IPS_COMPOSITION_TITLE`).
+# + custodian - (Optional) The custodian organization for the IPS document.
+# + attesters - (Optional) List of attesters for the IPS document.
+# + authors - List of authors for the IPS document (mandatory).
+public type IpsMetaData record {
+    CompositionUvIpsStatus compositionStatus = CODE_STATUS_FINAL;
+    string ipsBundleIdentifier = DEFAULT_IPS_BUNDLE_IDENTIFIER;
+    string compositionTitle = DEFAULT_IPS_COMPOSITION_TITLE;
+    string? custodian = ();
+    string[]? attesters = ();
+    string[] authors; 
+};
 
 type ResourceReference record {
     string resourceType;

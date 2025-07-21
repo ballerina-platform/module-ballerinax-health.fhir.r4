@@ -22,6 +22,9 @@ import ballerina/log;
 
 const FHIR_IG = "ips";
 
+configurable IpsMetaData? ips_meta_data_config = ();
+configurable map<string>? ips_section_titles = ();
+
 # Initializer for the module
 # + return - returns error if error occurred
 function init() returns r4:FHIRError? {

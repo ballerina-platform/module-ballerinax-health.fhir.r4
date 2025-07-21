@@ -77,6 +77,26 @@ final IpsSectionName[] & readonly REQUIRED_SECTIONS = [
     ALLERGIES
 ];
 
+const DEFAULT_IPS_COMPOSITION_TITLE = "International Patient Summary";
+const DEFAULT_IPS_BUNDLE_IDENTIFIER = "urn:oid:2.16.724.4.8.10.200.10";
+
+final map<string> & readonly DEFAULT_IPS_SECTION_TITLES = {
+    PROBLEMS: "Active Problems",
+    MEDICATIONS: "Medication Summary",
+    ALLERGIES: "Allergies and Intolerances",
+    IMMUNIZATIONS: "Immunizations",
+    RESULTS: "Diagnostic Results",
+    PROCEDURE_HISTORY: "History of Procedures",
+    MEDICAL_DEVICES: "History of Medical Device Use",
+    VITAL_SIGNS: "Vital Signs",
+    PAST_ILLNESS_HISTORY: "Past Illness History",
+    FUNCTIONAL_STATUS: "Functional Status",
+    PLAN_OF_CARE: "Plan of Care",
+    SOCIAL_HISTORY: "Social History",
+    PREGNANCY_HISTORY: "Pregnancy History",
+    ADVANCE_DIRECTIVES: "Advance Directives"
+};
+
 # Mandatory sections and recommended sections for the International Patient Summary (IPS).
 # This configuration is based on the IPS Implementation Guide and defines the resources
 # See: https://hl7.org/fhir/uv/ips
@@ -84,21 +104,18 @@ final IpsSectionConfig[] & readonly DEFAULT_SECTION_RESOURCE_CONFIG = [
     // Required sections as per IPS Implementation Guide
     {
         sectionName: PROBLEMS,
-        sectionTitle: "Active Problems",
         resources: [
             {resourceType: "Condition"}
         ]
     },
     {
         sectionName: ALLERGIES,
-        sectionTitle: "Allergies and Intolerances",
         resources: [
             {resourceType: "AllergyIntolerance"}
         ]
     },
     {
         sectionName: MEDICATIONS,
-        sectionTitle: "Medication Summary",
         resources: [
             {resourceType: "MedicationStatement"}
         ]
@@ -106,14 +123,12 @@ final IpsSectionConfig[] & readonly DEFAULT_SECTION_RESOURCE_CONFIG = [
     // Recommended sections
     {
         sectionName: IMMUNIZATIONS,
-        sectionTitle: "Immunizations",
         resources: [
             {resourceType: "Immunization"}
         ]
     },
     {
         sectionName: RESULTS,
-        sectionTitle: "Diagnostic Results",
         resources: [
             {resourceType: "Observation", searchParams: {"category": "laboratory"}},
             {resourceType: "DiagnosticReport"}
@@ -121,14 +136,12 @@ final IpsSectionConfig[] & readonly DEFAULT_SECTION_RESOURCE_CONFIG = [
     },
     {
         sectionName: PROCEDURE_HISTORY,
-        sectionTitle: "History of Procedures",
         resources: [
             {resourceType: "Procedure"}
         ]
     },
     {
         sectionName: MEDICAL_DEVICES,
-        sectionTitle: "History of Medical Device Use",
         resources: [
             {resourceType: "DeviceUseStatement"}
         ]

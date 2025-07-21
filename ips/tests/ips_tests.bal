@@ -1010,7 +1010,19 @@ public function testGenerateIpsWithMockServices() returns error? {
         "Immunization": "http://localhost:9097/fhir/r4"
     };
 
-    IPSContext ipsContext = check new (serviceResourceMap, sectionConfigs);
+    IpsMetaData ipsMetaData = {
+        authors: ["Practitioner/12345", "Organization/50"],
+        custodian: "Organization/50"
+    };
+
+    // validate the section configurations
+    string[]? errorMsgs = validateSectionConfig(sectionConfigs, ipsMetaData);
+    if errorMsgs is string[] {
+        test:assertFail("Section configuration validation failed: " + errorMsgs.toString().'join(", "));
+    }
+
+    // create the IPS context for the mock fhir services
+    IPSContext ipsContext = check new (serviceResourceMap, ipsMetaData, sectionConfigs);
 
     r4:Bundle bundle = check generateIps(patientId, ipsContext);
     r4:Bundle expectedBundle = check generatedIpsBundle.cloneWithType();

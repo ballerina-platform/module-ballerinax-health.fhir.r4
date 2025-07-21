@@ -27,18 +27,19 @@ import ballerinax/health.fhir.r4.international401;
 # + return - The constructed FHIR R4 Bundle or an error if generation fails.
 public isolated function generateIps(string patientId, IPSContext context) returns r4:Bundle|error {
     r4:Resource[] ipsBundleResources = [];
+    IpsMetaData ipsMetaData = context.getIpsMetaData();
 
     // 1. Prepare the Composition resource (sections will be filled below)
     CompositionUvIps composition = {
-        status: <CompositionUvIpsStatus>ips_composition_status,
+        status: ipsMetaData.compositionStatus,
         subject: {
             reference: "Patient/" + patientId
         },
         date: time:utcToString(time:utcNow()),
-        author: getIpsAuthorReferences(),
-        custodian: getIpsCustodianReference(),
+        author: context.getIpsAuthorReferences(),
+        custodian: context.getIpsCustodianReference(),
         section: [],
-        title: ips_composition_title,
+        title: ipsMetaData.compositionTitle,
         'type: {
             coding: [
                 {
@@ -152,7 +153,7 @@ public isolated function generateIps(string patientId, IPSContext context) retur
             // ad the section to the Composition
             CompositionUvIpsSection compSection = {
                 code: {coding: [{system: LOINC_SYSTEM, code: sectionCoding.code, display: sectionCoding.display}]},
-                title: sectionConfig.sectionTitle,
+                title: sectionConfig.sectionTitle ?: DEFAULT_IPS_SECTION_TITLES[sectionConfig.sectionName],
                 text: {status: "generated", div: divHtml},
                 entry: sectionRefs
             };
@@ -179,8 +180,8 @@ public isolated function generateIps(string patientId, IPSContext context) retur
     }
     // Add the custodian reference if not already present
     if composition.custodian is r4:Reference {
-        if custodian != "" {
-            r4:Resource? custodianResource = fetchReferencedResource(custodian, context);
+        if composition.custodian?.reference is string {
+            r4:Resource? custodianResource = fetchReferencedResource(<string>composition.custodian?.reference, context);
             if custodianResource is r4:Resource {
                 ipsBundleResources = addIfNotDuplicate(custodianResource, ipsBundleResources);
             }
@@ -203,10 +204,10 @@ public isolated function generateIps(string patientId, IPSContext context) retur
 
     // 5. Create the IPS Bundle at the end
     r4:Bundle ipsBundle = {
-        'type: r4:BUNDLE_TYPE_DOCUMENT, 
+        'type: r4:BUNDLE_TYPE_DOCUMENT,
         timestamp: time:utcToString(time:utcNow()),
         identifier: {
-            system: ips_bundle_identifier_system, 
+            system: ipsMetaData.ipsBundleIdentifier,
             value: uuid:createRandomUuid()
         },
         entry: finalEntries
@@ -346,15 +347,16 @@ public isolated function getIpsBundle(r4:Bundle|IpsBundleData bundleData) return
 # Validate the IPS section configurations.
 #
 # + sectionConfig - The array of SectionConfig objects to be validated.
+# + ipsMetaData - (Optional) IPS metadata containing authors and custodian references.
 # + return - Returns true if the IPS section configurations are valid,
-public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig) returns string[]? {
+public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig, IpsMetaData? ipsMetaData) returns string[]? {
     string[] errorMsgs = [];
-    
+
     // check sectionConfig contains all required sections
     IpsSectionName[] sectionNamesInSectionConfig = sectionConfig.map(
         isolated function(IpsSectionConfig section) returns IpsSectionName {
-            return section.sectionName;
-        }
+        return section.sectionName;
+    }
     );
     foreach IpsSectionName requiredSection in REQUIRED_SECTIONS {
         if sectionNamesInSectionConfig.indexOf(requiredSection) is () {
@@ -362,24 +364,39 @@ public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig)
         }
     }
 
-    if authors.length() > 0 {
-        // validate the author references
-        if getIpsAuthorReferences().length() == 0 {
-            errorMsgs.push("Invalid author reference is configured.");
+    IpsMetaData ipsMetaDataConfig;
+    if ipsMetaData is IpsMetaData {
+        // ips configuration is provided while validating the section config
+        ipsMetaDataConfig = ipsMetaData;
+    } else if ips_meta_data_config is IpsMetaData {
+        // use the default ips configuration from the config file
+        IpsMetaData|error ipsMetaDataConfigClone = ips_meta_data_config.cloneWithType();
+        if ipsMetaDataConfigClone is error {
+            errorMsgs.push("Failed to clone IPS metadata configuration: " + ipsMetaDataConfigClone.message());
+            return errorMsgs;
         }
+        ipsMetaDataConfig = ipsMetaDataConfigClone;
     } else {
+        errorMsgs.push("Not enough IPS metadata is provided to validate the section configuration.");
+        return errorMsgs;
+    }
+
+    if !isValidAuthorReferences(ipsMetaDataConfig.authors) {
+        errorMsgs.push("Invalid author reference is configured.");
+    }
+    if ipsMetaDataConfig.authors.length() == 0 {
         errorMsgs.push("At least one author reference is required in the IPS section configuration.");
     }
 
-    if custodian != "" {
-        if getIpsCustodianReference() is () {
+    if ipsMetaDataConfig.custodian != "" {
+        if !isValidCustodianReference(ipsMetaDataConfig.custodian) {
             errorMsgs.push("Invalid custodian reference is configured.");
         }
     }
 
     if errorMsgs.length() > 0 {
         return errorMsgs;
-    } 
+    }
 
     return ();
 }
@@ -388,7 +405,10 @@ isolated function constructIpsBundleFromR4Bundle(r4:Bundle fhirBundle) returns r
     r4:Bundle ipsBundle = {
         'type: "document",
         timestamp: fhirBundle.timestamp ?: time:utcToString(time:utcNow()),
-        identifier: fhirBundle.identifier ?: {system: ips_bundle_identifier_system, value: uuid:createRandomUuid()}
+        identifier: fhirBundle.identifier ?: {
+            system: ips_meta_data_config?.ipsBundleIdentifier ?: DEFAULT_IPS_BUNDLE_IDENTIFIER,
+            value: uuid:createRandomUuid()
+        }
     };
     r4:BundleEntry[] entries = fhirBundle.entry ?: [];
     string patientId = "";
@@ -408,7 +428,7 @@ isolated function constructIpsBundleFromR4Bundle(r4:Bundle fhirBundle) returns r
             ]
         },
         text: {status: "generated", div: ""},
-        title: ips_composition_problem_section_title
+        title: ips_section_titles[PROBLEMS] ?: DEFAULT_IPS_SECTION_TITLES[PROBLEMS]
     };
     //medication section
     CompositionUvIpsSection medicationSection = {
@@ -422,7 +442,7 @@ isolated function constructIpsBundleFromR4Bundle(r4:Bundle fhirBundle) returns r
             ]
         },
         text: {status: "generated", div: ""},
-        title: ips_composition_medication_section_title
+        title: ips_section_titles[MEDICATIONS] ?: DEFAULT_IPS_SECTION_TITLES[MEDICATIONS]
     };
     //allergy section
     CompositionUvIpsSection allergySection = {
@@ -436,35 +456,35 @@ isolated function constructIpsBundleFromR4Bundle(r4:Bundle fhirBundle) returns r
             ]
         },
         text: {status: "generated", div: ""},
-        title: ips_composition_allergy_section_title
+        title: ips_section_titles[ALLERGIES] ?: DEFAULT_IPS_SECTION_TITLES[ALLERGIES]
     };
     //immunization section
     CompositionUvIpsSection immunizationSection = {
         code: {coding: [{system: "http://loinc.org", code: "11369-6", display: "Immunizations"}]},
-        title: ips_composition_immunization_section_title,
+        title: ips_section_titles[IMMUNIZATIONS] ?: DEFAULT_IPS_SECTION_TITLES[IMMUNIZATIONS],
         text: {status: "generated", div: ""}
     };
     //procedure section
     CompositionUvIpsSection procedureSection = {
         code: {coding: [{system: "http://loinc.org", code: "47519-4", display: "Procedures"}]},
-        title: ips_composition_procedure_section_title,
+        title: ips_section_titles[PROCEDURE_HISTORY] ?: DEFAULT_IPS_SECTION_TITLES[PROCEDURE_HISTORY],
         text: {status: "generated", div: ""}
     };
     //diagnostic report section
     CompositionUvIpsSection diagnosticReportSection = {
         code: {coding: [{system: "http://loinc.org", code: "30954-2", display: "Diagnostic Reports"}]},
-        title: ips_composition_diagnostic_report_section_title,
+        title: ips_section_titles[RESULTS] ?: DEFAULT_IPS_SECTION_TITLES[RESULTS],
         text: {status: "generated", div: ""}
     };
 
     //composition resource
     CompositionUvIps composition = {
-        status: <CompositionUvIpsStatus>ips_composition_status,
+        status: ips_meta_data_config?.compositionStatus ?: CODE_STATUS_FINAL,
         subject: {reference: ""},
         date: ipsBundle.timestamp ?: time:utcToString(time:utcNow()),
         author: [],
         section: [allergySection, problemsSection, medicationSection],
-        title: ips_composition_title,
+        title: ips_meta_data_config?.compositionTitle ?: DEFAULT_IPS_COMPOSITION_TITLE,
         'type: {
             coding: [
                 {
@@ -624,9 +644,19 @@ isolated function constructIpsBundleFromR4Bundle(r4:Bundle fhirBundle) returns r
         composition.section.push(procedureSection);
     }
 
+    // add custodian reference if available
     composition.subject = {reference: string `Patient/${patientId}`};
-    composition.custodian = getIpsCustodianReference();
-    composition.author = getIpsAuthorReferences();
+    if ips_meta_data_config?.custodian !is () {
+        composition.custodian = {reference: ips_meta_data_config?.custodian};
+    }
+
+    // add authors to the composition
+    r4:Reference[] compositionAuthors = [];
+    string[] authors = ips_meta_data_config?.authors ?: [];
+    foreach string author in authors {
+        compositionAuthors.push({reference: author});
+    }
+    composition.author = compositionAuthors;
 
     ipsBundle.entry = ipsEntries;
     return ipsBundle;
@@ -640,39 +670,6 @@ isolated function getBundleEntry(r4:Resource 'resource) returns r4:BundleEntry {
     }
     entry.'resource = 'resource;
     return entry;
-}
-
-isolated function getIpsAuthorReferences() returns r4:Reference[] {
-    // should be a reference to Practitioner, Organization, PractitionerRole, Device, Patient, RelatedPerson
-    string[] resourceTypes = ["Practitioner", "Organization", "PractitionerRole", "Device", "Patient", "RelatedPerson"];
-    r4:Reference[] compositionAuthors = [];
-    foreach string author in authors {
-        ResourceReference|error referenceSplit = splitR4Reference(author);
-        if referenceSplit is error {
-            log:printDebug("Invalid reference format: " + author);
-            continue;
-        }
-        if resourceTypes.indexOf(referenceSplit.resourceType) is int {
-            compositionAuthors.push({reference: author});
-        }
-    }
-    return compositionAuthors;
-}
-
-isolated function getIpsCustodianReference() returns r4:Reference? {
-    // should be a Organization reference
-    if custodian != "" {
-        ResourceReference|error referenceSplit = splitR4Reference(custodian);
-        if referenceSplit is ResourceReference {
-            if referenceSplit.resourceType == "Organization" {
-                return {reference: custodian};
-            }
-        } else {
-            log:printDebug("Invalid custodian reference format: " + custodian);
-        }
-    }
-    
-    return ();
 }
 
 isolated function addIfNotDuplicate(r4:Resource|r4:Resource[] newResource, r4:Resource[] resourcesArr) returns r4:Resource[] {
@@ -710,7 +707,7 @@ isolated function fetchReferencedResource(string reference, IPSContext context) 
         log:printDebug("Invalid reference format: " + reference);
         return ();
     }
-    
+
     fhir:FHIRConnector|error clientVal = context.getFHIRClient(referenceSplit.resourceType);
     if clientVal is fhir:FHIRConnector {
         fhir:FHIRResponse resp = checkpanic clientVal->getById(referenceSplit.resourceType, referenceSplit.id);
@@ -796,7 +793,7 @@ isolated function extractSectionNarrativeSummary(r4:Resource resourceObj) return
     string summary = "";
     do {
         json resourceJson = resourceObj.toJson();
-        
+
         // First try to extract from existing narrative text if available
         json|error textField = resourceJson.text;
         if textField is json {
@@ -851,7 +848,7 @@ isolated function mapFhirResourceToIpsEntry(r4:Resource fhirResource, string pat
 
 isolated function mapFhirResourcesToIpsEntryArr(r4:Resource[] fhirResources, string patientId) returns r4:BundleEntry[] {
     r4:BundleEntry[] ipsEntries = [];
-    
+
     foreach var entry in fhirResources {
         do {
             json resourceType = entry.resourceType;
@@ -985,7 +982,7 @@ isolated function mapFhirResourcesToIpsEntryArr(r4:Resource[] fhirResources, str
             continue;
         }
     }
-    
+
     return ipsEntries;
 }
 
@@ -1009,4 +1006,35 @@ isolated function splitR4Reference(string reference) returns ResourceReference|e
         resourceType: parts[0],
         id: parts[1]
     };
+}
+
+isolated function isValidAuthorReferences(string[] authorRef) returns boolean {
+    string[] resourceTypes = ["Practitioner", "Organization", "PractitionerRole", "Device", "Patient", "RelatedPerson"];
+    if authorRef.length() == 0 {
+        return false;
+    }
+    foreach string ref in authorRef {
+        ResourceReference|error referenceSplit = splitR4Reference(ref);
+        if referenceSplit is error {
+            log:printDebug("Invalid author reference format: " + ref);
+            return false;
+        }
+        if resourceTypes.indexOf(referenceSplit.resourceType) is () {
+            return false;
+        } 
+    }
+    return true;
+}
+
+isolated function isValidCustodianReference(string? custodianRef) returns boolean {
+    if custodianRef is string {
+        ResourceReference|error referenceSplit = splitR4Reference(custodianRef);
+        if referenceSplit is ResourceReference {
+            return referenceSplit.resourceType == "Organization";
+        } else {
+            log:printDebug("Invalid custodian reference format: " + custodianRef);
+            return false;
+        }
+    }
+    return true;
 }

@@ -14,8 +14,12 @@
 // specific language governing permissions and limitations
 // under the License.
 import ballerinax/health.clients.fhir;
+import ballerinax/health.fhir.r4;
 
 public isolated class IPSContext {
+    // Metadata for the IPS document
+    private final IpsMetaData ipsMetaData;
+
     // Map of FHIR service URLs to their initialized FHIR clients
     private map<fhir:FHIRConnector> fhirClients = {};
 
@@ -25,13 +29,31 @@ public isolated class IPSContext {
     # Initializes the `IPSContext` instance with FHIR service-resource mapping, section-resource configuration, and section codes.
     #
     # + serviceResourceMap - Map of FHIR resource types to their corresponding service URLs.
+    # + ipsMetaData - (optional) Metadata for the IPS document, including authors and custodian.
     # + ipsSectionConfig - (optional) Array of section configuration objects for IPS sections. If not provided, defaults are used.
     # + return - An `error` if initialization fails, otherwise nil.
     public isolated function init(
             map<string> serviceResourceMap,
+            IpsMetaData? ipsMetaData = (),
             IpsSectionConfig[]? ipsSectionConfig = ()
     ) returns error? {
+        IpsMetaData ipsMetaDataConfig;
+        if ipsMetaData is IpsMetaData {
+            // ips configuration is provided while initializing the IPSContext
+            ipsMetaDataConfig = ipsMetaData;
+        } else if ips_meta_data_config is IpsMetaData {
+            // use the default ips configuration from the config file
+            ipsMetaDataConfig = check ips_meta_data_config.cloneWithType();
+        } else {
+            return error("IPS metadata is required for IPSContext initialization");
+        }
+
+        // Validate authors and custodian references
+        if !isValidAuthorReferences(ipsMetaDataConfig.authors) || !isValidCustodianReference(ipsMetaDataConfig.custodian) {
+            return error("Invalid IPS metadata: authors or custodian reference is not valid");
+        }
         self.ipsSectionConfig = ipsSectionConfig is IpsSectionConfig[] ? ipsSectionConfig.clone() : DEFAULT_SECTION_RESOURCE_CONFIG;
+        self.ipsMetaData = ipsMetaDataConfig.clone();
 
         // Initialize FHIR clients for each service URL (reuse connectors for duplicate URLs)
         map<string> serviceMap = serviceResourceMap;
@@ -79,6 +101,42 @@ public isolated class IPSContext {
             }
         }
         return error("FHIR client not found for service: " + resourceType);
+    }
+
+    # Returns an array of FHIR `Reference` objects for each author in the IPS metadata.
+    # Each author string is wrapped as a FHIR reference.
+    # + return - Array of `r4:Reference` representing the authors.
+    public isolated function getIpsAuthorReferences() returns r4:Reference[] {
+        lock {
+            r4:Reference[] compositionAuthors = [];
+	        foreach string author in self.ipsMetaData.authors {
+	            compositionAuthors.push({reference: author});
+	        }
+	        return compositionAuthors.cloneReadOnly();
+        }
+    }
+
+    # Returns a FHIR `Reference` object for the custodian organization in the IPS metadata.
+    # If the custodian is not set or is empty, returns nil.
+    # + return - `r4:Reference?` representing the custodian organization, or nil if not available.
+    public isolated function getIpsCustodianReference() returns r4:Reference? {
+        lock {
+            r4:Reference? custodianRef = ();
+            if self.ipsMetaData.custodian is string && self.ipsMetaData.custodian != "" {
+                // Create a reference for the custodian organization
+                custodianRef = {reference: self.ipsMetaData.custodian};
+            }
+            return custodianRef.cloneReadOnly();
+        }
+    }
+
+    # Returns the metadata for the IPS document.
+    # This includes the composition status, bundle identifier, title, custodian, and authors.
+    # + return - `IpsMetaData` object containing metadata for the IPS document.
+    public isolated function getIpsMetaData() returns IpsMetaData {
+        lock {
+            return self.ipsMetaData.cloneReadOnly();
+        }
     }
 
     isolated function createFHIRConnector(string serviceUrl) returns fhir:FHIRConnector|error {
