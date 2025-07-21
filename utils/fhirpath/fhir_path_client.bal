@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2023-2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -17,32 +17,52 @@
 # Client method to access utils package for fhirpath evaluation.
 #
 # + fhirResource - requested fhir resource
-# + fhirPath - fhirpath requested for evaluvation
+# + fhirPath - fhirpath requested for evaluation
 # + return - result of the fhirpath expression
 public isolated function getFhirPathResult(json fhirResource, string fhirPath) returns FhirPathResult {
-
-    string|json|int|float|boolean|byte|error results = evaluateFhirPath(fhirResource, fhirPath);
+    json|error results = getFhirPathValues(fhirResource, fhirPath);
 
     if results is error {
         return {
-            resultenError: {
+            'error: {
                 message: results.message()
             }
         };
     }
-    return {
-        result: results
-    };
 
+    return {result: results};
+}
+
+# Update the FHIR resource at the given FHIRPath with the provided value.
+#
+# + fhirResource - The FHIR resource to update
+# + fhirPathExpression - The FHIRPath expression (dot notation)
+# + value - The value to set at the path
+# + allowPathCreation - Whether to create missing paths (optional, defaults to configurable value)
+# + return - The updated FHIR resource or error
+public isolated function updateFhirPathValue(json fhirResource, string fhirPathExpression, json value, boolean? allowPathCreation = ()) returns FhirPathResult {
+    json|error result = allowPathCreation is boolean ?
+        setFhirPathValues(fhirResource, fhirPathExpression, value, allowPathCreation) :
+        setFhirPathValues(fhirResource, fhirPathExpression, value);
+
+    if result is error {
+        return {
+            'error: {
+                message: result.message()
+            }
+        };
+    }
+
+    return {result: result};
 }
 
 # Client record to hold the results of fhirpath evaluation.
 #
-# + result - Result of the fhirpath expression  
-# + resultenError - Error message if the result is an error  
+# + result - Result of the fhirpath expression
+# + error - Error message if the result is an error
 public type FhirPathResult record {
-    string|json|int|float|boolean|byte result?;
-    FhirPathErrorRecord resultenError?;
+    json result?;
+    FhirPathErrorRecord 'error?;
 };
 
 # Record to hold FhirPath request parameters.
