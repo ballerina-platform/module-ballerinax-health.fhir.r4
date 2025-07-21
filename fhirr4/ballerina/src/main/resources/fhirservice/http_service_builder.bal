@@ -264,7 +264,8 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         string patientId = paths[resourceTypeIndex + 1];
                         string baseResourcePath = string:'join("/", ...paths.slice(0, resourceTypeIndex));
 
-                        r4:FHIRError|r4:Bundle processIps = self.preprocessor.processIPSGenerateOperation(patientId, operationPayload, operationScope, baseResourcePath, req, ctx);
+                        r4:FHIRError|r4:Bundle processIps = self.preprocessor.processIPSGenerateOperation(
+                            patientId, operationPayload, operationScope, baseResourcePath, apiConfig.operations, req, ctx);
                         if processIps is r4:FHIRError {
                             return processIps;
                         } else {

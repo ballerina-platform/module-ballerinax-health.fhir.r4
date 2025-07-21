@@ -599,13 +599,14 @@ public isolated class FHIRPreprocessor {
     # + payload - The payload of the request
     # + operationRequestScope - The scope of the operation request
     # + baseResourcePath - The base resource path for the operation
+    # + patientOperationConfigs - The operation configurations for the Patient resource
     # + httpRequest - The HTTP request
     # + httpCtx - The HTTP context
     # + return - A `r4:FHIRError` if an error occurs during the processing, or a `r4:Bundle` containing the generated IPS
     #            or `()` if the operation is not supported.
     public isolated function processIPSGenerateOperation(string patientId, json|xml? payload, 
-            r4:FHIRInteractionLevel operationRequestScope, string baseResourcePath, http:Request httpRequest,
-            http:RequestContext httpCtx) returns r4:FHIRError|r4:Bundle {
+            r4:FHIRInteractionLevel operationRequestScope, string baseResourcePath, r4:OperationConfig[] patientOperationConfigs,
+            http:Request httpRequest, http:RequestContext httpCtx) returns r4:FHIRError|r4:Bundle {
         log:printDebug("Pre-processing FHIR IPS generation operation");
 
         // Validate main HTTP headers
@@ -662,7 +663,7 @@ public isolated class FHIRPreprocessor {
 
         // Generate IPS (International Patient Summary) for the patient
         log:printDebug(string `Generating IPS for Patient/${patientId}`);
-        r4:FHIRServiceInfo? patientServiceInfo = ips:fhirRegistry.getResourceFHIRService(PATIENT_RESOURCE);
+        r4:FHIRServiceInfo? patientServiceInfo = ips:fhirRegistry.getFHIRService(PATIENT_RESOURCE);
         if patientServiceInfo is () {
             string diagnostic = "No FHIR service found for Patient resource. Ensure the Patient resource is properly registered.";
             return r4:createFHIRError("Patient service not found", r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
@@ -679,7 +680,7 @@ public isolated class FHIRPreprocessor {
             serviceResourceMap[serviceName] = string `${serviceInfo.serviceUrl}/${baseResourcePath}`;
         }
 
-        r4:Bundle|error ipsBundle = handleIpsGeneration(patientId, patientServiceInfo, serviceResourceMap);
+        r4:Bundle|error ipsBundle = handleIpsGeneration(patientId, patientServiceInfo, serviceResourceMap, patientOperationConfigs);
 
         if ipsBundle is error {
             return r4:createFHIRError("IPS generation failed", r4:ERROR, r4:PROCESSING,

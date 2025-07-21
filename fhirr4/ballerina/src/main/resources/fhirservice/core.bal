@@ -25,6 +25,7 @@ const METADATA = "metadata";
 const LOCATION_HEADER = "Location";
 const SUMMARY_OPERATION = "summary";
 const IPS_SECTION_CONFIG = "ipsSectionConfig";
+const IPS_META_DATA = "ipsMetaData";
 
 // FHIR interaction records
 # FHIR Read interaction.

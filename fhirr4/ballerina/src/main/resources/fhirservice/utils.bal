@@ -158,32 +158,42 @@ isolated function handleConditionalHeader(string conditionalUrl, string resource
     }
 }
 
-isolated function handleIpsGeneration(string patientId, r4:FHIRServiceInfo patientServiceInfo, map<string> serviceResourceMap) returns r4:Bundle|error {
+isolated function handleIpsGeneration(string patientId, r4:FHIRServiceInfo patientServiceInfo, map<string> serviceResourceMap, r4:OperationConfig[] patientOperationConfigs) returns r4:Bundle|error {
     log:printDebug("Handling IPS generation for Patient resource with ID: " + patientId);
 
-    foreach r4:OperationConfig patientOperation in patientServiceInfo.apiConfig.operations {
+    foreach r4:OperationConfig patientOperation in patientOperationConfigs {
         if patientOperation.name == SUMMARY_OPERATION {
-            ips:SectionConfig[]|error? ipsSectionConfig = ();
+            ips:IpsSectionConfig[]|error? ipsSectionConfig = ();
+            ips:IpsMetaData|error? ipsMetaData = ();
 
             json? additionalProperties = patientOperation?.additionalProperties;
             if additionalProperties is map<json> {
                 ipsSectionConfig = additionalProperties[IPS_SECTION_CONFIG].cloneWithType();
+                ipsMetaData = additionalProperties[IPS_META_DATA].cloneWithType();
             } else {
                 log:printDebug("IPS Section Config is not provided, using default configuration.");
             }
             
-            ips:IPSContext|error ipsContext = new (serviceResourceMap, ipsSectionConfig is ips:SectionConfig[]? ? ipsSectionConfig : ());
+            ips:IPSContext|error ipsContext = new (
+                serviceResourceMap, 
+                ipsMetaData = ipsMetaData is ips:IpsMetaData? ? ipsMetaData : (),
+                ipsSectionConfig = ipsSectionConfig is ips:IpsSectionConfig[]? ? ipsSectionConfig : ()
+            );
 
             if ipsContext is error {
+                log:printError("Error initializing IPS context: " + ipsContext.message());
                 return r4:createFHIRError(ipsContext.message(), r4:ERROR, r4:PROCESSING);
             }
 
-            r4:Bundle|error ipsBundle = ips:generateIps(patientId, ipsContext);
-            if ipsBundle is error {
-                return r4:createFHIRError(ipsBundle.message(), r4:ERROR, r4:PROCESSING);
-            }
+            lock {
+                r4:Bundle|error ipsBundle = ips:generateIps(patientId, ipsContext);
+                if ipsBundle is error {
+                    log:printError("Error generating IPS bundle: " + ipsBundle.message());
+                    return r4:createFHIRError(ipsBundle.message(), r4:ERROR, r4:PROCESSING);
+                }
 
-            return ipsBundle;
+                return ipsBundle;
+            }
         }
     }
     
@@ -193,26 +203,25 @@ isolated function handleIpsGeneration(string patientId, r4:FHIRServiceInfo patie
 }
 
 isolated function validateOperationConfigs(r4:ResourceAPIConfig apiConfig) returns r4:FHIRError? {
-    if apiConfig.operations is r4:OperationConfig[] {
-        foreach r4:OperationConfig operation in apiConfig.operations {
-            // validate the summary operation
-            if operation.name == SUMMARY_OPERATION {
-                json? additionalProperties = operation?.additionalProperties;
-                if additionalProperties is map<json> {
-                    ips:SectionConfig[]|error? ipsSectionConfig = additionalProperties[IPS_SECTION_CONFIG].cloneWithType();
-                    if ipsSectionConfig is ips:SectionConfig[] {
-                        string[]? errors = ips:validateSectionConfig(ipsSectionConfig);
-                        if errors is string[] {
-                            if errors.length() > 0 {
-                                return r4:createFHIRError("IPS Section Config validation failed: " + errors.toString().substring(1, errors.toString().length() - 1), r4:ERROR, r4:INVALID);
-                            }
+    foreach r4:OperationConfig operation in apiConfig.operations {
+        // validate the summary operation
+        if operation.name == SUMMARY_OPERATION {
+            json? additionalProperties = operation?.additionalProperties;
+            if additionalProperties is map<json> {
+                ips:IpsSectionConfig[]|error? ipsSectionConfig = additionalProperties[IPS_SECTION_CONFIG].cloneWithType();
+                ips:IpsMetaData|error? ipsMetaData = additionalProperties[IPS_META_DATA].cloneWithType();
+                if ipsSectionConfig is ips:IpsSectionConfig[] && ipsMetaData is ips:IpsMetaData? {
+                    string[]? errors = ips:validateSectionConfig(ipsSectionConfig, ipsMetaData);
+                    if errors is string[] {
+                        if errors.length() > 0 {
+                            return r4:createFHIRError("IPS Section Config validation failed: " + errors.toString().substring(1, errors.toString().length() - 1), r4:ERROR, r4:INVALID);
                         }
                     }
                 }
             }
-
-            // add the validation for other operations if needed
         }
+
+        // add the validation for other operations if needed
     }
     return;
 }
