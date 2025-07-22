@@ -698,7 +698,6 @@ public isolated class FHIRPreprocessor {
         return ipsBundle;
     }
 
-
     isolated function processSearchParameters(string fhirResourceType, http:Request request)
                                                                 returns map<r4:RequestSearchParameter[]>|r4:FHIRError {
         map<r4:RequestSearchParameter[]> processedSearchParams = {};

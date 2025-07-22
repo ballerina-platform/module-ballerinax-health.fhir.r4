@@ -11,6 +11,7 @@
 // specific language governing permissions and limitations
 // under the License.
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.ips;
 
 final r4:ResourceAPIConfig apiConfig = {
     resourceType: "Patient",
@@ -338,4 +339,168 @@ final r4:ResourceAPIConfig operationsApiConfig = {
         }
     ],
     serverConfig: ()
+};
+
+final r4:ResourceAPIConfig ipsGenerationPatientApiConfig = {
+    resourceType: "Patient",
+    profiles: [
+        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+    ],
+    defaultProfile: (),
+    searchParameters: [],
+    operations: [
+        {
+            name: "summary",
+            active: true,
+            additionalProperties: {
+                ipsSectionConfig: [
+                    {
+                        sectionName: ips:PROBLEMS,
+                        sectionTitle: "Active Problems",
+                        resources: [
+                            {resourceType: "Condition"}
+                        ]
+                    },
+                    {
+                        sectionName: ips:ALLERGIES,
+                        sectionTitle: "Allergies and Intolerances",
+                        resources: [
+                            {resourceType: "AllergyIntolerance"}
+                        ]
+                    },
+                    {
+                        sectionName: ips:MEDICATIONS,
+                        sectionTitle: "Medication Summary",
+                        resources: [
+                            {resourceType: "MedicationStatement"}
+                        ]
+                    }
+                ],
+                ipsMetaData: {
+                    authors: ["Organization/50"]
+                }
+            }
+        }
+    ],
+    serverConfig: (),
+    authzConfig: (),
+    auditConfig: ()
+};
+
+final r4:ResourceAPIConfig ipsGenerationOrganizationApiConfig = {
+    resourceType: "Organization",
+    profiles: [
+        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+    ],
+    defaultProfile: (),
+    searchParameters: [],
+    operations: [],
+    serverConfig: (),
+    authzConfig: ()
+};
+
+final r4:ResourceAPIConfig ipsGenerationAllergicApiConfig = {
+    resourceType: "AllergyIntolerance",
+    profiles: [
+        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance"
+    ],
+    defaultProfile: (),
+    searchParameters: [
+        {
+            name: "patient",
+            active: true,
+            'type: r4:STRING,
+            information: {
+                description: "Patient receiving the products or services",
+                documentation: "https://hl7.org/fhir/R4/search.html#reference"
+            }
+        }
+    ],
+    operations: [],
+    serverConfig: (),
+    authzConfig: ()
+};
+
+final r4:ResourceAPIConfig ipsGenerationConditionApiConfig = {
+    resourceType: "Condition",
+    profiles: [
+        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+    ],
+    defaultProfile: (),
+    searchParameters: [
+        {
+            name: "patient",
+            active: true,
+            'type: r4:STRING,
+            information: {
+                description: "Who has the condition?",
+                documentation: "https://hl7.org/fhir/R4/search.html#reference"
+            }
+        }
+    ],
+    operations: [],
+    serverConfig: (),
+    authzConfig: ()
+};
+
+final r4:ResourceAPIConfig ipsGenerationMedicationStatementApiConfig = {
+    resourceType: "MedicationStatement",
+    profiles: [
+        "http://hl7.org/fhir/StructureDefinition/MedicationStatement"
+    ],
+    defaultProfile: (),
+    searchParameters: [
+        {
+            name: "subject",
+            active: true,
+            'type: r4:STRING,
+            information: {
+                description: "Who the goal is for",
+                documentation: "https://hl7.org/fhir/R4/search.html#reference"
+            }
+        },
+        {
+            name: "patient",
+            active: true,
+            'type: r4:STRING,
+            information: {
+                description: "Who the goal is for",
+                documentation: "https://hl7.org/fhir/R4/search.html#reference"
+            }
+        }
+    ],
+    operations: [],
+    serverConfig: (),
+    authzConfig: ()
+};
+
+final r4:ResourceAPIConfig ipsGenerationMedicationApiConfig = {
+    resourceType: "Medication",
+    profiles: [
+        "http://hl7.org/fhir/StructureDefinition/Medication"
+    ],
+    defaultProfile: (),
+    searchParameters: [
+        {
+            name: "code",
+            active: true,
+            'type: r4:STRING,
+            information: {
+                description: "Returns medications with the specified code",
+                documentation: "https://hl7.org/fhir/R4/search.html#token"
+            }
+        },
+        {
+            name: "_id",
+            active: true,
+            'type: r4:STRING,
+            information: {
+                description: "Logical id of this artifact",
+                documentation: "https://hl7.org/fhir/R4/search.html#string"
+            }
+        }
+    ],
+    operations: [],
+    serverConfig: (),
+    authzConfig: ()
 };

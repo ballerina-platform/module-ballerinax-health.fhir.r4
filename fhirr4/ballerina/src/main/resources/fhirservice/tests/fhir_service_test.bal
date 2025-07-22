@@ -182,7 +182,7 @@ function testCreate() returns error? {
 
 @test:Config { groups: ["FhirService"] }
 function testCreateInvalidPayload() returns error? {
-    json patient = {
+    json patient = { 
         resourceType: "Patient",
         id: "1",
         familyname: [
@@ -358,5 +358,4 @@ function testInvalidApiConfig() returns error? {
 function stopService() returns error? {
     check fhirListener.gracefulStop();
     log:printInfo("FHIR test service has stopped");
-
 }

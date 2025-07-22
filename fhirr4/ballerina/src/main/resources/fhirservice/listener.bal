@@ -68,5 +68,6 @@ public isolated class Listener {
         lock {
             check self.ls.detach(self.httpService);
         }
+        _ = r4:fhirRegistry.removeFHIRService(self.config.resourceType);
     }
 }
