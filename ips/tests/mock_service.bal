@@ -114,7 +114,7 @@ service http:Service /fhir/r4 on new http:Listener(9091) {
 
 service http:Service /fhir/r4 on new http:Listener(9092) {
     isolated resource function get Condition(http:Request request) returns http:Response {
-        string? searchParams = request.getQueryParamValue("subject");
+        string? searchParams = request.getQueryParamValue("patient");
 
         international401:Condition[] conditions = [
             {

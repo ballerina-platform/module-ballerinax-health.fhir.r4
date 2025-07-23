@@ -97,8 +97,9 @@ import ballerinax/health.fhir.r4.ips;
 import ballerina/log;
 import ballerinax/health.fhir.r4;
 
+// Custom implementation for generating an IPS Bundle.
+// The custom function must have the same signature as `GenerateIps`, with the first parameter as `patientId` and the second as `IPSContext`.
 public isolated function generateIpsCustomImpl(string patientId, ips:IPSContext context) returns r4:Bundle|error {
-    log:printInfo(string `Generating IPS Bundle for patient ID: ${patientId}`);
     r4:Bundle ipsBundle = {
         'type: "document",
         'id: "ips-bundle-" + patientId,
@@ -110,9 +111,9 @@ public isolated function generateIpsCustomImpl(string patientId, ips:IPSContext 
     return ipsBundle;
 }
 
-public function init() {
-    // Register the custom implementation for the IPS generation function.
-    ips:generateIps = generateIpsCustomImpl;
+// Register the custom implementation for the IPS generation function within the init function.
+public function initCustomImplementationForGenerateIps() {
+    ips:registerCustomGenerateIps(generateIpsCustomImpl);
 }
 ```
 

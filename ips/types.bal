@@ -21,4 +21,9 @@ import ballerinax/health.fhir.r4;
 # + patientId - The ID of the patient for whom the IPS Bundle is being generated.
 # + context - The IPSContext containing all necessary data to construct the IPS Bundle.
 # + return - The constructed FHIR R4 Bundle or an error if generation fails.
+#
+# When implementing a custom implementation for the `generateIps` function, you need to create the implementation function with the same function signature: the first parameter should be the `patientId` and the second parameter should be the `IPSContext`.
+# To interact with the `IPSContext`, use the public functions in the `IPSContext` class.
+#
+# Refer to the documentation of the `IPSContext` class for available public functions.
 public type GenerateIps isolated function (string patientId, IPSContext context) returns r4:Bundle|error;

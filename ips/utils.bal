@@ -221,6 +221,16 @@ public isolated function validateSectionConfig(IpsSectionConfig[] sectionConfig,
     return ();
 }
 
+## Registers a custom implementation for the IPS Bundle generation function.
+#
+# This function allows you to override the default IPS Bundle generation logic by providing your own implementation of the `GenerateIps` function type.
+# The custom function must have the same signature as `GenerateIps`, with the first parameter as `patientId` and the second as `IPSContext`.
+#
+# + customGenerateIps - The custom implementation function for generating an IPS Bundle. Must match the `GenerateIps` function type signature.
+public function registerCustomGenerateIps(GenerateIps customGenerateIps) {
+    generateIps = customGenerateIps;
+}
+
 ## Generates an IPS (International Patient Summary) Bundle for a given patient using the provided IPSContext.
 #
 # This function follows the IPS Implementation Guide by HL7 FHIR, ensuring that the generated IPS document is compliant with international standards.
