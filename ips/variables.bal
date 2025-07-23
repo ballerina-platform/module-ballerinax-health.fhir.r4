@@ -30,18 +30,44 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> INTERNATIONALPATIENTSUM
     
 };
 
+# IPS summary operation definition (see: https://www.hl7.org/fhir/uv/ips/2024Sep/OperationDefinition-summary.html)
+final map<r4:FHIROperationDefinition[]> & readonly INTERNATIONALPATIENTSUMMERY_OPERATIONS = {
+    "summary": [
+        {
+            name: "summary",
+            instanceLevel: true,
+            typeLevel: true,
+            systemLevel: false,
+            'resource: ["Patient"],
+            'parameter: [
+                {
+                    name: "identifier",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string",
+                    documentation: "When the logical id of the patient is not used, servers MAY choose to support patient selection based on provided identifier. Unless the identifier system is unknown, requestors SHOULD include both the system and value (e.g. 'identifier=https://standards.digital.health.nz/ns/nhi-id|CNNJ9186') when using this parameter."
+                },
+                {
+                    name: "return",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Bundle",
+                    documentation: "The Bundle returned is a document conforming to the specified input Composition profile parameter or the International Patient Summary Composition profile (if not otherwise specified)"
+                }
+            ]
+        }
+    ]
+};
+
 public json[] FHIR_VALUE_SETS = [];
 public json[] FHIR_CODE_SYSTEMS = [];
 
-configurable string ips_bundle_identifier_system = "urn:oid:2.16.724.4.8.10.200.10";
-configurable string ips_composition_status = "final";
-configurable string ips_composition_title = "International Patient Summary";
-configurable string ips_composition_problem_section_title = "Active Problems";
-configurable string ips_composition_allergy_section_title = "Allergies";
-configurable string ips_composition_medication_section_title = "Medications";
-configurable string ips_composition_immunization_section_title = "Immunizations";
-configurable string ips_composition_procedure_section_title = "Procedures";
-configurable string ips_composition_diagnostic_report_section_title = "Diagnostic Reports";
-configurable string[] attesters = [];
-configurable string custodian = "";
-configurable string author = "";
+# Provides access to the IPS (International Patient Summary) generation functionality.
+#
+# The `generateIps` variable is a type function that can be used to generate an IPS-compliant FHIR Bundle for a given patient.
+# It exposes the default implementation of the `GenerateIps` interface, but can be overridden by a custom implementation if needed.
+# This allows other modules to customize IPS generation logic as required.
+public GenerateIps generateIps = generateIpsImpl;
+

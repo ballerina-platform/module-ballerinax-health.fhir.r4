@@ -963,3 +963,111 @@ function testIpsBundleCreationFromR4Bundle() returns error? {
         test:assertFail("Error in parsing the bundle");
     }
 }
+
+@test:Config
+public function testNegativeSectionConfig() returns error? {
+    final IpsSectionConfig[] sectionConfigs = [
+        {
+            sectionName: PROBLEMS,
+            sectionTitle: "Active Problems",
+            resources: [
+                {resourceType: "Goal"}
+            ]
+        }
+    ];
+
+    string[]? errorMsgs = validateSectionConfig(sectionConfigs);
+    if errorMsgs is string[] {
+        test:assertEquals(errorMsgs.length(), 4, msg = "Should have one error message");
+    } else {
+        test:assertFail("Section configuration validation did not return expected error messages");
+    }
+}
+
+@test:Config
+public function testGenerateIpsWithMockServices() returns error? {
+    string patientId = "102";
+
+    final IpsSectionConfig[] sectionConfigs = [
+        {
+            sectionName: PROBLEMS,
+            sectionTitle: "Active Problems",
+            resources: [
+                {resourceType: "Condition"}
+            ]
+        },
+        {
+            sectionName: ALLERGIES,
+            sectionTitle: "Allergies and Intolerances",
+            resources: [
+                {resourceType: "AllergyIntolerance"}
+            ]
+        },
+        {
+            sectionName: MEDICATIONS,
+            sectionTitle: "Medication Summary",
+            resources: [
+                {resourceType: "MedicationStatement"}
+            ]
+        },
+        {
+            sectionName: IMMUNIZATIONS,
+            sectionTitle: "Immunizations",
+            resources: [
+                {resourceType: "Immunization"}
+            ]
+        }
+    ];
+
+    map<string> serviceResourceMap = {
+        "Patient": "http://localhost:9090/fhir/r4",
+        "Organization": "http://localhost:9091/fhir/r4",
+        "Condition": "http://localhost:9092/fhir/r4",
+        "AllergyIntolerance": "http://localhost:9093/fhir/r4",
+        "MedicationStatement": "http://localhost:9094/fhir/r4",
+        "Practitioner": "http://localhost:9095/fhir/r4",
+        "Medication": "http://localhost:9096/fhir/r4",
+        "Immunization": "http://localhost:9097/fhir/r4"
+    };
+
+    IpsMetaData ipsMetaData = {
+        authors: ["Practitioner/12345", "Organization/50"],
+        custodian: "Organization/50"
+    };
+
+    // validate the section configurations
+    string[]? errorMsgs = validateSectionConfig(sectionConfigs, ipsMetaData);
+    if errorMsgs is string[] {
+        test:assertFail("Section configuration validation failed: " + errorMsgs.toString().'join(", "));
+    }
+
+    // create the IPS context for the mock fhir services
+    IPSContext ipsContext = check new (serviceResourceMap, ipsMetaData, sectionConfigs);
+
+    r4:Bundle bundle = check generateIps(patientId, ipsContext);
+    r4:Bundle expectedBundle = check generatedIpsBundle.cloneWithType();
+
+    r4:BundleEntry[] bundleEntries = bundle.entry is r4:BundleEntry[] ? <r4:BundleEntry[]>bundle.entry : [];
+    r4:BundleEntry[] expectedEntries = expectedBundle.entry is r4:BundleEntry[] ? <r4:BundleEntry[]>expectedBundle.entry : [];
+
+    test:assertEquals(bundleEntries.length(), expectedEntries.length(), msg = "Bundle should have the same number of entries");
+
+    int index = 0;
+    foreach var item in bundleEntries {
+        r4:Resource bundleResource = check item["resource"].cloneWithType();
+        r4:Resource expectedBundleResource = check expectedEntries[index]["resource"].cloneWithType();
+        
+        if index == 0 {
+            CompositionUvIps composition = check bundleResource.cloneWithType();
+            CompositionUvIps expectedComposition = check expectedBundleResource.cloneWithType();
+
+            expectedComposition.date = composition.date;
+
+            test:assertEquals(composition, expectedComposition, msg = "Composition resource should match expected");
+        } else {
+            test:assertEquals(bundleResource, expectedBundleResource, msg = "Resource at index " + index.toString() + " should match expected");
+        }
+
+        index += 1;
+    }
+}
