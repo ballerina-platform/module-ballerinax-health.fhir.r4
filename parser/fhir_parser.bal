@@ -62,7 +62,7 @@ returns anydata|r4:FHIRParseError {
                 _payload = parsedXmlPayload;
             } else {
                 return <r4:FHIRParseError>r4:createFHIRError("Failed to parse string payload to json or xml", r4:ERROR,
-                r4:INVALID_STRUCTURE, errorType = r4:PARSE_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                        r4:INVALID_STRUCTURE, errorType = r4:PARSE_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         }
     } else {
@@ -81,7 +81,7 @@ returns anydata|r4:FHIRParseError {
         } else {
             string msg = string `Failed to find FHIR profile for the resource type : ${resourceType}`;
             return <r4:FHIRParseError>r4:createFHIRError(msg, r4:ERROR, r4:INVALID_STRUCTURE, errorType = r4:PARSE_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST);
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
         }
     } else if targetFHIRModelType != () {
         r4:ResourceDefinitionRecord|r4:FHIRTypeError resourceDefinition = r4:getResourceDefinition(targetFHIRModelType);
@@ -94,16 +94,16 @@ returns anydata|r4:FHIRParseError {
                 } else {
                     string msg = string `Failed to find FHIR profile for the resource type : ${resourceType}`;
                     return <r4:FHIRParseError>r4:createFHIRError(msg, r4:ERROR, r4:INVALID_STRUCTURE, errorType =
-                    r4:PARSE_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                            r4:PARSE_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
                 }
             } else {
                 string msg = string `Failed to find FHIR profile in the definition of the resource type : ${resourceType}`;
                 return <r4:FHIRParseError>r4:createFHIRError(msg, r4:ERROR, r4:INVALID_STRUCTURE, errorType = r4:PARSE_ERROR,
-                httpStatusCode = http:STATUS_BAD_REQUEST);
+                        httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         } else {
             return <r4:FHIRParseError>r4:createFHIRError(resourceDefinition.message(), r4:ERROR, r4:INVALID_STRUCTURE, errorType = r4:PARSE_ERROR,
-            httpStatusCode = http:STATUS_BAD_REQUEST);
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
         }
     } else {
         string[]? payloadProfiles = extractProfiles(_payload);
@@ -114,7 +114,7 @@ returns anydata|r4:FHIRParseError {
             } else {
                 string msg = "Failed to find FHIR profile for the profile URL : " + payloadProfiles[0];
                 return <r4:FHIRParseError>r4:createFHIRError(msg, r4:ERROR, r4:INVALID_STRUCTURE, errorType = r4:PARSE_ERROR,
-                httpStatusCode = http:STATUS_BAD_REQUEST);
+                        httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         } else {
             (r4:Profile & readonly)? profile = r4:fhirRegistry.findBaseProfile(resourceType);
@@ -123,7 +123,7 @@ returns anydata|r4:FHIRParseError {
             } else {
                 string msg = "Failed to find FHIR profile for the resource type : " + resourceType;
                 return <r4:FHIRParseError>r4:createFHIRError(msg, r4:ERROR, r4:INVALID_STRUCTURE, errorType = r4:PARSE_ERROR,
-                httpStatusCode = http:STATUS_BAD_REQUEST);
+                        httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         }
     }
@@ -136,14 +136,14 @@ isolated function validateAndExtractProfile(json|xml payload, r4:ResourceAPIConf
     if !r4:fhirRegistry.isSupportedResource(resourceType) {
         string diag = string `Payload contains unknown resource type : ${resourceType}`;
         return <r4:FHIRValidationError>r4:createFHIRError("Unknown FHIR resource type", r4:ERROR, r4:INVALID, diag,
-                                                errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
     }
 
     if resourceType != apiConfig.resourceType {
         string msg = "Mismatching resource type of the FHIR resource with the resource API";
         string diagMsg = string `Payload resource type : ${resourceType} but expected resource type : ${apiConfig.resourceType}`;
         return <r4:FHIRValidationError>r4:createFHIRError(msg, r4:ERROR, r4:INVALID, diagMsg,
-                                                errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
     }
 
     string[]? profiles = extractProfiles(payload);
@@ -155,14 +155,14 @@ isolated function validateAndExtractProfile(json|xml payload, r4:ResourceAPIConf
             if !resourceProfiles.hasKey(profile) {
                 string diag = string `Unknown profile : ${profile}`;
                 return <r4:FHIRValidationError>r4:createFHIRError("Invalid FHIR profile", r4:ERROR, r4:INVALID,
-                                diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                        diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
 
             // check whether the profile is supported according to API config
             if apiConfig.profiles.indexOf(profile) is () {
                 string diag = string `FHIR server does not support this FHIR profile : ${profile}`;
                 return <r4:FHIRValidationError>r4:createFHIRError("Unsupported FHIR profile", r4:ERROR, r4:INVALID,
-                                diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                        diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
             }
         }
 
@@ -181,7 +181,7 @@ isolated function validateAndExtractProfile(json|xml payload, r4:ResourceAPIConf
     }
     string diag = string `Matching profile not found for the resource type : ${resourceType}`;
     return <r4:FHIRValidationError>r4:createFHIRError("Profile not found", r4:ERROR, r4:PROCESSING,
-                                diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+            diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
 
 }
 
@@ -192,16 +192,16 @@ isolated function parseFHIRResource(r4:Profile profile, json|xml payload) return
             string|error detailedMessage = cloneWithType.detail().get("message").ensureType(string);
             string diagnostic = detailedMessage is string ? detailedMessage : cloneWithType.detail().toString();
             return <r4:FHIRParseError>r4:createFHIRError("Failed to parse request body as JSON resource", r4:ERROR, r4:PROCESSING,
-                                                    diagnostic, cause = cloneWithType, errorType = r4:PARSE_ERROR,
-                                                    httpStatusCode = http:STATUS_BAD_REQUEST);
+                    diagnostic, cause = cloneWithType, errorType = r4:PARSE_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
         } else {
             return cloneWithType;
         }
     } else {
         // TODO: parse xml payload [https://github.com/wso2-enterprise/open-healthcare/issues/887]
         return <r4:FHIRParseError>r4:createFHIRError("XML format of FHIR resources not supported yet", r4:ERROR,
-                                                r4:PROCESSING_NOT_SUPPORTED, errorType = r4:PARSE_ERROR,
-                                                httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+                r4:PROCESSING_NOT_SUPPORTED, errorType = r4:PARSE_ERROR,
+                httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
     }
 }
 
@@ -236,11 +236,11 @@ isolated function extractResourceType(json|xml payload) returns string|r4:FHIRVa
     } else {
         // TODO handle XML payload [https://github.com/wso2-enterprise/open-healthcare/issues/887]
         return <r4:FHIRValidationError>r4:createFHIRError("XML format of FHIR resources not supported yet", r4:ERROR,
-                                                r4:PROCESSING_NOT_SUPPORTED, errorType = r4:VALIDATION_ERROR,
-                                                httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+                r4:PROCESSING_NOT_SUPPORTED, errorType = r4:VALIDATION_ERROR,
+                httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
     }
     string message = "Failed to parse request body as JSON resource";
     string diagnostic = "Invalid JSON content detected, missing required element: \"resourceType\"";
     return <r4:FHIRValidationError>r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
-                                errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+            errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
 }

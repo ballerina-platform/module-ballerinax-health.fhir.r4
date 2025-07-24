@@ -279,7 +279,7 @@ function parseWithValidationFailureTest() returns r4:FHIRParseError|r4:FHIRValid
         string? diagnostic = errorDetail.issues[0].diagnostic;
         if diagnostic is string {
             test:assertEquals(diagnostic, "It should be a date, or partial date (e.g. just year or year + month) as used in human communication. The format is YYYY, YYYY-MM, " +
-            "or YYYY-MM-DD, e.g. 2018, 1973-06, or 1905-08-23. There SHALL be no time zone. Refer: https://hl7.org/fhir/R4/datatypes.html.");
+                    "or YYYY-MM-DD, e.g. 2018, 1973-06, or 1905-08-23. There SHALL be no time zone. Refer: https://hl7.org/fhir/R4/datatypes.html.");
         }
     } else {
         test:assertFail("Expect to fail since the FHIR server is not capable of understanding the given FHIR resource.");

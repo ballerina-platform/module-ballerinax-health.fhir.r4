@@ -24,7 +24,7 @@ final fhir_client:FHIRConnector? fhirConnector = check getFHIRConnectorConfig();
 
 function getFHIRConnectorConfig() returns fhir_client:FHIRConnector|error? {
     if terminologyConfig?.isTerminologyValidationEnabled is false || terminologyConfig?.terminologyServiceApi is () {
-        log:printInfo("Terminology validation is disabled or terminology service API is not configured.");
+        log:printDebug("Terminology validation is disabled or terminology service API is not configured.");
         return ();
     }
 
