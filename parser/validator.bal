@@ -103,10 +103,8 @@ public isolated function validate(anydata data) returns r4:FHIRValidationError? 
         }
 
         // terminology validation
-        boolean? terminologyValidationEnabled = terminologyConfig?.isTerminologyValidationEnabled;
-        if terminologyValidationEnabled is boolean && terminologyValidationEnabled {
+        if terminologyValidationEnabled {
             string[]? validationErrors = validateTerminologyData(validationResult);
-
             if validationErrors is string[] {
                 return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed, due to terminology validation failed", r4:ERROR, r4:INVALID, "Terminology validation failed",
                         errorType = r4:VALIDATION_ERROR, parsedErrors = validationErrors, httpStatusCode = http:STATUS_BAD_REQUEST);
