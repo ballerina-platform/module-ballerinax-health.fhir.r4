@@ -18,12 +18,12 @@ import ballerina/lang.'int as langint;
 import ballerina/lang.regexp;
 import ballerina/log;
 
-# Evaluate the fhirpath expression.
+# Retrieve FhirPath values.
 #
 # + fhirResource - requested fhir resource
 # + fhirPathExpression - requested fhirpath expression
 # + return - result of the fhirpath expression
-public isolated function getFhirPathValues(json fhirResource, string fhirPathExpression) returns json|error {
+public isolated function retrieveFhirPathValues(json fhirResource, string fhirPathExpression) returns json|error {
     // Input validation
     if fhirPathExpression.trim().length() == 0 {
         return createFhirPathError("FhirPath expression cannot be empty", fhirPathExpression);

@@ -14,13 +14,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Client method to access utils package for fhirpath evaluation.
+# Client method to get value of a given fhir path.
 #
-# + fhirResource - requested fhir resource
-# + fhirPath - fhirpath requested for evaluation
-# + return - result of the fhirpath expression
-public isolated function getFhirPathResult(json fhirResource, string fhirPath) returns FhirPathResult {
-    json|error results = getFhirPathValues(fhirResource, fhirPath);
+# + fhirResource - fhir resource
+# + fhirPath - fhirpath requested
+# + return - value of the fhirpath expression or error
+public isolated function getFhirPathValue(json fhirResource, string fhirPath) returns FhirPathResult {
+    json|error results = retrieveFhirPathValues(fhirResource, fhirPath);
 
     if results is error {
         return {
@@ -36,14 +36,14 @@ public isolated function getFhirPathResult(json fhirResource, string fhirPath) r
 # Update the FHIR resource at the given FHIRPath with the provided value.
 #
 # + fhirResource - The FHIR resource to update
-# + fhirPathExpression - The FHIRPath expression (dot notation)
+# + fhirPathExpression - The FHIRPath expression
 # + value - The value to set at the path
 # + allowPathCreation - Whether to create missing paths (optional, defaults to configurable value)
 # + return - The updated FHIR resource or error
-public isolated function updateFhirPathValue(json fhirResource, string fhirPathExpression, json value, boolean? allowPathCreation = ()) returns FhirPathResult {
+public isolated function setFhirPathValue(json fhirResource, string fhirPathExpression, json value, boolean? allowPathCreation = ()) returns FhirPathResult {
     json|error result = allowPathCreation is boolean ?
-        setFhirPathValues(fhirResource, fhirPathExpression, value, allowPathCreation) :
-        setFhirPathValues(fhirResource, fhirPathExpression, value);
+        updateFhirPathValues(fhirResource, fhirPathExpression, value, allowPathCreation) :
+        updateFhirPathValues(fhirResource, fhirPathExpression, value);
 
     if result is error {
         return {
@@ -56,27 +56,3 @@ public isolated function updateFhirPathValue(json fhirResource, string fhirPathE
     return {result: result};
 }
 
-# Client record to hold the results of fhirpath evaluation.
-#
-# + result - Result of the fhirpath expression
-# + error - Error message if the result is an error
-public type FhirPathResult record {
-    json result?;
-    FhirPathErrorRecord 'error?;
-};
-
-# Record to hold FhirPath request parameters.
-#
-# + fhirResource - the FHIR Resource which the FhirPath expression is evaluated against
-# + fhirPath - the FhirPath expression
-public type FhirPathRequest record {|
-    json fhirResource;
-    string[]|string fhirPath;
-|};
-
-# Record to hold FhirPath error Message.
-#
-# + message - error message
-public type FhirPathErrorRecord record {
-    string message;
-};

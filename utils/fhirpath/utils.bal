@@ -16,6 +16,7 @@
 
 // import ballerina/lang.'int as langint;
 import ballerina/lang.regexp;
+
 // import ballerina/log;
 
 const BRACKET_END = "]";
@@ -45,6 +46,30 @@ public type arrayAccessToken record {
     int index;
 };
 
+# Client record to hold the results of fhirpath evaluation.
+#
+# + result - Result of the fhirpath expression
+# + error - Error message if the result is an error
+public type FhirPathResult record {
+    json result?;
+    FhirPathErrorRecord 'error?;
+};
+
+# Record to hold FhirPath request parameters.
+#
+# + fhirResource - the FHIR Resource which the FhirPath expression is evaluated against
+# + fhirPath - the FhirPath expression
+public type FhirPathRequest record {|
+    json fhirResource;
+    string[]|string fhirPath;
+|};
+
+# Record to hold FhirPath error Message.
+#
+# + message - error message
+public type FhirPathErrorRecord record {
+    string message;
+};
 
 # Tokenize the fhirpath expression based on the token types.
 #
@@ -68,4 +93,17 @@ isolated function getTokens(string fhirPathExpression) returns Token[]|error {
     }
 
     return tokenRecordArray;
+}
+
+# FhirPathError is the error object that is returned when an error occurs during the evaluation of a FHIRPath expression.
+public type FHIRPathError distinct error;
+
+# Method to create a FHIRPathError
+#
+# + errorMsg - the reason for the occurence of error
+# + fhirPath - the fhirpath expression that is being evaluated
+# + return - the error object
+public isolated function createFhirPathError(string errorMsg, string? fhirPath) returns error {
+    FHIRPathError fhirPathError = error(errorMsg, fhirpath = fhirPath);
+    return fhirPathError;
 }
