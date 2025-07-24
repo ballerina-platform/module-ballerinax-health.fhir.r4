@@ -41,7 +41,7 @@ public type Token record {
 # Sub type of token for array access tokens.
 #
 # + index - index of the array element
-public type arrayAccessToken record {
+public type ArrayAccessToken record {
     *Token;
     int index;
 };

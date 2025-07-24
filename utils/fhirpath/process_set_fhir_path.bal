@@ -56,7 +56,7 @@ isolated function setValueRecursively(json current, Token[] tokens, int tokenInd
     Token token = tokens[tokenIndex];
     boolean isLastToken = tokenIndex == tokensLength - 1;
 
-    return token is arrayAccessToken ?
+    return token is ArrayAccessToken ?
         handleArrayAccessToken(current, token, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove) :
         handleRegularToken(current, token, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove);
 }
@@ -72,7 +72,7 @@ isolated function setValueRecursively(json current, Token[] tokens, int tokenInd
 # + allowPathCreation - Whether to create missing paths
 # + shouldRemove - Whether to remove the path instead of setting value
 # + return - Updated JSON or error
-isolated function handleArrayAccessToken(json current, arrayAccessToken token, Token[] tokens, int tokenIndex, json value, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove) returns json|error {
+isolated function handleArrayAccessToken(json current, ArrayAccessToken token, Token[] tokens, int tokenIndex, json value, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove) returns json|error {
     if !(current is map<json>) {
         return current;
     }

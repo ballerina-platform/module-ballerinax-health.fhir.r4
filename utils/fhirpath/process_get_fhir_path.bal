@@ -92,7 +92,7 @@ isolated function evaluateRecursively(json current, Token[] tokens, int tokenInd
     Token token = tokens[tokenIndex];
     boolean isLastToken = tokenIndex == tokensLength - 1;
 
-    return token is arrayAccessToken ?
+    return token is ArrayAccessToken ?
         evaluateArrayAccessToken(current, token, tokens, tokenIndex, isLastToken) :
         evaluateRegularToken(current, token, tokens, tokenIndex, isLastToken);
 }
@@ -105,7 +105,7 @@ isolated function evaluateRecursively(json current, Token[] tokens, int tokenInd
 # + tokenIndex - Current token index
 # + isLastToken - Whether this is the last token
 # + return - Evaluation result or error
-isolated function evaluateArrayAccessToken(json current, arrayAccessToken token, Token[] tokens, int tokenIndex, boolean isLastToken) returns json|error {
+isolated function evaluateArrayAccessToken(json current, ArrayAccessToken token, Token[] tokens, int tokenIndex, boolean isLastToken) returns json|error {
     if !(current is map<json>) {
         return createFhirPathError(INVALID_FHIRPATH_MSG, "");
     }
@@ -328,5 +328,5 @@ isolated function parseToken(string tokenStr) returns Token|error {
         return createFhirPathError(INVALID_CHARACTER_MSG, "");
     }
 
-    return <arrayAccessToken>{index: valueNum, value: arrayTokenName};
+    return <ArrayAccessToken>{index: valueNum, value: arrayTokenName};
 }

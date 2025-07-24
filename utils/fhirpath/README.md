@@ -1,96 +1,207 @@
-# FHIR R4 Utils FHIRPath package
+# FHIR R4 Utils FHIRPath Package
 
-A package containing FHIR related processors and utilities to evaluate FHIRPath expressions on FHIR resources to extract specific data elements.
+This package provides utilities for working with FHIR resources using FHIRPath expressions. It allows you to query, update, and manipulate FHIR resources in a type-safe manner using Ballerina.
 
 ## Package Overview
 
-This package provides a comprehensive set of functions and utilities to facilitate querying and manipulating FHIR resources using FHIRPath expressions.
+This package implements FHIRPath, a powerful expression language for querying and manipulating FHIR resources. It supports the FHIR R4 version and provides a set of functions to evaluate FHIRPath expressions, update resource values, and handle errors effectively.
 
 |                      |                      |
 |----------------------|----------------------|
 | FHIR version         | R4                   |
 | Implementation Guide | https://hl7.org/fhir/fhirpath.html |
+| Package Version      | 3.0.0                |
+| Ballerina Version    | 2201.12.2            |
 
-Refer [API Documentation](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath) for sample usage.
+Refer to the [API Documentation](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath) for detailed usage.
 
-# FHIR R4 Utils FHIRPath module
+## Features
 
-## Module Overview
-This module provides processors and utilities for implementing FHIR Path for accessing and 
-manipulating FHIR resources.
+- **Query FHIR Resources**: Extract one or more values for a matching FHIRPath expression from a FHIR resources
+- **Update FHIR Resources**: Set values in FHIR resources at specified paths
+- **Remove FHIR Sub-Resources**: Remove sub-elements from FHIR resources by setting values to null
+- **Resource Manipulation**: Support for creating missing paths and updating nested structures
+- **Error Handling**: Comprehensive error reporting for invalid paths or operations
+- **Type Safety**: Strong typing support for Ballerina applications
 
-### Sample Usage of the Module is Given Below:
 
-```
+## Usage Examples
+
+### Basic FHIRPath Value Extraction
+
+```ballerina
 import ballerina/io;
 import ballerinax/health.fhir.r4utils.fhirpath;
+
 json patient = {
-        "resourceType" : "Patient",
-        "id": "1",
-        "meta": {
-            "profile": [
-                "http://hl7.org/fhir/StructureDefinition/Patient"
+    "resourceType": "Patient",
+    "id": "1",
+    "meta": {
+        "profile": [
+            "http://hl7.org/fhir/StructureDefinition/Patient"
+        ]
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "Chalmers",
+            "given": [
+                "Peter",
+                "James"
             ]
         },
-        "active":true,
-        "name":[
+        {
+            "use": "usual",
+            "given": [
+                "Jim"
+            ]
+        }
+    ],
+    "gender": "male",
+    "birthDate": "1974-12-25",
+    "managingOrganization": {
+        "reference": "Organization/1",
+        "display": "Burgers University Medical Center"
+    }
+};
+
+public function main() {
+    // Get single value using FHIRPath
+    fhirpath:FhirPathResult result = fhirpath:getFhirPathValue(patient, "Patient.name[0].given[0]");
+    if result.result is json {
+        io:println("First given name: ", result.result);
+    }
+    // Get all given names
+    fhirpath:FhirPathResult result = fhirpath:getFhirPathValue(patient, "Patient.name.given[0]");
+    if result.result is json {
+        io:println("First given name: ", result.result);
+    }
+    
+    // Handle errors
+    fhirpath:FhirPathResult errorResult = fhirpath:getFhirPathValue(patient, "Patient.invalidPath");
+    if errorResult.'error is fhirpath:FhirPathErrorRecord {
+        io:println("Error: ", errorResult.'error.message);
+    }
+}
+```
+
+### Updating FHIR Resources
+
+```ballerina
+import ballerina/io;
+import ballerinax/health.fhir.r4utils.fhirpath;
+
+public function main() {
+    json patient = {
+        "resourceType": "Patient",
+        "id": "1",
+        "active": true
+    };
+    
+    // Update a value in the FHIR resource
+    fhirpath:FhirPathResult updateResult = fhirpath:setFhirPathValue(
+        patient, 
+        "Patient.gender", 
+        "male"
+    );
+    
+    if updateResult.result is json {
+        io:println("Updated patient: ", updateResult.result);
+    }
+}
+```
+
+### Removing FHIR Resource Fields
+
+```ballerina
+import ballerina/io;
+import ballerinax/health.fhir.r4utils.fhirpath;
+
+public function main() {
+    json patient = {
+        "resourceType": "Patient",
+        "id": "1",
+        "active": true,
+        "gender": "male",
+        "name": [
             {
-                "use":"official",
-                "family":"Chalmers",
-                "given":[
+                "use": "official",
+                "family": "Chalmers",
+                "given": [
                     "Peter",
                     "James"
                 ]
             },
             {
-                "use":"usual",
-                "given":[
+                "use": "usual",
+                "given": [
                     "Jim"
                 ]
             }
-        ],
-        "gender":"male",
-        "birthDate":"1974-12-25",
-        "managingOrganization":{
-            "reference":"Organization/1",
-            "display":"Burgers University Medical Center"
-        },
-        "address":[
-            {
-                "use":"home",
-                "line":[
-                    "534 Erewhon St",
-                    "sqw"
-                ],
-                "city":"PleasantVille",
-                "district":"Rainbow",
-                "state":"Vic",
-                "postalCode":"3999",
-                "country":"Australia"
-            },
-            {
-                "use":"work",
-                "line":[
-                    "33[0] 6th St"
-                ],
-                "city":"Melbourne",
-                "district":"Rainbow",
-                "state":"Vic",
-                "postalCode":"3000",
-                "country":"Australia"
-            }
         ]
     };
-
-public function main() {
-    string fPath = "Patient.address[4].city";
-    fhirpath:FhirPathResult newFhirPathResult = fhirpath:getFhirPathResult(patient, fPath);
-    if newFhirPathResult?.result is null {
-        json outcome = newFhirPathResult?.resultenError;
-        io:println(outcome.toString());
+    
+    // Remove a simple field
+    fhirpath:FhirPathResult result = fhirpath:setFhirPathValue(patient, "Patient.gender", ());
+    if result.result is json {
+        io:println("Patient after removing gender: ", result.result);
     }
-    else {
-        json outcome = newFhirPathResult?.result;
-        io:println(outcome.toString());
+    
+    // Remove an array element
+    fhirpath:FhirPathResult arrayResult = fhirpath:setFhirPathValue(patient, "Patient.name[0]", ());
+    if arrayResult.result is json {
+        io:println("Patient after removing first name: ", arrayResult.result);
+    }
+
+    // Remove multiple elements
+    fhirpath:FhirPathResult arrayResult = fhirpath:setFhirPathValue(patient, "Patient.name.given", ());
+    if arrayResult.result is json {
+        io:println("Patient after removing all given names: ", arrayResult.result);
+    }
+    
+    // Using low-level function for removal
+    json|error directResult = fhirpath:updateFhirPathValues(patient, "Patient.active", ());
+    if directResult is json {
+        io:println("Updated patient resource: ", directResult);
     }
 }
+```
+
+## API Reference
+
+### Main Functions
+
+- `getFhirPathValue(json fhirResource, string fhirPath) returns FhirPathResult`
+  - Evaluates a FHIRPath expression against a FHIR resource
+  - Returns a result containing either the extracted value or an error
+
+- `setFhirPathValue(json fhirResource, string fhirPathExpression, json value, boolean? allowPathCreation) returns FhirPathResult`
+  - Updates a FHIR resource at the specified FHIRPath with the provided value
+  - Use `()` as the value to remove a field from the resource
+  - Optionally creates missing paths in the resource structure
+
+- `retrieveFhirPathValues(json fhirResource, string fhirPathExpression) returns json|error`
+  - Low-level function for FHIRPath evaluation
+  - Returns the extracted values directly or an error
+
+- `updateFhirPathValues(json fhirResource, string fhirPathExpression, json newValue, boolean allowPathCreation) returns json|error`
+  - Low-level function for setting values in FHIR resources
+  - Use `()` as newValue to remove the specified path
+  - Returns the updated resource or an error
+
+### Types
+
+- `FhirPathResult` - Result record containing either a result or error
+- `FhirPathErrorRecord` - Error record with message field
+- `FhirPathRequest` - Request parameters for FHIRPath operations
+- `Token` - Basic token type for FHIRPath parsing
+- `ArrayAccessToken` - Sub type of token for array access tokens
+
+## Error Handling
+
+The package provides comprehensive error handling for various scenarios:
+- Invalid FHIRPath expressions
+- Mismatched resource types
+- Array index out of bounds
+- Invalid characters in path expressions
