@@ -173,22 +173,22 @@ public function main() {
 ### Main Functions
 
 - `getFhirPathValue(json fhirResource, string fhirPath) returns FhirPathResult`
-  - Evaluates a FHIRPath expression against a FHIR resource
-  - Returns a result containing either the extracted value or an error
+  - Returns a result containing either the extracted value list or an error. Output is a `FhirPathResult` record.
+  - Can handle both single and multiple values (Eg: `Patient.name.given[0]` returns the first given name, while `Patient.name.given` returns all given names)
 
 - `setFhirPathValue(json fhirResource, string fhirPathExpression, json value, boolean? allowPathCreation) returns FhirPathResult`
-  - Updates a FHIR resource at the specified FHIRPath with the provided value
-  - Use `()` as the value to remove a field from the resource
+  - Updates a FHIR resource at the specified FHIRPath with the provided value and returns or sends an error. Output is a `FhirPathResult` record.
+  - Use `()` as the value to remove a field from the resource (Eg: `Patient.gender` to `()` removes the gender field)
+  - Can handle both single and multiple values (Eg: `Patient.name.given[0]` sets the first given name, while `Patient.name.given` sets all given names)
   - Optionally creates missing paths in the resource structure
 
 - `retrieveFhirPathValues(json fhirResource, string fhirPathExpression) returns json|error`
-  - Low-level function for FHIRPath evaluation
+  - Low-level function of the getFhirPathValue function
   - Returns the extracted values directly or an error
 
 - `updateFhirPathValues(json fhirResource, string fhirPathExpression, json newValue, boolean allowPathCreation) returns json|error`
-  - Low-level function for setting values in FHIR resources
-  - Use `()` as newValue to remove the specified path
-  - Returns the updated resource or an error
+  - Low-level function of the setFhirPathValue function
+  - Returns the updated FHIR resource or an error
 
 ### Types
 
