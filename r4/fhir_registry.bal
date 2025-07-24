@@ -86,6 +86,9 @@ public isolated class FHIRRegistry {
     // Operations map (key: resource type)
     private map<OperationCollection> operationsMap = {};
 
+    // FHIR services map (key: resource type)
+    private FHIRServicesCollection fhirServicesMap = {};
+
     public function init() {
     }
 
@@ -293,6 +296,53 @@ public isolated class FHIRRegistry {
             }
         }
     }
+
+    # Add a FHIR service to the registry
+    #
+    # + resourceType - The resource type
+    # + serviceInfo - The FHIR service information
+    public isolated function registerFHIRService(string resourceType, FHIRServiceInfo serviceInfo) {
+        lock {
+            if !self.fhirServicesMap.hasKey(resourceType) {
+                self.fhirServicesMap[resourceType] = serviceInfo.clone();
+            }
+        }
+    }
+
+    # Get a FHIR service from the registry by resource type
+    #
+    # + resourceType - The resource type
+    # + return - The FHIR service information if found, otherwise ()
+    public isolated function getFHIRService(string resourceType) returns FHIRServiceInfo? {
+        lock {
+            if self.fhirServicesMap.hasKey(resourceType) {
+                return self.fhirServicesMap.get(resourceType).clone();
+            }
+        }
+        return ();
+    }
+
+    # Get all FHIR services in the registry
+    # + return - A map of FHIR services where the key is the resource type
+    public isolated function getAllRegisteredFHIRServices() returns FHIRServicesCollection {
+        lock {
+            return self.fhirServicesMap.cloneReadOnly();
+        }
+    }
+
+    # Remove a FHIR service from the registry
+    #
+    # + resourceType - The resource type
+    # + return - True if the service was removed, false if not found
+    public isolated function removeFHIRService(string resourceType) returns boolean {
+        lock {
+            if self.fhirServicesMap.hasKey(resourceType) {
+                _ = self.fhirServicesMap.remove(resourceType);
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 # Search parameter map (key: parameter name)
@@ -300,3 +350,6 @@ public type SearchParamCollection map<FHIRSearchParameterDefinition>;
 
 # Operation map (key: operation name)
 public type OperationCollection map<FHIROperationDefinition>;
+
+# FHIR services map (key: service name)
+public type FHIRServicesCollection map<FHIRServiceInfo>;

@@ -78,7 +78,7 @@ isolated function mapMedicationToIpsMedication(international401:Medication medic
         status: medication.status,
         form: medication.form,
         ingredient: medication.ingredient
-    };    
+    };
 
 // Medication Statement Mapping
 isolated function mapMedicationStatementToIpsMedicationStatement(international401:MedicationStatement medicationStatement, string patientId) returns MedicationStatementIPS => let
@@ -272,3 +272,84 @@ isolated function mapGenderToIpsGender(international401:PatientGender gender) re
         }
     }
 }
+
+isolated function mapOrganizationToIpsOrganization(international401:Organization organization) returns OrganizationUvIps => let
+    string organizationId = organization.id ?: uuid:createRandomUuid() in {
+        id: organizationId,
+        name: organization.name ?: "",
+        identifier: organization.identifier,
+        telecom: organization.telecom,
+        address: organization.address,
+        partOf: organization.partOf,
+        extension: organization.extension,
+        modifierExtension: organization.modifierExtension,
+        active: organization.active,
+        language: organization.language,
+        'type: organization.'type,
+        endpoint: organization.endpoint,
+        contained: organization.contained,
+        contact: organization.contact,
+        alias: organization.alias,
+        text: organization.text,
+        implicitRules: organization.implicitRules,
+        meta: {
+            tag: organization.meta?.tag,
+            lastUpdated: organization.meta?.lastUpdated,
+            'source: organization.meta?.'source,
+            versionId: organization.meta?.versionId,
+            extension: organization.meta?.extension,
+            security: organization.meta?.security
+        }
+    };
+
+isolated function mapPractitionerToIpsPractitioner(international401:Practitioner practitioner) returns PractitionerUvIps => let
+    string practitionerId = practitioner.id ?: uuid:createRandomUuid() in {
+        id: practitionerId,
+        identifier: practitioner.identifier,
+        name: practitioner.name ?: [],
+        extension: practitioner.extension,
+        address: practitioner.address,
+        modifierExtension: practitioner.modifierExtension,
+        active: practitioner.active,
+        photo: practitioner.photo,
+        language: practitioner.language,
+        birthDate: practitioner.birthDate,
+        contained: practitioner.contained,
+        qualification: practitioner.qualification,
+        telecom: practitioner.telecom,
+        implicitRules: practitioner.implicitRules,
+        text: practitioner.text,
+        gender: practitioner.gender,
+        communication: practitioner.communication
+    };
+
+isolated function mapPractitionerRoleToIpsPractitionerRole(international401:PractitionerRole practitionerRole) returns PractitionerRoleUvIps => let
+    string practitionerRoleId = practitionerRole.id ?: uuid:createRandomUuid() in {
+        id: practitionerRoleId,
+        implicitRules: practitionerRole.implicitRules,
+        active: practitionerRole.active,
+        period: practitionerRole.period,
+        practitioner: {
+            id: practitionerRole.practitioner?.id,
+            identifier: practitionerRole.practitioner?.identifier,
+            extension: practitionerRole.practitioner?.extension,
+            'type: practitionerRole.practitioner?.'type,
+            display: practitionerRole.practitioner?.display
+        },
+        organization: practitionerRole.organization,
+        code: practitionerRole.code,
+        specialty: practitionerRole.specialty,
+        location: practitionerRole.location,
+        telecom: practitionerRole.telecom,
+        availableTime: practitionerRole.availableTime,
+        notAvailable: practitionerRole.notAvailable,
+        endpoint: practitionerRole.endpoint,
+        identifier: practitionerRole.identifier,
+        extension: practitionerRole.extension,
+        healthcareService: practitionerRole.healthcareService,
+        contained: practitionerRole.contained,
+        language: practitionerRole.language,
+        modifierExtension: practitionerRole.modifierExtension,
+        availabilityExceptions: practitionerRole.availabilityExceptions,
+        text: practitionerRole.text
+    };

@@ -343,6 +343,17 @@ function testMetadata() returns error? {
     test:assertTrue(response is international401:CapabilityStatement);
 }
 
+@test:Config { groups: ["FhirService"] }
+function testInvalidApiConfig() returns error? {
+    r4:ResourceAPIConfig invalidApiConfig = {operations: [], authzConfig: (), profiles: [], defaultProfile: (), 
+        searchParameters: [], serverConfig: (), resourceType: ""};
+    Listener|error fhirListener = new (config = invalidApiConfig);
+    test:assertTrue(fhirListener is error, "Expected an error when creating a listener with invalid API config");
+    if fhirListener is error {
+        test:assertEquals(fhirListener.message(), "Resource type cannot be empty in the API config. Please provide a valid FHIR resource type.");
+    } 
+}
+
 @test:AfterGroups { value:["FhirService"] }
 function stopService() returns error? {
     check fhirListener.gracefulStop();

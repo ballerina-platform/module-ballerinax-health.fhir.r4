@@ -230,7 +230,7 @@ public type MedicinalProductIndication record {|
         "medicationReference": {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Reference to a specific medication (active substance, medicinal product or class of products) as part of an indication or contraindication.",
@@ -275,7 +275,7 @@ public type MedicinalProductIndication record {|
         "medicationCodeableConcept": {
             name: "medicationCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Reference to a specific medication (active substance, medicinal product or class of products) as part of an indication or contraindication.",

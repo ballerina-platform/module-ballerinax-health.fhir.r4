@@ -159,7 +159,7 @@ public const RESOURCE_NAME_MEDICATIONDISPENSE = "MedicationDispense";
         "medicationReference" : {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MedicationDispense.medication[x]",
@@ -272,7 +272,7 @@ public const RESOURCE_NAME_MEDICATIONDISPENSE = "MedicationDispense";
         "medicationCodeableConcept" : {
             name: "medicationCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MedicationDispense.medication[x]",

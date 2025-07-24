@@ -1211,7 +1211,7 @@ public type ImplementationGuideDefinitionTemplate record {|
         "nameImplementationGuideReference": {
             name: "nameImplementationGuideReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The source address for the page.",
@@ -1229,7 +1229,7 @@ public type ImplementationGuideDefinitionTemplate record {|
         "nameImplementationGuideUrl": {
             name: "nameImplementationGuideUrl",
             dataType: r4:urlType,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The source address for the page.",
