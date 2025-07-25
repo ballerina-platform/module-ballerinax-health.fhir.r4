@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2025, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -14,14 +14,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Set the values of matching FHIR paths in the JSON resource.
+# Set the value(s) of matching FHIR paths in the JSON resource.
 #
 # + fhirResource - The JSON FHIR resource to update
 # + fhirPathExpression - The FHIR path (dot notation, e.g., "Patient.name[0].family")
 # + newValue - The value to set at the path, or () to remove the path
 # + allowPathCreation - Whether to create missing paths (defaults to configurable value)
 # + return - The updated JSON resource or error
-public isolated function updateFhirPathValues(json fhirResource, string fhirPathExpression, json newValue, boolean allowPathCreation = createMissingPaths) returns json|error {
+public isolated function setFhirPathValues(json fhirResource, string fhirPathExpression, json newValue, boolean allowPathCreation = createMissingPaths) returns json|FHIRPathError {
     // Input validation
     if fhirPathExpression.trim().length() == 0 {
         return createFhirPathError("FhirPath expression cannot be empty", fhirPathExpression);
@@ -29,13 +29,17 @@ public isolated function updateFhirPathValues(json fhirResource, string fhirPath
 
     Token[]|error tokenRecords = getTokens(fhirPathExpression);
     if tokenRecords is error {
-        return tokenRecords;
+        return createFhirPathError(tokenRecords.message(), fhirPathExpression);
     }
 
-    // Check if we need to remove the path (when newValue is ())
+    // Check if we need to remove the path (when newValue is ())∏
     boolean shouldRemove = newValue is ();
 
-    return setValueRecursively(fhirResource, tokenRecords, 0, newValue, allowPathCreation, shouldRemove);
+    json|error outcome = setValueRecursively(fhirResource, tokenRecords, 0, newValue, allowPathCreation, shouldRemove);
+    if outcome is error {
+        return createFhirPathError(outcome.message(), fhirPathExpression);
+    }
+    return outcome;
 }
 
 # Recursively set value at the given path, handling nested arrays.
@@ -57,7 +61,7 @@ isolated function setValueRecursively(json current, Token[] tokens, int tokenInd
     boolean isLastToken = tokenIndex == tokensLength - 1;
 
     return token is ArrayAccessToken ?
-        handleArrayAccessToken(current, token, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove) :
+        check handleArrayAccessToken(current, token, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove) :
         handleRegularToken(current, token, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove);
 }
 

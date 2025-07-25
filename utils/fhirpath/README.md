@@ -68,20 +68,20 @@ json patient = {
 
 public function main() {
     // Get single value using FHIRPath
-    fhirpath:FhirPathResult result = fhirpath:getFhirPathValue(patient, "Patient.name[0].given[0]");
-    if result.result is json {
-        io:println("First given name: ", result.result);
+    json|error result = fhirpath:getFhirPathValues(patient, "Patient.name[0].given[0]");
+    if result is json {
+        io:println("First given name: ", result);
     }
-    // Get all given names
-    fhirpath:FhirPathResult result = fhirpath:getFhirPathValue(patient, "Patient.name.given[0]");
-    if result.result is json {
-        io:println("First given name: ", result.result);
+    // Get all given names from all name records
+    json|error allGivenResult = fhirpath:getFhirPathValues(patient, "Patient.name.given[0]");
+    if allGivenResult is json {
+        io:println("All first given names: ", allGivenResult);
     }
     
     // Handle errors
-    fhirpath:FhirPathResult errorResult = fhirpath:getFhirPathValue(patient, "Patient.invalidPath");
-    if errorResult.'error is fhirpath:FhirPathErrorRecord {
-        io:println("Error: ", errorResult.'error.message);
+    json|error errorResult = fhirpath:getFhirPathValues(patient, "Patient.invalidPath");
+    if errorResult is error {
+        io:println("Error: ", errorResult.message());
     }
 }
 ```
@@ -96,20 +96,58 @@ public function main() {
     json patient = {
         "resourceType": "Patient",
         "id": "1",
-        "active": true
+        "active": true,
+        "address": [
+            {
+                "use": "home",
+                "line": ["123 Main St"],
+                "city": "Anytown",
+                "state": "CA",
+                "postalCode": "12345"
+            },
+            {
+                "use": "work",
+                "line": ["456 Work St"],
+                "city": "Worktown",
+                "state": "CA",
+                "postalCode": "67890"
+            }
+        ]
     };
-    
+
     // Update a value in the FHIR resource
-    fhirpath:FhirPathResult updateResult = fhirpath:setFhirPathValue(
-        patient, 
-        "Patient.gender", 
-        "male"
+    json|error updateResult = fhirpath:setFhirPathValues(
+            patient,
+            "Patient.active",
+            false
     );
-    
-    if updateResult.result is json {
-        io:println("Updated patient: ", updateResult.result);
+    if updateResult is json {
+        io:println("Updated patient after active status change: ", updateResult);
+    }
+
+    // Update multiple values in the FHIR resource
+    json|error updatedAddresses = fhirpath:setFhirPathValues(
+            patient,
+            "Patient.address.line",
+            "***"
+    );
+    if updatedAddresses is json {
+        io:println("Updated patient after address line masking: ", updatedAddresses);
+    }
+
+    // Add a new value to the FHIR resource
+    json|error newlyAdded = fhirpath:setFhirPathValues(
+            patient,
+            "Patient.gender",
+            "male",
+            true
+    );
+
+    if newlyAdded is json {
+        io:println("Updated patient after gender status addition: ", newlyAdded);
     }
 }
+
 ```
 
 ### Removing FHIR Resource Fields
@@ -135,33 +173,28 @@ public function main() {
             },
             {
                 "use": "usual",
+                "family": "Fenders",
                 "given": [
                     "Jim"
                 ]
             }
         ]
     };
-    
+
     // Remove a simple field
-    fhirpath:FhirPathResult result = fhirpath:setFhirPathValue(patient, "Patient.gender", ());
-    if result.result is json {
-        io:println("Patient after removing gender: ", result.result);
-    }
-    
-    // Remove an array element
-    fhirpath:FhirPathResult arrayResult = fhirpath:setFhirPathValue(patient, "Patient.name[0]", ());
-    if arrayResult.result is json {
-        io:println("Patient after removing first name: ", arrayResult.result);
+    json|error result = fhirpath:setFhirPathValues(patient, "Patient.gender", ());
+    if result is json {
+        io:println("Patient after removing gender: ", result);
     }
 
     // Remove multiple elements
-    fhirpath:FhirPathResult arrayResult = fhirpath:setFhirPathValue(patient, "Patient.name.given", ());
-    if arrayResult.result is json {
-        io:println("Patient after removing all given names: ", arrayResult.result);
+    json|error multipleResult = fhirpath:setFhirPathValues(patient, "Patient.name.given", ());
+    if multipleResult is json {
+        io:println("Patient after removing all given names: ", multipleResult);
     }
-    
+
     // Using low-level function for removal
-    json|error directResult = fhirpath:updateFhirPathValues(patient, "Patient.active", ());
+    json|error directResult = fhirpath:setFhirPathValues(patient, "Patient.active", ());
     if directResult is json {
         io:println("Updated patient resource: ", directResult);
     }
@@ -172,31 +205,22 @@ public function main() {
 
 ### Main Functions
 
-- `getFhirPathValue(json fhirResource, string fhirPath) returns FhirPathResult`
-  - Returns a result containing either the extracted value list or an error. Output is a `FhirPathResult` record.
-  - Can handle both single and multiple values (Eg: `Patient.name.given[0]` returns the first given name, while `Patient.name.given` returns all given names)
+- `getFhirPathValues(json fhirResource, string fhirPath) returns json|FHIRPathError`
+  - Extracts values from FHIR resources using FHIRPath expressions
+  - Returns extracted values as a json array or an error
+  - Can handle both single and multiple values (e.g., `Patient.address[0].city` returns the first city from all address records, while `Patient.address.city` returns all the cities from all address records)
 
-- `setFhirPathValue(json fhirResource, string fhirPathExpression, json value, boolean? allowPathCreation) returns FhirPathResult`
-  - Updates a FHIR resource at the specified FHIRPath with the provided value and returns or sends an error. Output is a `FhirPathResult` record.
-  - Use `()` as the value to remove a field from the resource (Eg: `Patient.gender` to `()` removes the gender field)
-  - Can handle both single and multiple values (Eg: `Patient.name.given[0]` sets the first given name, while `Patient.name.given` sets all given names)
-  - Optionally creates missing paths in the resource structure
-
-- `retrieveFhirPathValues(json fhirResource, string fhirPathExpression) returns json|error`
-  - Low-level function of the getFhirPathValue function
-  - Returns the extracted values directly or an error
-
-- `updateFhirPathValues(json fhirResource, string fhirPathExpression, json newValue, boolean allowPathCreation) returns json|error`
-  - Low-level function of the setFhirPathValue function
-  - Returns the updated FHIR resource or an error
+- `setFhirPathValues(json fhirResource, string fhirPathExpression, json value, boolean allowPathCreation = createMissingPaths) returns json|FHIRPathError`
+  - Updates a FHIR resource at the specified FHIRPath with the provided value
+  - Can handle both single and multiple values (e.g., `Patient.address[0].city` sets the city in the first address, while `Patient.address.city` updates all the cities in all the addresses.)
+  - Use `()` as the value to remove a field from the resource (e.g., setting `Patient.gender` to `()` removes the gender field)
+  - Optionally can create missing paths in the resource structure based on the `allowPathCreation` parameter
 
 ### Types
 
-- `FhirPathResult` - Result record containing either a result or error
-- `FhirPathErrorRecord` - Error record with message field
-- `FhirPathRequest` - Request parameters for FHIRPath operations
-- `Token` - Basic token type for FHIRPath parsing
-- `ArrayAccessToken` - Sub type of token for array access tokens
+- `Token` - Basic token type for FHIRPath parsing with value field
+- `ArrayAccessToken` - Sub type of token for array access tokens with index field
+- `FHIRPathError` - Distinct error type for FHIRPath-related errors
 
 ## Error Handling
 
@@ -205,3 +229,6 @@ The package provides comprehensive error handling for various scenarios:
 - Mismatched resource types
 - Array index out of bounds
 - Invalid characters in path expressions
+- Resource structure validation errors
+
+All main functions return either the expected result or a `FHIRPathError` which can be handled using standard Ballerina error handling patterns.

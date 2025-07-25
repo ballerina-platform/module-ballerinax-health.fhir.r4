@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2025, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -25,7 +25,7 @@ function testRemoveSimpleStringField() {
         "gender": "male"
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.gender", ());
+    json|error result = setFhirPathValues(testResource, "Patient.gender", ());
     test:assertTrue(result is json, "Should successfully remove gender field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -44,7 +44,7 @@ function testRemoveBooleanField() {
         "gender": "male"
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.active", ());
+    json|error result = setFhirPathValues(testResource, "Patient.active", ());
     test:assertTrue(result is json, "Should successfully remove active field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -63,7 +63,7 @@ function testRemoveNumericField() {
         "active": true
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.version", ());
+    json|error result = setFhirPathValues(testResource, "Patient.version", ());
     test:assertTrue(result is json, "Should successfully remove version field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -84,7 +84,7 @@ function testRemoveNestedObjectField() {
         }
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.managingOrganization.display", ());
+    json|error result = setFhirPathValues(testResource, "Patient.managingOrganization.display", ());
     test:assertTrue(result is json, "Should successfully remove nested display field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -107,7 +107,7 @@ function testRemoveEntireNestedObject() {
         }
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.managingOrganization", ());
+    json|error result = setFhirPathValues(testResource, "Patient.managingOrganization", ());
     test:assertTrue(result is json, "Should successfully remove entire managingOrganization");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -133,7 +133,7 @@ function testRemoveArrayElementByIndex() {
         ]
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.name[0]", ());
+    json|error result = setFhirPathValues(testResource, "Patient.name[0]", ());
     test:assertTrue(result is json, "Should successfully remove first name element");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -168,7 +168,7 @@ function testRemoveMiddleArrayElement() {
         ]
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.name[1]", ());
+    json|error result = setFhirPathValues(testResource, "Patient.name[1]", ());
     test:assertTrue(result is json, "Should successfully remove middle name element");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -198,7 +198,7 @@ function testRemoveFieldFromArrayElement() {
         ]
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.name[0].family", ());
+    json|error result = setFhirPathValues(testResource, "Patient.name[0].family", ());
     test:assertTrue(result is json, "Should successfully remove family field from array element");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -226,7 +226,7 @@ function testRemoveEntireArrayField() {
         "active": true
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.name", ());
+    json|error result = setFhirPathValues(testResource, "Patient.name", ());
     test:assertTrue(result is json, "Should successfully remove entire name array");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -243,7 +243,7 @@ function testRemoveNonExistentField() {
         "id": "test-patient"
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.nonExistentField", ());
+    json|error result = setFhirPathValues(testResource, "Patient.nonExistentField", ());
     test:assertTrue(result is json, "Should handle removal of non-existent field gracefully");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -266,7 +266,7 @@ function testRemoveFromNonExistentArrayIndex() {
         ]
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.name[5]", ());
+    json|error result = setFhirPathValues(testResource, "Patient.name[5]", ());
     test:assertTrue(result is json, "Should handle removal of non-existent array index gracefully");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -284,7 +284,7 @@ function testRemoveFromEmptyArray() {
         "name": []
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.name[0]", ());
+    json|error result = setFhirPathValues(testResource, "Patient.name[0]", ());
     test:assertTrue(result is json, "Should handle removal from empty array gracefully");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -313,7 +313,7 @@ function testRemoveDeeplyNestedField() {
         ]
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.address[0].line[0].street", ());
+    json|error result = setFhirPathValues(testResource, "Patient.address[0].line[0].street", ());
     test:assertTrue(result is json, "Should successfully remove deeply nested field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -356,7 +356,7 @@ function testRemoveComplexNestedStructure() {
         ]
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.contact[0].relationship[0].coding[0].display", ());
+    json|error result = setFhirPathValues(testResource, "Patient.contact[0].relationship[0].coding[0].display", ());
     test:assertTrue(result is json, "Should successfully remove complex nested field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -395,7 +395,7 @@ function testRemoveLastArrayElement() {
         ]
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.name[1]", ());
+    json|error result = setFhirPathValues(testResource, "Patient.name[1]", ());
     test:assertTrue(result is json, "Should successfully remove last name element");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -421,7 +421,7 @@ function testRemoveSingleArrayElement() {
         ]
     };
 
-    json|error result = updateFhirPathValues(testResource, "Patient.name[0]", ());
+    json|error result = setFhirPathValues(testResource, "Patient.name[0]", ());
     test:assertTrue(result is json, "Should successfully remove single array element");
     if result is json {
         map<json> resultMap = <map<json>>result;

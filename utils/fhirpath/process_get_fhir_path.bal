@@ -18,12 +18,12 @@ import ballerina/lang.'int as langint;
 import ballerina/lang.regexp;
 import ballerina/log;
 
-# Retrieve FhirPath values.
+# Get the value(s) of a give FhirPath.
 #
-# + fhirResource - requested fhir resource
+# + fhirResource - fhir resource
 # + fhirPathExpression - requested fhirpath expression
 # + return - result of the fhirpath expression
-public isolated function retrieveFhirPathValues(json fhirResource, string fhirPathExpression) returns json|error {
+public isolated function getFhirPathValues(json fhirResource, string fhirPathExpression) returns json|FHIRPathError {
     // Input validation
     if fhirPathExpression.trim().length() == 0 {
         return createFhirPathError("FhirPath expression cannot be empty", fhirPathExpression);
@@ -38,14 +38,14 @@ public isolated function retrieveFhirPathValues(json fhirResource, string fhirPa
     // Extract resource type efficiently
     int? dotIndex = fhirPathExpression.indexOf(DOT_SEPARATOR);
     if dotIndex is () {
-        return createFhirPathError("Invalid FhirPath expression format", fhirPathExpression);
+        return createFhirPathError("Invalid FhirPath expression format. Should have at least one dot(.) notation to traverse", fhirPathExpression);
     }
 
     string resourceType = fhirPathExpression.substring(0, dotIndex);
 
     // Validate resource type match
     json resourceTypeValue = resourceMap["resourceType"];
-    if !(resourceTypeValue is string) || resourceType != resourceTypeValue {
+    if resourceType != resourceTypeValue {
         log:printDebug("ResourceType mismatch", expected = resourceType, actual = resourceTypeValue);
         return createFhirPathError(RESOURCE_TYPE_MISMATCH_MSG, fhirPathExpression);
     }
@@ -54,27 +54,27 @@ public isolated function retrieveFhirPathValues(json fhirResource, string fhirPa
     Token[]|error tokenRecords = getTokens(fhirPathExpression);
     if tokenRecords is error {
         log:printDebug("Token parsing failed", fhirPath = fhirPathExpression);
-        return tokenRecords;
+        return createFhirPathError(tokenRecords.message(), fhirPathExpression);
     }
 
     // Use recursive evaluation
     json|error evaluationResult = evaluateRecursively(fhirResource, tokenRecords, 0);
     if evaluationResult is error {
-        return evaluationResult;
+        return createFhirPathError(evaluationResult.message(), fhirPathExpression);
     }
 
     return formatReturnValue(evaluationResult);
 }
 
-# Optimize the return value based on type and content
+# Format the return value to always return a list of jsons.
 #
-# + result - The evaluation result
-# + return - Optimized result
-isolated function formatReturnValue(json result) returns json {
-    if result is json[] {
-        return result;
+# + value -  Input value
+# + return - Formatted result
+isolated function formatReturnValue(json value) returns json {
+    if value is json[] {
+        return value;
     }
-    return [result];
+    return [value];
 }
 
 # Recursively evaluate FHIRPath expression, handling nested arrays.
@@ -195,7 +195,7 @@ isolated function processArrayElements(json[] arr, Token[] tokens, int tokenInde
 # + fhirPaths - FhirPath expressions for the required elements
 # + fhirResource - Requested fhir resource
 # + return - Returns FHIR resource with the selected elements
-public isolated function selectResourceElements(string[] fhirPaths, map<json> fhirResource) returns map<anydata>|error {
+isolated function selectResourceElements(string[] fhirPaths, map<json> fhirResource) returns map<anydata>|error {
     string resourceType = check fhirResource["resourceType"].ensureType();
 
     map<anydata> elementMap = {
