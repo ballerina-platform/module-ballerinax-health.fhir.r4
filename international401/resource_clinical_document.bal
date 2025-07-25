@@ -559,7 +559,7 @@ public type Clinical_DocumentAttester record {|
         "targetIdentifier": {
             name: "targetIdentifier",
             dataType: r4:Identifier,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The target composition/document of this relationship.",
@@ -595,7 +595,7 @@ public type Clinical_DocumentAttester record {|
         "targetReference": {
             name: "targetReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The target composition/document of this relationship.",

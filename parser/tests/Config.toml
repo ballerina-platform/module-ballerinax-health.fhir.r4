@@ -1,0 +1,6 @@
+[terminologyConfig]
+isTerminologyValidationEnabled=false                    # Enable or disable terminology validation
+terminologyServiceApi="http://localhost:9089/fhir/r4"   # URL of the FHIR Terminology Service API
+tokenUrl=""
+clientId=""
+clientSecret=""

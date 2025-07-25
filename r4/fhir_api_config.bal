@@ -97,6 +97,7 @@ public type OperationParamConfig record {|
 # + preProcessor - Override this operation pre-processing function. If the integration  developer wants to take control of pre-processing the operation.  
 # + postProcessor - Override this operation post-processing function. If the integration  developer wants to take control of post-processing the operation.
 # + information - Meta information about the operation (no processed, just for information)
+# + additionalProperties - Additional properties that can be used to extend the operation configuration
 public type OperationConfig record {|
     readonly string name;
     readonly boolean active;
@@ -104,6 +105,7 @@ public type OperationConfig record {|
     readonly & OperationPreProcessor preProcessor?;
     readonly & OperationPostProcessor postProcessor?;
     readonly Information information?;
+    readonly json additionalProperties?;
 |};
 
 # Information about a rest feature.

@@ -217,3 +217,24 @@ public function main() returns error? {
 ```
 
 *Note:* `parseWithValidation` function returns `anydata` type when successful, and it needs to be cast to the relevant FHIR Resource type. It will return a validation error if it fails.
+
+---
+
+## Enabling Terminology Validation
+
+To enable terminology validation in the parser module, add the following configuration to your `config.toml` file:
+
+```toml
+[ballerinax.health.fhir.r4.parser.terminologyConfig]
+isTerminologyValidationEnabled=true
+terminologyServiceApi="http://localhost:9089/fhir/r4"
+tokenUrl=""
+clientId=""
+clientSecret=""
+```
+
+- `isTerminologyValidationEnabled`: Set to `true` to enable terminology validation.
+- `terminologyServiceApi`: The endpoint of your FHIR R4 terminology service.
+- `tokenUrl`, `clientId`, `clientSecret`: (Optional) Use these if your terminology service requires OAuth2 authentication.
+
+Once enabled, the parser will validate terminology bindings using the configured terminology service during resource parsing and validation.

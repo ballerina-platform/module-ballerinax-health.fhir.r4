@@ -143,7 +143,7 @@ public const RESOURCE_NAME_MEDICATIONADMINISTRATION = "MedicationAdministration"
         "medicationReference" : {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MedicationAdministration.medication[x]",
@@ -210,7 +210,7 @@ public const RESOURCE_NAME_MEDICATIONADMINISTRATION = "MedicationAdministration"
         "effectivePeriod" : {
             name: "effectivePeriod",
             dataType: r4:Period,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MedicationAdministration.effective[x]"
@@ -226,7 +226,7 @@ public const RESOURCE_NAME_MEDICATIONADMINISTRATION = "MedicationAdministration"
         "medicationCodeableConcept" : {
             name: "medicationCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MedicationAdministration.medication[x]",
@@ -243,7 +243,7 @@ public const RESOURCE_NAME_MEDICATIONADMINISTRATION = "MedicationAdministration"
         "effectiveDateTime" : {
             name: "effectiveDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "MedicationAdministration.effective[x]"

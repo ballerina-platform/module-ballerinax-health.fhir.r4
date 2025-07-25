@@ -87,6 +87,312 @@ json TEST_FHIR_RESOURCE_JSON_PATIENT_01 = {
     }
 };
 
+json TEST_FHIR_RESOURCE_JSON_PATIENT_02 = {
+    "resourceType": "Patient",
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension": [
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2106-3",
+                        "display": "White"
+                    }
+                },
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "1002-5",
+                        "display": "American Indian or Alaska Native"
+                    }
+                },
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2028-9",
+                        "display": "Asian"
+                    }
+                },
+                {
+                    "url": "detailed",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "1586-7",
+                        "display": "Shoshone"
+                    }
+                },
+                {
+                    "url": "detailed",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2036-2",
+                        "display": "Filipino"
+                    }
+                },
+                {
+                    "url": "text",
+                    "valueString": "Mixed"
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension": [
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2135-2",
+                        "display": "Hispanic or Latino"
+                    }
+                },
+                {
+                    "url": "detailed",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2184-0",
+                        "display": "Dominican"
+                    }
+                },
+                {
+                    "url": "detailed",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2148-5",
+                        "display": "Mexican"
+                    }
+                },
+                {
+                    "url": "text",
+                    "valueString": "Hispanic or Latino"
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        }
+    ],
+    "gender": "female",
+    "telecom": [
+        {
+            "system": "phone",
+            "use": "home",
+            "value": "555-555-5555"
+        },
+        {
+            "system": "email",
+            "value": "amy.shaw@example.com"
+        }
+    ],
+    "id": "101",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n\t\t\t<p>\n\t\t\t\t<b>Generated Narrative with Details</b>\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<b>id</b>: example</p>\n\t\t\t<p>\n\t\t\t\t<b>identifier</b>: Medical Record Number = 1032702 (USUAL)</p>\n\t\t\t<p>\n\t\t\t\t<b>active</b>: true</p>\n\t\t\t<p>\n\t\t\t\t<b>name</b>: Amy V. Shaw </p>\n\t\t\t<p>\n\t\t\t\t<b>telecom</b>: ph: 555-555-5555(HOME), amy.shaw@example.com</p>\n\t\t\t<p>\n\t\t\t\t<b>gender</b>: </p>\n\t\t\t<p>\n\t\t\t\t<b>birthsex</b>: Female</p>\n\t\t\t<p>\n\t\t\t\t<b>birthDate</b>: Feb 20, 2007</p>\n\t\t\t<p>\n\t\t\t\t<b>address</b>: 49 Meadow St Mounds OK 74047 US </p>\n\t\t\t<p>\n\t\t\t\t<b>race</b>: White, American Indian or Alaska Native, Asian, Shoshone, Filipino</p>\n\t\t\t<p>\n\t\t\t\t<b>ethnicity</b>: Hispanic or Latino, Dominican, Mexican</p>\n\t\t</div>"
+    },
+    "identifier": [
+        {
+            "system": "http://hospital.smarthealthit.org",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical Record Number"
+                    }
+                ],
+                "text": "Medical Record Number"
+            },
+            "value": "1032702"
+        }
+    ],
+    "address": [
+        {
+            "country": "US",
+            "city": "Mounds",
+            "line": [
+                "49 Meadow St"
+            ],
+            "postalCode": "74047",
+            "state": "OK"
+        }
+    ],
+    "active": true,
+    "birthDate": "2007-02-20",
+    "meta": {
+        "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+        ]
+    },
+    "name": [
+        {
+            "given": [
+                "Jack",
+                "V."
+            ],
+            "family": "Shaw"
+        }
+    ]
+};
+
+json TEST_FHIR_RESOURCE_JSON_PATIENT_02_INVALID_TERMINOLOGY = {
+    "resourceType": "Patient",
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension": [
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "invalid-code", // Invalid code
+                        "display": "White"
+                    }
+                },
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "1002-5",
+                        "display": "American Indian or Alaska Native"
+                    }
+                },
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2028-9",
+                        "display": "Asian"
+                    }
+                },
+                {
+                    "url": "detailed",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "1586-7",
+                        "display": "Shoshone"
+                    }
+                },
+                {
+                    "url": "detailed",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2036-2",
+                        "display": "Filipino"
+                    }
+                },
+                {
+                    "url": "text",
+                    "valueString": "Mixed"
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension": [
+                {
+                    "url": "ombCategory",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2135-2",
+                        "display": "Hispanic or Latino"
+                    }
+                },
+                {
+                    "url": "detailed",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "invalid-code", // Invalid code
+                        "display": "Dominican"
+                    }
+                },
+                {
+                    "url": "detailed",
+                    "valueCoding": {
+                        "system": "urn:oid:2.16.840.1.113883.6.238",
+                        "code": "2148-5",
+                        "display": "Mexican"
+                    }
+                },
+                {
+                    "url": "text",
+                    "valueString": "Hispanic or Latino"
+                }
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "F"
+        }
+    ],
+    "gender": "female",
+    "telecom": [
+        {
+            "system": "phone",
+            "use": "home",
+            "value": "555-555-5555"
+        },
+        {
+            "system": "email",
+            "value": "amy.shaw@example.com"
+        }
+    ],
+    "id": "101",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n\t\t\t<p>\n\t\t\t\t<b>Generated Narrative with Details</b>\n\t\t\t</p>\n\t\t\t<p>\n\t\t\t\t<b>id</b>: example</p>\n\t\t\t<p>\n\t\t\t\t<b>identifier</b>: Medical Record Number = 1032702 (USUAL)</p>\n\t\t\t<p>\n\t\t\t\t<b>active</b>: true</p>\n\t\t\t<p>\n\t\t\t\t<b>name</b>: Amy V. Shaw </p>\n\t\t\t<p>\n\t\t\t\t<b>telecom</b>: ph: 555-555-5555(HOME), amy.shaw@example.com</p>\n\t\t\t<p>\n\t\t\t\t<b>gender</b>: </p>\n\t\t\t<p>\n\t\t\t\t<b>birthsex</b>: Female</p>\n\t\t\t<p>\n\t\t\t\t<b>birthDate</b>: Feb 20, 2007</p>\n\t\t\t<p>\n\t\t\t\t<b>address</b>: 49 Meadow St Mounds OK 74047 US </p>\n\t\t\t<p>\n\t\t\t\t<b>race</b>: White, American Indian or Alaska Native, Asian, Shoshone, Filipino</p>\n\t\t\t<p>\n\t\t\t\t<b>ethnicity</b>: Hispanic or Latino, Dominican, Mexican</p>\n\t\t</div>"
+    },
+    "identifier": [
+        {
+            "system": "http://hospital.smarthealthit.org",
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical Record Number"
+                    }
+                ],
+                "text": "Medical Record Number"
+            },
+            "value": "1032702"
+        }
+    ],
+    "address": [
+        {
+            "country": "US",
+            "city": "Mounds",
+            "line": [
+                "49 Meadow St"
+            ],
+            "postalCode": "74047",
+            "state": "OK"
+        }
+    ],
+    "active": true,
+    "birthDate": "2007-02-20",
+    "meta": {
+        "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+        ]
+    },
+    "name": [
+        {
+            "given": [
+                "Jack",
+                "V."
+            ],
+            "family": "Shaw"
+        }
+    ]
+};
+
 json TEST_FHIR_RESOURCE_JSON_PATIENT_WITHOUT_PROFILE = {
     "resourceType": "Patient",
     "id": "123344",

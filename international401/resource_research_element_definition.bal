@@ -537,7 +537,7 @@ public enum ResearchElementDefinitionCharacteristicParticipantEffectiveGroupMeas
         "definitionCodeableConcept": {
             name: "definitionCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the research element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",
@@ -573,7 +573,7 @@ public enum ResearchElementDefinitionCharacteristicParticipantEffectiveGroupMeas
         "definitionCanonical": {
             name: "definitionCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the research element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",
@@ -600,7 +600,7 @@ public enum ResearchElementDefinitionCharacteristicParticipantEffectiveGroupMeas
         "definitionDataRequirement": {
             name: "definitionDataRequirement",
             dataType: r4:DataRequirement,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the research element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",
@@ -672,7 +672,7 @@ public enum ResearchElementDefinitionCharacteristicParticipantEffectiveGroupMeas
         "definitionExpression": {
             name: "definitionExpression",
             dataType: r4:Expression,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Define members of the research element using Codes (such as condition, medication, or observation), Expressions ( using an expression language such as FHIRPath or CQL) or DataRequirements (such as Diabetes diagnosis onset in the last year).",

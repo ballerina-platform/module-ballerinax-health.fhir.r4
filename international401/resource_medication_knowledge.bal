@@ -374,7 +374,7 @@ public type MedicationKnowledge record {|
         "characteristicMedicationKnowledgeQuantity": {
             name: "characteristicMedicationKnowledgeQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
@@ -383,7 +383,7 @@ public type MedicationKnowledge record {|
         "characteristicMedicationKnowledgeCodeableConcept": {
             name: "characteristicMedicationKnowledgeCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
@@ -676,7 +676,7 @@ public type MedicationKnowledgeMonograph record {|
         "itemReference": {
             name: "itemReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual ingredient - either a substance (simple ingredient) or another medication.",
@@ -703,7 +703,7 @@ public type MedicationKnowledgeMonograph record {|
         "itemCodeableConcept": {
             name: "itemCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The actual ingredient - either a substance (simple ingredient) or another medication.",

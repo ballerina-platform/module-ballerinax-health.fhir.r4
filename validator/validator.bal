@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -121,8 +121,19 @@ public isolated function validate(anydata data, typedesc<anydata>? targetFHIRMod
         string[] errors = parseConstraintErrors(validationResult.message());
         return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed", r4:ERROR, r4:INVALID, validationResult.message(),
                                                 errorType = r4:VALIDATION_ERROR, cause = validationResult, parsedErrors = errors, httpStatusCode = http:STATUS_BAD_REQUEST);
-    }
+    } 
+    
+    // terminology validation
+    if terminologyValidationEnabled {
+        string[]? validationErrors = validateTerminologyData(validationResult);
 
+        if validationErrors is string[] {    
+            return <r4:FHIRValidationError>createValidationError("FHIR resource validation failed, due to terminology validation failed", r4:ERROR, r4:INVALID, "Terminology validation failed", 
+                errorType = r4:VALIDATION_ERROR, parsedErrors = validationErrors, httpStatusCode = http:STATUS_BAD_REQUEST);
+        } else {
+            log:printDebug("Successfully validated FHIR resource with terminology validation");
+        }
+    }
 }
 
 isolated function parseConstraintErrors(string message) returns string[] {

@@ -458,7 +458,7 @@ public enum StructureMapStatus {
         "valueStructureMapDecimal": {
             name: "valueStructureMapDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Parameter value - variable or literal.",
@@ -485,7 +485,7 @@ public enum StructureMapStatus {
         "valueStructureMapString": {
             name: "valueStructureMapString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Parameter value - variable or literal.",
@@ -503,7 +503,7 @@ public enum StructureMapStatus {
         "valueStructureMapBoolean": {
             name: "valueStructureMapBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Parameter value - variable or literal.",
@@ -512,7 +512,7 @@ public enum StructureMapStatus {
         "valueStructureMapInteger": {
             name: "valueStructureMapInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Parameter value - variable or literal.",
@@ -521,7 +521,7 @@ public enum StructureMapStatus {
         "valueStructureMapId": {
             name: "valueStructureMapId",
             dataType: r4:id,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "Parameter value - variable or literal.",

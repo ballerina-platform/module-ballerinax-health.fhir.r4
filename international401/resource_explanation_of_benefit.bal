@@ -948,7 +948,7 @@ public type ExplanationOfBenefitItemDetail record {|
         "diagnosisReference": {
             name: "diagnosisReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The nature of illness or problem in a coded form or as a reference to an external defined Condition.",
@@ -957,7 +957,7 @@ public type ExplanationOfBenefitItemDetail record {|
         "diagnosisCodeableConcept": {
             name: "diagnosisCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The nature of illness or problem in a coded form or as a reference to an external defined Condition.",
@@ -1632,7 +1632,7 @@ public enum ExplanationOfBenefitOutcome {
         "procedureCodeableConcept": {
             name: "procedureCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The code or reference to a Procedure resource which identifies the clinical intervention performed.",
@@ -1650,7 +1650,7 @@ public enum ExplanationOfBenefitOutcome {
         "procedureReference": {
             name: "procedureReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The code or reference to a Procedure resource which identifies the clinical intervention performed.",
