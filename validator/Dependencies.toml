@@ -448,7 +448,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.validator"
-version = "5.0.1"
+version = "5.1.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
