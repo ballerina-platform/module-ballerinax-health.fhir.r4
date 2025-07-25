@@ -20,16 +20,23 @@ import ballerinax/health.clients.fhir as fhir_client;
 
 configurable TerminologyConfig? terminologyConfig = ();
 
+final boolean terminologyValidationEnabled = initializeTerminologyValidation();
 final fhir_client:FHIRConnector? fhirConnector = check getFHIRConnectorConfig();
 
-function getFHIRConnectorConfig() returns fhir_client:FHIRConnector|error? {
+function initializeTerminologyValidation() returns boolean {
     if terminologyConfig?.isTerminologyValidationEnabled is false || terminologyConfig?.terminologyServiceApi is () {
-        log:printInfo("Terminology validation is disabled or terminology service API is not configured.");
-        return ();
+        log:printDebug("Terminology validation is disabled or terminology service API is not configured.");
+        return false;
     }
-
     if !isTerminologyServiceAvailable() {
         log:printInfo("Terminology service is not available. Skipping FHIR Connector creation.");
+        return false;
+    }
+    return true;
+}
+
+function getFHIRConnectorConfig() returns fhir_client:FHIRConnector|error? {
+    if !terminologyValidationEnabled {
         return ();
     }
 

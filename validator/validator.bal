@@ -124,7 +124,7 @@ public isolated function validate(anydata data, typedesc<anydata>? targetFHIRMod
     } 
     
     // terminology validation
-    if terminologyConfig?.isTerminologyValidationEnabled == true {
+    if terminologyValidationEnabled {
         string[]? validationErrors = validateTerminologyData(validationResult);
 
         if validationErrors is string[] {    
