@@ -11,6 +11,7 @@
 // specific language governing permissions and limitations
 // under the License.
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.ips;
 import ballerinax/health.fhir.r4.parser;
 import ballerina/http;
 import ballerina/log;
@@ -153,6 +154,74 @@ isolated function handleConditionalHeader(string conditionalUrl, string resource
         }
     } on fail var e {
         // log the error and return a FHIR error
-    	return r4:createFHIRError("Error while handling conditional search: " + e.message(), r4:ERROR, r4:INVALID);
+        return r4:createFHIRError("Error while handling conditional search: " + e.message(), r4:ERROR, r4:INVALID);
     }
+}
+
+isolated function handleIpsGeneration(string patientId, r4:FHIRServiceInfo patientServiceInfo, map<string> serviceResourceMap, r4:OperationConfig[] patientOperationConfigs) returns r4:Bundle|error {
+    log:printDebug("Handling IPS generation for Patient resource with ID: " + patientId);
+
+    foreach r4:OperationConfig patientOperation in patientOperationConfigs {
+        if patientOperation.name == SUMMARY_OPERATION {
+            ips:IpsSectionConfig[]|error? ipsSectionConfig = ();
+            ips:IpsMetaData|error? ipsMetaData = ();
+
+            json? additionalProperties = patientOperation?.additionalProperties;
+            if additionalProperties is map<json> {
+                ipsSectionConfig = additionalProperties[IPS_SECTION_CONFIG].cloneWithType();
+                ipsMetaData = additionalProperties[IPS_META_DATA].cloneWithType();
+            } else {
+                log:printDebug("IPS Section Config is not provided, using default configuration.");
+            }
+            
+            ips:IPSContext|error ipsContext = new (
+                serviceResourceMap, 
+                ipsMetaData = ipsMetaData is ips:IpsMetaData? ? ipsMetaData : (),
+                ipsSectionConfig = ipsSectionConfig is ips:IpsSectionConfig[]? ? ipsSectionConfig : ()
+            );
+
+            if ipsContext is error {
+                log:printError("Error initializing IPS context: " + ipsContext.message());
+                return r4:createFHIRError(ipsContext.message(), r4:ERROR, r4:PROCESSING);
+            }
+
+            lock {
+                r4:Bundle|error ipsBundle = ips:generateIps(patientId, ipsContext);
+                if ipsBundle is error {
+                    log:printError("Error generating IPS bundle: " + ipsBundle.message());
+                    return r4:createFHIRError(ipsBundle.message(), r4:ERROR, r4:PROCESSING);
+                }
+
+                return ipsBundle;
+            }
+        }
+    }
+    
+    return r4:createFHIRError("IPS operation not supported for Patient resource",
+            r4:ERROR, r4:PROCESSING, diagnostic = "The '$summary' operation for IPS generation is not available for Patient resources. Please ensure the IPS operation is properly configured.",
+            httpStatusCode = http:STATUS_BAD_REQUEST);
+}
+
+isolated function validateOperationConfigs(r4:ResourceAPIConfig apiConfig) returns r4:FHIRError? {
+    foreach r4:OperationConfig operation in apiConfig.operations {
+        // validate the summary operation
+        if operation.name == SUMMARY_OPERATION {
+            json? additionalProperties = operation?.additionalProperties;
+            if additionalProperties is map<json> {
+                ips:IpsSectionConfig[]|error? ipsSectionConfig = additionalProperties[IPS_SECTION_CONFIG].cloneWithType();
+                ips:IpsMetaData|error? ipsMetaData = additionalProperties[IPS_META_DATA].cloneWithType();
+                if ipsSectionConfig is ips:IpsSectionConfig[] && ipsMetaData is ips:IpsMetaData? {
+                    string[]? errors = ips:validateSectionConfig(ipsSectionConfig, ipsMetaData);
+                    if errors is string[] {
+                        if errors.length() > 0 {
+                            return r4:createFHIRError("IPS Section Config validation failed: " + errors.toString().substring(1, errors.toString().length() - 1), r4:ERROR, r4:INVALID);
+                        }
+                    }
+                }
+            }
+        }
+
+        // add the validation for other operations if needed
+    }
+    return;
 }

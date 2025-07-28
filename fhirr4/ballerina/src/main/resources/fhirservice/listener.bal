@@ -34,6 +34,13 @@ public isolated class Listener {
             self.ls = check new (port);
         }
         self.config = config;
+
+        r4:fhirRegistry.registerFHIRService(config.resourceType, {
+            name: config.resourceType + " Service",
+            serviceUrl: "http://localhost:" + self.ls.getPort().toString(),
+            status: "active"
+        });
+        check validateOperationConfigs(config);
     }
 
     public isolated function 'start() returns error? {
@@ -61,5 +68,6 @@ public isolated class Listener {
         lock {
             check self.ls.detach(self.httpService);
         }
+        _ = r4:fhirRegistry.removeFHIRService(self.config.resourceType);
     }
 }
