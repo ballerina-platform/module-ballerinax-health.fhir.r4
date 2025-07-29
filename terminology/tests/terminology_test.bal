@@ -1277,6 +1277,54 @@ function codesystemSubsumeTest5() returns error? {
 }
 
 @test:Config {
+    groups: ["codesystem", "codesystem_subsume", "recursive_codesystem"]
+}
+function codesystemSubsumeTest6() returns error? {
+    // "A" is the parent of "A1"
+    r4:code codeA = "A";
+    r4:code codeB = "A1";
+    TestTerminology customTerminology = new ();
+    i4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
+    test:assertTrue(actualResult is i4:Parameters, "Expected Parameters result");
+    if actualResult is i4:Parameters {
+        i4:ParametersParameter actual = (<i4:ParametersParameter[]>actualResult.'parameter)[0];
+        test:assertEquals(actual.valueCode, "subsumed");
+    }
+}
+
+@test:Config {
+    groups: ["codesystem", "codesystem_subsume", "recursive_codesystem"]
+}
+function codesystemSubsumeTest7() returns error? {
+    // "A1a" and "A2" are not in a parent-child relationship (different branches)
+    r4:code codeA = "A1a";
+    r4:code codeB = "A2";
+    TestTerminology customTerminology = new ();
+    i4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
+    test:assertTrue(actualResult is i4:Parameters, "Expected Parameters result");
+    if actualResult is i4:Parameters {
+        i4:ParametersParameter actual = (<i4:ParametersParameter[]>actualResult.'parameter)[0];
+        test:assertEquals(actual.valueCode, "not-subsumed");
+    }
+}
+
+@test:Config {
+    groups: ["codesystem", "codesystem_subsume", "recursive_codesystem"]
+}
+function codesystemSubsumeTest8() returns error? {
+    // "A" is the parent of "A1"
+    r4:code codeA = "A1";
+    r4:code codeB = "A";
+    TestTerminology customTerminology = new ();
+    i4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
+    test:assertTrue(actualResult is i4:Parameters, "Expected Parameters result");
+    if actualResult is i4:Parameters {
+        i4:ParametersParameter actual = (<i4:ParametersParameter[]>actualResult.'parameter)[0];
+        test:assertEquals(actual.valueCode, "subsumed-by");
+    }
+}
+
+@test:Config {
     groups: ["codesystem", "add_codesystem", "failure_scenario"]
 }
 function addCodeSystem1() {
