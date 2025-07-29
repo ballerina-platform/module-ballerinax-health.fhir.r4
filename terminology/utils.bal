@@ -371,6 +371,20 @@ isolated function modifySearchParamsWithPagination(map<r4:RequestSearchParameter
     };
 }
 
+isolated function isAChildConcept(r4:code targetCode, r4:CodeSystemConcept[] conceptsInCurrentConcept) returns boolean {
+    foreach r4:CodeSystemConcept currentConcept in conceptsInCurrentConcept {
+        if currentConcept.code == targetCode {
+            return true;
+        }
+        if currentConcept.concept is r4:CodeSystemConcept[] {
+            if isAChildConcept(targetCode, <r4:CodeSystemConcept[]>currentConcept.concept) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 type PaginationSearchParamsResponse record {
     map<r4:RequestSearchParameter[]> searchParameters;
     int count;

@@ -59,6 +59,11 @@ public const FILTER = "filter";
 public const DISPLAY = "display";
 public const DEFINITION = "definition";
 public const OUTCOME = "outcome";
-public const EQUIVALENT = "equivalent";
-public const NOT_SUBSUMED = "not-subsumed";
 public const DEFAULT_VERSION = "0.0.0";
+
+public enum CodeSystemSubsumption {
+    EQUIVALENT = "equivalent",
+    NOT_SUBSUMED = "not-subsumed",
+    SUBSUMED = "subsumed",
+    SUBSUMED_BY = "subsumed-by"
+}
