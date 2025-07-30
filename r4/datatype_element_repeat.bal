@@ -1,4 +1,5 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+import ballerina/constraint;
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -199,12 +200,18 @@ public type ElementRepeat record {
     positiveInt countMax?;
     decimal duration?;
     decimal durationMax?;
-    Timecode durationUnit?;
+    @constraint:String {
+        pattern: re`s|min|h|d|wk|mo|a`
+    }
+    string | Timecode durationUnit?;
     positiveInt frequency?;
     positiveInt frequencyMax?;
     decimal period?;
     decimal periodMax?;
-    Timecode periodUnit?;
+    @constraint:String {
+        pattern: re`s|min|h|d|wk|mo|a`
+    }
+    string | Timecode periodUnit?;
     Daycode[] dayOfWeek?;
     time[] timeOfDay?;
     code[] when?;
