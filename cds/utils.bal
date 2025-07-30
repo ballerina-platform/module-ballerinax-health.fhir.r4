@@ -22,6 +22,7 @@ import ballerina/lang.regexp;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.parser;
 import ballerinax/health.fhir.r4.validator;
+import ballerina/log;
 
 # This method will validate the context data attached in the Cds request against it's respective Cds service definition.
 #
@@ -31,6 +32,7 @@ import ballerinax/health.fhir.r4.validator;
 public isolated function validateContext(CdsRequest cdsRequest, CdsService cdsService) returns CdsError? {
 
     Hook hook = <Hook>cdsRequest.hook;
+    log:printInfo("Validating context for hook: " + hook);
     Context context = cdsRequest.context;
     string errorMessage = string `Context validation failed: ${hook}`;
     string description = string `Context should only contains set of data allowed by the specification: https://cds-hooks.hl7.org/hooks/${hook}/STU1/${hook}/#context`;
@@ -40,30 +42,37 @@ public isolated function validateContext(CdsRequest cdsRequest, CdsService cdsSe
 
     match hook {
         PATIENT_VIEW => {
+            log:printInfo("Executing patient view hook");
             parsedOutput = context.cloneWithType(PatientViewContext);
         }
 
         ORDER_SIGN => {
+            log:printInfo("Executing order sign hook");
             parsedOutput = context.cloneWithType(OrderSignContext);
         }
 
         ORDER_SELECT => {
+            log:printInfo("Executing order select hook");
             parsedOutput = context.cloneWithType(OrderSelectContext);
         }
 
         ORDER_DISPATCH => {
+            log:printInfo("Executing order dispatch hook");
             parsedOutput = context.cloneWithType(OrderDispatchContext);
         }
 
         ENCOUNTER_START => {
+            log:printInfo("Executing encounter start hook");
             parsedOutput = context.cloneWithType(EncounterStartContext);
         }
 
         ENCOUNTER_DISCHARGE => {
+            log:printInfo("Executing encounter discharge hook");
             parsedOutput = context.cloneWithType(EncounterDischargeContext);
         }
 
         _ => {
+            log:printError("Unknown hook: " + hook);
             return <CdsError>parsedOutput;
         }
     }
@@ -111,7 +120,7 @@ public isolated function validateAndProcessPrefetch(CdsRequest cdsRequest, CdsSe
         }
 
         // 2. FhirAuthorization object contains access token, scopes etc
-        if (request.fhirAuthorization !is FhirAuthorization) {
+        if request.fhirAuthorization !is () && request.fhirAuthorization !is FhirAuthorization {
             return createCdsError("Can not find fhirAuthorization in the request", 400);
         }
 
@@ -175,9 +184,10 @@ isolated function fetchFhirResource(string hookId, string prefetchTemplateKey, s
             return createCdsError(string `Can not make a HTTP client for the server url: ${fhirServer}`, 400, cause = fhirClient);
         }
 
-        map<string|string[]> headers = {
-            "Authorization": string `Bearer ${(<FhirAuthorization>cdsRequest.fhirAuthorization).access_token}`
-        };
+        map<string|string[]> headers = {};
+        if cdsRequest.fhirAuthorization !is () {
+            headers["Authorization"] = string `Bearer ${(<FhirAuthorization>cdsRequest.fhirAuthorization).access_token}`;
+        }
         http:Response|http:ClientError response = fhirClient->get(template, headers);
         if (response is http:ClientError) {
             return createCdsError(string `Something went wrong while fetching the FHIR resource: ${fhirServer}${template}`, 500, cause = response);
