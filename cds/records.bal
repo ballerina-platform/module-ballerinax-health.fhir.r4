@@ -103,7 +103,7 @@ public type FhirAuthorization record {|
 
 # Describe the set of contextual data used by this hook. 
 # Only data logically and necessarily associated with the purpose of this hook should be represented in context.
-public type Context OrderSignContext|OrderDispatchContext|OrderSelectContext|AppointmentBookContext|EncounterStartContext|EncounterDischargeContext|PatientViewContext;
+public type Context PatientViewContext|OrderSignContext|OrderDispatchContext|OrderSelectContext|AppointmentBookContext|EncounterStartContext|EncounterDischargeContext;
 
 # Describe the set of contextual data used by order-sign hook.
 #
