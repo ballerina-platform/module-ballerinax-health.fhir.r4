@@ -1,4 +1,5 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+import ballerina/constraint;
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -90,7 +91,10 @@ public type Identifier record {|
     Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
 
-    IdentifierUse use?;
+    @constraint:String {
+        pattern: re`usual|official|temp|secondary|old`
+    }
+    string | IdentifierUse use?;
     CodeableConcept 'type?;
     uri system?;
     string value?;

@@ -1,4 +1,5 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+import ballerina/constraint;
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -57,7 +58,10 @@ public type Narrative record {|
     Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
 
-    StatusCode status;
+    @constraint:String {
+        pattern: re`generated|extensions|additional|empty`
+    }
+    string | StatusCode status;
     xhtml div;
 |};
 
