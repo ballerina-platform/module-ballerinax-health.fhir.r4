@@ -1,5 +1,4 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-import ballerina/constraint;
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -85,10 +84,7 @@ public type Quantity record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
 
     decimal value?;
-    @constraint:String {
-        pattern: re`<|<=|>=|>`
-    }
-    string | QuantityComparatorCode comparator?;
+    QuantityComparatorCode comparator?;
     string unit?;
     uri system?;
     code code?;
@@ -176,11 +172,7 @@ public type MoneyQuantity record {|
     decimal moneyValue?;
     string unit?;
     uri system?;
-    
-    @constraint:String {
-        pattern: re`<|<=|>=|>`
-    }
-    string | QuantityComparatorCode code?;
+    code code?;
 |};
 
 public enum QuantityComparatorCode {

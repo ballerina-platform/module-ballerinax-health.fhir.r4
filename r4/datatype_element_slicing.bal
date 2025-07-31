@@ -1,5 +1,4 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-import ballerina/constraint;
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -76,10 +75,7 @@ public type ElementSlicing record {|
     ElementDiscriminator[] discriminator?;
     string description?;
     boolean ordered?;
-    @constraint:String {
-        pattern: re`closed|open|openAtEnd`
-    }
-    string | ElementSlicingRules rules;
+    ElementSlicingRules rules;
 
 |};
 
