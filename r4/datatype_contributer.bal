@@ -1,5 +1,4 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-import ballerina/constraint;
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -64,10 +63,7 @@ public type Contributer record {|
     Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
 
-    @constraint:String {
-        pattern: re`author|editor|reviewer|endorser`
-    }
-    string | ContributerType 'type;
+    ContributerType 'type;
     string name;
     ContactDetail[] contact?;
 |};
