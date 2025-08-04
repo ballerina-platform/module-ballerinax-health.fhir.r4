@@ -282,7 +282,7 @@ public isolated function mapFhirCommunicationToCcdaLanguageCommunication(uscore5
     if communication.language is r4:CodeableConcept {
         CE? languageCode = mapFhirCodeableConceptToCcdaCoding(communication.language);
         if languageCode != () {
-            langComm.languageCode = <CS>languageCode;
+            langComm.languageCode.originalText = {xmlText: languageCode.displayName};
         }
     }
 

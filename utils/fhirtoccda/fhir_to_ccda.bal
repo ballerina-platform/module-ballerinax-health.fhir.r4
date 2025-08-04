@@ -25,7 +25,7 @@ import ballerina/uuid;
 
 # Transform FHIR resources to C-CDA format.
 #
-# + fhirResources - Array of FHIR resources to transform
+# + bundle - FHIR Bundle containing resources to be transformed
 # + customMapper - Custom mapper to be used for the transformation
 # + return - C-CDA document as ContinuityofCareDocumentCCD
 public isolated function fhirToCcda(r4:Bundle bundle, FhirToCcdaMapper? customMapper = ()) returns ContinuityofCareDocumentCCD|r4:FHIRError {
@@ -107,7 +107,7 @@ isolated function transformToCcda(r4:Resource[] fhirResources, FhirToCcdaMapper?
         recordTarget: recordTargets,
         author: [], // Will be populated based on available practitioner resources
         custodian: (),
-        component: createDefaultComponent()
+        component: createAllergyActComponent(allergyActs)
     };
 
     return ccda;
@@ -158,6 +158,30 @@ isolated function createDefaultComponent() returns Component {
         }
     };
 }
+
+isolated function createAllergyActComponent(Act[] allergyActs) returns Component {
+    Component component = createDefaultComponent();
+    Section section = {
+        code: {
+            code: "48765-2",
+            codeSystem: "2.16.840.1.113883.6.1",
+            displayName: "Allergy Intolerance"
+        },
+        entry: []
+    };
+    component.structuredBody.component = [
+        {
+            section: section
+        }
+    ];
+    foreach Act allergyAct in allergyActs {
+        (<Entry[]>section.entry).push({
+            act: allergyAct
+        });
+    }
+    return component;
+}
+
 
 isolated function generateUUID() returns string {
     return "urn:uuid:" + uuid:createType4AsString();
