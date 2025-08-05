@@ -18,15 +18,19 @@ import ballerina/lang.'int as langint;
 import ballerina/lang.regexp;
 import ballerina/log;
 
+// Configurable to control whether FHIR resource validation should be performed
 configurable boolean fhirResourceValidation = true;
 
-# Get the value(s) of a give FhirPath.
+// Configurable to control whether missing paths should be created
+configurable boolean createMissingPaths = false;
+
+# Evaluate and retrieve the value(s) of a give FhirPath.
 #
-# + fhirResource - fhir resource  
-# + fhirPathExpression - requested fhirpath expression  
+# + fhirResource - fhir resource
+# + fhirPathExpression - requested fhirpath expression
 # + validateFHIRResource - parameter description
 # + return - result of the fhirpath expression
-public isolated function getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
+isolated function retrieveFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
     // Input validation
     if !validateFhirPath(fhirPathExpression) {
         return createFhirPathError("Invalid FHIR Path expression", fhirPathExpression);
@@ -80,13 +84,15 @@ public isolated function getFhirPathValues(json fhirResource, string fhirPathExp
 
 # Set the value(s) of matching FHIR paths in the JSON resource.
 #
-# + fhirResource - The JSON FHIR resource to update  
-# + fhirPathExpression - The FHIR path (dot notation, e.g., "Patient.name[0].family")  
-# + newValue - The value to set at the path, or () to remove the path  
-# + allowPathCreation - Whether to create missing paths (defaults to configurable value)  
-# + validate - parameter description
+# + fhirResource - The JSON FHIR resource to update
+# + fhirPathExpression - The FHIR path (dot notation, e.g., "Patient.name[0].family")
+# + newValue - The value to set at the path, or () to remove the path
+# + allowPathCreation - Whether to create missing paths (defaults to configurable value)
+# + validateFHIRResource - parameter description
+# + modificationFunction - Function to modify the value at the path (ex: pass a hash function to hash the value)
 # + return - The updated JSON resource or error
-public isolated function setFhirPathValues(json fhirResource, string fhirPathExpression, json newValue, boolean allowPathCreation = createMissingPaths, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
+isolated function setFhirPathValues(json fhirResource, string fhirPathExpression, json? newValue = (), ModificationFunction? modificationFunction = (),
+        boolean allowPathCreation = createMissingPaths, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
     // Input validation
     if !validateFhirPath(fhirPathExpression) {
         return createFhirPathError("Invalid FHIR Path expression", fhirPathExpression);
@@ -104,9 +110,9 @@ public isolated function setFhirPathValues(json fhirResource, string fhirPathExp
     }
 
     // Check if we need to remove the path (when newValue is ())∏
-    boolean shouldRemove = newValue is ();
+    boolean shouldRemove = newValue is () && modificationFunction is ();
 
-    json|error outcome = setValueRecursively(fhirResource, tokenRecords, 0, newValue, allowPathCreation, shouldRemove);
+    json|error outcome = setValueRecursively(fhirResource, tokenRecords, 0, newValue, allowPathCreation, shouldRemove, modificationFunction);
     if outcome is error {
         return createFhirPathError(outcome.message(), fhirPathExpression);
     }
@@ -384,8 +390,9 @@ isolated function parseToken(string tokenStr) returns Token|error {
 # + value - The value to set
 # + allowPathCreation - Whether to create missing paths
 # + shouldRemove - Whether to remove the path instead of setting value
+# + modificationFunction - Function to modify the value at the path
 # + return - Updated JSON or error
-isolated function setValueRecursively(json current, Token[] tokens, int tokenIndex, json value, boolean allowPathCreation, boolean shouldRemove) returns json|error {
+isolated function setValueRecursively(json current, Token[] tokens, int tokenIndex, json value, boolean allowPathCreation, boolean shouldRemove, ModificationFunction? modificationFunction) returns json|error {
     int tokensLength = tokens.length();
     if tokenIndex >= tokensLength {
         return current;
@@ -395,8 +402,8 @@ isolated function setValueRecursively(json current, Token[] tokens, int tokenInd
     boolean isLastToken = tokenIndex == tokensLength - 1;
 
     return token is ArrayToken ?
-        check handleArrayAccessToken(current, token, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove) :
-        handleRegularToken(current, token, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove);
+        check handleArrayAccessToken(current, token, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove, modificationFunction) :
+        handleRegularToken(current, token, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove, modificationFunction);
 }
 
 # Handle array access token processing.
@@ -405,12 +412,13 @@ isolated function setValueRecursively(json current, Token[] tokens, int tokenInd
 # + token - Array access token
 # + tokens - All tokens
 # + tokenIndex - Current token index
-# + value - Value to set
+# + newValue - Value to set
 # + isLastToken - Whether this is the last token
 # + allowPathCreation - Whether to create missing paths
 # + shouldRemove - Whether to remove the path instead of setting value
+# + modificationFunction - Function to modify the value at the path
 # + return - Updated JSON or error
-isolated function handleArrayAccessToken(json current, ArrayToken token, Token[] tokens, int tokenIndex, json value, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove) returns json|error {
+isolated function handleArrayAccessToken(json current, ArrayToken token, Token[] tokens, int tokenIndex, json newValue, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove, ModificationFunction? modificationFunction) returns json|error {
     if !(current is map<json>) {
         return current;
     }
@@ -474,13 +482,17 @@ isolated function handleArrayAccessToken(json current, ArrayToken token, Token[]
                 currentMap[key] = newArr;
             }
         } else {
-            arr[idx] = value;
+            //  SET
+            json modifiedValue = check getModifiedValue(arr[idx], modificationFunction, newValue);
+            arr[idx] = modifiedValue;
         }
     } else {
-        json|error updatedElement = setValueRecursively(arr[idx], tokens, tokenIndex + 1, value, allowPathCreation, shouldRemove);
+        json|error updatedElement = setValueRecursively(arr[idx], tokens, tokenIndex + 1, newValue, allowPathCreation, shouldRemove, modificationFunction);
         if updatedElement is error {
             return updatedElement;
         }
+        //  SET
+        // json modifiedValue = check getModifiedValue(arr[idx], modificationFunction, updatedElement);
         arr[idx] = updatedElement;
     }
 
@@ -521,8 +533,10 @@ isolated function expandArrayIfNeeded(json[] arr, int requiredIndex, boolean all
 # + isLastToken - Whether this is the last token
 # + allowPathCreation - Whether to create missing paths
 # + shouldRemove - Whether to remove the path instead of setting value
+# + modificationFunction - Function to modify the value at the path
 # + return - Updated JSON or error
-isolated function handleRegularToken(json current, Token token, Token[] tokens, int tokenIndex, json value, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove) returns json|error {
+isolated function handleRegularToken(json current, Token token, Token[] tokens, int tokenIndex, json value, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove,
+        ModificationFunction? modificationFunction) returns json|error {
     if !(current is map<json>) {
         return current;
     }
@@ -531,10 +545,10 @@ isolated function handleRegularToken(json current, Token token, Token[] tokens, 
     string key = token.value;
 
     if currentMap[key] is json[] {
-        return handleArrayField(currentMap, key, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove);
+        return handleArrayField(currentMap, key, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove, modificationFunction);
     }
 
-    return handleObjectField(currentMap, key, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove);
+    return handleObjectField(currentMap, key, tokens, tokenIndex, value, isLastToken, allowPathCreation, shouldRemove, modificationFunction);
 }
 
 # Handle array field processing
@@ -543,12 +557,13 @@ isolated function handleRegularToken(json current, Token token, Token[] tokens, 
 # + key - Field key
 # + tokens - All tokens
 # + tokenIndex - Current token index
-# + value - Value to set
+# + newValue - Value to set
 # + isLastToken - Whether this is the last token
 # + allowPathCreation - Whether to create missing paths
 # + shouldRemove - Whether to remove the path instead of setting value
+# + modificationFunction - Function to modify the value at the path
 # + return - Updated JSON or error
-isolated function handleArrayField(map<json> currentMap, string key, Token[] tokens, int tokenIndex, json value, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove) returns json|error {
+isolated function handleArrayField(map<json> currentMap, string key, Token[] tokens, int tokenIndex, json newValue, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove, ModificationFunction? modificationFunction) returns json|error {
     json[] arr = <json[]>currentMap[key];
 
     if isLastToken {
@@ -556,18 +571,22 @@ isolated function handleArrayField(map<json> currentMap, string key, Token[] tok
             // Remove the entire array field
             _ = currentMap.remove(key);
         } else {
-            currentMap[key] = value;
+            //  SET
+            json modifiedValue = check getModifiedValue(currentMap[key], modificationFunction, newValue);
+            currentMap[key] = modifiedValue;
         }
         return currentMap;
     }
 
-    // Process each array element
+    // Setting multiple elements in an array (Ex: Patient.address.city)
     int arrayLength = arr.length();
     foreach int j in 0 ..< arrayLength {
-        json|error updatedElement = processArrayElement(arr[j], tokens, tokenIndex, value, allowPathCreation, shouldRemove);
+        json|error updatedElement = processArrayElement(arr[j], tokens, tokenIndex, newValue, allowPathCreation, shouldRemove, modificationFunction);
         if updatedElement is error {
             return updatedElement;
         }
+        //  SET
+        // json modifiedValue = check getModifiedValue(arr[j], modificationFunction, updatedElement);
         arr[j] = updatedElement;
     }
 
@@ -582,10 +601,11 @@ isolated function handleArrayField(map<json> currentMap, string key, Token[] tok
 # + value - Value to set
 # + allowPathCreation - Whether to create missing paths
 # + shouldRemove - Whether to remove the path instead of setting value
+# + modificationFunction - Function to modify the value at the path
 # + return - Updated element or error
-isolated function processArrayElement(json element, Token[] tokens, int tokenIndex, json value, boolean allowPathCreation, boolean shouldRemove) returns json|error {
+isolated function processArrayElement(json element, Token[] tokens, int tokenIndex, json value, boolean allowPathCreation, boolean shouldRemove, ModificationFunction? modificationFunction) returns json|error {
     if element is map<json> {
-        return setValueRecursively(element, tokens, tokenIndex + 1, value, allowPathCreation, shouldRemove);
+        return setValueRecursively(element, tokens, tokenIndex + 1, value, allowPathCreation, shouldRemove, modificationFunction);
     }
 
     if shouldRemove || !allowPathCreation {
@@ -594,7 +614,7 @@ isolated function processArrayElement(json element, Token[] tokens, int tokenInd
 
     // Create new map structure
     map<json> newElement = {};
-    return setValueRecursively(newElement, tokens, tokenIndex + 1, value, allowPathCreation, shouldRemove);
+    return setValueRecursively(newElement, tokens, tokenIndex + 1, value, allowPathCreation, shouldRemove, modificationFunction);
 }
 
 # Handle object field processing
@@ -607,8 +627,9 @@ isolated function processArrayElement(json element, Token[] tokens, int tokenInd
 # + isLastToken - Whether this is the last token
 # + allowPathCreation - Whether to create missing paths
 # + shouldRemove - Whether to remove the path instead of setting value
+# + modificationFunction - Function to modify the value at the path
 # + return - Updated JSON or error
-isolated function handleObjectField(map<json> currentMap, string key, Token[] tokens, int tokenIndex, json value, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove) returns json|error {
+isolated function handleObjectField(map<json> currentMap, string key, Token[] tokens, int tokenIndex, json value, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove, ModificationFunction? modificationFunction) returns json|error {
     if isLastToken {
         if shouldRemove {
             // Remove the field completely
@@ -616,7 +637,9 @@ isolated function handleObjectField(map<json> currentMap, string key, Token[] to
                 _ = currentMap.remove(key);
             }
         } else if currentMap.hasKey(key) || allowPathCreation {
-            currentMap[key] = value;
+            //  SET
+            json modifiedValue = check getModifiedValue(currentMap[key], modificationFunction, value);
+            currentMap[key] = modifiedValue;
         }
         return currentMap;
     }
@@ -634,7 +657,7 @@ isolated function handleObjectField(map<json> currentMap, string key, Token[] to
         currentMap[key] = {};
     }
 
-    json|error updatedChild = setValueRecursively(currentMap[key], tokens, tokenIndex + 1, value, allowPathCreation, shouldRemove);
+    json|error updatedChild = setValueRecursively(currentMap[key], tokens, tokenIndex + 1, value, allowPathCreation, shouldRemove, modificationFunction);
     if updatedChild is error {
         return updatedChild;
     }

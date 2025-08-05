@@ -17,12 +17,13 @@ Refer to the [API Documentation](https://central.ballerina.io/ballerinax/health.
 
 ## Features
 
-- **Query FHIR Resources**: Extract one or more values for a matching FHIRPath expression from a FHIR resources
+- **Query FHIR Resources**: Extract one or more values for a matching FHIRPath expression from FHIR resources
 - **Update FHIR Resources**: Set values in FHIR resources at specified paths
 - **Remove FHIR Sub-Resources**: Remove sub-elements from FHIR resources by setting values to null
 - **Resource Manipulation**: Support for creating missing paths and updating nested structures
+- **Function-based Value Modification**: Apply custom functions to transform values during updates (useful for data masking, hashing, etc.)
 - **Validate FHIRPath Expressions**: Ensure that FHIRPath expressions are valid before evaluation
-- **Validate FHIR Resource**: Ensure that FHIR resources provided and returned conform to the expected structure and types
+- **Validate FHIR Resources**: Ensure that FHIR resources provided and returned conform to the expected structure and types
 - **Error Handling**: Comprehensive error reporting for invalid paths or operations
 - **Type Safety**: Strong typing support for Ballerina applications
 
@@ -118,7 +119,7 @@ public function main() {
     };
 
     // Update a value in the FHIR resource
-    json|error updateResult = fhirpath:setFhirPathValues(
+    json|error updateResult = fhirpath:setFhirPathValuesWithNewValue(
             patient,
             "Patient.active",
             false
@@ -128,7 +129,7 @@ public function main() {
     }
 
     // Update multiple values in the FHIR resource
-    json|error updatedAddresses = fhirpath:setFhirPathValues(
+    json|error updatedAddresses = fhirpath:setFhirPathValuesWithNewValue(
             patient,
             "Patient.address.line",
             "***"
@@ -138,7 +139,7 @@ public function main() {
     }
 
     // Add a new value to the FHIR resource
-    json|error newlyAdded = fhirpath:setFhirPathValues(
+    json|error newlyAdded = fhirpath:setFhirPathValuesWithNewValue(
             patient,
             "Patient.gender",
             "male",
@@ -184,21 +185,98 @@ public function main() {
     };
 
     // Remove a simple field
-    json|error result = fhirpath:setFhirPathValues(patient, "Patient.gender", ());
+    json|error result = fhirpath:setFhirPathValuesWithNewValue(patient, "Patient.gender", ());
     if result is json {
         io:println("Patient after removing gender: ", result);
     }
 
     // Remove multiple elements
-    json|error multipleResult = fhirpath:setFhirPathValues(patient, "Patient.name.given", ());
+    json|error multipleResult = fhirpath:setFhirPathValuesWithNewValue(patient, "Patient.name.given", ());
     if multipleResult is json {
         io:println("Patient after removing all given names: ", multipleResult);
     }
 
     // Using low-level function for removal
-    json|error directResult = fhirpath:setFhirPathValues(patient, "Patient.active", ());
+    json|error directResult = fhirpath:setFhirPathValuesWithNewValue(patient, "Patient.active", ());
     if directResult is json {
         io:println("Updated patient resource: ", directResult);
+    }
+}
+```
+
+### Function-based Value Modifications
+
+```ballerina
+import ballerina/io;
+import ballerinax/health.fhir.r4utils.fhirpath;
+
+// Define a custom modification function for data masking
+isolated function maskString(json input) returns json|fhirpath:ModificationFunctionError {
+    if input is string {
+        return "***MASKED***";
+    }
+    return fhirpath:createModificationFunctionError("Expected string input for masking", (), input.toString());
+}
+
+// Define a function to hash sensitive data
+isolated function hashValue(json input) returns json|fhirpath:ModificationFunctionError {
+    if input is string {
+        return "HASH_" + input.length().toString(); // Simple hash for example
+    }
+    return fhirpath:createModificationFunctionError("Expected string input for hashing", (), input.toString());
+}
+
+public function main() {
+    json patient = {
+        "resourceType": "Patient",
+        "id": "1",
+        "name": [
+            {
+                "use": "official",
+                "family": "Doe",
+                "given": ["John", "Michael"]
+            }
+        ],
+        "telecom": [
+            {
+                "system": "phone",
+                "value": "+1-555-123-4567"
+            },
+            {
+                "system": "email",
+                "value": "john.doe@example.com"
+            }
+        ]
+    };
+
+    // Mask all phone numbers
+    json|error maskedPhone = fhirpath:setFhirPathValuesWithFunction(
+        patient, 
+        "Patient.telecom[0].value", 
+        maskString
+    );
+    if maskedPhone is json {
+        io:println("Patient with masked phone: ", maskedPhone);
+    }
+
+    // Hash email addresses
+    json|error hashedEmail = fhirpath:setFhirPathValuesWithFunction(
+        patient, 
+        "Patient.telecom[1].value", 
+        hashValue
+    );
+    if hashedEmail is json {
+        io:println("Patient with hashed email: ", hashedEmail);
+    }
+
+    // Apply function to multiple values
+    json|error maskedNames = fhirpath:setFhirPathValuesWithFunction(
+        patient, 
+        "Patient.name.given", 
+        maskString
+    );
+    if maskedNames is json {
+        io:println("Patient with masked given names: ", maskedNames);
     }
 }
 ```
@@ -207,26 +285,48 @@ public function main() {
 
 ### Main Functions
 
-- `getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validate = fhirResourceValidation) returns json|FHIRPathError`
+- `getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError`
   - Extracts values from FHIR resources using FHIRPath expressions
   - Returns extracted values as a json array or an error
   - Can handle both single and multiple values (e.g., `Patient.address[0].city` returns the first city from all address records, while `Patient.address.city` returns all the cities from all address records)
+  - Optional validation of FHIR resource structure
 
-- `setFhirPathValues(json fhirResource, string fhirPathExpression, json newValue, boolean allowPathCreation = createMissingPaths, boolean validate = fhirResourceValidation) returns json|FHIRPathError`
+- `setFhirPathValuesWithNewValue(json fhirResource, string fhirPathExpression, json newValue, boolean allowPathCreation = createMissingPaths, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError`
   - Updates a FHIR resource at the specified FHIRPath with the provided value
-  - Can handle both single and multiple values (e.g., `Patient.address[0].city` sets the city in the first address, while `Patient.address.city` updates all the cities in all the addresses.)
+  - Can handle both single and multiple values (e.g., `Patient.address[0].city` sets the city in the first address, while `Patient.address.city` updates all the cities in all the addresses)
   - Use `()` as the value to remove a field from the resource (e.g., setting `Patient.gender` to `()` removes the gender field)
   - Optionally can create missing paths in the resource structure based on the `allowPathCreation` parameter
+  - Optional validation of FHIR resource structure
 
-- `validateFhirPath(string fhirPath) returns boolean`
+- `setFhirPathValuesWithFunction(json fhirResource, string fhirPathExpression, ModificationFunction modificationFunction, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError`
+  - Updates a FHIR resource by applying a custom function to transform values at the specified FHIRPath
+  - Useful for data masking, hashing, encryption, or other custom transformations
+  - The modification function receives the current value and returns the transformed value
+  - Can handle both single and multiple values
+  - Optional validation of FHIR resource structure
+
+- `validateFhirPath(string fhirPathExpression) returns boolean`
   - Validates a FHIRPath expression to ensure it is syntactically correct
-  - Returns `true` if valid, or a `FHIRPathError` if invalid
+  - Returns `true` if valid, `false` if invalid
+  - Uses regex pattern matching to validate FHIRPath syntax
+
+- `validateFhirResource(json fhirResource) returns FHIRPathError?`
+  - Validates a FHIR resource to ensure it conforms to the FHIR R4 specification
+  - Returns `()` if valid, or a `FHIRPathError` if invalid
+  - Uses FHIR R4 validation libraries for comprehensive validation
 
 ### Types
 
 - `Token` - Basic token type for FHIRPath parsing with value field
 - `ArrayToken` - Sub type of token for array access tokens with index field
 - `FHIRPathError` - Distinct error type for FHIRPath-related errors
+- `ModificationFunction` - Function type for custom value transformations: `isolated function (json) returns json|ModificationFunctionError`
+- `ModificationFunctionError` - Distinct error type for modification function errors
+
+### Utility Functions
+
+- `createFhirPathError(string errorMsg, string? fhirPath) returns FHIRPathError` - Creates a FHIRPath error
+- `createModificationFunctionError(string errorMsg, string? fhirPath, string? fhirPathValue) returns ModificationFunctionError` - Creates a modification function error
 
 ## Error Handling
 

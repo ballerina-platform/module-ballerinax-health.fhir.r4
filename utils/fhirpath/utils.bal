@@ -27,9 +27,6 @@ const INVALID_FHIRPATH_MSG = "The given FhirPath expression is incorrect for the
 const RESOURCE_TYPE_MISMATCH_MSG = "Resource is not match with the FhirPath expression";
 const ARRAY_INDEX_ERROR_MSG = "The given array index is incorrect for the given FHIR resource";
 
-// Configurable to control whether missing paths should be created
-configurable boolean createMissingPaths = false;
-
 # Basic token type.
 #
 # + value - value of the token
@@ -113,4 +110,35 @@ public type FHIRPathError distinct error;
 public isolated function createFhirPathError(string errorMsg, string? fhirPath) returns FHIRPathError {
     FHIRPathError fhirPathError = error(errorMsg, fhirPath = fhirPath);
     return fhirPathError;
+}
+
+public type ModificationFunctionError distinct error;
+
+# Function to modify the value at the path
+public type ModificationFunction isolated function (json param) returns json|ModificationFunctionError;
+
+# Method to create a ModificationFunctionError
+#
+# + errorMsg - the reason for the occurence of error
+# + fhirPath - the fhirpath expression that is being evaluated
+# + fhirPathValue - the value of the fhirpath expression that is being modified
+# + return - the error object
+public isolated function createModificationFunctionError(string errorMsg, string? fhirPath, string? fhirPathValue) returns ModificationFunctionError {
+    ModificationFunctionError modificationFunctionError = error(errorMsg, fhirPath = fhirPath, fhirPathValue = fhirPathValue);
+    return modificationFunctionError;
+}
+
+isolated function getModifiedValue(json currentValue, ModificationFunction? modificationFunction,  json? newValue) returns json|ModificationFunctionError {
+    if !(currentValue is ()) && !(modificationFunction is ()) {
+        // Apply modification function if provided
+        json|ModificationFunctionError modifiedResult = modificationFunction(currentValue);
+        if modifiedResult is ModificationFunctionError {
+            return createModificationFunctionError(modifiedResult.message(), fhirPath = (), fhirPathValue = currentValue.toString());
+        }
+        return modifiedResult;
+    }
+    if !(newValue is ()) {
+        return newValue;
+    }
+    return currentValue;
 }
