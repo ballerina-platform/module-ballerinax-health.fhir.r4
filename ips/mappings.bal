@@ -14,13 +14,31 @@
 // specific language governing permissions and limitations
 // under the License.
 import ballerina/uuid;
+import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401;
+
+isolated function mapR4HumanNameToPatientubIpsName(r4:HumanName name) returns PatientUvIpsName => {
+    use: <PatientUvIpsNameUse?>name.use,
+    text: name.text,
+    family: name.family,
+    given: name.given,
+    prefix: name.prefix,
+    suffix: name.suffix,
+    period: name.period
+};
+
+isolated function mapR4HumanNameArrayToPatientubIpsNameArray(r4:HumanName[]? names) returns PatientUvIpsName[] {
+    if names is () {
+        return [];
+    }
+    return names.map(mapR4HumanNameToPatientubIpsName);
+}
 
 isolated function mapPatientToIpsPatient(international401:Patient patient) returns PatientUvIps => let
     string patientId = patient.id ?: uuid:createRandomUuid() in {
         id: patientId,
         identifier: patient.identifier,
-        name: patient.name ?: [],
+        name: mapR4HumanNameArrayToPatientubIpsNameArray(patient.name),
         telecom: patient.telecom,
         gender: mapGenderToIpsGender(patient.gender ?: CODE_GENDER_UNKNOWN),
         birthDate: <string>patient.birthDate,
@@ -306,7 +324,7 @@ isolated function mapPractitionerToIpsPractitioner(international401:Practitioner
     string practitionerId = practitioner.id ?: uuid:createRandomUuid() in {
         id: practitionerId,
         identifier: practitioner.identifier,
-        name: practitioner.name ?: [],
+        name: mapR4HumanNameArrayToPatientubIpsNameArray(practitioner.name),
         extension: practitioner.extension,
         address: practitioner.address,
         modifierExtension: practitioner.modifierExtension,
