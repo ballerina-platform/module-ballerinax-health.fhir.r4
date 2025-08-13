@@ -91,8 +91,12 @@ public isolated class FHIRPreprocessor {
         // Add resource specific operation configs
         foreach r4:OperationConfig operationConfig in self.apiConfig.operations {
             operationConfigs[operationConfig.name] = operationConfig;
+            r4:FHIRError? regOpStatus = r4:fhirRegistry.registerResourceOperation(self.apiConfig.resourceType, operationConfig);
+            if regOpStatus is r4:FHIRError {
+                log:printError("Error occurred while registering resource operation to FHIR registry", regOpStatus);
+            }
         }
-        self.operationConfigMap = operationConfigs.cloneReadOnly();
+        self.operationConfigMap = operationConfigs.cloneReadOnly();       
     }
 
     # Process the FHIR Read interaction.
