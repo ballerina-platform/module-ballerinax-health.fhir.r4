@@ -4,7 +4,7 @@ A package containing FHIR related processors and utilities to query, manipulate,
 
 ## Package Overview
 
-This package provides a comprehensive set of functions to facilitate querying, updating, and manipulating FHIR resources using FHIRPath expressions. It supports extracting values, setting new values, removing elements, and selecting specific resource elements based on FHIRPath expressions.
+This package provides a comprehensive set of functions to facilitate querying, updating, and manipulating FHIR resources using FHIRPath expressions. It features a unified API that supports extracting values, setting new values, removing elements, and applying custom transformation functions for data processing needs such as de-identification and masking.
 
 |                      |                      |
 |----------------------|----------------------|
@@ -18,9 +18,9 @@ This package provides a comprehensive set of functions to facilitate querying, u
 - **Query FHIR Resources**: Extract values from FHIR resources using FHIRPath expressions
 - **Update FHIR Resources**: Set or modify values in FHIR resources at specified paths  
 - **Remove FHIR Elements**: Remove sub-elements from FHIR resources by setting values to null
-- **Function-based Value Modification**: Apply custom functions to transform values during updates (useful for data masking, hashing, etc.)
-- **Resource Selection**: Select specific elements from FHIR resources using multiple FHIRPath expressions
-- **Path Creation**: Support for creating missing paths when updating nested structures
+- **Function-based Value Modification**: Apply custom functions to transform values during updates (useful for data masking, hashing, encryption, etc.)
+- **Unified API**: Single function handles both direct value setting and function-based transformations
+- **Path Creation**: Support for creating missing paths when updating nested structures (configurable)
 - **Validate FHIRPath Expressions**: Ensure that FHIRPath expressions are valid before evaluation
 - **Validate FHIR Resources**: Ensure that FHIR resources conform to the FHIR R4 specification
 - **Error Handling**: Comprehensive error reporting for invalid paths or operations
@@ -29,9 +29,7 @@ This package provides a comprehensive set of functions to facilitate querying, u
 ## Main Functions
 
 - `getFhirPathValues(json, string, boolean?)` - Extract values using FHIRPath expressions
-- `setFhirPathValuesWithNewValue(json, string, json, boolean?, boolean?)` - Set or remove values at specified paths
-- `setFhirPathValuesWithFunction(json, string, ModificationFunction, boolean?)` - Apply custom functions to transform values
+- `setFhirPathValues(json, string, json|ModificationFunction, boolean?)` - **Unified function** for setting values, applying transformations, or removing fields
 - `validateFhirPath(string)` - Validate FHIRPath expression syntax
-- `validateFhirResource(json)` - Validate FHIR resource structure
 
 Refer [API Documentation](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath) for detailed usage examples.

@@ -30,7 +30,7 @@ configurable boolean createMissingPaths = false;
 # + fhirPathExpression - requested fhirpath expression
 # + validateFHIRResource - parameter description
 # + return - result of the fhirpath expression
-isolated function retrieveFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
+public isolated function getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
     // Input validation
     if !validateFhirPath(fhirPathExpression) {
         return createFhirPathError("Invalid FHIR Path expression", fhirPathExpression);
@@ -41,7 +41,7 @@ isolated function retrieveFhirPathValues(json fhirResource, string fhirPathExpre
         check validateFhirResource(fhirResource);
     }
 
-    if !(fhirResource is map<json>) {
+    if fhirResource !is map<json> {
         return createFhirPathError("FHIR resource must be a JSON object", fhirPathExpression);
     }
 
@@ -82,25 +82,18 @@ isolated function retrieveFhirPathValues(json fhirResource, string fhirPathExpre
     return [evaluationResult];
 }
 
-# Set the value(s) of matching FHIR paths in the JSON resource.
-#
-# + fhirResource - The JSON FHIR resource to update
-# + fhirPathExpression - The FHIR path (dot notation, e.g., "Patient.name[0].family")
-# + newValue - The value to set at the path, or () to remove the path
-# + allowPathCreation - Whether to create missing paths (defaults to configurable value)
-# + validateFHIRResource - parameter description
-# + modificationFunction - Function to modify the value at the path (ex: pass a hash function to hash the value)
-# + return - The updated JSON resource or error
-isolated function setFhirPathValues(json fhirResource, string fhirPathExpression, json? newValue = (), ModificationFunction? modificationFunction = (),
-        boolean allowPathCreation = createMissingPaths, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
+public isolated function setFhirPathValues(json fhirResource, string fhirPathExpression, json|ModificationFunction modifier, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
+
+    json newValue = modifier is json ? modifier : ();
+    ModificationFunction? modificationFunction = modifier is ModificationFunction ? modifier : ();
+
     // Input validation
     if !validateFhirPath(fhirPathExpression) {
         return createFhirPathError("Invalid FHIR Path expression", fhirPathExpression);
     }
 
     // Validate FHIR resource and throw error if invalid
-    // newValue () is to remove the path, hence we don't validate the resource
-    if !(newValue is ()) && validateFHIRResource {
+    if validateFHIRResource {
         check validateFhirResource(fhirResource);
     }
 
@@ -109,10 +102,10 @@ isolated function setFhirPathValues(json fhirResource, string fhirPathExpression
         return createFhirPathError(tokenRecords.message(), fhirPathExpression);
     }
 
-    // Check if we need to remove the path (when newValue is ())∏
+    // newValue () is to remove the path
     boolean shouldRemove = newValue is () && modificationFunction is ();
 
-    json|error outcome = setValueRecursively(fhirResource, tokenRecords, 0, newValue, allowPathCreation, shouldRemove, modificationFunction);
+    json|error outcome = setValueRecursively(fhirResource, tokenRecords, 0, newValue, createMissingPaths, shouldRemove, modificationFunction);
     if outcome is error {
         return createFhirPathError(outcome.message(), fhirPathExpression);
     }
@@ -157,7 +150,7 @@ isolated function evaluateRecursively(json current, Token[] tokens, int tokenInd
 # + isLastToken - Whether this is the last token
 # + return - Evaluation result or error
 isolated function evaluateArrayAccessToken(json current, ArrayToken token, Token[] tokens, int tokenIndex, boolean isLastToken) returns json|error {
-    if !(current is map<json>) {
+    if current !is map<json> {
         return createFhirPathError(INVALID_FHIRPATH_MSG, "");
     }
 
@@ -170,7 +163,7 @@ isolated function evaluateArrayAccessToken(json current, ArrayToken token, Token
     }
 
     json fieldValue = currentMap[key];
-    if !(fieldValue is json[]) {
+    if fieldValue !is json[] {
         return createFhirPathError(INVALID_FHIRPATH_MSG, "");
     }
 
@@ -193,7 +186,7 @@ isolated function evaluateArrayAccessToken(json current, ArrayToken token, Token
 # + isLastToken - Whether this is the last token
 # + return - Evaluation result or error
 isolated function evaluateRegularToken(json current, Token token, Token[] tokens, int tokenIndex, boolean isLastToken) returns json|error {
-    if !(current is map<json>) {
+    if current !is map<json> {
         return createFhirPathError(INVALID_FHIRPATH_MSG, "");
     }
 
@@ -419,7 +412,7 @@ isolated function setValueRecursively(json current, Token[] tokens, int tokenInd
 # + modificationFunction - Function to modify the value at the path
 # + return - Updated JSON or error
 isolated function handleArrayAccessToken(json current, ArrayToken token, Token[] tokens, int tokenIndex, json newValue, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove, ModificationFunction? modificationFunction) returns json|error {
-    if !(current is map<json>) {
+    if current !is map<json> {
         return current;
     }
 
@@ -436,7 +429,7 @@ isolated function handleArrayAccessToken(json current, ArrayToken token, Token[]
     }
 
     json fieldValue = currentMap[key];
-    if !(fieldValue is json[]) {
+    if fieldValue !is json[] {
         if shouldRemove || !allowPathCreation {
             return current;
         }
@@ -537,7 +530,7 @@ isolated function expandArrayIfNeeded(json[] arr, int requiredIndex, boolean all
 # + return - Updated JSON or error
 isolated function handleRegularToken(json current, Token token, Token[] tokens, int tokenIndex, json value, boolean isLastToken, boolean allowPathCreation, boolean shouldRemove,
         ModificationFunction? modificationFunction) returns json|error {
-    if !(current is map<json>) {
+    if current !is map<json> {
         return current;
     }
 
@@ -650,7 +643,7 @@ isolated function handleObjectField(map<json> currentMap, string key, Token[] to
             return currentMap;
         }
         currentMap[key] = {};
-    } else if !(currentMap[key] is map<json>) {
+    } else if currentMap[key] !is map<json> {
         if shouldRemove || !allowPathCreation {
             return currentMap;
         }

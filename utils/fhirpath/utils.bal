@@ -67,7 +67,7 @@ public isolated function validateFhirPath(string fhirPathExpression) returns boo
 #
 # + fhirResource - The FHIR resource to validate
 # + return - True if the resource is valid, false otherwise
-public isolated function validateFhirResource(json fhirResource) returns FHIRPathError? {
+isolated function validateFhirResource(json fhirResource) returns FHIRPathError? {
     r4:FHIRValidationError? validateFHIRResourceJson = validator:validate(fhirResource);
 
     if validateFHIRResourceJson is r4:FHIRValidationError {
@@ -129,7 +129,7 @@ public isolated function createModificationFunctionError(string errorMsg, string
 }
 
 isolated function getModifiedValue(json currentValue, ModificationFunction? modificationFunction,  json? newValue) returns json|ModificationFunctionError {
-    if !(currentValue is ()) && !(modificationFunction is ()) {
+    if currentValue !is () && modificationFunction !is () {
         // Apply modification function if provided
         json|ModificationFunctionError modifiedResult = modificationFunction(currentValue);
         if modifiedResult is ModificationFunctionError {
@@ -137,7 +137,7 @@ isolated function getModifiedValue(json currentValue, ModificationFunction? modi
         }
         return modifiedResult;
     }
-    if !(newValue is ()) {
+    if newValue !is () {
         return newValue;
     }
     return currentValue;
