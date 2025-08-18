@@ -15,6 +15,7 @@ import ballerina/test;
 import ballerinax/health.fhir.r4;
 import ballerina/lang.regexp;
 import ballerina/http;
+import ballerinax/health.fhir.r4.international401;
 
 function returnCodeSystemData(string fileName) returns r4:CodeSystem {
     string filePath = string `tests/resources/terminology/code_systems/${fileName}.json`;
@@ -64,6 +65,7 @@ isolated class TestTerminology {
     # Global records to store Terminologies across different profiles and packages.
     private map<r4:CodeSystem> codeSystemMap = {};
     private map<r4:ValueSet> valueSetMap = {};
+    private map<international401:ConceptMap> conceptMap = {};
 
     function init() {
         // Add a CodeSystem object for http://xyz.org
@@ -420,5 +422,27 @@ isolated class TestTerminology {
             }
             return valueSet.clone();
         }
+    
+    public isolated function findConceptMap(r4:uri? system, string? id, string? version) returns international401:ConceptMap|r4:FHIRError {
+        lock {
+            if self.conceptMap.hasKey(system.toString()) {
+                return <international401:ConceptMap>self.conceptMap[system.toString()].clone();
+            }
+        }
+        international401:ConceptMap conceptMap = {status: "unknown"};
+        return conceptMap;
+    }
+
+    public isolated function addConceptMap(international401:ConceptMap conceptMap) returns r4:FHIRError? {
+        return;
+    }
+
+    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset, int? count) returns international401:ConceptMap[]|r4:FHIRError {
+        return [];
+    }
+
+    public isolated function isConceptMapExist(r4:uri system, string version) returns boolean {
+        return false;
+    }
 }
 

@@ -15,6 +15,7 @@ import ballerina/lang.'int as langint;
 import ballerina/log;
 import ballerina/time;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401;
 
 public isolated function findConceptsInValueSetFromCodeValue(r4:code|r4:Coding|r4:CodeableConcept codeValue, r4:uri system, string? version, Terminology? terminology = inMemoryTerminology) returns r4:CodeSystemConcept[]|r4:CodeSystemConcept|r4:FHIRError {
     r4:CodeSystemConcept[] codeConceptDetailsList = [];
@@ -494,4 +495,33 @@ public type Terminology isolated object {
     # + count - The maximum number of concepts to return (optional).
     # + return - Returns a ValueSetExpansion if successful, or an FHIRError if the operation fails.
     public isolated function expandValueSet(map<r4:RequestSearchParameter[]> searchParams, r4:ValueSet valueSet, int offset, int count) returns r4:ValueSet|r4:FHIRError;
+
+    # To check whether the ConceptMap exists.
+    #
+    # + system - ConceptMap URL to be checked.
+    # + version - Version of the ConceptMap to be checked.
+    # + return - Return true if the ConceptMap exists, else false.
+    public isolated function isConceptMapExist(r4:uri system, string version) returns boolean;
+
+    # Add a new concept map. Terminology API makes sure that the ConceptMap is valid. 
+    #
+    # + conceptMap - ConceptMap to be added. 
+    # + return - FHIRError if any.
+    public isolated function addConceptMap(international401:ConceptMap conceptMap) returns r4:FHIRError?;
+
+    # The function definition for Concept Map finder implementations.
+    #
+    # + system - Concept Map URL to be searched.
+    # + id - Id of the CodeSystem to be searched.
+    # + version - Version of the CodeSystem to be searched.
+    # + return - Concept Map if found or else FHIRError.
+    public isolated function findConceptMap(r4:uri? system = (), string? id = (), string? version = ()) returns international401:ConceptMap|r4:FHIRError;
+
+    # The function definition for Concept Map finder implementations.
+    #
+    # + params - Search parameters.  
+    # + offset - Offset value for the search.  
+    # + count - Count value for the search.
+    # + return - Concept Map array if found or else FHIRError.
+    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset = (), int? count = ()) returns international401:ConceptMap[]|r4:FHIRError;
 };
