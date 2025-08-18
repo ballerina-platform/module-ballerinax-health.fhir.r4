@@ -238,57 +238,64 @@ public isolated class FHIRRegistry {
     # + opConfig - The operation configuration to be registered
     # + return - An error if the operation is invalid or an error occurred while registering the operation
     public isolated function registerResourceOperation(string resourceType, OperationConfig opConfig) returns FHIRError? {
-        OperationCollection resourceOperations = self.getResourceOperations(resourceType);
-        if !resourceOperations.hasKey(opConfig.name) {
-            // If the operation is not defined in resourceOperationDefinitions, it should be defined using the operationConfigMap
-            if opConfig.parameters is OperationParamConfig[] {
-                log:printDebug(string `Processing operation parameters for ${opConfig.name}`);
-                FHIROperationParameterDefinition[] operationParams = [];
-                // Process operation parameters
-                // Note: This is a placeholder for any specific processing logic for operation parameters
-                foreach var item in <OperationParamConfig[]> opConfig.parameters {
-                    //create FHIROperationParameterDefinition for the operation
-                    FHIROperationParameterDefinition operationParam = {
-                        name: item.name,
-                        use: "in",
-                        min: item?.min != () ? <int>item.min : 0,
-                        max: item?.max != () ? <string>item.max : "*"
+        lock {
+            OperationCollection resourceOperations = {};
+            if self.operationsMap.hasKey(resourceType) {
+                resourceOperations = self.operationsMap.get(resourceType);
+            } else {
+                self.operationsMap[resourceType] = resourceOperations;
+            }
+            if !resourceOperations.hasKey(opConfig.name) {
+                // If the operation is not defined in resourceOperationDefinitions, it should be defined using the operationConfigMap
+                if opConfig.parameters is OperationParamConfig[] {
+                    log:printDebug(string `Processing operation parameters for ${opConfig.name}`);
+                    FHIROperationParameterDefinition[] operationParams = [];
+                    // Process operation parameters
+                    // Note: This is a placeholder for any specific processing logic for operation parameters
+                    foreach var item in <OperationParamConfig[]>opConfig.parameters {
+                        //create FHIROperationParameterDefinition for the operation
+                        FHIROperationParameterDefinition operationParam = {
+                            name: item.name,
+                            use: "in",
+                            min: item?.min != () ? <int>item.min : 0,
+                            max: item?.max != () ? <string>item.max : "*"
+                        };
+                        operationParams.push(operationParam);
+                    }
+
+                    FHIROperationDefinition operationDefinition = {
+                        name: opConfig.name,
+                        'parameter: operationParams,
+                        'resource: [resourceType],
+                        typeLevel: false,
+                        systemLevel: false,
+                        instanceLevel: false
                     };
-                    operationParams.push(operationParam);
-                }
-                
-                FHIROperationDefinition operationDefinition = {
-                    name: opConfig.name,
-                    'parameter: operationParams,
-                    'resource: [resourceType],
-                    typeLevel: false,
-                    systemLevel: false,
-                    instanceLevel: false
-                };
-                json additionalProps = opConfig?.additionalProperties;
-                //access the operation level information
-                json|error metaInfo = additionalProps.meta;
-                if metaInfo is json {
-                    json|error operationLevels = metaInfo.operationLevels;
-                    if operationLevels is json {
-                        json|error typeLevel = operationLevels.typeLevel;
-                        json|error systemLevel = operationLevels.systemLevel;
-                        json|error instanceLevel = operationLevels.instanceLevel;
-                        // Set the operation levels
-                        if typeLevel is boolean {
-                            operationDefinition.typeLevel = typeLevel;
-                        }
-                        // Set the system and instance levels
-                        if systemLevel is boolean {
-                            operationDefinition.systemLevel = <boolean>systemLevel;
-                        }
-                        if instanceLevel is boolean {
-                            operationDefinition.instanceLevel = <boolean>instanceLevel;
+                    json additionalProps = opConfig?.additionalProperties;
+                    //access the operation level information
+                    json|error metaInfo = additionalProps.meta;
+                    if metaInfo is json {
+                        json|error operationLevels = metaInfo.operationLevels;
+                        if operationLevels is json {
+                            json|error typeLevel = operationLevels.typeLevel;
+                            json|error systemLevel = operationLevels.systemLevel;
+                            json|error instanceLevel = operationLevels.instanceLevel;
+                            // Set the operation levels
+                            if typeLevel is boolean {
+                                operationDefinition.typeLevel = typeLevel;
+                            }
+                            // Set the system and instance levels
+                            if systemLevel is boolean {
+                                operationDefinition.systemLevel = <boolean>systemLevel;
+                            }
+                            if instanceLevel is boolean {
+                                operationDefinition.instanceLevel = <boolean>instanceLevel;
+                            }
                         }
                     }
+                    // Add the operation definition to the resourceOperations
+                    resourceOperations[opConfig.name] = operationDefinition;
                 }
-                // Add the operation definition to the resourceOperations
-                resourceOperations[opConfig.name] = operationDefinition;
             }
         }
     }
