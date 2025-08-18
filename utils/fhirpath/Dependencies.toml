@@ -442,7 +442,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.fhirpath"
-version = "3.0.0"
+version = "2.0.0"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "lang.int"},
