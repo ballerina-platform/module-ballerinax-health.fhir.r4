@@ -29,8 +29,8 @@ configurable boolean createMissingPaths = false;
 # + fhirResource - fhir resource
 # + fhirPathExpression - requested fhirpath expression
 # + validateFHIRResource - parameter description
-# + return - result of the fhirpath expression
-public isolated function getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
+# + return - list of results of the fhirpath expression
+public isolated function getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json[]|FHIRPathError {
     // Input validation
     if !validateFhirPath(fhirPathExpression) {
         return createFhirPathError("Invalid FHIR Path expression", fhirPathExpression);

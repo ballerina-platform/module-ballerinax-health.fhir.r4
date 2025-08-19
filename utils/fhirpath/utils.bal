@@ -85,6 +85,8 @@ isolated function getTokens(string fhirPathExpression) returns Token[]|error {
     Token[] tokenRecordArray = [];
 
     // Pre-allocate array size for better performance
+    // Start from index 1 to skip the resource type (e.g., "Patient" in "Patient.name.given")
+    // Only process field access tokens after the resource type
     foreach int i in 1 ..< tokensLength {
         string tokenStr = tokens[i];
         Token|error tokenResult = parseToken(tokenStr);
@@ -128,6 +130,12 @@ public isolated function createModificationFunctionError(string errorMsg, string
     return modificationFunctionError;
 }
 
+# Get the modified value by applying either a modification function or setting a new value.
+#
+# + currentValue - The current value at the FHIRPath location
+# + modificationFunction - Optional function to transform the current value
+# + newValue - Optional new value to set directly
+# + return - The modified value or an error if modification function fails
 isolated function getModifiedValue(json currentValue, ModificationFunction? modificationFunction,  json? newValue) returns json|ModificationFunctionError {
     if currentValue !is () && modificationFunction !is () {
         // Apply modification function if provided

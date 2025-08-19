@@ -32,7 +32,7 @@ Refer to the [API Documentation](https://central.ballerina.io/ballerinax/health.
 
 ### Main Functions
 
-- `getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError`
+- `getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json[]|FHIRPathError`
   - Extracts values from FHIR resources using FHIRPath expressions
   - Returns extracted values as a json array or an error
   - Can handle both single and multiple values (e.g., `Patient.address[0].city` returns the first city from all address records, while `Patient.address.city` returns all the cities from all address records)
