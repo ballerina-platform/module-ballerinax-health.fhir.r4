@@ -10,7 +10,7 @@ This package implements FHIRPath, a powerful expression language for querying an
 |----------------------|----------------------|
 | FHIR version         | R4                   |
 | Implementation Guide | https://hl7.org/fhir/fhirpath.html |
-| Package Version      | 3.0.0                |
+| Package Version      | 2.0.0                |
 | Ballerina Version    | 2201.12.2            |
 
 Refer to the [API Documentation](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath) for detailed usage.
