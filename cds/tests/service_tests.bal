@@ -243,7 +243,8 @@ function call_cds_service_payload_with_no_prefetch_data_and_fhirAuthorization() 
             "userId": "Practitioner/example",
             "patientId": "1288992",
             "encounterId": "89284"
-        }
+        },
+        "fhirAuthorization": {}
     };
 
     CdsRequest|error cdsRequest = payload.cloneWithType(CdsRequest);

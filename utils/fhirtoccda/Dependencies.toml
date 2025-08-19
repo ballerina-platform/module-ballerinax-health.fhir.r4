@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.12.2"
+distribution-version = "2201.12.3"
 
 [[package]]
 org = "ballerina"
@@ -37,9 +37,6 @@ version = "1.7.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
-modules = [
-	{org = "ballerina", packageName = "constraint", moduleName = "constraint"}
-]
 
 [[package]]
 org = "ballerina"
@@ -53,10 +50,22 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "data.jsondata"
-version = "1.1.1"
+version = "1.1.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.object"}
+]
+
+[[package]]
+org = "ballerina"
+name = "data.xmldata"
+version = "1.4.2"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "lang.object"}
+]
+modules = [
+	{org = "ballerina", packageName = "data.xmldata", moduleName = "data.xmldata"}
 ]
 
 [[package]]
@@ -98,10 +107,6 @@ dependencies = [
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "url"}
 ]
-modules = [
-	{org = "ballerina", packageName = "http", moduleName = "http"},
-	{org = "ballerina", packageName = "http", moduleName = "http.httpscerr"}
-]
 
 [[package]]
 org = "ballerina"
@@ -110,9 +115,6 @@ version = "1.8.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.value"}
-]
-modules = [
-	{org = "ballerina", packageName = "io", moduleName = "io"}
 ]
 
 [[package]]
@@ -133,9 +135,6 @@ dependencies = [
 	{org = "ballerina", name = "lang.string"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "time"}
-]
-modules = [
-	{org = "ballerina", packageName = "jwt", moduleName = "jwt"}
 ]
 
 [[package]]
@@ -195,9 +194,6 @@ version = "0.0.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
-modules = [
-	{org = "ballerina", packageName = "lang.regexp", moduleName = "lang.regexp"}
-]
 
 [[package]]
 org = "ballerina"
@@ -222,9 +218,6 @@ name = "lang.value"
 version = "0.0.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
-]
-modules = [
-	{org = "ballerina", packageName = "lang.value", moduleName = "lang.value"}
 ]
 
 [[package]]
@@ -313,9 +306,6 @@ version = "2.7.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
-modules = [
-	{org = "ballerina", packageName = "time", moduleName = "time"}
-]
 
 [[package]]
 org = "ballerina"
@@ -323,9 +313,6 @@ name = "url"
 version = "2.6.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
-]
-modules = [
-	{org = "ballerina", packageName = "url", moduleName = "url"}
 ]
 
 [[package]]
@@ -343,6 +330,18 @@ modules = [
 ]
 
 [[package]]
+org = "ballerinai"
+name = "observe"
+version = "0.0.0"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "observe"}
+]
+modules = [
+	{org = "ballerinai", packageName = "observe", moduleName = "observe"}
+]
+
+[[package]]
 org = "ballerinax"
 name = "health.base"
 version = "1.1.1"
@@ -355,17 +354,11 @@ dependencies = [
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "uuid"}
 ]
-modules = [
-	{org = "ballerinax", packageName = "health.base", moduleName = "health.base"},
-	{org = "ballerinax", packageName = "health.base", moduleName = "health.base.auth"},
-	{org = "ballerinax", packageName = "health.base", moduleName = "health.base.error"},
-	{org = "ballerinax", packageName = "health.base", moduleName = "health.base.message"}
-]
 
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4"
-version = "6.2.1"
+version = "6.0.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
@@ -374,7 +367,6 @@ dependencies = [
 	{org = "ballerina", name = "lang.regexp"},
 	{org = "ballerina", name = "lang.value"},
 	{org = "ballerina", name = "log"},
-	{org = "ballerina", name = "test"},
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "url"},
 	{org = "ballerina", name = "uuid"},
@@ -382,5 +374,35 @@ dependencies = [
 ]
 modules = [
 	{org = "ballerinax", packageName = "health.fhir.r4", moduleName = "health.fhir.r4"}
+]
+
+[[package]]
+org = "ballerinax"
+name = "health.fhir.r4.uscore501"
+version = "2.0.0"
+dependencies = [
+	{org = "ballerina", name = "constraint"},
+	{org = "ballerina", name = "log"},
+	{org = "ballerinax", name = "health.fhir.r4"}
+]
+modules = [
+	{org = "ballerinax", packageName = "health.fhir.r4.uscore501", moduleName = "health.fhir.r4.uscore501"}
+]
+
+[[package]]
+org = "ballerinax"
+name = "health.fhir.r4utils.fhirtoccda"
+version = "0.1.0"
+dependencies = [
+	{org = "ballerina", name = "data.xmldata"},
+	{org = "ballerina", name = "log"},
+	{org = "ballerina", name = "test"},
+	{org = "ballerina", name = "uuid"},
+	{org = "ballerinai", name = "observe"},
+	{org = "ballerinax", name = "health.fhir.r4"},
+	{org = "ballerinax", name = "health.fhir.r4.uscore501"}
+]
+modules = [
+	{org = "ballerinax", packageName = "health.fhir.r4utils.fhirtoccda", moduleName = "health.fhir.r4utils.fhirtoccda"}
 ]
 

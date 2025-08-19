@@ -297,7 +297,7 @@ isolated function linkCoverage(HRexCoverage coverageToLink, http:Client coverage
 # + return - A `r4:Bundle` on a successful search, or `r4:FHIRError` on failure
 isolated function executeFhirSearch(fhir:FHIRConnector fhirClient, string 'resource,
         map<string[]> searchParams) returns r4:Bundle|r4:FHIRError {
-    fhir:FHIRResponse|fhir:FHIRError searchRes = fhirClient->search('resource, searchParams);
+    fhir:FHIRResponse|fhir:FHIRError searchRes = fhirClient->search('resource, mode = fhir:GET, searchParameters = searchParams);
     if searchRes is fhir:FHIRError {
         log:printError("FHIR search error", searchRes);
         return INTERNAL_ERROR;
