@@ -536,12 +536,14 @@ public type PaginationContext record {|
 |};
 
 # Record to hold FHIR service information.
-# 
-# + name - The name of the service
-# + serviceUrl - The service URL
-# + status - Service status (active, inactive)
+#
+# + name - The name of the service  
+# + serviceUrl - The service URL  
+# + status - Service status (active, inactive)  
+# + apiConfig - API configuration details
 public type FHIRServiceInfo record {|
     string name;
     string serviceUrl;
     string status = "active";
+    ResourceAPIConfig apiConfig?;
 |};
