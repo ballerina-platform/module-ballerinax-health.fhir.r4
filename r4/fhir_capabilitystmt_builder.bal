@@ -43,6 +43,10 @@ public type CapabilityStatementConfig record {|
     ContactDetail[] contact?;
 |};
 
+# Generate a FHIR Capability Statement based on FHIR API configurations.
+#
+# + config - Additional configuration for the capability statement elements
+# + return - The generated FHIR Capability Statement or an error
 public isolated function generateFHIRCapabilityStatement(CapabilityStatementConfig? config = ()) returns CapabilityStatement|error {
 
     CapabilityStatement capabilityStatement = {
