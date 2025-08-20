@@ -33,8 +33,8 @@ isolated function encryptOperation(json value) returns json|fhirpath:Modificatio
 
 isolated function hashOperation(json value) returns json|fhirpath:ModificationFunctionError {
     if value is string {
-        string|error hashedValue = hashWithKey(value);
-        if hashedValue is error {
+        string|DeIdentificationError hashedValue = hashWithKey(value);
+        if hashedValue is DeIdentificationError {
             return fhirpath:createModificationFunctionError("Error occurred during hashing.", (), value);
         }
         return hashedValue;

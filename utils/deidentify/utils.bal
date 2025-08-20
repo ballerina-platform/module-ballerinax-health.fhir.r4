@@ -47,16 +47,7 @@ public isolated function encryptWithKey(string plaintext, string keyString = enc
     // Convert plaintext to bytes
     byte[] plaintextBytes = plaintext.toBytes();
 
-    // Prepare the key - AES requires 16, 24, or 32 byte keys
-    byte[] keyBytes = keyString.toBytes();
-
-    // Pad or truncate key to 16 bytes for AES-128
-    byte[16] aesKey = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    int keyLength = keyBytes.length() < 16 ? keyBytes.length() : 16;
-
-    foreach int i in 0 ..< keyLength {
-        aesKey[i] = keyBytes[i];
-    }
+    byte[16] aesKey = prepareAesKey(keyString);
 
     // Encrypt using AES-ECB
     byte[]|crypto:Error encryptedBytes = crypto:encryptAesEcb(plaintextBytes, aesKey);
@@ -81,7 +72,7 @@ public isolated function decryptWithKey(string encryptedText, string keyString) 
     // Manual hex string to byte array conversion
     int textLength = encryptedText.length();
     if textLength % 2 != 0 {
-        return error("Invalid encrypted text format");
+        return error("Invalid encrypted text format: hex string length must be even");
     }
 
     foreach int i in 0 ..< (textLength / 2) {
@@ -96,7 +87,7 @@ public isolated function decryptWithKey(string encryptedText, string keyString) 
             if hexChar >= "0" && hexChar <= "9" {
                 int|error charCode = int:fromString(hexChar);
                 if charCode is error {
-                    return error("Invalid hex character");
+                    return error("Invalid hex character: " + hexChar);
                 }
                 digitValue = charCode;
             } else if hexChar >= "A" && hexChar <= "F" {
@@ -113,16 +104,7 @@ public isolated function decryptWithKey(string encryptedText, string keyString) 
         encryptedBytes.push(<byte>byteValue);
     }
 
-    // Prepare the key - same as encryption
-    byte[] keyBytes = keyString.toBytes();
-
-    // Pad or truncate key to 16 bytes for AES-128
-    byte[16] aesKey = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    int keyLength = keyBytes.length() < 16 ? keyBytes.length() : 16;
-
-    foreach int i in 0 ..< keyLength {
-        aesKey[i] = keyBytes[i];
-    }
+    byte[16] aesKey = prepareAesKey(keyString);
 
     // Decrypt using AES-ECB
     byte[]|crypto:Error decryptedBytes = crypto:decryptAesEcb(encryptedBytes, aesKey);
@@ -145,7 +127,7 @@ public type DeIdentificationError distinct error;
 
 # Method to create a DeIdentificationError
 #
-# + errorMsg - the reason for the occurence of error
+# + errorMsg - the reason for the occurrence of error
 # + fhirPath - the fhirpath expression that is being evaluated
 # + operation - parameter description
 # + return - the error object
@@ -177,4 +159,18 @@ isolated function isEmptyResource(json fhirData) returns boolean {
 
     // For other types (int, float, decimal, boolean), they are not considered empty
     return false;
+}
+
+# Utility function to prepare a 16-byte AES key from a string
+#
+# + keyString - The key string to be prepared
+# + return - A 16-byte array for AES-128
+isolated function prepareAesKey(string keyString) returns byte[16] {
+    byte[] keyBytes = keyString.toBytes();
+    byte[16] aesKey = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    int keyLength = keyBytes.length() < 16 ? keyBytes.length() : 16;
+    foreach int i in 0 ..< keyLength {
+        aesKey[i] = keyBytes[i];
+    }
+    return aesKey;
 }
