@@ -365,6 +365,7 @@ dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "lang.runtime"},
 	{org = "ballerina", name = "log"},
+	{org = "ballerina", name = "task"},
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "url"},
 	{org = "ballerina", name = "uuid"},
