@@ -63,7 +63,7 @@ public isolated function registerModificationFunctions(map<fhirpath:Modification
 # + validateFHIRResource - Flag indicating whether to validate the FHIR resource.
 # + skipError - Flag indicating whether to skip errors during de-identification.
 # + return - The de-identified FHIR resource or an error.
-public isolated function deIdentifyFhirData(json fhirResource, boolean validateFHIRResource = fhirResourceValidation, boolean skipError = skipOnError) returns json|DeIdentificationError {
+public isolated function deIdentify(json fhirResource, boolean validateFHIRResource = fhirResourceValidation, boolean skipError = skipOnError) returns json|DeIdentificationError {
     log:printDebug("Starting de-identification process for FHIR resource: " + fhirResource.toJsonString());
 
     // Check if the resource is empty
@@ -86,7 +86,7 @@ public isolated function deIdentifyFhirData(json fhirResource, boolean validateF
 }
 
 isolated function deIdentifyBundle(json bundleResource, boolean validateFHIRResource, boolean skipError) returns json|DeIdentificationError {
-    if !(bundleResource is map<json>) {
+    if bundleResource !is map<json> {
         return createDeIdentificationError("Invalid bundle format: expected map<json>");
     }
 
@@ -100,7 +100,7 @@ isolated function deIdentifyBundle(json bundleResource, boolean validateFHIRReso
 
     json entryField = bundleMap.get("entry");
 
-    if !(entryField is json[]) {
+    if entryField !is json[] {
         return createDeIdentificationError("Invalid bundle entry format: expected json array");
     }
 
@@ -112,7 +112,7 @@ isolated function deIdentifyBundle(json bundleResource, boolean validateFHIRReso
     foreach int i in 0 ..< entries.length() {
         json entry = entries[i];
 
-        if !(entry is map<json>) {
+        if entry !is map<json> {
             if skipError {
                 log:printWarn(`Skipping invalid entry at index ${i.toString()}: not a map`);
                 deIdentifiedEntries.push(entry);
@@ -178,11 +178,8 @@ isolated function deIdentifySingleResource(json fhirResource, boolean validateFH
     }
 
     log:printDebug(`Available Operations: ${[...operations.keys(), "redact"].toString()}`);
-    log:printDebug("Provided Rules: ");
-    foreach FHIRPathRule rule in fhirPathRules {
-        log:printDebug(`[RULE] FHIR Path: ${rule.fhirPath}, Operation: ${rule.operation}`);
-    }
-    log:printDebug(`Original Resource: ${fhirResource.toJsonString()}`);
+    log:printDebug("Provided Rules: ", rules =  fhirPathRules.toJson());
+    log:printDebug(`Original Resource: ${fhirResource.toJson()}`);
 
     json modifiedResource = fhirResource;
 

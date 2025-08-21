@@ -63,7 +63,7 @@ json observationResource = {
 @test:Config {}
 function testDeIdentifyWithDefaultConfiguration() {
     // The default configuration has Patient.name with mask operation
-    json|DeIdentificationError result = deIdentifyFhirData(patientResource);
+    json|DeIdentificationError result = deIdentify(patientResource);
 
     test:assertTrue(result is json, msg = "Expected successful de-identification");
 
@@ -79,7 +79,7 @@ function testDeIdentifyWithDefaultConfiguration() {
 function testDeIdentifyWithEmptyResource() {
     json emptyResource = {};
 
-    json|DeIdentificationError result = deIdentifyFhirData(emptyResource);
+    json|DeIdentificationError result = deIdentify(emptyResource);
 
     test:assertTrue(result is json, msg = "Expected successful handling of empty resource");
     test:assertEquals(result, emptyResource, msg = "Expected empty resource to remain unchanged");
@@ -93,7 +93,7 @@ function testDeIdentifyWithMalformedResource() {
         // Missing required fields but still valid JSON
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(malformedResource);
+    json|DeIdentificationError result = deIdentify(malformedResource);
 
     // Should handle gracefully since skipOnError is true by default
     test:assertTrue(result is json, msg = "Expected successful handling of malformed resource");
@@ -108,7 +108,7 @@ function testDeIdentifyWithFhirValidationEnabled() {
         "name": [{"family": "Test"}]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(invalidFhirResource, validateFHIRResource = true, skipError = false);
+    json|DeIdentificationError result = deIdentify(invalidFhirResource, validateFHIRResource = true, skipError = false);
 
     test:assertTrue(result is DeIdentificationError, msg = "Expected a validation error");
 }
@@ -122,7 +122,7 @@ function testDeIdentifyWithFhirValidationDisabled() {
         "name": [{"family": "Test"}]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(invalidFhirResource, validateFHIRResource = false);
+    json|DeIdentificationError result = deIdentify(invalidFhirResource, validateFHIRResource = false);
 
     test:assertTrue(result is json, msg = "Expected successful processing with validation disabled");
 }
@@ -130,7 +130,7 @@ function testDeIdentifyWithFhirValidationDisabled() {
 // Test with different resource types
 @test:Config {}
 function testDeIdentifyWithObservationResource() {
-    json|DeIdentificationError result = deIdentifyFhirData(observationResource);
+    json|DeIdentificationError result = deIdentify(observationResource);
 
     test:assertTrue(result is json, msg = "Expected successful de-identification of Observation resource");
     // Since default rules target Patient.name, Observation should remain unchanged
@@ -154,7 +154,7 @@ function testCustomOperationRegistration() {
     // Test that the custom operation is now available
     // Note: This would require modifying the configuration to use the custom operation
     // For this test, we'll just verify the registration doesn't cause errors
-    json|DeIdentificationError result = deIdentifyFhirData(patientResource);
+    json|DeIdentificationError result = deIdentify(patientResource);
     test:assertTrue(result is json, msg = "Expected successful processing after custom operation registration");
 }
 
@@ -199,7 +199,7 @@ function testDeIdentifyWithComplexResource() {
         ]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(complexResource);
+    json|DeIdentificationError result = deIdentify(complexResource);
 
     test:assertTrue(result is json, msg = "Expected successful de-identification of complex resource");
 
@@ -223,7 +223,7 @@ function testDeIdentifyWithInvalidOperation() {
         "name": [{"family": "TestFamily"}]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(testResource);
+    json|DeIdentificationError result = deIdentify(testResource);
 
     // Should succeed since skipOnError is true by default
     test:assertTrue(result is json, msg = "Expected successful handling with skipOnError=true");
@@ -242,7 +242,7 @@ function testRedactOperationHandling() {
         "birthDate": "1990-01-01"
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(testResource);
+    json|DeIdentificationError result = deIdentify(testResource);
 
     test:assertTrue(result is json, msg = "Expected successful processing");
 
@@ -259,7 +259,7 @@ function testHashOperationWithDifferentTypes() {
         "name": [{"family": "NumberTest"}]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(resourceWithNumbers);
+    json|DeIdentificationError result = deIdentify(resourceWithNumbers);
 
     test:assertTrue(result is json, msg = "Expected successful handling of resource with number ID");
 }
@@ -273,7 +273,7 @@ function testEncryptOperationHandling() {
         "name": [{"family": "ToBeEncrypted"}]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(testResource);
+    json|DeIdentificationError result = deIdentify(testResource);
 
     test:assertTrue(result is json, msg = "Expected successful processing with encryption");
 }
@@ -285,7 +285,7 @@ function testDeIdentifyWithMinimalResource() {
         "resourceType": "Patient"
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(minimalResource);
+    json|DeIdentificationError result = deIdentify(minimalResource);
 
     test:assertTrue(result is json, msg = "Expected successful handling of minimal resource");
     test:assertEquals(result, minimalResource, msg = "Expected minimal resource to remain unchanged");
@@ -310,8 +310,8 @@ function testConcurrentDeIdentification() {
     };
 
     // Simulate concurrent calls
-    json|DeIdentificationError result1 = deIdentifyFhirData(resource1);
-    json|DeIdentificationError result2 = deIdentifyFhirData(resource2);
+    json|DeIdentificationError result1 = deIdentify(resource1);
+    json|DeIdentificationError result2 = deIdentify(resource2);
 
     test:assertTrue(result1 is json, msg = "Expected successful processing of first resource");
     test:assertTrue(result2 is json, msg = "Expected successful processing of second resource");
@@ -329,7 +329,7 @@ function testArrayAccessPatterns() {
         ]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(resourceWithArrays);
+    json|DeIdentificationError result = deIdentify(resourceWithArrays);
 
     test:assertTrue(result is json, msg = "Expected successful processing of resource with arrays");
 
@@ -366,7 +366,7 @@ function testDeeplyNestedStructures() {
         ]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(nestedResource);
+    json|DeIdentificationError result = deIdentify(nestedResource);
 
     test:assertTrue(result is json, msg = "Expected successful processing of deeply nested resource");
 }
@@ -380,7 +380,7 @@ function testErrorRecoveryScenarios() {
         "name": "InvalidNameFormat" // Should be array, not string
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(problematicResource);
+    json|DeIdentificationError result = deIdentify(problematicResource);
 
     // Should handle gracefully with skipOnError=true
     test:assertTrue(result is json, msg = "Expected graceful handling of problematic resource");

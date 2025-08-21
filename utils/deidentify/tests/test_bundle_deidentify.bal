@@ -88,7 +88,7 @@ function testBundleDeIdentificationWithMultiplePatients() {
         ]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(bundleResource);
+    json|DeIdentificationError result = deIdentify(bundleResource);
 
     test:assertTrue(result is json, msg = "Expected successful bundle de-identification");
 
@@ -168,7 +168,7 @@ function testBundleWithMixedResourceTypes() {
         ]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(bundleResource);
+    json|DeIdentificationError result = deIdentify(bundleResource);
 
     test:assertTrue(result is json, msg = "Expected successful processing of mixed bundle");
 
@@ -222,7 +222,7 @@ function testEmptyBundle() {
         "entry": []
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(emptyBundle);
+    json|DeIdentificationError result = deIdentify(emptyBundle);
 
     test:assertTrue(result is json, msg = "Expected successful processing of empty bundle");
 
@@ -243,7 +243,7 @@ function testBundleWithoutEntryField() {
         "type": "collection"
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(bundleWithoutEntry);
+    json|DeIdentificationError result = deIdentify(bundleWithoutEntry);
 
     test:assertTrue(result is json, msg = "Expected successful processing of bundle without entry field");
     test:assertEquals(result, bundleWithoutEntry, msg = "Expected bundle to remain unchanged");
@@ -259,7 +259,7 @@ function testBundleWithInvalidEntryFormat() {
         "entry": "invalid-entry-format" // Should be array, not string
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(invalidBundle);
+    json|DeIdentificationError result = deIdentify(invalidBundle);
 
     test:assertTrue(result is DeIdentificationError, msg = "Expected error for invalid entry format");
 }
@@ -285,7 +285,7 @@ function testBundleWithMissingResourceField() {
         ]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(bundleWithMissingResource, skipError = true);
+    json|DeIdentificationError result = deIdentify(bundleWithMissingResource, skipError = true);
 
     test:assertTrue(result is json, msg = "Expected successful processing with skipError=true");
 
@@ -338,7 +338,7 @@ function testBundleWithMissingResourceFieldNoSkip() {
         ]
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(bundleWithMissingResource, skipError = false);
+    json|DeIdentificationError result = deIdentify(bundleWithMissingResource, skipError = false);
 
     test:assertTrue(result is DeIdentificationError, msg = "Expected error with skipError=false");
 }
@@ -374,7 +374,7 @@ function testLargeBundleWithManyPatients() {
         "entry": entries
     };
 
-    json|DeIdentificationError result = deIdentifyFhirData(largeBundle);
+    json|DeIdentificationError result = deIdentify(largeBundle);
 
     test:assertTrue(result is json, msg = "Expected successful processing of large bundle");
 

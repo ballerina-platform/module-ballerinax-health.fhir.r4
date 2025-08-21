@@ -16,10 +16,18 @@
 
 import ballerinax/health.fhir.r4utils.fhirpath;
 
+# Star Mask Operation
+#
+# + value - The input value to be masked.
+# + return - The masked value.
 isolated function starMaskOperation(json value) returns json|fhirpath:ModificationFunctionError {
     return "*****";
 }
 
+# Encrypt Operation
+#
+# + value - The input value to be encrypted.
+# + return - The encrypted value.
 isolated function encryptOperation(json value) returns json|fhirpath:ModificationFunctionError {
     if value is string {
         string|DeIdentificationError encryptedValue = encryptWithKey(value);
@@ -31,6 +39,10 @@ isolated function encryptOperation(json value) returns json|fhirpath:Modificatio
     return fhirpath:createModificationFunctionError("Invalid input provided for encryptOperation.", (), value.toString());
 }
 
+# Hash Operation
+#
+# + value - The input value to be hashed.
+# + return - The hashed value.
 isolated function hashOperation(json value) returns json|fhirpath:ModificationFunctionError {
     if value is string {
         string|DeIdentificationError hashedValue = hashWithKey(value);

@@ -28,7 +28,7 @@ import ballerinax/health.fhir.r4utils.deidentify;
 ```
 
 ## Quick Start
-By default the package is configured to mask all `Patient.name` fields. You can use the `deIdentifyFhirData` function to de-identify a FHIR resource or Bundle.
+By default the package is configured to mask all `Patient.name` fields. You can use the `deIdentify` function to de-identify a FHIR resource or Bundle.
 
 ```ballerina
 import ballerinax/health.fhir.r4utils.deidentify;
@@ -47,7 +47,7 @@ public function main() {
         "gender": "male"
     };
 
-    json|deidentify:DeIdentificationError result = deidentify:deIdentifyFhirData(patientResource);
+    json|deidentify:DeIdentificationError result = deidentify:deIdentify(patientResource);
 
     if result is json {
         io:println("De-identified resource:");
@@ -78,6 +78,10 @@ Replaces sensitive data with asterisks (`*****`).
 ```toml
 [[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
 fhirPath = "Patient.name"
+operation = "mask"
+
+[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+fhirPath = "Patient.address.line"
 operation = "mask"
 ```
 
@@ -269,7 +273,7 @@ public function main() {
         "birthDate": "1990-05-15"
     };
 
-    json|deidentify:DeIdentificationError result = deidentify:deIdentifyFhirData(patient);
+    json|deidentify:DeIdentificationError result = deidentify:deIdentify(patient);
     if result is json {
         io:println("De-identified patient data: ", result);
     } else {
@@ -310,7 +314,7 @@ public function main() {
         ]
     };
 
-    json|deidentify:DeIdentificationError result = deidentify:deIdentifyFhirData(bundleResource);
+    json|deidentify:DeIdentificationError result = deidentify:deIdentify(bundleResource);
     io:println("De-identified bundle data: ", result);
 }
 ```
@@ -319,11 +323,11 @@ public function main() {
 
 ### Core Functions
 
-#### `deIdentifyFhirData`
+#### `deIdentify`
 De-identifies a FHIR resource or Bundle based on configured rules.
 
 ```ballerina
-public isolated function deIdentifyFhirData(
+public isolated function deIdentify(
     json fhirResource, 
     boolean validateFHIRResource = fhirResourceValidation, 
     boolean skipError = skipOnError
@@ -371,7 +375,7 @@ public isolated function decryptWithKey(string encryptedText, string keyString)
 ## Error Handling
 
 ```ballerina
-json|deidentify:DeIdentificationError result = deidentify:deIdentifyFhirData(patientResource);
+json|deidentify:DeIdentificationError result = deidentify:deIdentify(patientResource);
 
 if result is deidentify:DeIdentificationError {
     io:println(`Error: ${result.message()}`);
