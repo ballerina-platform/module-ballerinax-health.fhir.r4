@@ -114,7 +114,7 @@ isolated class InMemoryTerminology {
                                         );
                     log:printError(fHIRError.toBalString());
                 } else {
-                    string key = getKey(<string>c.url, <string>c.version);
+                    string key = getKey(<string>c.url, <string?>c.version?: "");
                     resultedConceptMapsMap[key] = c;
                 }
             }
