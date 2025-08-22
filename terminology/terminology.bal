@@ -726,3 +726,72 @@ public isolated function addValueSet(r4:ValueSet valueSet, Terminology? terminol
         return result;
     }
 }
+
+public isolated function addConceptMap(i4:ConceptMap conceptMap, Terminology? terminology = inMemoryTerminology) returns r4:FHIRError? {
+    if conceptMap.url == () {
+        return r4:createFHIRError(
+                    string `Cannot find the URL of the ConceptMap with name: ${conceptMap.name.toString()}`,
+                    r4:ERROR,
+                    r4:INVALID_REQUIRED,
+                    diagnostic = "Add a proper URL for the resource: https://hl7.org/fhir/R4/conceptmap-definitions.html#ConceptMap.url",
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
+    }
+    if conceptMap.version == () {
+        return r4:createFHIRError(
+                    string `Cannot find the version of the ConceptMap with name: ${conceptMap.name.toString()}`,
+                    r4:ERROR,
+                    r4:INVALID_REQUIRED,
+                    diagnostic = string `Add appropriate version for the resource: https://hl7.org/fhir/R4/conceptmap-definitions.html#ConceptMap.version`,
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
+    }
+    string url = <string>conceptMap.url;
+    string rVersion = <string>conceptMap.version;
+    r4:FHIRValidationError? validateResult = validator:validate(conceptMap.clone(), r4:ValueSet);
+
+    if validateResult is r4:FHIRValidationError {
+        return r4:createFHIRError(
+                    "Validation failed",
+                    r4:ERROR,
+                    r4:INVALID,
+                    diagnostic = string `Check whether the data conforms to the specification: https://hl7.org/fhir/R4/conceptmap-definitions.html`,
+                    errorType = r4:VALIDATION_ERROR,
+                    cause = validateResult,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
+    }
+    if (<Terminology>terminology).isConceptMapExist(url, rVersion) {
+        return r4:createFHIRError(
+                    "Duplicate entry",
+                    r4:ERROR,
+                    r4:PROCESSING_DUPLICATE,
+                    diagnostic = string `Already there is a ConceptMap exists in the registry with the URL: ${url}`,
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+    }
+    r4:FHIRError? result = (<Terminology>terminology).addConceptMap(conceptMap.clone());
+    if result is r4:FHIRError {
+        return result;
+    }
+}
+
+public isolated function searchConceptMaps(map<r4:RequestSearchParameter[]> params, Terminology? terminology = inMemoryTerminology) returns r4:FHIRError|i4:ConceptMap[] {
+    record {map<r4:RequestSearchParameter[]> searchParameters; int count; int offset;} paginationData = check modifySearchParamsWithPagination(params.clone());
+
+    // Validate the requested search parameters in the allowed list
+    foreach var param in paginationData.searchParameters.keys() {
+        if !VALUESETS_SEARCH_PARAMS.hasKey(param) {
+            return r4:createFHIRError(
+                        string `Invalid search parameter: ${param}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_SUPPORTED,
+                        diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toString()}`,
+                        errorType = r4:VALIDATION_ERROR
+                    );
+        }
+    }
+    return (<Terminology>terminology).searchConceptMap(paginationData.searchParameters.clone(), offset = paginationData.offset, count = paginationData.count);
+}
