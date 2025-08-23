@@ -12,7 +12,7 @@ This module provides a robust utility for merging two JSON objects using Balleri
 
 - **Composite Key Support**: Specify multiple fields as a composite key for array element matching.
 - **Type Safety**: Returns errors on type mismatches unless configured to ignore them.
-- **Preserves Base Structure**: The base JSON is never mutated; a new merged object is returned.
+- **Preserves Original Structure**: The original JSON is never mutated; a new merged object is returned.
 
 ## Usage
 
@@ -25,9 +25,9 @@ import ballerinax/health.fhir.r4utils.jsonmerge;
 ### Basic Merge
 
 ```ballerina
-json base = { "a": 1, "b": 2 };
-json src = { "b": 3, "c": 4 };
-json result = check jsonmerge:mergeJson(base, src);
+json original = { "a": 1, "b": 2 };
+json updates = { "b": 3, "c": 4 };
+json result = check jsonmerge:mergeJson(original, updates);
 ```
 
 Result:
@@ -38,10 +38,10 @@ Result:
 ### Array Merge by Key
 
 ```ballerina
-json base = { "items": [ { "id": 1, "value": "A" } ] };
-json src = { "items": [ { "id": 1, "value": "B" }, { "id": 2, "value": "C" } ] };
+json original = { "items": [ { "id": 1, "value": "A" } ] };
+json updates = { "items": [ { "id": 1, "value": "B" }, { "id": 2, "value": "C" } ] };
 map<string[]> keys = { "items": ["id"] };
-json result = check jsonmerge:mergeJson(base, src, keys);
+json result = check jsonmerge:mergeJson(original, updates, keys);
 ```
 
 Result:
@@ -58,10 +58,10 @@ This will match array elements where both `id` and `code` fields are equal.
 
 ## API Reference
 
-### mergeJson(json baseJson, json srcJson, map<string[]>? keys = ()) returns json|error
+### mergeJson(json original, json updates, map<string[]>? keys = ()) returns json|error
 
-- `baseJson`: The base JSON object.
-- `srcJson`: The source JSON object to merge.
+- `original`: The original JSON object.
+- `updates`: The updates JSON object to merge.
 - `keys`: (Optional) Map specifying merge keys for arrays at different paths. Supports composite keys.
 
 Returns the merged JSON object or an error if types mismatch.
@@ -71,7 +71,7 @@ For more details, see the implementation in [jsonmerge.bal](jsonmerge.bal).
 ## Strategy
 
 ### Main Merge Logic
-- **New Key Addition:** If a key exists only in source, it's directly added to the result  
+- **New Key Addition:** If a key exists only in updates JSON, it's directly added to the result  
 
 - **Existing Key Handling:** When a key exists in both objects, applies type-specific merge strategies
 
@@ -79,42 +79,42 @@ For more details, see the implementation in [jsonmerge.bal](jsonmerge.bal).
 
 **Strategy 1: Object-to-Object Merge**
 
-- Both source and base values are JSON objects
+- Both updates and original values are JSON objects
 - Performs recursive deep merge using the same mergeJson function 
 - Nested objects are merged recursively with filtered keys for nested paths
 
 **Strategy 2: Array-to-Array Merge**
 
-- Both source and base values are JSON arrays (json[]) 
+- Both updates and original values are JSON arrays (json[]) 
 - Two Sub-strategies:
 
   1. **Simple Append:** When no merge keys specified, concatenates arrays
 
-      - Concatenates source array to base array 
-      - Base elements come first, followed by source elements 
+      - Concatenates updates array to original array 
+      - Original elements come first, followed by updates elements 
       - Allows duplicate elements
 
   2.  **Key-Based Merge:** When merge keys provided, matches array elements by specified key fields 
 
       - First checks for exact JSON matches to avoid duplicates
-      - Extracts specified key field values from source elements 
-      - Compares key values between source and base array elements    
+      - Extracts specified key field values from updates elements 
+      - Compares key values between updates and original array elements    
         **Note:** Supports composite keys and primitive value matching only
       - When keys match, recursively merges the matching objects
       - Elements without matching keys are appended as new items
 
 **Strategy 3: Type Mismatch Handling**
 
-- Source and base have different types (object vs array, object vs primitive, etc.) 
+- Updates and original values have different types (object vs array, object vs primitive, etc.) 
 - **Configurable Behavior:**
 
   - Strict Mode (ignoreMismatchedTypes = false): Returns error on type mismatch
-  - Lenient Mode (ignoreMismatchedTypes = true): Preserves base value, ignores source
+  - Lenient Mode (ignoreMismatchedTypes = true): Preserves original value, ignores updates
 
 **Strategy 4: Primitive Value Merge**
 
 - Both values are primitive types (string, number, boolean, null) 
-- Source value overwrites base value completely
+- Updates value overwrites original value completely
 - Simple replacement strategy for non-structural data
 
 ## Error Handling

@@ -21,7 +21,7 @@ import ballerina/test;
 @test:Config {}
 function testmergeJson_FHIR() returns error? {
 
-    json src = {
+    json updates = {
         "resourceType": "Patient",
         "id": "591841",
         "meta": {
@@ -51,7 +51,7 @@ function testmergeJson_FHIR() returns error? {
         "birthDate": "1985-06-15"
     };
 
-    json base = {
+    json original = {
         "resourceType": "Patient",
         "identifier": [
             {
@@ -96,7 +96,7 @@ function testmergeJson_FHIR() returns error? {
         "identifier": ["value"],
         "identifier.type.coding": ["system", "code"]
     };
-    json mergeResult = check mergeJson(base, src, keysMap);
+    json mergeResult = check mergeJson(original, updates, keysMap);
     io:println("Result: ", mergeResult);
 
 }
@@ -105,8 +105,8 @@ function testmergeJson_FHIR() returns error? {
 function testFhirPatientResourceMerge() {
     io:println("=== FHIR Test: Patient Resource Merge ===");
 
-    // Source Patient resource with updated information
-    json sourcePatient = {
+    // Updates Patient resource with updated information
+    json updatesPatient = {
         "resourceType": "Patient",
         "id": "patient-123",
         "meta": {
@@ -161,8 +161,8 @@ function testFhirPatientResourceMerge() {
         ]
     };
 
-    // Base Patient resource with existing information
-    json basePatient = {
+    // Original Patient resource with existing information
+    json originalPatient = {
         "resourceType": "Patient",
         "id": "patient-123",
         "meta": {
@@ -238,18 +238,18 @@ function testFhirPatientResourceMerge() {
         "address": ["use"]
     };
 
-    json|error mergeResult = mergeJson(basePatient, sourcePatient, fhirKeys);
+    json|error mergeResult = mergeJson(originalPatient, updatesPatient, fhirKeys);
 
-    io:println("Source Patient: " + sourcePatient.toJsonString());
-    io:println("Base Patient: " + basePatient.toJsonString());
+    io:println("Updates Patient: " + updatesPatient.toJsonString());
+    io:println("Original Patient: " + originalPatient.toJsonString());
 
     if mergeResult is json {
         io:println("Merged Patient: " + mergeResult.toJsonString());
         map<json> resultMap = <map<json>>mergeResult;
         test:assertEquals(resultMap["resourceType"], "Patient");
         test:assertEquals(resultMap["id"], "patient-123");
-        test:assertTrue(resultMap.hasKey("gender"), "Should preserve gender from base");
-        test:assertTrue(resultMap.hasKey("birthDate"), "Should preserve birthDate from base");
+        test:assertTrue(resultMap.hasKey("gender"), "Should preserve gender from original");
+        test:assertTrue(resultMap.hasKey("birthDate"), "Should preserve birthDate from original");
     } else {
         io:println("Merge Error: " + mergeResult.message());
         test:assertFail("FHIR Patient merge should not fail");
@@ -260,8 +260,8 @@ function testFhirPatientResourceMerge() {
 function testFhirObservationResourceMerge() {
     io:println("=== FHIR Test: Observation Resource Merge ===");
 
-    // Source Observation with updated values
-    json sourceObservation = {
+    // Updates Observation with updated values
+    json updatesObservation = {
         "resourceType": "Observation",
         "id": "obs-vitals-001",
         "status": "final",
@@ -327,8 +327,8 @@ function testFhirObservationResourceMerge() {
         ]
     };
 
-    // Base Observation with existing data
-    json baseObservation = {
+    // Original Observation with existing data
+    json originalObservation = {
         "resourceType": "Observation",
         "id": "obs-vitals-001",
         "meta": {
@@ -408,17 +408,17 @@ function testFhirObservationResourceMerge() {
         "component.code.coding": ["system", "code"]
     };
 
-    json|error mergeResult = mergeJson(baseObservation, sourceObservation, fhirKeys);
+    json|error mergeResult = mergeJson(originalObservation, updatesObservation, fhirKeys);
 
-    io:println("Source Observation: " + sourceObservation.toJsonString());
-    io:println("Base Observation: " + baseObservation.toJsonString());
+    io:println("Updates Observation: " + updatesObservation.toJsonString());
+    io:println("Original Observation: " + originalObservation.toJsonString());
 
     if mergeResult is json {
         io:println("Merged Observation: " + mergeResult.toJsonString());
         map<json> resultMap = <map<json>>mergeResult;
         test:assertEquals(resultMap["resourceType"], "Observation");
-        test:assertEquals(resultMap["status"], "final"); // Should be updated from source
-        test:assertTrue(resultMap.hasKey("performer"), "Should preserve performer from base");
+        test:assertEquals(resultMap["status"], "final"); // Should be updated from updates
+        test:assertTrue(resultMap.hasKey("performer"), "Should preserve performer from original");
     } else {
         io:println("Merge Error: " + mergeResult.message());
         test:assertFail("FHIR Observation merge should not fail");
@@ -429,8 +429,8 @@ function testFhirObservationResourceMerge() {
 function testFhirMedicationRequestMerge() {
     io:println("=== FHIR Test: MedicationRequest Resource Merge ===");
 
-    // Source MedicationRequest with updates
-    json sourceMedicationRequest = {
+    // Updates MedicationRequest with updates
+    json updatesMedicationRequest = {
         "resourceType": "MedicationRequest",
         "id": "med-req-001",
         "status": "active",
@@ -495,8 +495,8 @@ function testFhirMedicationRequestMerge() {
         ]
     };
 
-    // Base MedicationRequest with existing data
-    json baseMedicationRequest = {
+    // Original MedicationRequest with existing data
+    json originalMedicationRequest = {
         "resourceType": "MedicationRequest",
         "id": "med-req-001",
         "meta": {
@@ -558,19 +558,19 @@ function testFhirMedicationRequestMerge() {
         "reasonCode": ["coding"]
     };
 
-    json|error mergeResult = mergeJson(baseMedicationRequest, sourceMedicationRequest, fhirKeys);
+    json|error mergeResult = mergeJson(originalMedicationRequest, updatesMedicationRequest, fhirKeys);
 
-    io:println("Source MedicationRequest: " + sourceMedicationRequest.toJsonString());
-    io:println("Base MedicationRequest: " + baseMedicationRequest.toJsonString());
+    io:println("Updates MedicationRequest: " + updatesMedicationRequest.toJsonString());
+    io:println("Original MedicationRequest: " + originalMedicationRequest.toJsonString());
 
     if mergeResult is json {
         io:println("Merged MedicationRequest: " + mergeResult.toJsonString());
         map<json> resultMap = <map<json>>mergeResult;
         test:assertEquals(resultMap["resourceType"], "MedicationRequest");
-        test:assertEquals(resultMap["status"], "active"); // Should be updated from source
-        test:assertTrue(resultMap.hasKey("priority"), "Should preserve priority from base");
-        test:assertTrue(resultMap.hasKey("encounter"), "Should preserve encounter from base");
-        test:assertTrue(resultMap.hasKey("reasonCode"), "Should preserve reasonCode from base");
+        test:assertEquals(resultMap["status"], "active"); // Should be updated from updates
+        test:assertTrue(resultMap.hasKey("priority"), "Should preserve priority from original");
+        test:assertTrue(resultMap.hasKey("encounter"), "Should preserve encounter from original");
+        test:assertTrue(resultMap.hasKey("reasonCode"), "Should preserve reasonCode from original");
     } else {
         io:println("Merge Error: " + mergeResult.message());
         test:assertFail("FHIR MedicationRequest merge should not fail");
@@ -581,8 +581,8 @@ function testFhirMedicationRequestMerge() {
 function testFhirBundleResourceMerge() {
     io:println("=== FHIR Test: Bundle Resource Merge ===");
 
-    // Source Bundle with additional entries
-    json sourceBundle = {
+    // Updates Bundle with additional entries
+    json updatesBundle = {
         "resourceType": "Bundle",
         "id": "bundle-001",
         "type": "collection",
@@ -626,8 +626,8 @@ function testFhirBundleResourceMerge() {
         ]
     };
 
-    // Base Bundle with existing entries
-    json baseBundle = {
+    // Original Bundle with existing entries
+    json originalBundle = {
         "resourceType": "Bundle",
         "id": "bundle-001",
         "meta": {
@@ -678,17 +678,17 @@ function testFhirBundleResourceMerge() {
         "entry": ["fullUrl"]
     };
 
-    json|error mergeResult = mergeJson(baseBundle, sourceBundle, fhirKeys);
+    json|error mergeResult = mergeJson(originalBundle, updatesBundle, fhirKeys);
 
-    io:println("Source Bundle: " + sourceBundle.toJsonString());
-    io:println("Base Bundle: " + baseBundle.toJsonString());
+    io:println("Updates Bundle: " + updatesBundle.toJsonString());
+    io:println("Original Bundle: " + originalBundle.toJsonString());
 
     if mergeResult is json {
         io:println("Merged Bundle: " + mergeResult.toJsonString());
         map<json> resultMap = <map<json>>mergeResult;
         test:assertEquals(resultMap["resourceType"], "Bundle");
         test:assertEquals(resultMap["type"], "collection");
-        test:assertTrue(resultMap.hasKey("total"), "Should preserve total from base");
+        test:assertTrue(resultMap.hasKey("total"), "Should preserve total from original");
 
         // Check that entries are properly merged
         json entryJson = resultMap["entry"];
@@ -705,8 +705,8 @@ function testFhirBundleResourceMerge() {
 function testFhirDiagnosticReportMerge() {
     io:println("=== FHIR Test: DiagnosticReport Resource Merge ===");
 
-    // Source DiagnosticReport with updated results
-    json sourceDiagnosticReport = {
+    // Updates DiagnosticReport with updated results
+    json updatesDiagnosticReport = {
         "resourceType": "DiagnosticReport",
         "id": "report-001",
         "status": "final",
@@ -795,8 +795,8 @@ function testFhirDiagnosticReportMerge() {
         }
     };
 
-    // Base DiagnosticReport with existing data and some overlapping results
-    json baseDiagnosticReport = {
+    // Original DiagnosticReport with existing data and some overlapping results
+    json originalDiagnosticReport = {
         "resourceType": "DiagnosticReport",
         "id": "report-001",
         "status": "preliminary",
@@ -925,12 +925,12 @@ function testFhirDiagnosticReportMerge() {
         "result.referenceRange.high": ["value", "unit"]
     };
 
-    io:println("Source DiagnosticReport:");
-    io:println(sourceDiagnosticReport.toJsonString());
+    io:println("Updates DiagnosticReport:");
+    io:println(updatesDiagnosticReport.toJsonString());
     io:println("");
 
-    io:println("Base DiagnosticReport:");
-    io:println(baseDiagnosticReport.toJsonString());
+    io:println("Original DiagnosticReport:");
+    io:println(originalDiagnosticReport.toJsonString());
     io:println("");
 
     io:println("FHIR Keys Map:");
@@ -938,7 +938,7 @@ function testFhirDiagnosticReportMerge() {
     io:println("");
 
     // Perform the merge
-    json|error mergeResult = mergeJson(baseDiagnosticReport, sourceDiagnosticReport, fhirKeys);
+    json|error mergeResult = mergeJson(originalDiagnosticReport, updatesDiagnosticReport, fhirKeys);
 
     if mergeResult is json {
         io:println("Merged DiagnosticReport:");
@@ -949,17 +949,17 @@ function testFhirDiagnosticReportMerge() {
         // Verify basic properties
         test:assertEquals(resultMap["resourceType"], "DiagnosticReport", "Resource type should be preserved");
         test:assertEquals(resultMap["id"], "report-001", "ID should be preserved");
-        test:assertEquals(resultMap["status"], "final", "Status should be updated from source");
+        test:assertEquals(resultMap["status"], "final", "Status should be updated from updates");
 
         // Verify subject merge
         json subjectJson = resultMap["subject"];
         if subjectJson is map<json> {
             test:assertEquals(subjectJson["reference"], "Patient/patient-123", "Subject reference should be preserved");
-            test:assertTrue(subjectJson.hasKey("display"), "Subject display should be preserved from base");
+            test:assertTrue(subjectJson.hasKey("display"), "Subject display should be preserved from original");
         }
 
-        // Verify encounter is preserved from base
-        test:assertTrue(resultMap.hasKey("encounter"), "Encounter should be preserved from base");
+        // Verify encounter is preserved from original
+        test:assertTrue(resultMap.hasKey("encounter"), "Encounter should be preserved from original");
 
         // Verify result array merge
         json resultsJson = resultMap["result"];
@@ -982,9 +982,9 @@ function testFhirDiagnosticReportMerge() {
             }
 
             if glucoseResult is map<json> {
-                test:assertTrue(glucoseResult.hasKey("valueQuantity"), "Glucose should have valueQuantity from source");
-                test:assertTrue(glucoseResult.hasKey("code"), "Glucose should have code from base");
-                test:assertEquals(glucoseResult["status"], "final", "Glucose status should be updated from source");
+                test:assertTrue(glucoseResult.hasKey("valueQuantity"), "Glucose should have valueQuantity from updates");
+                test:assertTrue(glucoseResult.hasKey("code"), "Glucose should have code from original");
+                test:assertEquals(glucoseResult["status"], "final", "Glucose status should be updated from updates");
             }
         }
 
@@ -997,9 +997,9 @@ function testFhirDiagnosticReportMerge() {
         // Verify meta merge
         json metaJson = resultMap["meta"];
         if metaJson is map<json> {
-            test:assertEquals(metaJson["versionId"], "2", "Version should be updated from source");
+            test:assertEquals(metaJson["versionId"], "2", "Version should be updated from updates");
             test:assertEquals(metaJson["source"], "lab-system-v2", "Source should be updated");
-            test:assertTrue(metaJson.hasKey("profile"), "Profile should be preserved from base");
+            test:assertTrue(metaJson.hasKey("profile"), "Profile should be preserved from original");
         }
 
         io:println("FHIR DiagnosticReport merge test completed successfully");
@@ -1015,8 +1015,8 @@ function testFhirDiagnosticReportMerge() {
 function testFhirObservationMerge() {
     io:println("=== FHIR Test: Observation Resource Merge ===");
 
-    // Source Observation with updated values
-    json sourceObservation = {
+    // Updates Observation with updated values
+    json updatesObservation = {
         "resourceType": "Observation",
         "id": "glucose-001",
         "status": "final",
@@ -1079,7 +1079,7 @@ function testFhirObservationMerge() {
         ]
     };
 
-    json baseObservation = {
+    json originalObservation = {
         "resourceType": "Observation",
         "id": "glucose-001",
         "status": "preliminary",
@@ -1139,16 +1139,16 @@ function testFhirObservationMerge() {
         "referenceRange": ["low.value", "high.value"]
     };
 
-    json|error mergeResult = mergeJson(baseObservation, sourceObservation, observationKeys);
+    json|error mergeResult = mergeJson(originalObservation, updatesObservation, observationKeys);
 
     if mergeResult is json {
         io:println("Merged Observation:");
         io:println(mergeResult.toJsonString());
 
         map<json> resultMap = <map<json>>mergeResult;
-        test:assertEquals(resultMap["status"], "final", "Status should be updated from source");
-        test:assertTrue(resultMap.hasKey("valueQuantity"), "ValueQuantity should be added from source");
-        test:assertTrue(resultMap.hasKey("effectiveDateTime"), "EffectiveDateTime should be preserved from base");
+        test:assertEquals(resultMap["status"], "final", "Status should be updated from updates");
+        test:assertTrue(resultMap.hasKey("valueQuantity"), "ValueQuantity should be added from updates");
+        test:assertTrue(resultMap.hasKey("effectiveDateTime"), "EffectiveDateTime should be preserved from original");
 
         io:println("FHIR Observation merge test completed successfully");
     } else {
@@ -1161,7 +1161,7 @@ function testFhirObservationMerge() {
 function testFhirPatientMerge() {
     io:println("=== FHIR Test: Patient Resource Merge ===");
 
-    json sourcePatient = {
+    json updatesPatient = {
         "resourceType": "Patient",
         "id": "patient-123",
         "active": true,
@@ -1197,7 +1197,7 @@ function testFhirPatientMerge() {
         ]
     };
 
-    json basePatient = {
+    json originalPatient = {
         "resourceType": "Patient",
         "id": "patient-123",
         "active": false,
@@ -1249,16 +1249,16 @@ function testFhirPatientMerge() {
         "maritalStatus.coding": ["system", "code"]
     };
 
-    json|error mergeResult = mergeJson(basePatient, sourcePatient, patientKeys);
+    json|error mergeResult = mergeJson(originalPatient, updatesPatient, patientKeys);
 
     if mergeResult is json {
         io:println("Merged Patient:");
         io:println(mergeResult.toJsonString());
 
         map<json> resultMap = <map<json>>mergeResult;
-        test:assertEquals(resultMap["active"], true, "Active should be updated from source");
-        test:assertTrue(resultMap.hasKey("gender"), "Gender should be preserved from base");
-        test:assertTrue(resultMap.hasKey("birthDate"), "BirthDate should be preserved from base");
+        test:assertEquals(resultMap["active"], true, "Active should be updated from updates");
+        test:assertTrue(resultMap.hasKey("gender"), "Gender should be preserved from original");
+        test:assertTrue(resultMap.hasKey("birthDate"), "BirthDate should be preserved from original");
 
         json nameJson = resultMap["name"];
         if nameJson is json[] {

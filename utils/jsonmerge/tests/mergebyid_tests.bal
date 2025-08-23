@@ -19,8 +19,8 @@ import ballerina/test;
 
 @test:Config {}
 function testComplexMergeByIdStrategy() {
-    // Create complex source JSON object with nested arrays
-    json sourceJson = {
+    // Create complex updates JSON object with nested arrays
+    json updatesJson = {
         "companyName": "TechCorp",
         "employees": [
             {
@@ -46,8 +46,8 @@ function testComplexMergeByIdStrategy() {
         "location": "San Francisco"
     };
 
-    // Create complex base JSON object with nested arrays
-    json baseJson = {
+    // Create complex original JSON object with nested arrays
+    json originalJson = {
         "companyName": "TechCorp Inc",
         "employees": [
             {
@@ -80,11 +80,11 @@ function testComplexMergeByIdStrategy() {
     };
 
     // Perform deep merge with mergeById strategy
-    json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Complex MergeById Strategy ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if mergeResult is json {
         io:println("Result: " + mergeResult.toJsonString());
     } else {
@@ -95,25 +95,25 @@ function testComplexMergeByIdStrategy() {
 
 @test:Config {}
 function testEmptyArraysMerge() {
-    json sourceJson = {
+    json updatesJson = {
         "items": [],
-        "name": "Source"
+        "name": "Updates"
     };
 
-    json baseJson = {
+    json originalJson = {
         "items": [],
-        "description": "Base"
+        "description": "original"
     };
 
     map<string[]> idsMap = {
         "items": ["id"]
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, idsMap);
+    json|error result = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Empty Arrays Merge ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -124,22 +124,22 @@ function testEmptyArraysMerge() {
 
 @test:Config {}
 function testTypeMismatchArrayToObject() {
-    json sourceJson = {
+    json updatesJson = {
         "data": [1, 2, 3]
     };
 
-    json baseJson = {
+    json originalJson = {
         "data": {
             "type": "object",
             "value": "test"
         }
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
     io:println("=== Test Case: Type Mismatch - Array to Object ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -150,22 +150,22 @@ function testTypeMismatchArrayToObject() {
 
 @test:Config {}
 function testTypeMismatchObjectToArray() {
-    json sourceJson = {
+    json updatesJson = {
         "data": {
             "type": "object",
-            "value": "source"
+            "value": "updates"
         }
     };
 
-    json baseJson = {
+    json originalJson = {
         "data": ["item1", "item2"]
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
     io:println("=== Test Case: Type Mismatch - Object to Array ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -176,19 +176,19 @@ function testTypeMismatchObjectToArray() {
 
 @test:Config {}
 function testPrimitiveToArrayMerge() {
-    json sourceJson = {
+    json updatesJson = {
         "tags": "important"
     };
 
-    json baseJson = {
+    json originalJson = {
         "tags": ["urgent", "priority"]
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
     io:println("=== Test Case: Primitive to Array Merge ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -199,7 +199,7 @@ function testPrimitiveToArrayMerge() {
 
 @test:Config {}
 function testMissingIdFieldsInArray() {
-    json sourceJson = {
+    json updatesJson = {
         "users": [
             {
                 "id": 1,
@@ -211,7 +211,7 @@ function testMissingIdFieldsInArray() {
         ]
     };
 
-    json baseJson = {
+    json originalJson = {
         "users": [
             {
                 "id": 1,
@@ -228,11 +228,11 @@ function testMissingIdFieldsInArray() {
         "users": ["id"]
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, idsMap);
+    json|error result = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Missing ID Fields in Array ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -242,21 +242,21 @@ function testMissingIdFieldsInArray() {
 
 @test:Config {}
 function testPrimitiveArrayMerge() {
-    json sourceJson = {
+    json updatesJson = {
         "numbers": [1, 2, 3],
         "strings": ["a", "b"]
     };
 
-    json baseJson = {
+    json originalJson = {
         "numbers": [4, 5, 6],
         "strings": ["c", "d"]
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
     io:println("=== Test Case: Primitive Array Merge ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -267,9 +267,9 @@ function testPrimitiveArrayMerge() {
 
 @test:Config {}
 function testNestedObjectMerge() {
-    json sourceJson = {
+    json updatesJson = {
         "config": {
-            "database": {
+            "dataoriginal": {
                 "host": "localhost",
                 "port": 5432
             },
@@ -279,9 +279,9 @@ function testNestedObjectMerge() {
         }
     };
 
-    json baseJson = {
+    json originalJson = {
         "config": {
-            "database": {
+            "dataoriginal": {
                 "host": "remote-host",
                 "username": "admin"
             },
@@ -291,11 +291,11 @@ function testNestedObjectMerge() {
         }
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
     io:println("=== Test Case: Nested Object Merge ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -305,19 +305,19 @@ function testNestedObjectMerge() {
 }
 
 @test:Config {}
-function testEmptySourceObject() {
-    json sourceJson = {};
+function testEmptyUpdatesObject() {
+    json updatesJson = {};
 
-    json baseJson = {
-        "name": "Base",
+    json originalJson = {
+        "name": "original",
         "items": [1, 2, 3]
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
-    io:println("=== Test Case: Empty Source Object ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("=== Test Case: Empty Updates Object ===");
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -327,19 +327,19 @@ function testEmptySourceObject() {
 }
 
 @test:Config {}
-function testEmptyBaseObject() {
-    json sourceJson = {
-        "name": "Source",
+function testEmptyoriginalObject() {
+    json updatesJson = {
+        "name": "Updates",
         "items": [1, 2, 3]
     };
 
-    json baseJson = {};
+    json originalJson = {};
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
-    io:println("=== Test Case: Empty Base Object ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("=== Test Case: Empty original Object ===");
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -348,42 +348,20 @@ function testEmptyBaseObject() {
 
 }
 
-@test:Config {}
-function testInvalidStrategyError() {
-    json sourceJson = {
-        "name": "Source"
-    };
-
-    json baseJson = {
-        "name": "Base"
-    };
-
-    json|error result = mergeJson(baseJson, sourceJson, ());
-
-    io:println("=== Test Case: Invalid Strategy Error ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
-    if result is json {
-        io:println("Result: " + result.toJsonString());
-    } else {
-        io:println("Error: " + result.message());
-    }
-
-}
 
 @test:Config {}
-function testNonObjectSourceError() {
-    json sourceJson = "not an object";
+function testNonObjectUpdatesError() {
+    json updatesJson = "not an object";
 
-    json baseJson = {
-        "name": "Base"
+    json originalJson = {
+        "name": "original"
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
-    io:println("=== Test Case: Non-Object Source Error ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("=== Test Case: Non-Object Updates Error ===");
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -394,7 +372,7 @@ function testNonObjectSourceError() {
 
 @test:Config {}
 function testMixedArrayElementTypes() {
-    json sourceJson = {
+    json updatesJson = {
         "items": [
             {
                 "id": 1,
@@ -406,7 +384,7 @@ function testMixedArrayElementTypes() {
         ]
     };
 
-    json baseJson = {
+    json originalJson = {
         "items": [
             {
                 "id": 1,
@@ -421,11 +399,11 @@ function testMixedArrayElementTypes() {
         "items": ["id"]
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, idsMap);
+    json|error result = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Mixed Array Element Types ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -436,30 +414,30 @@ function testMixedArrayElementTypes() {
 
 @test:Config {}
 function testDeepNestedArrayMerge() {
-    json sourceJson = {
+    json updatesJson = {
         "level1": {
             "level2": {
                 "items": [
                     {
                         "id": "A",
-                        "data": "source_data"
+                        "data": "updates_data"
                     }
                 ]
             }
         }
     };
 
-    json baseJson = {
+    json originalJson = {
         "level1": {
             "level2": {
                 "items": [
                     {
                         "id": "A",
-                        "metadata": "base_metadata"
+                        "metadata": "original_metadata"
                     },
                     {
                         "id": "B",
-                        "data": "base_only"
+                        "data": "original_only"
                     }
                 ]
             }
@@ -470,11 +448,11 @@ function testDeepNestedArrayMerge() {
         "level1.level2.items": ["id"]
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, idsMap);
+    json|error result = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Deep Nested Array Merge ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -485,21 +463,21 @@ function testDeepNestedArrayMerge() {
 
 @test:Config {}
 function testAppendStrategyWithArrays() {
-    json sourceJson = {
+    json updatesJson = {
         "tags": ["new", "feature"],
         "categories": ["tech"]
     };
 
-    json baseJson = {
+    json originalJson = {
         "tags": ["existing", "old"],
         "categories": ["business", "finance"]
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
     io:println("=== Test Case: Append Strategy with Arrays ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -510,27 +488,27 @@ function testAppendStrategyWithArrays() {
 
 @test:Config {}
 function testNullValuesHandling() {
-    json sourceJson = {
-        "name": "Source",
+    json updatesJson = {
+        "name": "Updates",
         "value": (),
         "data": {
             "field1": "test"
         }
     };
 
-    json baseJson = {
+    json originalJson = {
         "name": (),
-        "description": "Base",
+        "description": "original",
         "data": {
             "field2": "value"
         }
     };
 
-    json|error result = mergeJson(baseJson, sourceJson, ());
+    json|error result = mergeJson(originalJson, updatesJson, ());
 
     io:println("=== Test Case: Null Values Handling ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if result is json {
         io:println("Result: " + result.toJsonString());
     } else {
@@ -541,8 +519,8 @@ function testNullValuesHandling() {
 
 @test:Config {}
 function testCompositeKeyMergeWithMultipleIds() {
-    // Create source JSON with composite key elements (id + code)
-    json sourceJson = {
+    // Create updates JSON with composite key elements (id + code)
+    json updatesJson = {
         "products": [
             {
                 "id": 1,
@@ -572,8 +550,8 @@ function testCompositeKeyMergeWithMultipleIds() {
         }
     };
 
-    // Create base JSON with some matching and non-matching composite keys
-    json baseJson = {
+    // Create original JSON with some matching and non-matching composite keys
+    json originalJson = {
         "products": [
             {
                 "id": 1,
@@ -599,7 +577,7 @@ function testCompositeKeyMergeWithMultipleIds() {
             }
         ],
         "metadata": {
-            "Base": "warehouse_system",
+            "original": "warehouse_system",
             "lastUpdated": "2024-01-15"
         }
     };
@@ -609,11 +587,11 @@ function testCompositeKeyMergeWithMultipleIds() {
         "products": ["id", "code"] // Composite key: id + code
     };
 
-    json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Composite Key Merge (ID + Code) ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if mergeResult is json {
         io:println("Result: " + mergeResult.toJsonString());
     } else {
@@ -624,8 +602,8 @@ function testCompositeKeyMergeWithMultipleIds() {
 
 @test:Config {}
 function testMultipleFieldMatchingScenario() {
-    // Create source with users having both userId and departmentCode
-    json sourceJson = {
+    // Create updates with users having both userId and departmentCode
+    json updatesJson = {
         "users": [
             {
                 "userId": "U001",
@@ -656,8 +634,8 @@ function testMultipleFieldMatchingScenario() {
         ]
     };
 
-    // Create base with some matching composite keys
-    json baseJson = {
+    // Create original with some matching composite keys
+    json originalJson = {
         "users": [
             {
                 "userId": "U001",
@@ -699,11 +677,11 @@ function testMultipleFieldMatchingScenario() {
         "users.projects": ["projectId"]
     };
 
-    json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Multiple Field Matching (UserID + DepartmentCode) ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if mergeResult is json {
         io:println("Result: " + mergeResult.toJsonString());
     } else {
@@ -714,8 +692,8 @@ function testMultipleFieldMatchingScenario() {
 
 @test:Config {}
 function testTripleCompositeKeyScenario() {
-    // Create source with elements requiring 3 fields to match
-    json sourceJson = {
+    // Create updates with elements requiring 3 fields to match
+    json updatesJson = {
         "transactions": [
             {
                 "accountId": "ACC001",
@@ -742,7 +720,7 @@ function testTripleCompositeKeyScenario() {
         ]
     };
 
-    json baseJson = {
+    json originalJson = {
         "transactions": [
             {
                 "accountId": "ACC001",
@@ -774,11 +752,11 @@ function testTripleCompositeKeyScenario() {
         "transactions": ["accountId", "transactionType", "currency"]
     };
 
-    json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Triple Composite Key (AccountID + Type + Currency) ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if mergeResult is json {
         io:println("Result: " + mergeResult.toJsonString());
     } else {
@@ -790,7 +768,7 @@ function testTripleCompositeKeyScenario() {
 @test:Config {}
 function testPartialCompositeKeyMatch() {
     // Test case where some elements have partial composite key matches
-    json sourceJson = {
+    json updatesJson = {
         "orders": [
             {
                 "orderId": "ORD001",
@@ -814,7 +792,7 @@ function testPartialCompositeKeyMatch() {
         ]
     };
 
-    json baseJson = {
+    json originalJson = {
         "orders": [
             {
                 "orderId": "ORD001",
@@ -837,11 +815,11 @@ function testPartialCompositeKeyMatch() {
         "orders": ["orderId", "customerId"]
     };
 
-    json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Partial Composite Key Match ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if mergeResult is json {
         io:println("Result: " + mergeResult.toJsonString());
     } else {
@@ -853,7 +831,7 @@ function testPartialCompositeKeyMatch() {
 @test:Config {}
 function testNestedCompositeKeyMerge() {
     // Test nested arrays with composite keys
-    json sourceJson = {
+    json updatesJson = {
         "departments": [
             {
                 "deptId": "ENG",
@@ -876,7 +854,7 @@ function testNestedCompositeKeyMerge() {
         ]
     };
 
-    json baseJson = {
+    json originalJson = {
         "departments": [
             {
                 "deptId": "ENG",
@@ -905,11 +883,11 @@ function testNestedCompositeKeyMerge() {
         "departments.employees": ["empId", "teamCode"]
     };
 
-    json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Nested Composite Key Merge ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if mergeResult is json {
         io:println("Result: " + mergeResult.toJsonString());
     } else {
@@ -921,7 +899,7 @@ function testNestedCompositeKeyMerge() {
 @test:Config {}
 function testMixedSingleAndCompositeKeys() {
     // Test mixing single and composite keys in same structure
-    json sourceJson = {
+    json updatesJson = {
         "customers": [
             {
                 "customerId": "C001",
@@ -945,7 +923,7 @@ function testMixedSingleAndCompositeKeys() {
         ]
     };
 
-    json baseJson = {
+    json originalJson = {
         "customers": [
             {
                 "customerId": "C001",
@@ -981,11 +959,11 @@ function testMixedSingleAndCompositeKeys() {
         "customers.orders": ["orderId", "productCode"] // Composite key
     };
 
-    json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, idsMap);
 
     io:println("=== Test Case: Mixed Single and Composite Keys ===");
-    io:println("Source: " + sourceJson.toJsonString());
-    io:println("Base: " + baseJson.toJsonString());
+    io:println("Updates: " + updatesJson.toJsonString());
+    io:println("Original: " + originalJson.toJsonString());
     if mergeResult is json {
         io:println("Result: " + mergeResult.toJsonString());
     } else {
@@ -996,8 +974,8 @@ function testMixedSingleAndCompositeKeys() {
 
 @test:Config {}
 function testComplexNestedJsonMerge() {
-    // Create complex source JSON with multiple levels of nesting
-    json sourceJson = {
+    // Create complex updates JSON with multiple levels of nesting
+    json updatesJson = {
         "company": {
             "name": "TechCorp Solutions",
             "departments": [
@@ -1059,8 +1037,8 @@ function testComplexNestedJsonMerge() {
         }
     };
 
-    // Create complex base JSON with overlapping and additional data
-    json baseJson = {
+    // Create complex original JSON with overlapping and additional data
+    json originalJson = {
         "company": {
             "name": "TechCorp Inc",
             "founded": 2015,
@@ -1142,14 +1120,14 @@ function testComplexNestedJsonMerge() {
     };
 
     // Perform deep merge
-    json|error mergeResult = mergeJson(baseJson, sourceJson, keysMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, keysMap);
 
     io:println("=== Complex Nested JSON Merge Test ===");
-    io:println("Source JSON:");
-    io:println(sourceJson.toJsonString());
+    io:println("Updates JSON:");
+    io:println(updatesJson.toJsonString());
     io:println("");
-    io:println("Base JSON:");
-    io:println(baseJson.toJsonString());
+    io:println("Original JSON:");
+    io:println(originalJson.toJsonString());
     io:println("");
     io:println("Keys Map:");
     io:println(keysMap.toString());
@@ -1175,7 +1153,7 @@ function testComplexNestedJsonMerge() {
 @test:Config {}
 function testDeeplyNestedArraysWithCompositeKeys() {
     // Test case with composite keys and deeply nested arrays
-    json sourceJson = {
+    json updatesJson = {
         "organization": {
             "regions": [
                 {
@@ -1212,7 +1190,7 @@ function testDeeplyNestedArraysWithCompositeKeys() {
         }
     };
 
-    json baseJson = {
+    json originalJson = {
         "organization": {
             "regions": [
                 {
@@ -1271,14 +1249,14 @@ function testDeeplyNestedArraysWithCompositeKeys() {
         "organization.regions.offices.teams.members.certifications": ["certId"]
     };
 
-    json|error mergeResult = mergeJson(baseJson, sourceJson, keysMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, keysMap);
 
     io:println("=== Deeply Nested Arrays with Composite Keys Test ===");
-    io:println("Source JSON:");
-    io:println(sourceJson.toJsonString());
+    io:println("Updates JSON:");
+    io:println(updatesJson.toJsonString());
     io:println("");
-    io:println("Base JSON:");
-    io:println(baseJson.toJsonString());
+    io:println("Original JSON:");
+    io:println(originalJson.toJsonString());
     io:println("");
 
     if mergeResult is json {
@@ -1295,7 +1273,7 @@ function testDeeplyNestedArraysWithCompositeKeys() {
 @test:Config {}
 function testMixedDataTypesInNestedArrays() {
     // Test case with mixed data types in nested structures
-    json sourceJson = {
+    json updatesJson = {
         "application": {
             "modules": [
                 {
@@ -1333,7 +1311,7 @@ function testMixedDataTypesInNestedArrays() {
         }
     };
 
-    json baseJson = {
+    json originalJson = {
         "application": {
             "name": "Enterprise App",
             "version": "1.0.0",
@@ -1388,14 +1366,14 @@ function testMixedDataTypesInNestedArrays() {
         "application.modules.components.dependencies.configs": ["configId"]
     };
 
-    json|error mergeResult = mergeJson(baseJson, sourceJson, keysMap);
+    json|error mergeResult = mergeJson(originalJson, updatesJson, keysMap);
 
     io:println("=== Mixed Data Types in Nested Arrays Test ===");
-    io:println("Source JSON:");
-    io:println(sourceJson.toJsonString());
+    io:println("Updates JSON:");
+    io:println(updatesJson.toJsonString());
     io:println("");
-    io:println("Base JSON:");
-    io:println(baseJson.toJsonString());
+    io:println("Original JSON:");
+    io:println(originalJson.toJsonString());
     io:println("");
 
     if mergeResult is json {

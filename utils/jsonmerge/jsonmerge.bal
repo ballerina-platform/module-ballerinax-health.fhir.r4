@@ -16,47 +16,47 @@
 
 import ballerina/log;
 
-// Configuration flag to control behavior when source and base have different types for the same key
-// When true: ignores type mismatches and preserves base value
+// Configuration flag to control behavior when updates and original JSONs have different types for the same key
+// When true: ignores type mismatches and preserves original value
 // When false: returns an error on type mismatch
 configurable boolean ignoreMismatchedTypes = false;
 
 # Description.
 #
-# + srcJson - Source JSON object to merge from
-# + baseJson - Base JSON object to merge into (serves as base)  
+# + updates - Updates JSON object to merge from
+# + original - Original JSON object to merge into (serves as base)  
 # + keys - Optional map specifying merge keys for arrays at different paths
 # Format: {"keyValue": ["keyField"]} or {"parent.keyValue": ["keyField"]}
 # Supports composite keys: {"keyValue": ["field1", "field2"]}
 # Note: Currently only supports keys with primitive values (string, int, boolean, float, decimal)
 # + return - return merged JSON object or error if types mismatch
-public isolated function mergeJson(json baseJson, json srcJson, map<string[]>? keys = ()) returns json|error {
+public isolated function mergeJson(json original, json updates, map<string[]>? keys = ()) returns json|error {
 
     // Input validation: Ensure both parameters are JSON objects (maps)
-    if !(srcJson is map<json>) {
-        return error("Source JSON must be a valid JSON object");
+    if !(updates is map<json>) {
+        return error("Updates JSON must be a valid JSON object");
     }
-    if !(baseJson is map<json>) {
-        return error("Base JSON must be a valid JSON object");
+    if !(original is map<json>) {
+        return error("Original JSON must be a valid JSON object");
     }
 
-    log:printDebug("base json: " + baseJson.toString());
-    log:printDebug("src json: " + srcJson.toString());
+    log:printDebug("Original json: ", original = original);
+    log:printDebug("Updates json: ", updates = updates);
 
     // Type cast to map<json> for easier manipulation
-    map<json> srcMap = <map<json>>srcJson;
-    map<json> baseMap = <map<json>>baseJson;
+    map<json> updatesMap = <map<json>>updates;
+    map<json> originalMap = <map<json>>original;
 
-    // Clone base as the result to preserve original base structure
-    map<json> resultMap = baseMap.clone();
+    // Clone original as the result to preserve original base structure
+    map<json> resultMap = originalMap.clone();
 
-    // Iterate through each key-value pair in the source JSON
-    foreach var [key, srcValue] in srcMap.entries() {
-        // Case 1: Key doesn't exist in base - simply add it
+    // Iterate through each key-value pair in the updates JSON
+    foreach var [key, updatesValue] in updatesMap.entries() {
+        // Case 1: Key doesn't exist in original - simply add it
         if !resultMap.hasKey(key) {
-            resultMap[key] = srcValue;
+            resultMap[key] = updatesValue;
         } else {
-            // Case 2: Key exists in both source and base - need to merge values
+            // Case 2: Key exists in both updates and original - need to merge values
             json resultValue = resultMap[key];
 
             // Process merge keys for current context
@@ -82,14 +82,14 @@ public isolated function mergeJson(json baseJson, json srcJson, map<string[]>? k
                     }
                 }
             }
-            log:printDebug("filteredKeys map: " + filteredKeys.toString());
-            log:printDebug("matchedKeys array: " + matchedKeys.toString());
+            log:printDebug("filteredKeys map: ", filteredKeys = filteredKeys);
+            log:printDebug("matchedKeys array: ", matchedKeys = matchedKeys);
 
             // Merge strategy based on value types
 
             // Strategy 1: Both values are JSON objects - recursive merge
-            if srcValue is map<json> && resultValue is map<json> {
-                json|error mergeResult = mergeJson(resultValue, srcValue, filteredKeys);
+            if updatesValue is map<json> && resultValue is map<json> {
+                json|error mergeResult = mergeJson(resultValue, updatesValue, filteredKeys);
                 if mergeResult is error {
                     return mergeResult;
                 }
@@ -97,14 +97,14 @@ public isolated function mergeJson(json baseJson, json srcJson, map<string[]>? k
             }
 
             // Strategy 2: Both values are JSON arrays - merge based on keys or append
-            else if srcValue is json[] && resultValue is json[] {
+            else if updatesValue is json[] && resultValue is json[] {
                 if keys is () {
                     // No merge keys specified - simple append
-                    json[] appendResult = deepMergeArrayByAppend(resultValue, srcValue);
+                    json[] appendResult = deepMergeArrayByAppend(resultValue, updatesValue);
                     resultMap[key] = appendResult;
                 } else {
                     // Merge keys specified - merge by matching key values
-                    json[]|error mergeByKeyResult = deepMergeArrayByKey(resultValue, srcValue, matchedKeys, filteredKeys);
+                    json[]|error mergeByKeyResult = deepMergeArrayByKey(resultValue, updatesValue, matchedKeys, filteredKeys);
                     if mergeByKeyResult is error {
                         return mergeByKeyResult;
                     }
@@ -113,27 +113,27 @@ public isolated function mergeJson(json baseJson, json srcJson, map<string[]>? k
             }
 
             // Strategy 3: Type mismatch handling
-            // Covers cases where source and base have different types for the same key
-            // Examples: source has object, base has array
-            else if (srcValue is map<json> && !(resultValue is map<json>)) ||
-                    (!(srcValue is map<json>) && resultValue is map<json>) ||
-                    (srcValue is json[] && !(resultValue is json[])) ||
-                    (!(srcValue is json[]) && resultValue is json[]) {
+            // Covers cases where updates and original have different types for the same key
+            // Examples: updates has object, original has array
+            else if (updatesValue is map<json> && !(resultValue is map<json>)) ||
+                    (!(updatesValue is map<json>) && resultValue is map<json>) ||
+                    (updatesValue is json[] && !(resultValue is json[])) ||
+                    (!(updatesValue is json[]) && resultValue is json[]) {
 
                 if !ignoreMismatchedTypes {
                     // Strict mode: return error on type mismatch
                     return error("Type mismatch for resultValue: " + resultValue.toString() +
-                        " and srcValue: " + srcValue.toString());
+                        " and updatesValue: " + updatesValue.toString());
                 }
-                // Lenient mode: preserve base value, ignore source
-                // This maintains data integrity by keeping the base structure intact
+                // Lenient mode: preserve original value, ignore updates
+                // This maintains data integrity by keeping the original structure intact
             }
 
-            // Strategy 4: Both values are primitives - overwrite with source value
-            // Overwrites the base value with the source value irrespective of type
-            // Example: base={"version": "1.0"}, source={"version": "2.0"} -> result={"version": "2.0"}
+            // Strategy 4: Both values are primitives - overwrite with updates value
+            // Overwrites the original value with the updates value irrespective of type
+            // Example: original={"version": "1.0"}, updates={"version": "2.0"} -> result={"version": "2.0"}
             else {
-                resultMap[key] = srcValue;
+                resultMap[key] = updatesValue;
             }
         }
         log:printDebug(key + ": result json: " + resultMap.toJson().toString());
@@ -144,39 +144,39 @@ public isolated function mergeJson(json baseJson, json srcJson, map<string[]>? k
 
 # Description.
 #
-# + srcArray - Source array to merge from
-# + baseArray - Base array to merge into  
+# + updatesArray - Updates array to merge from
+# + originalArray - Original array to merge into  
 # + matchedKeys - Array of key field names to use for matching elements
 # + keys - Optional nested merge keys for recursive object merging (map<string[]>)
 # + return - return merged JSON array or error
 // Examples:
 // Simple key match:
-//   source: [{"id": "1", "name": "John"}]
-//   base: [{"id": "1", "name": "Jane"}]
+//   updates: [{"id": "1", "name": "John"}]
+//   original: [{"id": "1", "name": "Jane"}]
 //   matchedKeys: ["id"]
-//   result: [{"id": "1", "name": "John"}] (source overwrites)
+//   result: [{"id": "1", "name": "John"}] (updates overwrites)
 //
 // Composite key match:
-//   source: [{"system": "http://hl7.org", "code": "123", "display": "New"}]
-//   base: [{"system": "http://hl7.org", "code": "123", "display": "Old"}]
+//   updates: [{"system": "http://hl7.org", "code": "123", "display": "New"}]
+//   original: [{"system": "http://hl7.org", "code": "123", "display": "Old"}]
 //   matchedKeys: ["system", "code"]
 //   result: [{"system": "http://hl7.org", "code": "123", "display": "New"}]
-isolated function deepMergeArrayByKey(json[] baseArray, json[] srcArray, string[] matchedKeys, map<string[]>? keys) returns json[]|error {
+isolated function deepMergeArrayByKey(json[] originalArray, json[] updatesArray, string[] matchedKeys, map<string[]>? keys) returns json[]|error {
 
     // Fallback to simple append if no merge keys specified
     if matchedKeys.length() == 0 {
-        return deepMergeArrayByAppend(baseArray, srcArray);
+        return deepMergeArrayByAppend(originalArray, updatesArray);
     }
 
-    // Start with base array as base (preserves base order and unmatched elements)
-    json[] resultArray = baseArray.clone();
+    // Start with original array as base (preserves original order and unmatched elements)
+    json[] resultArray = originalArray.clone();
 
-    // Process each element in source array
-    foreach json srcElement in srcArray {
+    // Process each element in updates array
+    foreach json updatesElement in updatesArray {
         // Look for exact match between elements.
         boolean elementExists = false;
         foreach json resultElement in resultArray {
-            if srcElement == resultElement {
+            if updatesElement == resultElement {
                 elementExists = true;
                 break;
             }
@@ -186,32 +186,32 @@ isolated function deepMergeArrayByKey(json[] baseArray, json[] srcArray, string[
         }
 
         // Key-based merge logic for objects
-        if (srcElement is map<json>) {
-            map<json> srcMap = <map<json>>srcElement;
+        if (updatesElement is map<json>) {
+            map<json> updatesMap = <map<json>>updatesElement;
 
-            // Extract key values from source element for matching
+            // Extract key values from updates element for matching
             // Example: if matchedKeys=["id", "system"], extract values for both fields
-            map<json> srcKeyValues = {};
+            map<json> updatesKeyValues = {};
             boolean hasAllKeys = true;
 
             foreach string keyField in matchedKeys {
-                if srcMap.hasKey(keyField) {
-                    json keyValue = srcMap.get(keyField);
-                    srcKeyValues[keyField] = keyValue;
+                if updatesMap.hasKey(keyField) {
+                    json keyValue = updatesMap.get(keyField);
+                    updatesKeyValues[keyField] = keyValue;
                 } else {
-                    // Source element missing required key field - can't match by key
+                    // updates element missing required key field - can't match by key
                     hasAllKeys = false;
                     break;
                 }
             }
 
-            // If source element lacks required keys, append it as new element
-            // Example: trying to match by "id" but source element has no "id" field
+            // If updates element lacks required keys, append it as new element
+            // Example: trying to match by "id" but updates element has no "id" field
             if !hasAllKeys {
-                resultArray.push(srcElement);
+                resultArray.push(updatesElement);
                 continue;
             }
-            log:printDebug("Source has all keys.");
+            log:printDebug("updates has all keys.");
 
             boolean foundMatch = false;
 
@@ -226,7 +226,7 @@ isolated function deepMergeArrayByKey(json[] baseArray, json[] srcArray, string[
 
                 map<json> resultElementMap = <map<json>>resultElement;
 
-                // Check if all key fields match between source and result elements
+                // Check if all key fields match between updates and result elements
                 boolean keysMatch = true;
                 foreach string keyField in matchedKeys {
                     if !resultElementMap.hasKey(keyField) {
@@ -235,20 +235,20 @@ isolated function deepMergeArrayByKey(json[] baseArray, json[] srcArray, string[
                     }
 
                     json resultKeyValue = resultElementMap.get(keyField);
-                    json srcKeyValue = srcKeyValues.get(keyField);
+                    json updatesKeyValue = updatesKeyValues.get(keyField);
 
                     // Compare key values for exact match
-                    if resultKeyValue != srcKeyValue {
+                    if resultKeyValue != updatesKeyValue {
                         keysMatch = false;
                         break;
                     }
                 }
 
                 if keysMatch {
-                    log:printDebug("Keys match! baseElement:" + resultElement.toString() + " srcElement: " + srcElement.toString());
+                    log:printDebug("Keys match! originalElement:" + resultElement.toString() + " updatesElement: " + updatesElement.toString());
 
                     // Found matching element - perform deep merge of the objects
-                    json|error mergeResult = mergeJson(resultElement, srcElement, keys);
+                    json|error mergeResult = mergeJson(resultElement, updatesElement, keys);
                     if mergeResult is error {
                         return mergeResult;
                     }
@@ -258,13 +258,13 @@ isolated function deepMergeArrayByKey(json[] baseArray, json[] srcArray, string[
                 }
             }
 
-            // If no matching element found, append source element as new
+            // If no matching element found, append updates element as new
             if !foundMatch {
-                resultArray.push(srcElement);
+                resultArray.push(updatesElement);
             }
         } else {
             // Not an object, just append (already checked for duplicates)
-            resultArray.push(srcElement);
+            resultArray.push(updatesElement);
         }
     }
     log:printDebug("Result array: " + resultArray.toString());
@@ -273,13 +273,13 @@ isolated function deepMergeArrayByKey(json[] baseArray, json[] srcArray, string[
 
 # Description.
 #
-# + srcArray - Source array to append
-# + baseArray - Base array to append to
+# + updatesArray - Updates array to append
+# + originalArray - Original array to append to
 # + return - Merged array
-// Note: This preserves order with base elements first, then source elements
-isolated function deepMergeArrayByAppend(json[] baseArray, json[] srcArray) returns json[] {
+// Note: This preserves order with original elements first, then updates elements
+isolated function deepMergeArrayByAppend(json[] originalArray, json[] updatesArray) returns json[] {
     // Just append arrays
-    json[] combinedArray = [...baseArray, ...srcArray];
+    json[] combinedArray = [...originalArray, ...updatesArray];
     return combinedArray;
 }
 
