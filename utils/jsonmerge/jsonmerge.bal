@@ -33,10 +33,10 @@ configurable boolean ignoreMismatchedTypes = false;
 public isolated function mergeJson(json original, json updates, map<string[]>? keys = ()) returns json|error {
 
     // Input validation: Ensure both parameters are JSON objects (maps)
-    if !(updates is map<json>) {
+    if updates !is map<json> {
         return error("Updates JSON must be a valid JSON object");
     }
-    if !(original is map<json>) {
+    if original !is map<json> {
         return error("Original JSON must be a valid JSON object");
     }
 
@@ -67,7 +67,7 @@ public isolated function mergeJson(json original, json updates, map<string[]>? k
             if keys is map<string[]> {
 
                 // Direct key match: key exists in keys map
-                if (keys.hasKey(key)) {
+                if keys.hasKey(key) {
                     string[] keyField = keys.get(key);
                     matchedKeys.push(...keyField);
                 }
@@ -115,10 +115,10 @@ public isolated function mergeJson(json original, json updates, map<string[]>? k
             // Strategy 3: Type mismatch handling
             // Covers cases where updates and original have different types for the same key
             // Examples: updates has object, original has array
-            else if (updatesValue is map<json> && !(resultValue is map<json>)) ||
-                    (!(updatesValue is map<json>) && resultValue is map<json>) ||
-                    (updatesValue is json[] && !(resultValue is json[])) ||
-                    (!(updatesValue is json[]) && resultValue is json[]) {
+            else if (updatesValue is map<json> && resultValue !is map<json>) ||
+                    (updatesValue !is map<json> && resultValue is map<json>) ||
+                    (updatesValue is json[] && resultValue !is json[]) ||
+                    (updatesValue !is json[] && resultValue is json[]) {
 
                 if !ignoreMismatchedTypes {
                     // Strict mode: return error on type mismatch
@@ -186,7 +186,7 @@ isolated function deepMergeArrayByKey(json[] originalArray, json[] updatesArray,
         }
 
         // Key-based merge logic for objects
-        if (updatesElement is map<json>) {
+        if updatesElement is map<json> {
             map<json> updatesMap = <map<json>>updatesElement;
 
             // Extract key values from updates element for matching
@@ -220,7 +220,7 @@ isolated function deepMergeArrayByKey(json[] originalArray, json[] updatesArray,
                 json resultElement = resultArray[i];
 
                 // Skip non-object elements in result array
-                if !(resultElement is map<json>) {
+                if resultElement !is map<json> {
                     continue;
                 }
 
