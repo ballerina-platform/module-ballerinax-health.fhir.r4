@@ -76,9 +76,9 @@ function testmergeJson_FHIR() returns error? {
         ]
     };
 
-    map<string> keysMap = {
-        "identifier": "value",
-        "identifier.type.coding": "system,code"
+    map<string[]> keysMap = {
+        "identifier": ["value"],
+        "identifier.type.coding": ["system", "code"]
     };
     json mergeResult = check mergeJson(base, src, keysMap);
     io:println("Result: ", mergeResult);
@@ -214,12 +214,12 @@ function testFhirPatientResourceMerge() {
     };
 
     // Define keys for merging FHIR Patient arrays
-    map<string> fhirKeys = {
-        "identifier": "system,value",
-        "identifier.type.coding": "system,code",
-        "name": "use",
-        "telecom": "system,use",
-        "address": "use"
+    map<string[]> fhirKeys = {
+        "identifier": ["system", "value"],
+        "identifier.type.coding": ["system", "code"],
+        "name": ["use"],
+        "telecom": ["system", "use"],
+        "address": ["use"]
     };
 
     json|error mergeResult = mergeJson(basePatient, sourcePatient, fhirKeys);
@@ -386,10 +386,10 @@ function testFhirObservationResourceMerge() {
     };
 
     // Define keys for merging FHIR Observation arrays
-    map<string> fhirKeys = {
-        "category.coding": "system,code",
-        "code.coding": "system,code",
-        "component.code.coding": "system,code"
+    map<string[]> fhirKeys = {
+        "category.coding": ["system", "code"],
+        "code.coding": ["system", "code"],
+        "component.code.coding": ["system", "code"]
     };
 
     json|error mergeResult = mergeJson(baseObservation, sourceObservation, fhirKeys);
@@ -537,9 +537,9 @@ function testFhirMedicationRequestMerge() {
     };
 
     // Define keys for merging FHIR MedicationRequest arrays
-    map<string> fhirKeys = {
-        "dosageInstruction": "sequence",
-        "reasonCode": "coding"
+    map<string[]> fhirKeys = {
+        "dosageInstruction": ["sequence"],
+        "reasonCode": ["coding"]
     };
 
     json|error mergeResult = mergeJson(baseMedicationRequest, sourceMedicationRequest, fhirKeys);
@@ -658,8 +658,8 @@ function testFhirBundleResourceMerge() {
     };
 
     // Define keys for merging FHIR Bundle entries
-    map<string> fhirKeys = {
-        "entry": "fullUrl"
+    map<string[]> fhirKeys = {
+        "entry": ["fullUrl"]
     };
 
     json|error mergeResult = mergeJson(baseBundle, sourceBundle, fhirKeys);
@@ -897,16 +897,16 @@ function testFhirDiagnosticReportMerge() {
     };
 
     // Define keys for merging FHIR resources
-    map<string> fhirKeys = {
-        "result": "reference",
-        "performer": "reference",
-        "resultsInterpreter": "reference",
-        "specimen": "reference",
-        "category.coding": "system,code",
-        "code.coding": "system,code",
-        "result.code.coding": "system,code",
-        "result.referenceRange.low": "value,unit",
-        "result.referenceRange.high": "value,unit"
+    map<string[]> fhirKeys = {
+        "result": ["reference"],
+        "performer": ["reference"],
+        "resultsInterpreter": ["reference"],
+        "specimen": ["reference"],
+        "category.coding": ["system", "code"],
+        "code.coding": ["system", "code"],
+        "result.code.coding": ["system", "code"],
+        "result.referenceRange.low": ["value", "unit"],
+        "result.referenceRange.high": ["value", "unit"]
     };
 
     io:println("Source DiagnosticReport:");
@@ -1111,16 +1111,16 @@ function testFhirObservationMerge() {
         ]
     };
 
-    map<string> observationKeys = {
-        "category": "coding.system,coding.code",
-        "category.coding": "system,code",
-        "code.coding": "system,code",
-        "interpretation": "coding.system,coding.code",
-        "interpretation.coding": "system,code",
-        "component": "code.coding.system,code.coding.code",
-        "component.code.coding": "system,code",
-        "performer": "reference",
-        "referenceRange": "low.value,high.value"
+    map<string[]> observationKeys = {
+        "category": ["coding.system", "coding.code"],
+        "category.coding": ["system", "code"],
+        "code.coding": ["system", "code"],
+        "interpretation": ["coding.system", "coding.code"],
+        "interpretation.coding": ["system", "code"],
+        "component": ["code.coding.system", "code.coding.code"],
+        "component.code.coding": ["system", "code"],
+        "performer": ["reference"],
+        "referenceRange": ["low.value", "high.value"]
     };
 
     json|error mergeResult = mergeJson(baseObservation, sourceObservation, observationKeys);
@@ -1226,11 +1226,11 @@ function testFhirPatientMerge() {
         }
     };
 
-    map<string> patientKeys = {
-        "name": "use",
-        "telecom": "system,use",
-        "address": "use",
-        "maritalStatus.coding": "system,code"
+    map<string[]> patientKeys = {
+        "name": ["use"],
+        "telecom": ["system", "use"],
+        "address": ["use"],
+        "maritalStatus.coding": ["system", "code"]
     };
 
     json|error mergeResult = mergeJson(basePatient, sourcePatient, patientKeys);

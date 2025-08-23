@@ -1,5 +1,4 @@
 import ballerina/log;
-import ballerina/regex;
 
 // Configuration flag to control behavior when source and base have different types for the same key
 // When true: ignores type mismatches and preserves base value
@@ -11,11 +10,11 @@ configurable boolean ignoreMismatchedTypes = false;
 # + srcJson - Source JSON object to merge from
 # + baseJson - Base JSON object to merge into (serves as base)  
 # + keys - Optional map specifying merge keys for arrays at different paths
-# Format: {"arrayFieldName": "keyField"} or {"parent.arrayField": "keyField"}
-# Supports composite keys: {"arrayField": "key1,key2"}
+# Format: {"keyValue": ["keyField"]} or {"parent.keyValue": ["keyField"]}
+# Supports composite keys: {"keyValue": ["field1", "field2"]}
 # Note: Currently only supports keys with primitive values (string, int, boolean, float, decimal)
 # + return - return merged JSON object or error if types mismatch
-public isolated function mergeJson(json baseJson, json srcJson, map<string>? keys = ()) returns json|error {
+public isolated function mergeJson(json baseJson, json srcJson, map<string[]>? keys = ()) returns json|error {
 
     // Input validation: Ensure both parameters are JSON objects (maps)
     if !(srcJson is map<json>) {
@@ -46,33 +45,21 @@ public isolated function mergeJson(json baseJson, json srcJson, map<string>? key
 
             // Process merge keys for current context
             // This handles nested key paths and composite keys for array merging
-            map<string> filteredKeys = {}; // Keys for nested objects
+            map<string[]> filteredKeys = {}; // Keys for nested objects
             string[] matchedKeys = []; // Keys for current level array merging
 
-            if keys is map<string> {
-                // Process each key to determine merge strategy
+            if keys is map<string[]> {
+
+                // Direct key match: key exists in keys map
+                if (keys.hasKey(key)) {
+                    string[] keyField = keys.get(key);
+                    matchedKeys.push(...keyField);
+                }
+                // Process each key to handle nested paths
                 foreach var [keyPath, keyField] in keys.entries() {
-
-                    // Direct match: keyPath equals current key
-                    if keyPath.equalsIgnoreCaseAscii(key) {
-
-                        // Handle composite keys (comma-separated)
-                        // Example: keyField="id,type" -> matchedKeys=["id", "type"]
-                        if keyField.includes(",") {
-                            string[] compositeKeyFields = regex:split(keyField, ",");
-                            foreach string keyValue in compositeKeyFields {
-                                string trimmedValue = keyValue.trim();
-                                if trimmedValue.length() > 0 {
-                                    matchedKeys.push(trimmedValue);
-                                }
-                            }
-                        } else {
-                            matchedKeys.push(keyField);
-                        }
-                    }
                     // Nested path match: keyPath starts with current key + "."
                     // Example: key="patient", keyPath="patient.identifier" -> pass "identifier" to nested merge
-                    else if keyPath.startsWith(key + ".") {
+                    if keyPath.startsWith(key + ".") {
                         string keyPrefix = key + ".";
                         string newKey = keyPath.substring(keyPrefix.length());
                         filteredKeys[newKey] = keyField;
@@ -99,8 +86,7 @@ public isolated function mergeJson(json baseJson, json srcJson, map<string>? key
                     // No merge keys specified - simple append
                     json[] appendResult = deepMergeArrayByAppend(resultValue, srcValue);
                     resultMap[key] = appendResult;
-                }
-                else {
+                } else {
                     // Merge keys specified - merge by matching key values
                     json[]|error mergeByKeyResult = deepMergeArrayByKey(resultValue, srcValue, matchedKeys, filteredKeys);
                     if mergeByKeyResult is error {
@@ -145,7 +131,7 @@ public isolated function mergeJson(json baseJson, json srcJson, map<string>? key
 # + srcArray - Source array to merge from
 # + baseArray - Base array to merge into  
 # + matchedKeys - Array of key field names to use for matching elements
-# + keys - Optional nested merge keys for recursive object merging
+# + keys - Optional nested merge keys for recursive object merging (map<string[]>)
 # + return - return merged JSON array or error
 // Examples:
 // Simple key match:
@@ -159,7 +145,7 @@ public isolated function mergeJson(json baseJson, json srcJson, map<string>? key
 //   base: [{"system": "http://hl7.org", "code": "123", "display": "Old"}]
 //   matchedKeys: ["system", "code"]
 //   result: [{"system": "http://hl7.org", "code": "123", "display": "New"}]
-isolated function deepMergeArrayByKey(json[] baseArray, json[] srcArray, string[] matchedKeys, map<string>? keys) returns json[]|error {
+isolated function deepMergeArrayByKey(json[] baseArray, json[] srcArray, string[] matchedKeys, map<string[]>? keys) returns json[]|error {
 
     // Fallback to simple append if no merge keys specified
     if matchedKeys.length() == 0 {
@@ -260,8 +246,7 @@ isolated function deepMergeArrayByKey(json[] baseArray, json[] srcArray, string[
             if !foundMatch {
                 resultArray.push(srcElement);
             }
-        }
-        else {
+        } else {
             // Not an object, just append (already checked for duplicates)
             resultArray.push(srcElement);
         }

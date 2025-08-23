@@ -58,9 +58,9 @@ function testComplexMergeByIdStrategy() {
     };
 
     // Define IDs map for merging strategy
-    map<string> idsMap = {
-        "employees": "id",
-        "employees.projects": "projectId"
+    map<string[]> idsMap = {
+        "employees": ["id"],
+        "employees.projects": ["projectId"]
     };
 
     // Perform deep merge with mergeById strategy
@@ -89,8 +89,8 @@ function testEmptyArraysMerge() {
         "description": "Base"
     };
 
-    map<string> idsMap = {
-        "items": "id"
+    map<string[]> idsMap = {
+        "items": ["id"]
     };
 
     json|error result = mergeJson(baseJson, sourceJson, idsMap);
@@ -208,8 +208,8 @@ function testMissingIdFieldsInArray() {
         ]
     };
 
-    map<string> idsMap = {
-        "users": "id"
+    map<string[]> idsMap = {
+        "users": ["id"]
     };
 
     json|error result = mergeJson(baseJson, sourceJson, idsMap);
@@ -401,8 +401,8 @@ function testMixedArrayElementTypes() {
         ]
     };
 
-    map<string> idsMap = {
-        "items": "id"
+    map<string[]> idsMap = {
+        "items": ["id"]
     };
 
     json|error result = mergeJson(baseJson, sourceJson, idsMap);
@@ -450,8 +450,8 @@ function testDeepNestedArrayMerge() {
         }
     };
 
-    map<string> idsMap = {
-        "level1.level2.items": "id"
+    map<string[]> idsMap = {
+        "level1.level2.items": ["id"]
     };
 
     json|error result = mergeJson(baseJson, sourceJson, idsMap);
@@ -589,9 +589,8 @@ function testCompositeKeyMergeWithMultipleIds() {
     };
 
     // Define IDs map with composite key - need both id AND code to match
-    // Note: Current implementation expects single string value, but this demonstrates the concept
-    map<string> idsMap = {
-        "products": "id,code" // This would need special handling in the implementation
+    map<string[]> idsMap = {
+        "products": ["id", "code"] // Composite key: id + code
     };
 
     json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
@@ -679,9 +678,9 @@ function testMultipleFieldMatchingScenario() {
     };
 
     // This demonstrates matching on both userId AND departmentCode
-    map<string> idsMap = {
-        "users": "userId,departmentCode", // Composite key
-        "users.projects": "projectId"
+    map<string[]> idsMap = {
+        "users": ["userId", "departmentCode"], // Composite key
+        "users.projects": ["projectId"]
     };
 
     json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
@@ -755,8 +754,8 @@ function testTripleCompositeKeyScenario() {
     };
 
     // Triple composite key: accountId + transactionType + currency
-    map<string> idsMap = {
-        "transactions": "accountId,transactionType,currency"
+    map<string[]> idsMap = {
+        "transactions": ["accountId", "transactionType", "currency"]
     };
 
     json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
@@ -818,8 +817,8 @@ function testPartialCompositeKeyMatch() {
     };
 
     // Composite key requiring both orderId AND customerId
-    map<string> idsMap = {
-        "orders": "orderId,customerId"
+    map<string[]> idsMap = {
+        "orders": ["orderId", "customerId"]
     };
 
     json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
@@ -885,9 +884,9 @@ function testNestedCompositeKeyMerge() {
     };
 
     // Composite keys at multiple levels
-    map<string> idsMap = {
-        "departments": "deptId",
-        "departments.employees": "empId,teamCode"
+    map<string[]> idsMap = {
+        "departments": ["deptId"],
+        "departments.employees": ["empId", "teamCode"]
     };
 
     json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
@@ -960,10 +959,10 @@ function testMixedSingleAndCompositeKeys() {
     };
 
     // Mix of single and composite keys
-    map<string> idsMap = {
-        "customers": "customerId", // Single key
-        "suppliers": "supplierId", // Single key  
-        "customers.orders": "orderId,productCode" // Composite key
+    map<string[]> idsMap = {
+        "customers": ["customerId"], // Single key
+        "suppliers": ["supplierId"], // Single key
+        "customers.orders": ["orderId", "productCode"] // Composite key
     };
 
     json|error mergeResult = mergeJson(baseJson, sourceJson, idsMap);
@@ -1117,13 +1116,13 @@ function testComplexNestedJsonMerge() {
     };
 
     // Define complex keys map for nested array merging
-    map<string> keysMap = {
-        "company.departments": "deptId",
-        "company.departments.employees": "empId",
-        "company.departments.employees.projects": "projectId",
-        "company.departments.employees.projects.tasks": "taskId",
-        "company.departments.campaigns": "campaignId",
-        "company.departments.policies": "policyId"
+    map<string[]> keysMap = {
+        "company.departments": ["deptId"],
+        "company.departments.employees": ["empId"],
+        "company.departments.employees.projects": ["projectId"],
+        "company.departments.employees.projects.tasks": ["taskId"],
+        "company.departments.campaigns": ["campaignId"],
+        "company.departments.policies": ["policyId"]
     };
 
     // Perform deep merge
@@ -1248,12 +1247,12 @@ function testDeeplyNestedArraysWithCompositeKeys() {
     };
 
     // Complex nested keys mapping
-    map<string> keysMap = {
-        "organization.regions": "regionId",
-        "organization.regions.offices": "officeId",
-        "organization.regions.offices.teams": "teamId",
-        "organization.regions.offices.teams.members": "memberId",
-        "organization.regions.offices.teams.members.certifications": "certId"
+    map<string[]> keysMap = {
+        "organization.regions": ["regionId"],
+        "organization.regions.offices": ["officeId"],
+        "organization.regions.offices.teams": ["teamId"],
+        "organization.regions.offices.teams.members": ["memberId"],
+        "organization.regions.offices.teams.members.certifications": ["certId"]
     };
 
     json|error mergeResult = mergeJson(baseJson, sourceJson, keysMap);
@@ -1366,11 +1365,11 @@ function testMixedDataTypesInNestedArrays() {
         }
     };
 
-    map<string> keysMap = {
-        "application.modules": "moduleId",
-        "application.modules.components": "componentId",
-        "application.modules.components.dependencies": "depId",
-        "application.modules.components.dependencies.configs": "configId"
+    map<string[]> keysMap = {
+        "application.modules": ["moduleId"],
+        "application.modules.components": ["componentId"],
+        "application.modules.components.dependencies": ["depId"],
+        "application.modules.components.dependencies.configs": ["configId"]
     };
 
     json|error mergeResult = mergeJson(baseJson, sourceJson, keysMap);

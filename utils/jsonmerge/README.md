@@ -40,7 +40,7 @@ Result:
 ```ballerina
 json base = { "items": [ { "id": 1, "value": "A" } ] };
 json src = { "items": [ { "id": 1, "value": "B" }, { "id": 2, "value": "C" } ] };
-map<string> keys = { "items": "id" };
+map<string[]> keys = { "items": ["id"] };
 json result = check jsonmerge:mergeJson(base, src, keys);
 ```
 
@@ -52,13 +52,13 @@ Result:
 ### Composite Key Example
 
 ```ballerina
-map<string> keys = { "products": "id,code" };
+map<string[]> keys = { "products": ["id", "code"] };
 ```
 This will match array elements where both `id` and `code` fields are equal.
 
 ## API Reference
 
-### mergeJson(json baseJson, json srcJson, map<string>? keys = ()) returns json|error
+### mergeJson(json baseJson, json srcJson, map<string[]>? keys = ()) returns json|error
 
 - `baseJson`: The base JSON object.
 - `srcJson`: The source JSON object to merge.
@@ -99,7 +99,7 @@ For more details, see the implementation in [jsonmerge.bal](jsonmerge.bal).
       - First checks for exact JSON matches to avoid duplicates
       - Extracts specified key field values from source elements 
       - Compares key values between source and base array elements    
-        **Note:** Supports composite keys  (comma-separated) and primitive value matching only
+        **Note:** Supports composite keys and primitive value matching only
       - When keys match, recursively merges the matching objects
       - Elements without matching keys are appended as new items
 
@@ -108,7 +108,7 @@ For more details, see the implementation in [jsonmerge.bal](jsonmerge.bal).
 - Source and base have different types (object vs array, object vs primitive, etc.) 
 - **Configurable Behavior:**
 
-  -  Strict Mode (ignoreMismatchedTypes = false): Returns error on type mismatch
+  - Strict Mode (ignoreMismatchedTypes = false): Returns error on type mismatch
   - Lenient Mode (ignoreMismatchedTypes = true): Preserves base value, ignores source
 
 **Strategy 4: Primitive Value Merge**

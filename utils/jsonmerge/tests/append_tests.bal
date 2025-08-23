@@ -157,7 +157,6 @@ function testmergeJson_ArrayToNonArray() returns error? {
     io:println("Source: ", src);
     io:println("Base: ", base);
 
-    // json expected = {a: [1, 2]};
     json|error result = mergeJson(base, src);
     io:println("Result: ", result);
     test:assertTrue(result is error);
