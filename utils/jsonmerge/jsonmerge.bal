@@ -40,8 +40,8 @@ public isolated function mergeJson(json original, json updates, map<string[]>? k
         return error("Original JSON must be a valid JSON object");
     }
 
-    log:printDebug("Original json: ", original = original);
-    log:printDebug("Updates json: ", updates = updates);
+    log:printDebug("Original json:", original = original);
+    log:printDebug("Updates json:", updates = updates);
 
     // Type cast to map<json> for easier manipulation
     map<json> updatesMap = <map<json>>updates;
@@ -82,8 +82,8 @@ public isolated function mergeJson(json original, json updates, map<string[]>? k
                     }
                 }
             }
-            log:printDebug("filteredKeys map: ", filteredKeys = filteredKeys);
-            log:printDebug("matchedKeys array: ", matchedKeys = matchedKeys);
+            log:printDebug("Filtered keys map for key: " + key, filteredKeys = filteredKeys);
+            log:printDebug("Matched keys array for key: " + key, matchedKeys = matchedKeys);
 
             // Merge strategy based on value types
 
@@ -122,8 +122,8 @@ public isolated function mergeJson(json original, json updates, map<string[]>? k
 
                 if !ignoreMismatchedTypes {
                     // Strict mode: return error on type mismatch
-                    return error("Type mismatch for resultValue: " + resultValue.toString() +
-                        " and updatesValue: " + updatesValue.toString());
+                    return error("Type mismatch for original value:" + resultValue.toString() +
+                        " and updates value:" + updatesValue.toString());
                 }
                 // Lenient mode: preserve original value, ignore updates
                 // This maintains data integrity by keeping the original structure intact
@@ -136,7 +136,7 @@ public isolated function mergeJson(json original, json updates, map<string[]>? k
                 resultMap[key] = updatesValue;
             }
         }
-        log:printDebug(key + ": result json: " + resultMap.toJson().toString());
+        log:printDebug("Key: " + key + ", Result json:", resultMap = resultMap);
 
     }
     return resultMap;
@@ -211,7 +211,7 @@ isolated function deepMergeArrayByKey(json[] originalArray, json[] updatesArray,
                 resultArray.push(updatesElement);
                 continue;
             }
-            log:printDebug("updates has all keys.");
+            log:printDebug("Updates element has all keys.");
 
             boolean foundMatch = false;
 
@@ -245,7 +245,7 @@ isolated function deepMergeArrayByKey(json[] originalArray, json[] updatesArray,
                 }
 
                 if keysMatch {
-                    log:printDebug("Keys match! originalElement:" + resultElement.toString() + " updatesElement: " + updatesElement.toString());
+                    log:printDebug("Keys match!", resultElement = resultElement, updatesElement = updatesElement);
 
                     // Found matching element - perform deep merge of the objects
                     json|error mergeResult = mergeJson(resultElement, updatesElement, keys);
@@ -267,7 +267,7 @@ isolated function deepMergeArrayByKey(json[] originalArray, json[] updatesArray,
             resultArray.push(updatesElement);
         }
     }
-    log:printDebug("Result array: " + resultArray.toString());
+    log:printDebug("Result array:", resultArray = resultArray);
     return resultArray;
 }
 
