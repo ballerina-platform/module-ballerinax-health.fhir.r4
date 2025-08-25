@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.12.3"
+distribution-version = "2201.12.8"
 
 [[package]]
 org = "ballerina"
@@ -336,6 +336,9 @@ dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "observe"}
 ]
+modules = [
+	{org = "ballerinai", packageName = "observe", moduleName = "observe"}
+]
 
 [[package]]
 org = "ballerinax"
@@ -362,6 +365,7 @@ dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "lang.runtime"},
 	{org = "ballerina", name = "log"},
+	{org = "ballerina", name = "task"},
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "url"},
 	{org = "ballerina", name = "uuid"},
@@ -400,7 +404,7 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.parser"
-version = "6.1.1"
+version = "6.1.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
@@ -414,7 +418,7 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.validator"
-version = "5.1.1"
+version = "5.1.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
@@ -429,11 +433,12 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.deidentify"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "test"},
+	{org = "ballerinai", name = "observe"},
 	{org = "ballerinax", name = "health.fhir.r4utils.fhirpath"}
 ]
 modules = [
@@ -449,6 +454,7 @@ dependencies = [
 	{org = "ballerina", name = "lang.int"},
 	{org = "ballerina", name = "lang.regexp"},
 	{org = "ballerina", name = "log"},
+	{org = "ballerinax", name = "health.fhir.r4"},
 	{org = "ballerinax", name = "health.fhir.r4.validator"}
 ]
 modules = [
