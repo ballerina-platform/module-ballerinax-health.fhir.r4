@@ -16,6 +16,7 @@ env:
 
 jobs:
   build:
+    if: github.repository == 'ballerina-platform/module-ballerinax-health.fhir.r4'
     runs-on: ubuntu-latest
     env:
       JAVA_OPTS: -Xmx4G
