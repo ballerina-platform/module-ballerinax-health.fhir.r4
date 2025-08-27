@@ -2,6 +2,24 @@
 
 This module provides a robust utility for merging two JSON objects using Ballerina, supporting advanced strategies such as key-based array merging, composite keys, and deep recursive merging. It is designed for use cases like FHIR resource merging, configuration overlays, and general-purpose JSON manipulation.
 
+## Table of Contents
+
+- [Features](#features)
+- [Usage](#usage)
+  - [Import](#import)
+  - [Basic Merge](#basic-merge)
+  - [Array Merge by Key](#array-merge-by-key)
+  - [Composite Key Example](#composite-key-example)
+  - [FHIR Resource Merge](#fhir-resource-merge)
+- [API Reference](#api-reference)
+  - [mergeJson](#mergejson)
+  - [mergeFHIRResources](#mergefhirresources)
+- [Strategy](#strategy)
+  - [Main Merge Logic](#main-merge-logic)
+  - [Type-Based Merge Strategies](#type-based-merge-strategies)
+- [Error Handling](#error-handling)
+- [Testing](#testing)
+
 ## Features
 
 - **Deep Merge**: Recursively merges nested JSON objects.
@@ -9,10 +27,11 @@ This module provides a robust utility for merging two JSON objects using Balleri
   - **Append**: By default, arrays are concatenated.
   - **Key-Based Merge**: Arrays of objects can be merged by matching one or more key fields (including composite keys).
     - **Note:** Currently only supports keys with primitive values (string, int, boolean, float, decimal)
-
 - **Composite Key Support**: Specify multiple fields as a composite key for array element matching.
 - **Type Safety**: Returns errors on type mismatches unless configured to ignore them.
 - **Preserves Original Structure**: The original JSON is never mutated; a new merged object is returned.
+- **FHIR Resource Support**: Specialized functions for merging FHIR R4 resources and bundles with:
+  - Built-in FHIR validation before and after merge operations
 
 ## Usage
 
@@ -49,12 +68,71 @@ Result:
 { "items": [ { "id": 1, "value": "B" }, { "id": 2, "value": "C" } ] }
 ```
 
+**Note:** The merge keys can be defined inside the Config.toml file as well. `Nested key paths should be given inside double quotes` as follows. 
+
+```
+[mergeKeys]
+#Patient resources
+identifier = ["use","system","value"]
+"identifier.type.coding" = ["system", "code"]
+telecom = ["system","use","value"]
+address = ["use","postalCode"]
+name = ["use"]
+```
+
 ### Composite Key Example
 
 ```ballerina
 map<string[]> keys = { "products": ["id", "code"] };
 ```
 This will match array elements where both `id` and `code` fields are equal.
+
+### FHIR Resource Merge
+
+```ballerina
+json originalPatient = {
+    "resourceType": "Patient",
+    "id": "example",
+    "identifier": [
+        {
+            "system": "http://example.org/mrn",
+            "value": "12345"
+        }
+    ],
+    "name": [
+        {
+            "use": "official",
+            "family": "Doe",
+            "given": ["John"]
+        }
+    ]
+};
+
+json updatesPatient = {
+    "resourceType": "Patient",
+    "id": "example",
+    "identifier": [
+        {
+            "system": "http://example.org/mrn", 
+            "value": "12345"
+        },
+        {
+            "system": "http://example.org/ssn",
+            "value": "111-22-3333"
+        }
+    ],
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "+1-555-123-4567",
+            "use": "home"
+        }
+    ]
+};
+
+json result = check jsonmerge:mergeFHIRResources(originalPatient, updatesPatient);
+
+```
 
 ## API Reference
 
@@ -66,7 +144,23 @@ This will match array elements where both `id` and `code` fields are equal.
 
 Returns the merged JSON object or an error if types mismatch.
 
-For more details, see the implementation in [jsonmerge.bal](jsonmerge.bal).
+For more details, see the implementation in [json_merge.bal](json_merge.bal).
+
+### mergeFHIRResources(json originalResource, json updatesResource, map<string[]>? keys = ()) returns json|error
+
+- `originalResource`: The base FHIR resource (serves as foundation).
+- `updatesResource`: The source FHIR resource containing updates to merge.
+-  `keys` : Optional map specifying merge keys for FHIR resource arrays
+
+Returns the merged FHIR resource or an error if validation fails.
+
+This function:
+- Validates both input resources against FHIR R4 standards
+- Uses FHIR-specific merge keys for arrays (e.g., identifiers merged by system+value)
+- Validates the merged result to ensure FHIR compliance
+- Returns descriptive errors for any validation failures
+
+For more details, see the implementation in [fhir_resource_merge.bal](fhir_resource_merge.bal).
 
 ## Strategy
 

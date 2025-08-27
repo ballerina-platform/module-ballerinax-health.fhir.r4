@@ -21,6 +21,21 @@ import ballerina/log;
 // When false: returns an error on type mismatch
 configurable boolean ignoreMismatchedTypes = false;
 
+// Configurable merge keys - read from Config.toml file for application-wide array merging strategy
+// This allows external configuration of how arrays should be merged by specifying which fields
+// to use as keys for matching array elements. When merge keys are defined, arrays of objects
+// will be merged by matching elements with the same key field values instead of simple appending.
+// Examples in Config.toml:
+//   [mergeKeys]
+//   #Patient resources
+//   identifier = ["use", "system", "value"]
+//   "identifier.type.coding" = ["system", "code"]
+//   telecom = ["system", "use", "value"]
+//   address = ["use", "postalCode"]
+//   name = ["use"]
+//   configurable map<string[]> mergeKeys = {};
+configurable map<string[]> mergeKeys = {};
+
 # Description.
 #
 # + updates - Updates JSON object to merge from
@@ -31,6 +46,29 @@ configurable boolean ignoreMismatchedTypes = false;
 # Note: Currently only supports keys with primitive values (string, int, boolean, float, decimal)
 # + return - return merged JSON object or error if types mismatch
 public isolated function mergeJson(json original, json updates, map<string[]>? keys = ()) returns json|error {
+    // This is the public entry point - use configured keys only if no keys provided
+    map<string[]>? effectiveKeys = keys;
+
+    // Only use configured merge keys if the caller did not provide any keys
+    if keys is () && mergeKeys.length() > 0 {
+        // Clean TOML parsed artifacts (extra quotes) from configured merge keys before using them
+        effectiveKeys = cleanMergeKeys(mergeKeys);
+        log:printDebug("Using configured merge keys for top-level merge:", mergeKeys = effectiveKeys);
+    }
+
+    return mergeJsonInternal(original, updates, effectiveKeys);
+}
+
+# Description.
+# Internal implementation of JSON merging with detailed merge strategies.
+# Note: This is an internal function allowing for precise control over merge behavior in recursive calls. 
+# Use mergeJson() for public API.
+#
+# + updates - Updates JSON object to merge from
+# + original - Original JSON object to merge into (serves as base)  
+# + keys - Optional map specifying merge keys for arrays at different paths
+# + return - return merged JSON object or error if types mismatch
+isolated function mergeJsonInternal(json original, json updates, map<string[]>? keys = ()) returns json|error {
 
     // Input validation: Ensure both parameters are JSON objects (maps)
     if updates !is map<json> {
@@ -42,6 +80,7 @@ public isolated function mergeJson(json original, json updates, map<string[]>? k
 
     log:printDebug("Original json:", original = original);
     log:printDebug("Updates json:", updates = updates);
+    log:printDebug("Keys json:", keys = keys);
 
     // Type cast to map<json> for easier manipulation
     map<json> updatesMap = <map<json>>updates;
@@ -283,3 +322,22 @@ isolated function deepMergeArrayByAppend(json[] originalArray, json[] updatesArr
     return combinedArray;
 }
 
+# Description.
+# Helper function to clean merge keys by removing extra quotes from TOML parsing
+#
+# + rawKeys - The raw merge keys map from configuration
+# + return - Cleaned merge keys map without extra quotes
+isolated function cleanMergeKeys(map<string[]> rawKeys) returns map<string[]> {
+    map<string[]> cleanedKeys = {};
+
+    foreach var [keyPath, keyFields] in rawKeys.entries() {
+        string cleanedKeyPath = keyPath;
+
+        // Remove extra quotes if they exist at the beginning and end
+        if cleanedKeyPath.startsWith("\"") && cleanedKeyPath.endsWith("\"") && cleanedKeyPath.length() > 1 {
+            cleanedKeyPath = cleanedKeyPath.substring(1, cleanedKeyPath.length() - 1);
+        }
+        cleanedKeys[cleanedKeyPath] = keyFields;
+    }
+    return cleanedKeys;
+}

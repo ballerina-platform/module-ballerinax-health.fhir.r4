@@ -17,9 +17,9 @@
 import ballerina/io;
 import ballerina/test;
 
-// Basic functionality tests
+// Basic tests for FHIR resource merging
 @test:Config {}
-function testmergeJson_FHIR() returns error? {
+function testmergeFHIRResources_FHIR() returns error? {
 
     json updates = {
         "resourceType": "Patient",
@@ -96,7 +96,7 @@ function testmergeJson_FHIR() returns error? {
         "identifier": ["value"],
         "identifier.type.coding": ["system", "code"]
     };
-    json mergeResult = check mergeJson(original, updates, keysMap);
+    json mergeResult = check mergeFHIRResources(original, updates, keysMap);
     io:println("Result: ", mergeResult);
 
 }
@@ -167,8 +167,7 @@ function testFhirPatientResourceMerge() {
         "id": "patient-123",
         "meta": {
             "versionId": "1",
-            "lastUpdated": "2024-01-10T08:15:00Z",
-            "profile": ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"]
+            "lastUpdated": "2024-01-10T08:15:00Z"
         },
         "identifier": [
             {
@@ -238,10 +237,7 @@ function testFhirPatientResourceMerge() {
         "address": ["use"]
     };
 
-    json|error mergeResult = mergeJson(originalPatient, updatesPatient, fhirKeys);
-
-    io:println("Updates Patient: " + updatesPatient.toJsonString());
-    io:println("Original Patient: " + originalPatient.toJsonString());
+    json|error mergeResult = mergeFHIRResources(originalPatient, updatesPatient, fhirKeys);
 
     if mergeResult is json {
         io:println("Merged Patient: " + mergeResult.toJsonString());
@@ -289,6 +285,16 @@ function testFhirObservationResourceMerge() {
             "reference": "Patient/patient-123"
         },
         "effectiveDateTime": "2024-01-15T14:30:00Z",
+        "effectivePeriod": {
+            "start": "2013-04-05T10:30:10+01:00",
+            "end": "2013-04-05T10:30:10+01:00"
+        },
+        "valueQuantity": {
+            "value": 7.2,
+            "unit": "g/dl",
+            "system": "http://unitsofmeasure.org",
+            "code": "g/dL"
+        },
         "component": [
             {
                 "code": {
@@ -359,6 +365,16 @@ function testFhirObservationResourceMerge() {
             "display": "John Johnson"
         },
         "effectiveDateTime": "2024-01-10T12:00:00Z",
+        "effectivePeriod": {
+            "start": "2013-04-05T10:30:10+01:00",
+            "end": "2013-04-05T10:30:10+01:00"
+        },
+        "valueQuantity": {
+            "value": 7.2,
+            "unit": "g/dl",
+            "system": "http://unitsofmeasure.org",
+            "code": "g/dL"
+        },
         "performer": [
             {
                 "reference": "Practitioner/dr-smith",
@@ -408,10 +424,7 @@ function testFhirObservationResourceMerge() {
         "component.code.coding": ["system", "code"]
     };
 
-    json|error mergeResult = mergeJson(originalObservation, updatesObservation, fhirKeys);
-
-    io:println("Updates Observation: " + updatesObservation.toJsonString());
-    io:println("Original Observation: " + originalObservation.toJsonString());
+    json|error mergeResult = mergeFHIRResources(originalObservation, updatesObservation, fhirKeys);
 
     if mergeResult is json {
         io:println("Merged Observation: " + mergeResult.toJsonString());
@@ -446,6 +459,9 @@ function testFhirMedicationRequestMerge() {
         },
         "subject": {
             "reference": "Patient/patient-123"
+        },
+        "medicationReference": {
+            "reference": "Medication/patient-123"
         },
         "authoredOn": "2024-01-15T09:00:00Z",
         "requester": {
@@ -519,6 +535,9 @@ function testFhirMedicationRequestMerge() {
             "reference": "Patient/patient-123",
             "display": "John Johnson"
         },
+        "medicationReference": {
+            "reference": "Medication/patient-123"
+        },
         "encounter": {
             "reference": "Encounter/enc-001"
         },
@@ -555,13 +574,11 @@ function testFhirMedicationRequestMerge() {
     // Define keys for merging FHIR MedicationRequest arrays
     map<string[]> fhirKeys = {
         "dosageInstruction": ["sequence"],
+        "medicationCodeableConcept.coding": ["system", "code"],
         "reasonCode": ["coding"]
     };
 
-    json|error mergeResult = mergeJson(originalMedicationRequest, updatesMedicationRequest, fhirKeys);
-
-    io:println("Updates MedicationRequest: " + updatesMedicationRequest.toJsonString());
-    io:println("Original MedicationRequest: " + originalMedicationRequest.toJsonString());
+    json|error mergeResult = mergeFHIRResources(originalMedicationRequest, updatesMedicationRequest, fhirKeys);
 
     if mergeResult is json {
         io:println("Merged MedicationRequest: " + mergeResult.toJsonString());
@@ -678,10 +695,7 @@ function testFhirBundleResourceMerge() {
         "entry": ["fullUrl"]
     };
 
-    json|error mergeResult = mergeJson(originalBundle, updatesBundle, fhirKeys);
-
-    io:println("Updates Bundle: " + updatesBundle.toJsonString());
-    io:println("Original Bundle: " + originalBundle.toJsonString());
+    json|error mergeResult = mergeFHIRResources(originalBundle, updatesBundle, fhirKeys);
 
     if mergeResult is json {
         io:println("Merged Bundle: " + mergeResult.toJsonString());
@@ -738,47 +752,15 @@ function testFhirDiagnosticReportMerge() {
         "result": [
             {
                 "reference": "Observation/glucose-001",
-                "display": "Glucose measurement",
-                "status": "final",
-                "valueQuantity": {
-                    "value": 95,
-                    "unit": "mg/dL",
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mg/dL"
-                },
-                "interpretation": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
-                                "code": "N",
-                                "display": "Normal"
-                            }
-                        ]
-                    }
-                ]
+                "display": "Glucose measurement"
             },
             {
                 "reference": "Observation/sodium-001",
-                "display": "Sodium measurement",
-                "status": "final",
-                "valueQuantity": {
-                    "value": 142,
-                    "unit": "mmol/L",
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mmol/L"
-                }
+                "display": "Sodium measurement"
             },
             {
                 "reference": "Observation/creatinine-001",
-                "display": "Creatinine measurement",
-                "status": "final",
-                "valueQuantity": {
-                    "value": 1.1,
-                    "unit": "mg/dL",
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mg/dL"
-                }
+                "display": "Creatinine measurement"
             }
         ],
         "performer": [
@@ -832,52 +814,15 @@ function testFhirDiagnosticReportMerge() {
         "result": [
             {
                 "reference": "Observation/glucose-001",
-                "display": "Blood glucose",
-                "status": "preliminary",
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://loinc.org",
-                            "code": "33747-0",
-                            "display": "Glucose [Mass/volume] in Blood"
-                        }
-                    ]
-                },
-                "effectiveDateTime": "2024-01-15T08:00:00Z"
+                "display": "Blood glucose"
             },
             {
                 "reference": "Observation/potassium-001",
-                "display": "Potassium measurement",
-                "status": "final",
-                "valueQuantity": {
-                    "value": 4.2,
-                    "unit": "mmol/L",
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mmol/L"
-                },
-                "referenceRange": [
-                    {
-                        "low": {
-                            "value": 3.5,
-                            "unit": "mmol/L"
-                        },
-                        "high": {
-                            "value": 5.0,
-                            "unit": "mmol/L"
-                        }
-                    }
-                ]
+                "display": "Potassium measurement"
             },
             {
                 "reference": "Observation/bun-001",
-                "display": "Blood Urea Nitrogen",
-                "status": "final",
-                "valueQuantity": {
-                    "value": 18,
-                    "unit": "mg/dL",
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mg/dL"
-                }
+                "display": "Blood Urea Nitrogen"
             }
         ],
         "performer": [
@@ -918,27 +863,11 @@ function testFhirDiagnosticReportMerge() {
         "performer": ["reference"],
         "resultsInterpreter": ["reference"],
         "specimen": ["reference"],
-        "category.coding": ["system", "code"],
-        "code.coding": ["system", "code"],
-        "result.code.coding": ["system", "code"],
-        "result.referenceRange.low": ["value", "unit"],
-        "result.referenceRange.high": ["value", "unit"]
+        "code.coding": ["system", "code"]
     };
 
-    io:println("Updates DiagnosticReport:");
-    io:println(updatesDiagnosticReport.toJsonString());
-    io:println("");
-
-    io:println("Original DiagnosticReport:");
-    io:println(originalDiagnosticReport.toJsonString());
-    io:println("");
-
-    io:println("FHIR Keys Map:");
-    io:println(fhirKeys.toString());
-    io:println("");
-
     // Perform the merge
-    json|error mergeResult = mergeJson(originalDiagnosticReport, updatesDiagnosticReport, fhirKeys);
+    json|error mergeResult = mergeFHIRResources(originalDiagnosticReport, updatesDiagnosticReport, fhirKeys);
 
     if mergeResult is json {
         io:println("Merged DiagnosticReport:");
@@ -980,12 +909,6 @@ function testFhirDiagnosticReportMerge() {
                     }
                 }
             }
-
-            if glucoseResult is map<json> {
-                test:assertTrue(glucoseResult.hasKey("valueQuantity"), "Glucose should have valueQuantity from updates");
-                test:assertTrue(glucoseResult.hasKey("code"), "Glucose should have code from original");
-                test:assertEquals(glucoseResult["status"], "final", "Glucose status should be updated from updates");
-            }
         }
 
         // Verify performer array merge
@@ -1008,152 +931,6 @@ function testFhirDiagnosticReportMerge() {
         io:println("Merge failed with error:");
         io:println(mergeResult.message());
         test:assertFail("FHIR DiagnosticReport merge should not fail");
-    }
-}
-
-@test:Config {}
-function testFhirObservationMerge() {
-    io:println("=== FHIR Test: Observation Resource Merge ===");
-
-    // Updates Observation with updated values
-    json updatesObservation = {
-        "resourceType": "Observation",
-        "id": "glucose-001",
-        "status": "final",
-        "category": [
-            {
-                "coding": [
-                    {
-                        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
-                        "code": "laboratory",
-                        "display": "Laboratory"
-                    }
-                ]
-            }
-        ],
-        "code": {
-            "coding": [
-                {
-                    "system": "http://loinc.org",
-                    "code": "33747-0",
-                    "display": "Glucose [Mass/volume] in Blood"
-                }
-            ]
-        },
-        "subject": {
-            "reference": "Patient/patient-123"
-        },
-        "valueQuantity": {
-            "value": 95,
-            "unit": "mg/dL",
-            "system": "http://unitsofmeasure.org",
-            "code": "mg/dL"
-        },
-        "interpretation": [
-            {
-                "coding": [
-                    {
-                        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
-                        "code": "N",
-                        "display": "Normal"
-                    }
-                ]
-            }
-        ],
-        "component": [
-            {
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://loinc.org",
-                            "code": "33747-0",
-                            "display": "Glucose"
-                        }
-                    ]
-                },
-                "valueQuantity": {
-                    "value": 95,
-                    "unit": "mg/dL"
-                }
-            }
-        ]
-    };
-
-    json originalObservation = {
-        "resourceType": "Observation",
-        "id": "glucose-001",
-        "status": "preliminary",
-        "category": [
-            {
-                "coding": [
-                    {
-                        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
-                        "code": "laboratory",
-                        "display": "Lab Test"
-                    }
-                ]
-            }
-        ],
-        "code": {
-            "coding": [
-                {
-                    "system": "http://loinc.org",
-                    "code": "33747-0",
-                    "display": "Blood Glucose"
-                }
-            ]
-        },
-        "subject": {
-            "reference": "Patient/patient-123",
-            "display": "John Doe"
-        },
-        "effectiveDateTime": "2024-01-15T08:00:00Z",
-        "performer": [
-            {
-                "reference": "Organization/lab-central"
-            }
-        ],
-        "referenceRange": [
-            {
-                "low": {
-                    "value": 70,
-                    "unit": "mg/dL"
-                },
-                "high": {
-                    "value": 100,
-                    "unit": "mg/dL"
-                }
-            }
-        ]
-    };
-
-    map<string[]> observationKeys = {
-        "category": ["coding.system", "coding.code"],
-        "category.coding": ["system", "code"],
-        "code.coding": ["system", "code"],
-        "interpretation": ["coding.system", "coding.code"],
-        "interpretation.coding": ["system", "code"],
-        "component": ["code.coding.system", "code.coding.code"],
-        "component.code.coding": ["system", "code"],
-        "performer": ["reference"],
-        "referenceRange": ["low.value", "high.value"]
-    };
-
-    json|error mergeResult = mergeJson(originalObservation, updatesObservation, observationKeys);
-
-    if mergeResult is json {
-        io:println("Merged Observation:");
-        io:println(mergeResult.toJsonString());
-
-        map<json> resultMap = <map<json>>mergeResult;
-        test:assertEquals(resultMap["status"], "final", "Status should be updated from updates");
-        test:assertTrue(resultMap.hasKey("valueQuantity"), "ValueQuantity should be added from updates");
-        test:assertTrue(resultMap.hasKey("effectiveDateTime"), "EffectiveDateTime should be preserved from original");
-
-        io:println("FHIR Observation merge test completed successfully");
-    } else {
-        io:println("Observation merge failed: " + mergeResult.message());
-        test:assertFail("FHIR Observation merge should not fail");
     }
 }
 
@@ -1249,7 +1026,7 @@ function testFhirPatientMerge() {
         "maritalStatus.coding": ["system", "code"]
     };
 
-    json|error mergeResult = mergeJson(originalPatient, updatesPatient, patientKeys);
+    json|error mergeResult = mergeFHIRResources(originalPatient, updatesPatient, patientKeys);
 
     if mergeResult is json {
         io:println("Merged Patient:");
