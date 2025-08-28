@@ -63,7 +63,7 @@ function testRemoveNumericField() {
         "active": true
     };
 
-    json|error result = setFhirPathValues(testResource, "Patient.version", (), validateFHIRResource = false);
+    json|error result = setFhirPathValues(testResource, "Patient.version", ());
     test:assertTrue(result is json, "Should successfully remove version field");
     if result is json {
         map<json> resultMap = <map<json>>result;

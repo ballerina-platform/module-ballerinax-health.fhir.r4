@@ -30,14 +30,14 @@ const ARRAY_INDEX_ERROR_MSG = "The given array index is incorrect for the given 
 # Basic token type.
 #
 # + value - value of the token
-public type Token record {
+type Token record {
     string value;
 };
 
 # Sub type of token for array access tokens.
 #
 # + index - index of the array element
-public type ArrayToken record {
+type ArrayToken record {
     *Token;
     int index;
 };
@@ -122,11 +122,10 @@ public type ModificationFunction isolated function (json param) returns json|Mod
 # Method to create a ModificationFunctionError
 #
 # + errorMsg - the reason for the occurence of error
-# + fhirPath - the fhirpath expression that is being evaluated
 # + fhirPathValue - the value of the fhirpath expression that is being modified
 # + return - the error object
-public isolated function createModificationFunctionError(string errorMsg, string? fhirPath, string? fhirPathValue) returns ModificationFunctionError {
-    ModificationFunctionError modificationFunctionError = error(errorMsg, fhirPath = fhirPath, fhirPathValue = fhirPathValue);
+public isolated function createModificationFunctionError(string errorMsg, string? fhirPathValue) returns ModificationFunctionError {
+    ModificationFunctionError modificationFunctionError = error(errorMsg, fhirPathValue = fhirPathValue);
     return modificationFunctionError;
 }
 
@@ -141,7 +140,7 @@ isolated function getModifiedValue(json currentValue, ModificationFunction? modi
         // Apply modification function if provided
         json|ModificationFunctionError modifiedResult = modificationFunction(currentValue);
         if modifiedResult is ModificationFunctionError {
-            return createModificationFunctionError(modifiedResult.message(), fhirPath = (), fhirPathValue = currentValue.toString());
+            return createModificationFunctionError(modifiedResult.message(), fhirPathValue = currentValue.toString());
         }
         return modifiedResult;
     }

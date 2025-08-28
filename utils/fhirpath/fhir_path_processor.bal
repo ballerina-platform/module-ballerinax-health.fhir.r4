@@ -18,26 +18,29 @@ import ballerina/lang.'int as langint;
 import ballerina/lang.regexp;
 import ballerina/log;
 
-// Configurable to control whether FHIR resource validation should be performed
-configurable boolean fhirResourceValidation = true;
+// Configurable to control whether input FHIR resource validation should be performed
+configurable boolean inputFHIRResourceValidation = false;
 
-// Configurable to control whether missing paths should be created
+// Configurable to control whether output FHIR resource validation should be performed. Used only in setFhirPathValues() function.
+configurable boolean outputFHIRResourceValidation = false;
+
+// Configurable to control whether missing paths should be created. Used only in setFhirPathValues() function.
 configurable boolean createMissingPaths = false;
 
-# Evaluate and retrieve the value(s) of a give FhirPath.
+# Get values of a FHIR resource using a FHIRPath expression
 #
-# + fhirResource - fhir resource
-# + fhirPathExpression - requested fhirpath expression
-# + validateFHIRResource - parameter description
-# + return - list of results of the fhirpath expression
-public isolated function getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json[]|FHIRPathError {
-    // Input validation
+# + fhirResource - Input FHIR resource
+# + fhirPathExpression - fhirpath expression to get values from
+# + validateInputFHIRResource - whether to validate the input FHIR resource
+# + return - list of results of the fhirpath expression or FHIRPathError
+public isolated function getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation) returns json[]|FHIRPathError {
+    // Input FHIR Path validation
     if !validateFhirPath(fhirPathExpression) {
         return createFhirPathError("Invalid FHIR Path expression", fhirPathExpression);
     }
 
-    // Validate FHIR resource and throw error if invalid
-    if validateFHIRResource {
+    // Validate input FHIR resource and throw error if invalid
+    if validateInputFHIRResource {
         check validateFhirResource(fhirResource);
     }
 
@@ -82,18 +85,27 @@ public isolated function getFhirPathValues(json fhirResource, string fhirPathExp
     return [evaluationResult];
 }
 
-public isolated function setFhirPathValues(json fhirResource, string fhirPathExpression, json|ModificationFunction modifier, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError {
+# Updates a FHIR resource at the specified FHIRPath with either a new value or by applying a ModificationFunction
+#
+# + fhirResource - Input FHIR resource
+# + fhirPathExpression - FHIRPath expression to set/modify values
+# + value - new value to replace or a function of type ModificationFunction to modify the existing value
+# + validateInputFHIRResource - whether to validate the input FHIR resource
+# + validateOutputFHIRResource - whether to validate the output FHIR resource
+# + return - Updated FHIR resource or FHIRPathError
+public isolated function setFhirPathValues(json fhirResource, string fhirPathExpression, json|ModificationFunction value,
+        boolean validateInputFHIRResource = inputFHIRResourceValidation, boolean validateOutputFHIRResource = outputFHIRResourceValidation) returns json|FHIRPathError {
 
-    json newValue = modifier is json ? modifier : ();
-    ModificationFunction? modificationFunction = modifier is ModificationFunction ? modifier : ();
+    json newValue = value is json ? value : ();
+    ModificationFunction? modificationFunction = value is ModificationFunction ? value : ();
 
     // Input validation
     if !validateFhirPath(fhirPathExpression) {
         return createFhirPathError("Invalid FHIR Path expression", fhirPathExpression);
     }
 
-    // Validate FHIR resource and throw error if invalid
-    if validateFHIRResource {
+    // Validate input FHIR resource and throw error if invalid
+    if validateInputFHIRResource {
         check validateFhirResource(fhirResource);
     }
 
@@ -111,7 +123,7 @@ public isolated function setFhirPathValues(json fhirResource, string fhirPathExp
     }
 
     // Validate FHIR resource and throw error if invalid
-    if validateFHIRResource {
+    if validateOutputFHIRResource {
         FHIRPathError? validateFhirResourceResult = validateFhirResource(outcome);
         if validateFhirResourceResult is FHIRPathError {
             return createFhirPathError("Created resource is not FHIR compliant", fhirPathExpression);

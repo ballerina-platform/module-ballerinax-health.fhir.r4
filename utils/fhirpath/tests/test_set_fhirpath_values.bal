@@ -33,7 +33,7 @@ function testSetSimpleStringValue() {
 function testSetSimpleNumberValue() {
     json originalPatient = samplePatient3.clone();
     // Note: FHIR IDs are typically strings, but for testing purposes, we can set a number and set validate = false
-    json|error result = setFhirPathValues(originalPatient, "Patient.id", 999, validateFHIRResource = false);
+    json|error result = setFhirPathValues(originalPatient, "Patient.id", 999);
 
     test:assertTrue(result is json, "Should successfully set id value");
     if result is json {
@@ -117,7 +117,7 @@ function testBulkUpdateArrayElements() {
 @test:Config {}
 function testBulkUpdateNestedArrayElements() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.address.line", "***", validateFHIRResource = false);
+    json|error result = setFhirPathValues(originalPatient, "Patient.address.line", "***");
 
     test:assertTrue(result is json, "Should successfully update all line numbers");
     if result is json {
@@ -148,7 +148,7 @@ function addToConfigFile(string value) returns error? {
 @test:Config {}
 function testSkipNonExistentPathWithPathCreationDisabled() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.nonExistentField", "value", validateFHIRResource = false);
+    json|error result = setFhirPathValues(originalPatient, "Patient.nonExistentField", "value");
 
     test:assertTrue(result is json, "Should return original resource unchanged");
     if result is json {
@@ -176,7 +176,7 @@ function testSkipNonExistentNestedPath() {
 @test:Config {}
 function testSkipNonExistentArrayIndexWithPathCreationDisabled() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.address[5].city", "value", validateFHIRResource = false);
+    json|error result = setFhirPathValues(originalPatient, "Patient.address[5].city", "value");
 
     test:assertTrue(result is json, "Should return original resource unchanged");
     if result is json {

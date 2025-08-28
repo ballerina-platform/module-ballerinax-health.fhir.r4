@@ -1,17 +1,15 @@
-# FHIR R4 Utils FHIRPath Package
+# FHIR R4 Utils - FHIRPath Package
 
 This package provides utilities for working with FHIR resources using FHIRPath expressions. It allows you to query, update, and manipulate FHIR resources in a type-safe manner using Ballerina.
 
 ## Package Overview
 
-This package implements FHIRPath, a powerful expression language for querying and manipulating FHIR resources. It supports the FHIR R4 version and provides a set of functions to evaluate FHIRPath expressions, update resource values, and handle errors effectively.
+This package implements FHIRPath, a powerful expression language for querying and manipulating FHIR resources. It supports the FHIR R4 version and provides a set of functions to extract FHIRPath expression values, update resource values, and handle errors effectively.
 
 |                      |                      |
 |----------------------|----------------------|
 | FHIR version         | R4                   |
 | Implementation Guide | https://hl7.org/fhir/fhirpath.html |
-| Package Version      | 2.0.0                |
-| Ballerina Version    | 2201.12.2            |
 
 Refer to the [API Documentation](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath) for detailed usage.
 
@@ -19,64 +17,15 @@ Refer to the [API Documentation](https://central.ballerina.io/ballerinax/health.
 
 - **Query FHIR Resources**: Extract one or more values for a matching FHIRPath expression from FHIR resources
 - **Update FHIR Resources**: Set values in FHIR resources at specified paths
-- **Remove FHIR Sub-Resources**: Remove sub-elements from FHIR resources by setting values to null
-- **Resource Manipulation**: Support for creating missing paths and updating nested structures
+- **Remove FHIR Sub-Resources**: Remove sub-elements from FHIR resources
+- **Adding Sub-Resources**: Support for creating new FHIR paths and setting JSON values
 - **Function-based Value Modification**: Apply custom functions to transform values during updates (useful for data masking, hashing, etc.)
 - **Unified API**: Single function handles both direct value setting and function-based transformations
 - **Validate FHIRPath Expressions**: Ensure that FHIRPath expressions are valid before evaluation
-- **Validate FHIR Resources**: Ensure that FHIR resources provided and returned conform to the expected structure and types
+- **Validate FHIR Resources**: Ensure that FHIR resources provided and returned conform to the expected structure and types. (For more info visit https://central.ballerina.io/ballerinax/health.fhir.r4.validator/latest)
 - **Error Handling**: Comprehensive error reporting for invalid paths or operations
 - **Type Safety**: Strong typing support for Ballerina applications
 
-## API Reference
-
-### Main Functions
-
-- `getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateFHIRResource = fhirResourceValidation) returns json[]|FHIRPathError`
-  - Extracts values from FHIR resources using FHIRPath expressions
-  - Returns extracted values as a json array or an error
-  - Can handle both single and multiple values (e.g., `Patient.address[0].city` returns the first city from all address records, while `Patient.address.city` returns all the cities from all address records)
-  - Optional validation of FHIR resource structure
-
-- `setFhirPathValues(json fhirResource, string fhirPathExpression, json|ModificationFunction valueOrFunction, boolean validateFHIRResource = fhirResourceValidation) returns json|FHIRPathError`
-  - Updates a FHIR resource at the specified FHIRPath with either a new value or by applying a custom function
-  - **Direct Value Setting**: When `valueOrFunction` is a json value, it sets the new value directly
-    - Can handle both single and multiple values (e.g., `Patient.address[0].city` sets the city in the first address, while `Patient.address.city` updates all the cities in all the addresses)
-    - Use `()` as the value to remove a field from the resource (e.g., setting `Patient.gender` to `()` removes the gender field)
-  - **Function-based Transformation**: When `valueOrFunction` is a ModificationFunction, it applies the function to transform existing values
-    - Useful for data masking, hashing, encryption, or other custom transformations
-    - The modification function receives the current value and returns the transformed value
-    - Can handle both single and multiple values
-  - Optional validation of FHIR resource structure
-
-- `validateFhirPath(string fhirPathExpression) returns boolean`
-  - Validates a FHIRPath expression to ensure it is syntactically correct
-  - Returns `true` if valid, `false` if invalid
-  - Uses regex pattern matching to validate FHIRPath syntax
-
-### Types
-
-- `Token` - Basic token type for FHIRPath parsing with value field
-- `ArrayToken` - Sub type of token for array access tokens with index field
-- `FHIRPathError` - Distinct error type for FHIRPath-related errors
-- `ModificationFunction` - Function type for custom value transformations: `isolated function (json) returns json|ModificationFunctionError`
-- `ModificationFunctionError` - Distinct error type for modification function errors
-
-### Utility Functions
-
-- `createFhirPathError(string errorMsg, string? fhirPath) returns FHIRPathError` - Creates a FHIRPath error
-- `createModificationFunctionError(string errorMsg, string? fhirPath, string? fhirPathValue) returns ModificationFunctionError` - Creates a modification function error
-
-## Error Handling
-
-The package provides comprehensive error handling for various scenarios:
-- Invalid FHIRPath expressions
-- Mismatched resource types
-- Array index out of bounds
-- Invalid characters in path expressions
-- Resource structure validation errors
-
-All main functions return either the expected result or a `FHIRPathError` which can be handled using standard Ballerina error handling patterns.
 
 ## Usage Examples
 
