@@ -4,7 +4,7 @@ This package provides utilities for working with FHIR resources using FHIRPath e
 
 ## Package Overview
 
-This package implements FHIRPath, a powerful expression language for querying and manipulating FHIR resources. It supports the FHIR R4 version and provides a set of functions to extract FHIRPath expression values, update resource values, and handle errors effectively.
+This package implements FHIRPath, a powerful expression language for querying and manipulating FHIR resources. It supports the FHIR R4 version and provides a set of functions to extract [FHIRPath expression](https://hl7.org/fhir/fhirpath.html) values, update resource values, and handle errors effectively.
 
 |                      |                      |
 |----------------------|----------------------|

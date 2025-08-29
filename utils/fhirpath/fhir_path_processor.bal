@@ -31,7 +31,7 @@ configurable boolean createMissingPaths = false;
 #
 # + fhirResource - Input FHIR resource
 # + fhirPathExpression - fhirpath expression to get values from
-# + validateInputFHIRResource - whether to validate the input FHIR resource
+# + validateInputFHIRResource - whether to validate the input FHIR resource (default = false)
 # + return - list of results of the fhirpath expression or FHIRPathError
 public isolated function getFhirPathValues(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation) returns json[]|FHIRPathError {
     // Input FHIR Path validation
@@ -90,8 +90,8 @@ public isolated function getFhirPathValues(json fhirResource, string fhirPathExp
 # + fhirResource - Input FHIR resource
 # + fhirPathExpression - FHIRPath expression to set/modify values
 # + value - new value to replace or a function of type ModificationFunction to modify the existing value
-# + validateInputFHIRResource - whether to validate the input FHIR resource
-# + validateOutputFHIRResource - whether to validate the output FHIR resource
+# + validateInputFHIRResource - whether to validate the input FHIR resource (default = false)
+# + validateOutputFHIRResource - whether to validate the output FHIR resource (default = false)
 # + return - Updated FHIR resource or FHIRPathError
 public isolated function setFhirPathValues(json fhirResource, string fhirPathExpression, json|ModificationFunction value,
         boolean validateInputFHIRResource = inputFHIRResourceValidation, boolean validateOutputFHIRResource = outputFHIRResourceValidation) returns json|FHIRPathError {
