@@ -17,8 +17,8 @@ Refer to the [API Documentation](https://central.ballerina.io/ballerinax/health.
 
 - **Query FHIR Resources**: Extract one or more values for a matching FHIRPath expression from FHIR resources
 - **Update FHIR Resources**: Set values in FHIR resources at specified paths
-- **Remove FHIR Sub-Resources**: Remove sub-elements from FHIR resources
-- **Adding Sub-Resources**: Support for creating new FHIR paths and setting JSON values
+- **Remove FHIR Resource Elements**: Remove elements from FHIR resources
+- **Adding FHIR Resource Elements**: Support for creating new FHIR paths and adding elements to FHIR resources
 - **Function-based Value Modification**: Apply custom functions to transform values during updates (useful for data masking, hashing, etc.)
 - **Unified API**: Single function handles both direct value setting and function-based transformations
 - **Validate FHIRPath Expressions**: Ensure that FHIRPath expressions are valid before evaluation
