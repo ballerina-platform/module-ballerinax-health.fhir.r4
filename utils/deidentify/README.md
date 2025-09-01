@@ -1,27 +1,22 @@
-# FHIR Resource De-Identification Package
+# FHIR R4 Utils - De-Identification Package
 
 A highly extensible Ballerina package for de-identifying FHIR resources using FHIRPath expressions. This utility provides built-in de-identification operations and allows developers to implement custom de-identification functions while maintaining FHIR compliance.
-
-|                      |                      |
-|----------------------|----------------------|
-| FHIR version         | R4                   |
-| Package Version      | 1.0.0                |
-| Ballerina Version    | 2201.12.2            |
 
 ## Features
 
 - **FHIRPath-based Rules**: Use FHIRPath expressions to target specific fields in FHIR resources to de-identify
 - **Built-in Operations**: Support for mask, encrypt, hash, and redact operations
-- **Custom Functions**: Write and register your own de-identification functions
+- **Custom Functions**: Provide your own de-identification functions and configure to use them
 - **Bundle Support**: Handles both single FHIR resources and FHIR Bundles
-- **Runtime Configuration**: Externally configurable rules and keys
-- **FHIR Validation**: Optional FHIR resource validation
+- **Configuration**: Externally configurable rules and keys
+- **Input FHIR resource validation**: Optional FHIR input resource validation
+- **Output FHIR resource validation**: Optional FHIR output resource validation
 - **Error Handling**: Configurable error handling with skip-on-error capability
 - **Thread Safe**: Isolated functions for concurrent operations
 
-## Usage
+# Usage
 
-Import the package in your Ballerina project:
+Import the package in your Ballerina project. and start using the de-identification functions.
 
 ```ballerina
 import ballerinax/health.fhir.r4utils.deidentify;
@@ -58,78 +53,116 @@ public function main() {
 }
 ```
 
-## Configuration
-Create a `Config.toml` file to define de-identification rules and keys:
+## Providing de-identification rules
 
+The real usage of this package comes with the ability to define de-identification rules. There are two approaches:
+
+1. You can provide de-identification rules in the `Config.toml` file under the `rules` section. Each rule consists of a FHIRPath expression and the desired operation to perform.
+
+Config.toml
 ```toml
-[ballerinax.health.fhir.r4utils.deidentify]
-cryptoHashKey = "your-secure-hash-key"
-encryptKey = "your-secure-encrypt-key"
-skipOnError = true
-fhirResourceValidation = true
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
+fhirPath = "Patient.id"
+operation = "mask"
 ```
 
-## Built-in De-identification Operations
-The package provides several built-in operations that can be applied to FHIR resources, upon configuration using FHIRPath expressions. You can configure which operations to use in which fhir path, in your `Config.toml` file under `fhirPathRules`.
+Ballerina Code
+```ballerina
+json|deidentify:DeIdentificationError result = deidentify:deIdentify(patientResource);
+```
 
-### 1. Mask Operation
+
+2. You can also provide rules programmatically using the provided API. Use the `deIdentifyRules` parameter in the `deidentify:deIdentify` function to specify the rules. Rules should be an array  of `DeIdentifyRule` records, which contains `fhirPath` and `operation` fields.
+
+Ballerina Code
+```ballerina
+deidentify:DeIdentifyRule[] rules = [
+        {
+            "fhirPath": "Patient.id",
+            "operation": "mask"
+        }
+    ];
+json|deidentify:DeIdentificationError result3 = deidentify:deIdentify(patientResource, deIdentifyRules =  rules);
+```
+
+`fhirPath`: Used to point to the specific element in the FHIR resource you want to de-identify. Check out [FHIRPath documentation](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath/latest) for more details on how to use FHIRPath expressions.
+
+`operation`: Specifies the de-identification operation to perform on the targeted element. Similar to `mask`, there are several built-in de-identification operations available in the package, which you can use under `operation` in these rules.
+
+## Built-in De-identification Operations
+
+### 1. Mask Operation (`mask`)
 Replaces sensitive data with asterisks (`*****`).
 
 ```toml
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.name"
 operation = "mask"
 
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.address.line"
 operation = "mask"
 ```
 
-### 2. Encrypt Operation
+### 2. Encrypt Operation (`encrypt`)
 Encrypts data using AES-ECB encryption with a configurable key.
 
 ```toml
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.id"
 operation = "encrypt"
 ```
 
-### 3. Hash Operation
+Important: Use `encryptKey` in Config.toml under `[ballerinax.health.fhir.r4utils.deidentify]` to configure the encryption key.
+
+```toml
+[ballerinax.health.fhir.r4utils.deidentify]
+encryptKey = "your-secure-encrypt-key"
+```
+
+### 3. Hash Operation (`hash`)
 Creates a hash of the data using HMAC-SHA256.
 
 ```toml
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.telecom.value"
 operation = "hash"
 ```
-Note: `Patient.telecom` is an array, so `Patient.telecom.value` points to all the `value` fields of each telecom entry, and the `hash` operation will be applied to each of them. i.e. Hashing all phone numbers.
 
-### 4. Redact Operation
+Important: Use `cryptoHashKey` in Config.toml under `[ballerinax.health.fhir.r4utils.deidentify]` to configure the hash key.
+
+```toml
+[ballerinax.health.fhir.r4utils.deidentify]
+cryptoHashKey = "your-secure-hash-key"
+```
+
+### 4. Redact Operation (`redact`)
 Completely removes the specified field from the resource.
 
 ```toml
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.address"
 operation = "redact"
 ```
 
-## Configuration Options
+## Extra configurations with Config.toml
 
-| Setting | Type | Default | Description |
-|---------|------|---------|-------------|
-| `cryptoHashKey` | string | "wso2-healthcare-hash" | Key used for hashing operations. Change in production. |
-| `encryptKey` | string | "wso2-healthcare-encrypt" | Key used for encryption operations. Change in production. |
-| `skipOnError` | boolean | true | Skip errors and continue processing |
-| `fhirResourceValidation` | boolean | true | Validate FHIR resource structure |
-| `fhirPathRules` | FHIRPathRule[] | Default mask rule | Array of de-identification rules |
+You can set the following configurations in Config.toml to be applied globally. Check `Configurables` section in the package documentation for more details.
 
-After configuring all the rules, you can run the de-identification process as shown in the Quick Start section.
+```toml
+[ballerinax.health.fhir.r4utils.deidentify]
+skipOnError = true
+inputFHIRResourceValidation = true
+outputFHIRResourceValidation = true
+```
 
-## Creating Custom De-identification Functions
+Without limiting to the built-in operations, you can create custom de-identification functions, and use them in your de-identification rules.
 
-The package allows you to implement custom de-identification logic by writing functions that conform to the `fhirpath:ModificationFunction` type from the FHIRPath utilities. Then you can register these functions to be used in your de-identification rules. You can configure these custom functions the same way mentioned above in your `Config.toml` file.
+# Creating Custom De-identification Operations
 
-### Custom Function Signature
+The package allows you to implement custom de-identification logic by writing functions that conform to the `fhirpath:ModificationFunction` type from the [FHIRPath utilities](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath/latest#ModificationFunction). Then you can provide these operations to the `deidentify:deIdentify` function to be used in your de-identification rules. You can configure these custom functions the same way mentioned above.
+
+### Custom De-identification Operation Signature
 
 ```ballerina
 import ballerinax/health.fhir.r4utils.fhirpath;
@@ -137,7 +170,7 @@ import ballerinax/health.fhir.r4utils.fhirpath;
 public type ModificationFunction = fhirpath:ModificationFunction;
 ```
 
-### Example: Implementing Custom Functions
+### Example: Implementing Custom De-identification Operations
 
 ```ballerina
 import ballerinax/health.fhir.r4utils.fhirpath;
@@ -175,7 +208,7 @@ isolated function partialMaskFunction(json value) returns json|fhirpath:Modifica
 }
 ```
 
-### Configuration with Custom Functions
+### Creating rules with custom operations
 
 Update your `Config.toml` to use custom operations:
 
@@ -184,32 +217,46 @@ Update your `Config.toml` to use custom operations:
 cryptoHashKey = "your-secure-hash-key"
 encryptKey = "your-secure-encrypt-key"
 skipOnError = true
-fhirResourceValidation = false
+inputFHIRResourceValidation = false
+outputFHIRResourceValidation = false
 
 # Custom de-identification rules
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.name.family"
 operation = "pseudonymize"
 
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.name.given"
 operation = "mask"
 
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.birthDate"
 operation = "removeDay"
 
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.id"
 operation = "encrypt"  # Built-in operation
 
-[[ballerinax.health.fhir.r4utils.deidentify.fhirPathRules]]
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPath = "Patient.address"
 operation = "redact"   # Built-in operation
 ```
 
-### Registering & Using Custom Functions
+Note: You can also create an array of de-identify rules and provide rules programmatically as mentioned above.
 
+### Using Custom De-identification Operations
+In order to use the custom de-identification operations, you need to create a map of type `map<fhirpath:ModificationFunction>` and pass it to the `deidentify:deIdentify` function under `operations` parameter. This map should be in the following format:
+
+```ballerina
+map<fhirpath:ModificationFunction> customOperations = {
+    "pseudonymize": pseudonymizeFunction,
+    "removeDay": removeDayFromDate,
+    "mask": customMaskingFunction
+};
+
+```
+
+Complete Example:
 ```ballerina
 import ballerina/crypto;
 import ballerina/io;
@@ -262,9 +309,6 @@ public function main() {
         "mask": customMaskingFunction
     };
 
-    // Register your custom functions
-    deidentify:registerModificationFunctions(customOperations);
-
     // Now you can use these operations in your configuration
     json patient = {
         "resourceType": "Patient",
@@ -273,7 +317,7 @@ public function main() {
         "birthDate": "1990-05-15"
     };
 
-    json|deidentify:DeIdentificationError result = deidentify:deIdentify(patient);
+    json|deidentify:DeIdentificationError result = deidentify:deIdentify(patient, operations = customOperations);
     if result is json {
         io:println("De-identified patient data: ", result);
     } else {
@@ -285,7 +329,7 @@ public function main() {
 
 ## Bundle Support
 
-The utility automatically detects and processes FHIR Bundles:
+The utility automatically detects and processes FHIR Bundles. You can pass a Bundle resource to the `deIdentify` function, and it will apply the de-identification rules to each entry in the Bundle. You can use the FHIR path expressions relative to the resource under bundle entries. For example use `Patient.id` to refer to the IDs of all the patient resources in the Bundle.
 
 ```ballerina
 import ballerina/io;
@@ -319,72 +363,6 @@ public function main() {
 }
 ```
 
-## API Reference
-
-### Core Functions
-
-#### `deIdentify`
-De-identifies a FHIR resource or Bundle based on configured rules.
-
-```ballerina
-public isolated function deIdentify(
-    json fhirResource, 
-    boolean validateFHIRResource = fhirResourceValidation, 
-    boolean skipError = skipOnError
-) returns json|DeIdentificationError
-```
-
-**Parameters:**
-- `fhirResource`: The FHIR resource or Bundle to de-identify
-- `validateFHIRResource`: Whether to validate FHIR resource structure (default: from config)
-- `skipError`: Whether to skip errors and continue processing (default: from config)
-
-#### `registerModificationFunctions`
-Register custom modification functions for additional operations.
-
-```ballerina
-public isolated function registerModificationFunctions(
-    map<fhirpath:ModificationFunction> functions
-)
-```
-
-### Utility Functions
-
-Following utility functions are available for encryption, hashing, and other operations, and are used by the built-in de-identification operations.
-
-#### `hashWithKey`
-```ballerina
-public isolated function hashWithKey(string value, string hashKey = cryptoHashKey) 
-    returns string|DeIdentificationError
-```
-
-#### `encryptWithKey`
-```ballerina
-public isolated function encryptWithKey(string plaintext, string keyString = encryptKey) 
-    returns string|DeIdentificationError
-```
-
-#### `decryptWithKey`
-Note: This function can be used to decrypt data that was encrypted by the built-in `encryptWithKey` function.
-
-```ballerina
-public isolated function decryptWithKey(string encryptedText, string keyString) 
-    returns string|DeIdentificationError
-```
-
-## Error Handling
-
-```ballerina
-json|deidentify:DeIdentificationError result = deidentify:deIdentify(patientResource);
-
-if result is deidentify:DeIdentificationError {
-    io:println(`Error: ${result.message()}`);
-    // Access additional error details
-    string? fhirPath = result.detail()["fhirPath"];
-    string? operation = result.detail()["operation"];
-}
-```
-
 ## Best Practices
 
 1. **Security**: Use strong, unique keys for encryption and hashing
@@ -393,9 +371,4 @@ if result is deidentify:DeIdentificationError {
 4. **Error Handling**: Implement robust error handling in custom functions
 5. **Testing**: Write comprehensive tests for custom de-identification logic
 6. **Compliance**: Ensure operations meet regulatory requirements (HIPAA, GDPR, etc.)
-
-## Dependencies
-
-- **ballerina/crypto**: For encryption and hashing operations
-- **ballerina/log**: For logging
-- **ballerinax/health.fhir.r4utils.fhirpath**: For FHIRPath evaluation
+7. **Validation**: Use FHIR validation to ensure resource integrity before and after de-identification

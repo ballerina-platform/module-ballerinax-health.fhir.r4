@@ -108,7 +108,7 @@ function testDeIdentifyWithFhirValidationEnabled() {
         "name": [{"family": "Test"}]
     };
 
-    json|DeIdentificationError result = deIdentify(invalidFhirResource, validateFHIRResource = true, skipError = false);
+    json|DeIdentificationError result = deIdentify(invalidFhirResource, validateInputFHIRResource = true, skipError = false);
 
     test:assertTrue(result is DeIdentificationError, msg = "Expected a validation error");
 }
@@ -122,7 +122,7 @@ function testDeIdentifyWithFhirValidationDisabled() {
         "name": [{"family": "Test"}]
     };
 
-    json|DeIdentificationError result = deIdentify(invalidFhirResource, validateFHIRResource = false);
+    json|DeIdentificationError result = deIdentify(invalidFhirResource);
 
     test:assertTrue(result is json, msg = "Expected successful processing with validation disabled");
 }
@@ -149,12 +149,11 @@ function testCustomOperationRegistration() {
         "customMask": customMaskFunction
     };
 
-    registerModificationFunctions(customOperations);
 
     // Test that the custom operation is now available
     // Note: This would require modifying the configuration to use the custom operation
     // For this test, we'll just verify the registration doesn't cause errors
-    json|DeIdentificationError result = deIdentify(patientResource);
+    json|DeIdentificationError result = deIdentify(patientResource, operations = customOperations);
     test:assertTrue(result is json, msg = "Expected successful processing after custom operation registration");
 }
 

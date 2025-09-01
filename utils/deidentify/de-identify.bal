@@ -20,20 +20,21 @@ import ballerinax/health.fhir.r4utils.fhirpath;
 configurable string cryptoHashKey = "wso2-healthcare-hash";
 configurable string encryptKey = "wso2-healthcare-encrypt";
 configurable boolean skipOnError = true;
-configurable boolean fhirResourceValidation = true;
+configurable boolean inputFHIRResourceValidation = false;
+configurable boolean outputFHIRResourceValidation = false;
 
-configurable FHIRPathRule[] fhirPathRules = [
+configurable DeIdentifyRule[] rules = [
     {
         fhirPath: "Patient.name",
         operation: "mask"
     }
 ];
 
-# FHIRPathRule is a record type that defines a rule for modifying FHIR resources using FHIRPath expressions.
+# DeIdentifyRule is a record type that defines a rule for de-identifying FHIR resources using FHIRPath expressions.
 #
 # + fhirPath - The FHIRPath expression to select the field(s) to be modified.
 # + operation - The operation to be performed on the selected field(s).
-public type FHIRPathRule record {|
+public type DeIdentifyRule record {|
     string fhirPath;
     string operation;
 |};
@@ -45,25 +46,26 @@ isolated map<fhirpath:ModificationFunction> initOperations = {
     hash: <fhirpath:ModificationFunction>hashOperation
 };
 
-# Function to register custom modification functions for FHIRPath operations. Provided map of functions will be appended to the existing operations.
-# Functions with same key in the map will override the existing ones.
+# Function to de-identify FHIR data. It can handle both single FHIR resources and FHIR Bundles.
 #
-# + functions - Map of FHIRPath modification functions to register.
-public isolated function registerModificationFunctions(map<fhirpath:ModificationFunction> functions) {
-    foreach var [key, value] in functions.entries() {
+# + fhirResource - The FHIR resource to be de-identified.
+# + operations - Map of custom de-identification operations to use. Provided operations will be appended to the existing ones. Existing operations will be overridden if they have the same key.
+# + deIdentifyRules - Array of DeIdentifyRule defining the de-identification rules to apply.
+# + validateInputFHIRResource - Flag indicating whether to validate the input FHIR resource.
+# + validateOutputFHIRResource - Flag indicating whether to validate the output FHIR resource.
+# + skipError - Flag indicating whether to skip errors during de-identification.
+# + return - The de-identified FHIR resource or an error.
+public isolated function deIdentify(json fhirResource, map<fhirpath:ModificationFunction> operations = {}, DeIdentifyRule[] deIdentifyRules = rules, boolean validateInputFHIRResource = inputFHIRResourceValidation, boolean validateOutputFHIRResource = outputFHIRResourceValidation,
+        boolean skipError = skipOnError) returns json|DeIdentificationError {
+
+    // Register any custom functions provided. Provided map of functions will be appended to the existing operations.
+    // Functions with same key in the map will override the existing ones.
+    foreach var [key, value] in operations.entries() {
         lock {
             initOperations[key] = value;
         }
     }
-}
 
-# Function to de-identify FHIR data. It can handle both single FHIR resources and FHIR Bundles.
-#
-# + fhirResource - The FHIR resource to be de-identified.
-# + validateFHIRResource - Flag indicating whether to validate the FHIR resource.
-# + skipError - Flag indicating whether to skip errors during de-identification.
-# + return - The de-identified FHIR resource or an error.
-public isolated function deIdentify(json fhirResource, boolean validateFHIRResource = fhirResourceValidation, boolean skipError = skipOnError) returns json|DeIdentificationError {
     log:printDebug("Starting de-identification process for FHIR resource: " + fhirResource.toJsonString());
 
     // Check if the resource is empty
@@ -77,15 +79,16 @@ public isolated function deIdentify(json fhirResource, boolean validateFHIRResou
         json|error resourceType = fhirResource.get("resourceType");
         if resourceType is string && resourceType == "Bundle" {
             log:printDebug("Detected FHIR Bundle resource, processing multiple resources");
-            return deIdentifyBundle(fhirResource, validateFHIRResource, skipError);
+            return deIdentifyBundle(fhirResource, deIdentifyRules, validateInputFHIRResource, validateOutputFHIRResource, skipError);
         }
     }
 
     // Process single resource (existing logic)
-    return deIdentifySingleResource(fhirResource, validateFHIRResource, skipError);
+    return deIdentifySingleResource(fhirResource, deIdentifyRules, validateInputFHIRResource, validateOutputFHIRResource, skipError);
 }
 
-isolated function deIdentifyBundle(json bundleResource, boolean validateFHIRResource, boolean skipError) returns json|DeIdentificationError {
+isolated function deIdentifyBundle(json bundleResource, DeIdentifyRule[] deIdentifyRules, boolean validateInputFHIRResource, boolean validateOutputFHIRResource, boolean skipError) returns json|DeIdentificationError {
+
     if bundleResource !is map<json> {
         return createDeIdentificationError("Invalid bundle format: expected map<json>");
     }
@@ -107,7 +110,7 @@ isolated function deIdentifyBundle(json bundleResource, boolean validateFHIRReso
     json[] entries = <json[]>entryField;
     json[] deIdentifiedEntries = [];
 
-    log:printInfo("Processing FHIR Bundle with " + entries.length().toString() + " entries");
+    log:printDebug("Processing FHIR Bundle with " + entries.length().toString() + " entries");
 
     foreach int i in 0 ..< entries.length() {
         json entry = entries[i];
@@ -136,7 +139,7 @@ isolated function deIdentifyBundle(json bundleResource, boolean validateFHIRReso
         log:printDebug(`Processing entry ${i + 1}/${entries.length()}`);
 
         // De-identify the individual resource
-        json|DeIdentificationError deIdentifiedResource = deIdentifySingleResource(resourceField, validateFHIRResource, skipError);
+        json|DeIdentificationError deIdentifiedResource = deIdentifySingleResource(resourceField, deIdentifyRules, validateInputFHIRResource, validateOutputFHIRResource, skipError);
 
         if deIdentifiedResource is DeIdentificationError {
             if skipError {
@@ -160,12 +163,13 @@ isolated function deIdentifyBundle(json bundleResource, boolean validateFHIRReso
     map<json> deIdentifiedBundle = bundleMap.clone();
     deIdentifiedBundle["entry"] = deIdentifiedEntries;
 
-    log:printInfo(`Completed processing FHIR Bundle with ${deIdentifiedEntries.length().toString()} entries`);
+    log:printDebug(`Completed processing FHIR Bundle with ${deIdentifiedEntries.length().toString()} entries`);
 
     return deIdentifiedBundle;
 }
 
-isolated function deIdentifySingleResource(json fhirResource, boolean validateFHIRResource, boolean skipError) returns json|DeIdentificationError {
+isolated function deIdentifySingleResource(json fhirResource, DeIdentifyRule[] deIdentifyRules, boolean validateInputFHIRResource, boolean validateOutputFHIRResource, boolean skipError) returns json|DeIdentificationError {
+
     // Check if the single resource is empty before processing
     if isEmptyResource(fhirResource) {
         log:printDebug("Empty single resource detected, returning as-is");
@@ -178,24 +182,26 @@ isolated function deIdentifySingleResource(json fhirResource, boolean validateFH
     }
 
     log:printDebug(`Available Operations: ${[...operations.keys(), "redact"].toString()}`);
-    log:printDebug("Provided Rules: ", rules =  fhirPathRules.toJson());
-    log:printDebug(`Original Resource: ${fhirResource.toJson()}`);
+    log:printDebug("Provided Rules: ", rules = deIdentifyRules.toJson());
+    log:printDebug(`Original Resource: ${fhirResource.toJsonString()}`);
 
     json modifiedResource = fhirResource;
 
-    foreach FHIRPathRule rule in fhirPathRules {
+    foreach DeIdentifyRule rule in deIdentifyRules {
         log:printDebug(`[PROCESSING RULE] FHIR Path: ${rule.fhirPath} | Operation: ${rule.operation}`);
 
         json|fhirpath:FHIRPathError modifiedResourceTemp = modifiedResource;
 
         // Handling redact operation seperately since it removes the fhir path entirely.
         if rule.operation == "redact" {
-            modifiedResourceTemp = fhirpath:setFhirPathValues(modifiedResource, rule.fhirPath, (), validateFHIRResource = validateFHIRResource);
+            modifiedResourceTemp = fhirpath:setFhirPathValues(modifiedResource, rule.fhirPath, (), validateInputFHIRResource = validateInputFHIRResource,
+                    validateOutputFHIRResource = validateOutputFHIRResource);
         }
 
         foreach string operation in operations.keys() {
             if rule.operation == operation {
-                modifiedResourceTemp = fhirpath:setFhirPathValues(modifiedResource, rule.fhirPath, <fhirpath:ModificationFunction>operations[operation], validateFHIRResource = validateFHIRResource);
+                modifiedResourceTemp = fhirpath:setFhirPathValues(modifiedResource, rule.fhirPath, <fhirpath:ModificationFunction>operations[operation],
+                        validateInputFHIRResource = validateInputFHIRResource, validateOutputFHIRResource = validateOutputFHIRResource);
                 break;
             }
         }
