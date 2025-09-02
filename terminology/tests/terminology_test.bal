@@ -1812,3 +1812,20 @@ function translateTestForUnmappedOtherMap() returns error? {
     r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
     test:assertEquals(result, readJsonData("translate_responses/response_for_unmapped_other_map"));
 }
+
+@test:Config {
+    groups: ["conceptmap"]
+}
+function testAddConceptMap() returns error? {
+
+    r4:ConceptMap conceptMapToAdd = {url: "http://example.org/fhir/ConceptMap/conceptMapToAdd", version: "4.1.0", status: "unknown"};
+    TestTerminology customTerminology = new ();
+    check addConceptMap(conceptMapToAdd, customTerminology);
+    r4:ConceptMap|r4:FHIRError foundMap = readConceptMap("http://example.org/fhir/ConceptMap/conceptMapToAdd", (), (), customTerminology);
+    if foundMap is r4:ConceptMap {
+        test:assertEquals(foundMap.url, conceptMapToAdd.url);
+        test:assertEquals(foundMap.status, conceptMapToAdd.status);
+    }
+
+    
+}

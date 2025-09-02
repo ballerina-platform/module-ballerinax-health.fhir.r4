@@ -854,6 +854,6 @@ public isolated function searchConceptMaps(map<r4:RequestSearchParameter[]> para
     return (<Terminology>terminology).searchConceptMap(paginationData.searchParameters.clone(), offset = paginationData.offset, count = paginationData.count);
 }
 
-public isolated function readConceptMapByUrl(r4:uri conceptMapUrl, string? id = (), string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ConceptMap|r4:FHIRError {
-    return (<Terminology>terminology).findConceptMap(conceptMapUrl, id, version);
+public isolated function readConceptMap(r4:uri conceptMapUrl, string? id = (), string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ConceptMap|r4:FHIRError {
+    return (<Terminology>terminology).findConceptMap(conceptMapUrl = conceptMapUrl, id = id, version = version);
 }
