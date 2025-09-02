@@ -16,7 +16,6 @@ import ballerina/io;
 import ballerina/lang.regexp;
 import ballerina/test;
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401;
 
 function returnCodeSystemData(string fileName) returns r4:CodeSystem {
     string filePath = string `tests/resources/terminology/code_systems/${fileName}.json`;
@@ -485,8 +484,28 @@ isolated class TestTerminology {
         return ();
     }
 
-    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset, int? count) returns international401:ConceptMap[]|r4:FHIRError {
-        return [];
+    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset, int? count) returns r4:ConceptMap[]|r4:FHIRError {
+
+        r4:ConceptMap[] conceptMapsArray = [];
+        lock {
+            conceptMapsArray = self.conceptMap.clone().toArray();
+        }
+
+        foreach var searchParam in params.keys() {
+            r4:RequestSearchParameter[] searchParamValues = params[searchParam] ?: [];
+
+            r4:ConceptMap[] filteredList = [];
+            if searchParamValues.length() != 0 {
+                foreach var queriedValue in searchParamValues {
+                    r4:ConceptMap[] result = from r4:ConceptMap entry in conceptMapsArray
+                        where entry[CONCEPT_MAPS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
+                        select entry;
+                    filteredList.push(...result);
+                }
+                conceptMapsArray = filteredList;
+            }
+        }
+        return conceptMapsArray;
     }
 
     public isolated function isConceptMapExist(r4:uri system, string version) returns boolean {

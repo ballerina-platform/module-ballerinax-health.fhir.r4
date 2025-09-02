@@ -305,7 +305,7 @@ isolated class InMemoryTerminology {
             if searchParamValues.length() != 0 {
                 foreach var queriedValue in searchParamValues {
                     r4:ConceptMap[] result = from r4:ConceptMap entry in conceptMapsArray
-                        where entry[CODESYSTEMS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
+                        where entry[CONCEPT_MAPS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
                         select entry;
                     filteredList.push(...result);
                 }
