@@ -194,13 +194,13 @@ isolated function deIdentifySingleResource(json fhirResource, DeIdentifyRule[] d
 
         // Handling redact operation seperately since it removes the fhir path entirely.
         if rule.operation == "redact" {
-            modifiedResourceTemp = fhirpath:setFhirPathValues(modifiedResource, rule.fhirPath, (), validateInputFHIRResource = validateInputFHIRResource,
+            modifiedResourceTemp = fhirpath:setValuesToFhirPath(modifiedResource, rule.fhirPath, (), validateInputFHIRResource = validateInputFHIRResource,
                     validateOutputFHIRResource = validateOutputFHIRResource);
         }
 
         foreach string operation in operations.keys() {
             if rule.operation == operation {
-                modifiedResourceTemp = fhirpath:setFhirPathValues(modifiedResource, rule.fhirPath, <fhirpath:ModificationFunction>operations[operation],
+                modifiedResourceTemp = fhirpath:setValuesToFhirPath(modifiedResource, rule.fhirPath, <fhirpath:ModificationFunction>operations[operation],
                         validateInputFHIRResource = validateInputFHIRResource, validateOutputFHIRResource = validateOutputFHIRResource);
                 break;
             }
