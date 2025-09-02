@@ -467,57 +467,41 @@ public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding 
     }
 }
 
+# This function translates codes from a source value set to a target value set using the concept maps in the terminology service.
+# 
+# This function is implemented based on: https://hl7.org/fhir/R4/terminology-service.html#translate
+#
+# + sourceValueSetUri - the URL of the source value set
+# + targetValueSetUri - the URL of the target value set
+# + codesToTranslate - the codes to translate
+# + terminology - the terminology service to use
+# + return - an r4:Parameters resource containing the translation results, or an r4:OperationOutcome resource if an error occurs
 public isolated function translate(r4:uri sourceValueSetUri, r4:uri targetValueSetUri, r4:CodeableConcept codesToTranslate, Terminology? terminology = inMemoryTerminology) returns r4:Parameters|r4:OperationOutcome {
 
-    r4:ValueSet|r4:FHIRError sourceValueSet = (<Terminology>terminology).findValueSet(sourceValueSetUri);
-    if sourceValueSet is r4:FHIRError {
-        if sourceValueSetUri == "" {
-            return r4:errorToOperationOutcome(
-                r4:createFHIRError(
-                    "Source value set URI should be provided",
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_SUPPORTED,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST
-                )
-            );
-        } else {
-            return r4:errorToOperationOutcome(
-                r4:createFHIRError(
-                    string `Source valueset not found for the provided value set URL: ${sourceValueSetUri}`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                )
-            );
-        }
+    if sourceValueSetUri == "" {
+        return r4:errorToOperationOutcome(
+            r4:createFHIRError(
+                "Source value set URI should be provided",
+                r4:ERROR,
+                r4:PROCESSING_NOT_SUPPORTED,
+                errorType = r4:PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_BAD_REQUEST
+            )
+        );
     }
 
-    r4:ValueSet|r4:FHIRError targetValueSet = (<Terminology>terminology).findValueSet(targetValueSetUri);
-    if targetValueSet is r4:FHIRError {
-        if targetValueSetUri == "" {
-            return r4:errorToOperationOutcome(
-                r4:createFHIRError(
-                    "Target value set URI should be provided",
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_SUPPORTED,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST
-                )
-            );
-        } else {
-            return r4:errorToOperationOutcome(
-                r4:createFHIRError(
-                    string `Target valueset not found for the provided value set URL: ${targetValueSetUri}`,
-                    r4:ERROR,
-                    r4:PROCESSING_NOT_FOUND,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_NOT_FOUND
-                )
-            );
-        }
+    if targetValueSetUri == "" {
+        return r4:errorToOperationOutcome(
+            r4:createFHIRError(
+                "Target value set URI should be provided",
+                r4:ERROR,
+                r4:PROCESSING_NOT_SUPPORTED,
+                errorType = r4:PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_BAD_REQUEST
+            )
+        );
     }
+    
     r4:ConceptMap[]|r4:FHIRError matchingConceptMaps = (<Terminology>terminology).findConceptMapBySourceAndTargetValueSets(sourceValueSetUri, targetValueSetUri);
     if matchingConceptMaps is r4:FHIRError {
         return r4:errorToOperationOutcome(matchingConceptMaps);
