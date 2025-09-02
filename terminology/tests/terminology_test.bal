@@ -1825,7 +1825,23 @@ function testAddConceptMap() returns error? {
     if foundMap is r4:ConceptMap {
         test:assertEquals(foundMap.url, conceptMapToAdd.url);
         test:assertEquals(foundMap.status, conceptMapToAdd.status);
-    }
+    }  
+}
 
-    
+@test:Config {
+    groups: ["conceptmap"]
+}
+function testSearchConceptMap() returns error? {
+
+    TestTerminology customTerminology = new ();
+    string conceptMapUrl = "http://hl7.org/fhir/ConceptMap/example2";
+    map<r4:RequestSearchParameter[]> searchParameters = {"url": [{name: "url", value: conceptMapUrl, typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:URI}], "_count": [{name: "_count", value: "10", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]};
+    r4:ConceptMap[] foundConceptMaps = check searchConceptMaps(searchParameters, customTerminology);
+    test:assertTrue(foundConceptMaps.length() > 0);
+    test:assertEquals(conceptMapUrl, foundConceptMaps[0].url);
+
+    string version = "4.0.1";
+    map<r4:RequestSearchParameter[]> searchParameters2 = {"version": [{name: "version", value: version, typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:STRING}], "_count": [{name: "_count", value: "10", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]};
+    r4:ConceptMap[] foundConceptMaps2 = check searchConceptMaps(searchParameters2, customTerminology);
+    test:assertTrue(foundConceptMaps2.length() == 6);
 }

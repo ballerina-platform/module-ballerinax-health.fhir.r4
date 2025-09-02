@@ -841,17 +841,20 @@ public isolated function searchConceptMaps(map<r4:RequestSearchParameter[]> para
 
     // Validate the requested search parameters in the allowed list
     foreach var param in paginationData.searchParameters.keys() {
-        if !VALUESETS_SEARCH_PARAMS.hasKey(param) {
+        if !CONCEPT_MAPS_SEARCH_PARAMS.hasKey(param) {
             return r4:createFHIRError(
                         string `Invalid search parameter: ${param}`,
                         r4:ERROR,
                         r4:PROCESSING_NOT_SUPPORTED,
-                        diagnostic = string `Allowed search parameters: ${VALUESETS_SEARCH_PARAMS.keys().toString()}`,
+                        diagnostic = string `Allowed search parameters: ${CONCEPT_MAPS_SEARCH_PARAMS.keys().toString()}`,
                         errorType = r4:VALIDATION_ERROR
                     );
         }
     }
-    return (<Terminology>terminology).searchConceptMap(paginationData.searchParameters.clone(), offset = paginationData.offset, count = paginationData.count);
+    map<r4:RequestSearchParameter[]> c = paginationData.searchParameters.clone();
+    int offset = paginationData.offset;
+    int count = paginationData.count;
+    return (<Terminology>terminology).searchConceptMap(c, offset = offset, count = count);
 }
 
 public isolated function readConceptMap(r4:uri conceptMapUrl, string? id = (), string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ConceptMap|r4:FHIRError {
