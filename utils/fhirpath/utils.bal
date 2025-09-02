@@ -46,7 +46,7 @@ type ArrayToken record {
 #
 # + fhirPathExpression - The FHIR path expression to validate
 # + return - True if the path is valid, false otherwise
-public isolated function validateFhirPath(string fhirPathExpression) returns boolean {
+isolated function validateFhirPath(string fhirPathExpression) returns boolean {
     // Check if expression is empty or only whitespace
     if fhirPathExpression.trim().length() == 0 {
         return false;
