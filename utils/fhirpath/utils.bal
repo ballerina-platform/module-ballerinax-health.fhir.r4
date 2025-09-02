@@ -120,16 +120,6 @@ public type ModificationFunctionError distinct error;
 # Function to modify the value at the path
 public type ModificationFunction isolated function (json param) returns json|ModificationFunctionError;
 
-# Method to create a ModificationFunctionError
-#
-# + errorMsg - the reason for the occurence of error
-# + fhirPathValue - the value of the fhirpath expression that is being modified
-# + return - the error object
-public isolated function createModificationFunctionError(string errorMsg, string? fhirPathValue) returns ModificationFunctionError {
-    ModificationFunctionError modificationFunctionError = error(errorMsg, fhirPathValue = fhirPathValue);
-    return modificationFunctionError;
-}
-
 # Get the modified value by applying either a modification function or setting a new value.
 #
 # + currentValue - The current value at the FHIRPath location
@@ -138,12 +128,8 @@ public isolated function createModificationFunctionError(string errorMsg, string
 # + return - The modified value or an error if modification function fails
 isolated function getModifiedValue(json currentValue, ModificationFunction? modificationFunction,  json? newValue) returns json|ModificationFunctionError {
     if currentValue !is () && modificationFunction !is () {
-        // Apply modification function if provided
-        json|ModificationFunctionError modifiedResult = modificationFunction(currentValue);
-        if modifiedResult is ModificationFunctionError {
-            return createModificationFunctionError(modifiedResult.message(), fhirPathValue = currentValue.toString());
-        }
-        return modifiedResult;
+        // Apply modification function if provided and return result
+        return modificationFunction(currentValue);
     }
     if newValue !is () {
         return newValue;

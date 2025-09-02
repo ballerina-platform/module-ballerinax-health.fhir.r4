@@ -21,21 +21,21 @@ isolated function toUpperCaseFunction(json input) returns json|ModificationFunct
     if input is string {
         return input.toUpperAscii();
     }
-    return createModificationFunctionError("Non-string input provided for toUpperCaseFunction.", input.toString());
+    return error("Non-string input provided for toUpperCaseFunction.", value = input.toString());
 }
 
 isolated function toLowerCaseFunction(json input) returns json|ModificationFunctionError {
     if input is string {
         return input.toLowerAscii();
     }
-    return createModificationFunctionError("Non-string input provided for toLowerCaseFunction.", input.toString());
+    return error("Non-string input provided for toLowerCaseFunction.", value = input.toString());
 }
 
 isolated function addPrefixFunction(json input) returns json|ModificationFunctionError {
     if input is string|int {
         return "PREFIX_" + input.toString();
     }
-    return createModificationFunctionError("Non-string/int input provided for addPrefixFunction.", input.toString());
+    return error("Non-string/int input provided for addPrefixFunction.", value = input.toString());
 }
 
 isolated function hashFunction(json input) returns json|ModificationFunctionError {
@@ -43,11 +43,11 @@ isolated function hashFunction(json input) returns json|ModificationFunctionErro
         // Simple hash simulation for testing
         return "HASH_" + input.length().toString();
     }
-    return createModificationFunctionError("Non-string input provided for hashFunction.", input.toString());
+    return error("Non-string input provided for hashFunction.", value = input.toString());
 }
 
 isolated function errorFunction(json input) returns json|ModificationFunctionError {
-    return createModificationFunctionError("Intentional error for testing", input.toString());
+    return error("Intentional error for testing", value = input.toString());
 }
 
 isolated function emptyStringFunction(json input) returns json|ModificationFunctionError {
@@ -64,7 +64,7 @@ isolated function reverseStringFunction(json input) returns json|ModificationFun
         }
         return reversed;
     }
-    return createModificationFunctionError("Input is not a string", input.toString());
+    return error("Input is not a string", value = input.toString());
 }
 
 // TESTS

@@ -205,7 +205,7 @@ isolated function hashOperation(json input) returns json|fhirpath:ModificationFu
     if input is string {
         return "HASH_" + input.length().toString(); // Simple hash for example
     }
-    return fhirpath:createModificationFunctionError("Expected string input for hashing", (), input.toString());
+    return error("Expected string input for hashing", fhirPathValue = input.toString());
 }
 
 public function main() {
