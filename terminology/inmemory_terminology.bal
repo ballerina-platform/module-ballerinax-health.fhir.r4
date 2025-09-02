@@ -241,13 +241,10 @@ isolated class InMemoryTerminology {
             }
         } else if conceptMapUrl != () {
             r4:ConceptMap conceptMap = {status: "unknown"};
-            string latestVersion = DEFAULT_VERSION;
             foreach var item in conceptMaps.keys() {
-                if regexp:isFullMatch(re `${conceptMapUrl}\|.*`, item)
-                && conceptMaps[item] is r4:ConceptMap
-                && (<r4:ConceptMap>conceptMaps[item]).version > latestVersion {
+                if conceptMapUrl == item
+                && conceptMaps[item] is r4:ConceptMap {
                     conceptMap = <r4:ConceptMap>conceptMaps[item];
-                    latestVersion = conceptMap.version ?: DEFAULT_VERSION;
                     isIdExistInRegistry = true;
                 }
             }
@@ -256,7 +253,7 @@ isolated class InMemoryTerminology {
                 return conceptMap.clone();
             } else {
                 return r4:createFHIRError(
-                            string `Unknown concept map: '${conceptMapUrl.toBalString()}'`,
+                            string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
                         r4:ERROR,
                         r4:PROCESSING_NOT_FOUND,
                         httpStatusCode = http:STATUS_NOT_FOUND
@@ -264,7 +261,7 @@ isolated class InMemoryTerminology {
             }
         }
         return r4:createFHIRError(
-                string `Unknown CodeSystem: '${conceptMapUrl.toBalString()}'`,
+                string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
                 r4:ERROR,
                 r4:PROCESSING_NOT_FOUND,
                 httpStatusCode = http:STATUS_NOT_FOUND

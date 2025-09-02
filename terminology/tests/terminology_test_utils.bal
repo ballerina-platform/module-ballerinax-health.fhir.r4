@@ -441,19 +441,48 @@ isolated class TestTerminology {
             }
             return valueSet.clone();
         }
-    
-    public isolated function findConceptMap(r4:uri? system, string? id, string? version) returns international401:ConceptMap|r4:FHIRError {
+
+    public isolated function findConceptMap(r4:uri? conceptMapUrl, string? id, string? version) returns r4:ConceptMap|r4:FHIRError {
+
+        map<r4:ConceptMap> conceptMaps = {};
         lock {
-            if self.conceptMap.hasKey(system.toString()) {
-                return <r4:ConceptMap>self.conceptMap[system.toString()].clone();
+            conceptMaps = self.conceptMap.clone();
+        }
+        boolean isIdExistInRegistry = false;
+        if conceptMapUrl != () {
+            r4:ConceptMap conceptMap = {status: "unknown"};
+            foreach var item in conceptMaps.keys() {
+                if conceptMapUrl == item
+                && conceptMaps[item] is r4:ConceptMap {
+                    conceptMap = <r4:ConceptMap>conceptMaps[item];
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return conceptMap.clone();
+            } else {
+                return r4:createFHIRError(
+                            string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                        );
             }
         }
-        r4:ConceptMap conceptMap = {status: "unknown"};
-        return conceptMap;
+        return r4:createFHIRError(
+                string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND,
+                httpStatusCode = http:STATUS_NOT_FOUND
+            );
     }
 
-    public isolated function addConceptMap(international401:ConceptMap conceptMap) returns r4:FHIRError? {
-        return inMemoryTerminology.addConceptMap(conceptMap);
+    public isolated function addConceptMap(r4:ConceptMap conceptMap) returns r4:FHIRError? {
+        lock {
+            self.conceptMap[getKey(<string>conceptMap.url, <string>conceptMap.version)] = conceptMap.clone();
+        }
+        return ();
     }
 
     public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset, int? count) returns international401:ConceptMap[]|r4:FHIRError {
