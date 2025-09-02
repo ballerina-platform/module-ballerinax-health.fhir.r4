@@ -30,14 +30,14 @@ const ARRAY_INDEX_ERROR_MSG = "The given array index is incorrect for the given 
 # Basic token type.
 #
 # + value - value of the token
-public type Token record {
+type Token record {
     string value;
 };
 
 # Sub type of token for array access tokens.
 #
 # + index - index of the array element
-public type ArrayToken record {
+type ArrayToken record {
     *Token;
     int index;
 };
@@ -46,7 +46,7 @@ public type ArrayToken record {
 #
 # + fhirPathExpression - The FHIR path expression to validate
 # + return - True if the path is valid, false otherwise
-public isolated function validateFhirPath(string fhirPathExpression) returns boolean {
+isolated function validateFhirPath(string fhirPathExpression) returns boolean {
     // Check if expression is empty or only whitespace
     if fhirPathExpression.trim().length() == 0 {
         return false;
@@ -109,26 +109,16 @@ public type FHIRPathError distinct error;
 # + errorMsg - the reason for the occurence of error
 # + fhirPath - the fhirpath expression that is being evaluated
 # + return - the error object
-public isolated function createFhirPathError(string errorMsg, string? fhirPath) returns FHIRPathError {
+isolated function createFhirPathError(string errorMsg, string? fhirPath) returns FHIRPathError {
     FHIRPathError fhirPathError = error(errorMsg, fhirPath = fhirPath);
     return fhirPathError;
 }
 
+# Error thrown when a modification function fails
 public type ModificationFunctionError distinct error;
 
 # Function to modify the value at the path
 public type ModificationFunction isolated function (json param) returns json|ModificationFunctionError;
-
-# Method to create a ModificationFunctionError
-#
-# + errorMsg - the reason for the occurence of error
-# + fhirPath - the fhirpath expression that is being evaluated
-# + fhirPathValue - the value of the fhirpath expression that is being modified
-# + return - the error object
-public isolated function createModificationFunctionError(string errorMsg, string? fhirPath, string? fhirPathValue) returns ModificationFunctionError {
-    ModificationFunctionError modificationFunctionError = error(errorMsg, fhirPath = fhirPath, fhirPathValue = fhirPathValue);
-    return modificationFunctionError;
-}
 
 # Get the modified value by applying either a modification function or setting a new value.
 #
@@ -138,12 +128,8 @@ public isolated function createModificationFunctionError(string errorMsg, string
 # + return - The modified value or an error if modification function fails
 isolated function getModifiedValue(json currentValue, ModificationFunction? modificationFunction,  json? newValue) returns json|ModificationFunctionError {
     if currentValue !is () && modificationFunction !is () {
-        // Apply modification function if provided
-        json|ModificationFunctionError modifiedResult = modificationFunction(currentValue);
-        if modifiedResult is ModificationFunctionError {
-            return createModificationFunctionError(modifiedResult.message(), fhirPath = (), fhirPathValue = currentValue.toString());
-        }
-        return modifiedResult;
+        // Apply modification function if provided and return result
+        return modificationFunction(currentValue);
     }
     if newValue !is () {
         return newValue;
