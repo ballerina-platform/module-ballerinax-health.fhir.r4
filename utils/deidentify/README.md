@@ -16,14 +16,14 @@ A highly extensible Ballerina package for de-identifying FHIR resources using FH
 
 # Usage
 
-Import the package in your Ballerina project. and start using the de-identification functions.
+Import the package in your Ballerina project and start using the de-identification functionality.
 
 ```ballerina
 import ballerinax/health.fhir.r4utils.deidentify;
 ```
 
 ## Quick Start
-By default the package is configured to mask all `Patient.name` fields. You can use the `deIdentify` function to de-identify a FHIR resource or Bundle.
+By default, the package is configured to mask the `Patient.name` field. 
 
 ```ballerina
 import ballerinax/health.fhir.r4utils.deidentify;
@@ -82,6 +82,7 @@ deidentify:DeIdentifyRule[] rules = [
             "operation": "mask"
         }
     ];
+
 json|deidentify:DeIdentificationError result3 = deidentify:deIdentify(patientResource, deIdentifyRules =  rules);
 ```
 
@@ -113,12 +114,13 @@ fhirPath = "Patient.id"
 operation = "encrypt"
 ```
 
-Important: Use `encryptKey` in Config.toml under `[ballerinax.health.fhir.r4utils.deidentify]` to configure the encryption key.
+Important: Use `encryptKey` in Config.toml under `[ballerinax.health.fhir.r4utils.deidentify]` to configure the encryption key. 
 
 ```toml
 [ballerinax.health.fhir.r4utils.deidentify]
 encryptKey = "your-secure-encrypt-key"
 ```
+You can also set via an environment variable. Check the [ballerina documentation](https://ballerina.io/learn/provide-values-to-configurable-variables/#provide-via-environment-variables) for more details.
 
 ### 3. Hash Operation (`hash`)
 Creates a hash of the data using HMAC-SHA256.
@@ -135,6 +137,7 @@ Important: Use `cryptoHashKey` in Config.toml under `[ballerinax.health.fhir.r4u
 [ballerinax.health.fhir.r4utils.deidentify]
 cryptoHashKey = "your-secure-hash-key"
 ```
+You can also set via an environment variable. Check the [ballerina documentation](https://ballerina.io/learn/provide-values-to-configurable-variables/#provide-via-environment-variables) for more details.
 
 ### 4. Redact Operation (`redact`)
 Completely removes the specified field from the resource.
@@ -184,7 +187,7 @@ isolated function pseudonymizeFunction(json value) returns json|fhirpath:Modific
         string pseudonym = "PSEUDO_" + hashedBytes.toBase64();
         return pseudonym;
     }
-    return value;
+    return error("Value is not a string", value = value);
 }
 
 // Custom date shifting function
@@ -194,7 +197,7 @@ isolated function shiftDateFunction(json value) returns json|fhirpath:Modificati
         // In practice, you'd parse the date and shift consistently
         return "2024-01-01"; // Placeholder shifted date
     }
-    return value;
+    return error("Value is not a string", value = value);
 }
 
 // Custom partial masking function
@@ -204,7 +207,7 @@ isolated function partialMaskFunction(json value) returns json|fhirpath:Modifica
         string masked = value.substring(0, 2) + "***" + value.substring(value.length() - 2);
         return masked;
     }
-    return "*****";
+    return error("Unsupported value type", value = value);
 }
 ```
 
@@ -272,7 +275,7 @@ isolated function pseudonymizeFunction(json value) returns json|fhirpath:Modific
         string pseudonym = "PSEUDO_" + hashedBytes.toBase64();
         return pseudonym;
     }
-    return value;
+    return error("Value is not a string", value = value);
 }
 
 // Custom function to remove the day from a date
@@ -293,7 +296,7 @@ isolated function removeDayFromDate(json value) returns json|fhirpath:Modificati
         io:println("Invalid date format, returning a shifted date.");
         return fhirpath:createModificationFunctionError("Invalid date format, returning a shifted date.", (), value.toString());
     }
-    return value;
+    return error("Value is not a string", value = value);
 }
 
 // Custom partial masking function

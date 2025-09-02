@@ -131,7 +131,7 @@ public type DeIdentificationError distinct error;
 # + fhirPath - the fhirpath expression that is being evaluated
 # + operation - parameter description
 # + return - the error object
-public isolated function createDeIdentificationError(string errorMsg, string? fhirPath = (), string? operation = ()) returns DeIdentificationError {
+isolated function createDeIdentificationError(string errorMsg, string? fhirPath = (), string? operation = ()) returns DeIdentificationError {
     DeIdentificationError deIdentificationError = error(errorMsg, fhirPath = fhirPath, operation = operation);
     return deIdentificationError;
 }

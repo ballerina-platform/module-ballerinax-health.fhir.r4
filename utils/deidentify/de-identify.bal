@@ -50,10 +50,10 @@ isolated map<fhirpath:ModificationFunction> initOperations = {
 #
 # + fhirResource - The FHIR resource to be de-identified.
 # + operations - Map of custom de-identification operations to use. Provided operations will be appended to the existing ones. Existing operations will be overridden if they have the same key.
-# + deIdentifyRules - Array of DeIdentifyRule defining the de-identification rules to apply.
-# + validateInputFHIRResource - Flag indicating whether to validate the input FHIR resource.
-# + validateOutputFHIRResource - Flag indicating whether to validate the output FHIR resource.
-# + skipError - Flag indicating whether to skip errors during de-identification.
+# + deIdentifyRules - Array of DeIdentifyRule defining the de-identification rules to apply. Defaults to the configured rules in Config.toml
+# + validateInputFHIRResource - Flag indicating whether to validate the input FHIR resource. Defaults to false or the value in Config.toml if configured.
+# + validateOutputFHIRResource - Flag indicating whether to validate the output FHIR resource. Defaults to false or the value in Config.toml if configured.
+# + skipError - Flag indicating whether to skip errors during de-identification. Defaults to false or the value in Config.toml if configured.
 # + return - The de-identified FHIR resource or an error.
 public isolated function deIdentify(json fhirResource, map<fhirpath:ModificationFunction> operations = {}, DeIdentifyRule[] deIdentifyRules = rules, boolean validateInputFHIRResource = inputFHIRResourceValidation, boolean validateOutputFHIRResource = outputFHIRResourceValidation,
         boolean skipError = skipOnError) returns json|DeIdentificationError {
