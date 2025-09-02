@@ -437,11 +437,11 @@ isolated class InMemoryTerminology {
 
         if conceptDetails is () && valuesetConceptDetails is () {
             return r4:createFHIRError(
-                    string `Unknown ValueSet or CodeSystem : ${system}${version == () ? "" : "|" + version}`,
-                    r4:ERROR,
-                    r4:INVALID_REQUIRED,
-                    errorType = r4:PROCESSING_ERROR,
-                    httpStatusCode = http:STATUS_BAD_REQUEST
+                string `Unknown ValueSet or CodeSystem : ${system}${version == () ? "" : "|" + version}`,
+                r4:ERROR,
+                r4:INVALID_REQUIRED,
+                errorType = r4:PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_BAD_REQUEST
             );
         } else if conceptDetails is r4:FHIRError {
             return conceptDetails.clone();
@@ -450,11 +450,11 @@ isolated class InMemoryTerminology {
         }
 
         return r4:createFHIRError(
-                "Concept not found",
-                r4:ERROR,
-                r4:PROCESSING_NOT_FOUND,
-                errorType = r4:PROCESSING_ERROR,
-                httpStatusCode = http:STATUS_BAD_REQUEST
+            "Concept not found",
+            r4:ERROR,
+            r4:PROCESSING_NOT_FOUND,
+            errorType = r4:PROCESSING_ERROR,
+            httpStatusCode = http:STATUS_BAD_REQUEST
         );
     }
 

@@ -1753,7 +1753,7 @@ function translateTestWithIncorrectSourceValueSet() returns error? {
     TestTerminology customTerminology = new ();
     r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
     test:assertTrue(result is r4:OperationOutcome);
-    test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Source valueset not found for the provided value set URL: http://www.google.com");
+    test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Concept map not found for provided source and target value sets");
 }
 
 @test:Config {
