@@ -467,6 +467,80 @@ public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding 
     }
 }
 
+public isolated function translate(r4:uri sourceValueSetUri, r4:uri targetValueSetUri, r4:CodeableConcept codesToTranslate, Terminology? terminology = inMemoryTerminology) returns r4:Parameters|r4:OperationOutcome {
+
+    r4:ValueSet|r4:FHIRError sourceValueSet = (<Terminology>terminology).findValueSet(sourceValueSetUri);
+    if sourceValueSet is r4:FHIRError {
+        if sourceValueSetUri == "" {
+            return r4:errorToOperationOutcome(
+                r4:createFHIRError(
+                    "Source value set URI should be provided",
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_SUPPORTED,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                )
+            );
+        } else {
+            return r4:errorToOperationOutcome(
+                r4:createFHIRError(
+                    string `Source valueset not found for the provided value set URL: ${sourceValueSetUri}`,
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_FOUND,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                )
+            );
+        }
+    }
+
+    r4:ValueSet|r4:FHIRError targetValueSet = (<Terminology>terminology).findValueSet(targetValueSetUri);
+    if targetValueSet is r4:FHIRError {
+        if targetValueSetUri == "" {
+            return r4:errorToOperationOutcome(
+                r4:createFHIRError(
+                    "Target value set URI should be provided",
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_SUPPORTED,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                )
+            );
+        } else {
+            return r4:errorToOperationOutcome(
+                r4:createFHIRError(
+                    string `Target valueset not found for the provided value set URL: ${targetValueSetUri}`,
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_FOUND,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                )
+            );
+        }
+    }
+    r4:ConceptMap[]|r4:FHIRError matchingConceptMaps = (<Terminology>terminology).findConceptMapBySourceAndTargetValueSets(sourceValueSetUri, targetValueSetUri);
+    if matchingConceptMaps is r4:FHIRError {
+        return r4:errorToOperationOutcome(matchingConceptMaps);
+    }
+    if matchingConceptMaps.length() == 0 {
+        return r4:errorToOperationOutcome(
+            r4:createFHIRError(
+                string `A concept map with the provided value set URLs was not found:  sourceValueSetUrl: ${sourceValueSetUri}, targetValueSetUrl: ${targetValueSetUri}`,
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND,
+                errorType = r4:PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_NOT_FOUND
+            )
+        );
+    }
+    r4:Parameters|r4:FHIRError response = doTranslation(matchingConceptMaps, codesToTranslate, terminology);
+    if response is r4:FHIRError {
+        return r4:errorToOperationOutcome(response);
+    } else {
+        return response;
+    }
+}
+
 # Create CodeableConcept data type for given code in a given system.
 #
 # + system - system uri of the code system or value set  
@@ -778,7 +852,7 @@ public isolated function addConceptMap(i4:ConceptMap conceptMap, Terminology? te
     }
 }
 
-public isolated function searchConceptMaps(map<r4:RequestSearchParameter[]> params, Terminology? terminology = inMemoryTerminology) returns r4:FHIRError|i4:ConceptMap[] {
+public isolated function searchConceptMaps(map<r4:RequestSearchParameter[]> params, Terminology? terminology = inMemoryTerminology) returns r4:FHIRError|r4:ConceptMap[] {
     record {map<r4:RequestSearchParameter[]> searchParameters; int count; int offset;} paginationData = check modifySearchParamsWithPagination(params.clone());
 
     // Validate the requested search parameters in the allowed list
@@ -794,4 +868,8 @@ public isolated function searchConceptMaps(map<r4:RequestSearchParameter[]> para
         }
     }
     return (<Terminology>terminology).searchConceptMap(paginationData.searchParameters.clone(), offset = paginationData.offset, count = paginationData.count);
+}
+
+public isolated function readConceptMapByUrl(r4:uri conceptMapUrl, string? id = (), string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ConceptMap|r4:FHIRError {
+    return (<Terminology>terminology).findConceptMap(conceptMapUrl, id, version);
 }
