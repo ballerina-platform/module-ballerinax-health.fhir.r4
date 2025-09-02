@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2023 - 2025, WSO2 LLC. (http://www.wso2.com).
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
@@ -1569,4 +1569,246 @@ function addValueset8() {
     };
     r4:FHIRError? actual = addValueSet(vs);
     test:assertTrue(actual !is r4:FHIRError, "Expected a FHIRError");
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestHappyPath() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/correct_response"));
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithoutCodeSystem() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/correct_response_without_system"));
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithWrongCodeSystem() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "wrongCodeSystem",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_with_no_matches"));
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithMultipleCodes() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/administrative-gender";
+    r4:uri valueSet2Url = "http://terminology.hl7.org/ValueSet/v2-0001";
+
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "other"
+            },
+            {
+                code: "female"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_multiple_codes"));
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithoutCode() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/administrative-gender";
+    r4:uri valueSet2Url = "http://terminology.hl7.org/ValueSet/v2-0001";
+
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/administrative-gender"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_absent_code"));
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateWithWrongCode() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "wrongCode"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_with_no_matches"));
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithoutSourceValueSet() returns error? {
+
+    r4:uri valueSet1Url = "";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertTrue(result is r4:OperationOutcome);
+    test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Source value set URI should be provided");
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithoutTargetValueSet() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertTrue(result is r4:OperationOutcome);
+    test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Target value set URI should be provided");
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithIncorrectSourceValueSet() returns error? {
+
+    r4:uri valueSet1Url = "http://www.google.com";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertTrue(result is r4:OperationOutcome);
+    test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Source valueset not found for the provided value set URL: http://www.google.com");
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestForUnmappedFixed() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/fixed1";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/fixed2";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "fixed"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_unmapped_fixed"));
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestForUnmappedProvided() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/provided1";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/provided2";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "provided"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_unmapped_provided"));
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestForUnmappedOtherMap() returns error? {
+
+    r4:uri valueSet1Url = "http://example.org/fhir/example1";
+    r4:uri valueSet2Url = "http://example.org/fhir/example2";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "otherMapCode"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_unmapped_other_map"));
 }
