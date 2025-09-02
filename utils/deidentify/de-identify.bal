@@ -25,17 +25,17 @@ configurable boolean outputFHIRResourceValidation = false;
 
 configurable DeIdentifyRule[] rules = [
     {
-        fhirPath: "Patient.name",
+        fhirPaths: ["Patient.name"],
         operation: "mask"
     }
 ];
 
-# DeIdentifyRule is a record type that defines a rule for de-identifying FHIR resources using FHIRPath expressions.
+# DeIdentifyRule is a record type that defines a rule for de-identifying FHIR resources using a list of FHIRPath expressions.
 #
-# + fhirPath - The FHIRPath expression to select the field(s) to be modified.
+# + fhirPaths - The FHIRPath expressions to select the field(s) to be modified.
 # + operation - The operation to be performed on the selected field(s).
 public type DeIdentifyRule record {|
-    string fhirPath;
+    string[] fhirPaths;
     string operation;
 |};
 
@@ -45,6 +45,32 @@ isolated map<fhirpath:ModificationFunction> initOperations = {
     encrypt: <fhirpath:ModificationFunction>encryptOperation,
     hash: <fhirpath:ModificationFunction>hashOperation
 };
+
+# Rule with a single fhir path
+#
+# + fhirPath - The FHIRPath expression to select the field(s) to be modified.
+# + operation - The operation to be performed on the selected field(s).
+type Rule record {|
+    string fhirPath;
+    string operation;
+|};
+
+# Simplifies the de-identification rules by flattening the FHIRPath expressions.
+#
+# + rules - The array of DeIdentifyRule to simplify.
+# + return - The simplified array of Rule.
+isolated function simplifyRules(DeIdentifyRule[] rules) returns Rule[] {
+    Rule[] simplifiedRules = [];
+    foreach var rule in rules {
+        foreach var path in rule.fhirPaths {
+            simplifiedRules.push({
+                fhirPath: path,
+                operation: rule.operation
+            });
+        }
+    }
+    return simplifiedRules;
+}
 
 # Function to de-identify FHIR data. It can handle both single FHIR resources and FHIR Bundles.
 #
@@ -79,15 +105,15 @@ public isolated function deIdentify(json fhirResource, map<fhirpath:Modification
         json|error resourceType = fhirResource.get("resourceType");
         if resourceType is string && resourceType == "Bundle" {
             log:printDebug("Detected FHIR Bundle resource, processing multiple resources");
-            return deIdentifyBundle(fhirResource, deIdentifyRules, validateInputFHIRResource, validateOutputFHIRResource, skipError);
+            return deIdentifyBundle(fhirResource, simplifyRules(deIdentifyRules), validateInputFHIRResource, validateOutputFHIRResource, skipError);
         }
     }
 
     // Process single resource (existing logic)
-    return deIdentifySingleResource(fhirResource, deIdentifyRules, validateInputFHIRResource, validateOutputFHIRResource, skipError);
+    return deIdentifySingleResource(fhirResource, simplifyRules(deIdentifyRules), validateInputFHIRResource, validateOutputFHIRResource, skipError);
 }
 
-isolated function deIdentifyBundle(json bundleResource, DeIdentifyRule[] deIdentifyRules, boolean validateInputFHIRResource, boolean validateOutputFHIRResource, boolean skipError) returns json|DeIdentificationError {
+isolated function deIdentifyBundle(json bundleResource, Rule[] deIdentifyRules, boolean validateInputFHIRResource, boolean validateOutputFHIRResource, boolean skipError) returns json|DeIdentificationError {
 
     if bundleResource !is map<json> {
         return createDeIdentificationError("Invalid bundle format: expected map<json>");
@@ -168,7 +194,7 @@ isolated function deIdentifyBundle(json bundleResource, DeIdentifyRule[] deIdent
     return deIdentifiedBundle;
 }
 
-isolated function deIdentifySingleResource(json fhirResource, DeIdentifyRule[] deIdentifyRules, boolean validateInputFHIRResource, boolean validateOutputFHIRResource, boolean skipError) returns json|DeIdentificationError {
+isolated function deIdentifySingleResource(json fhirResource, Rule[] deIdentifyRules, boolean validateInputFHIRResource, boolean validateOutputFHIRResource, boolean skipError) returns json|DeIdentificationError {
 
     // Check if the single resource is empty before processing
     if isEmptyResource(fhirResource) {
@@ -187,7 +213,7 @@ isolated function deIdentifySingleResource(json fhirResource, DeIdentifyRule[] d
 
     json modifiedResource = fhirResource;
 
-    foreach DeIdentifyRule rule in deIdentifyRules {
+    foreach Rule rule in deIdentifyRules {
         log:printDebug(`[PROCESSING RULE] FHIR Path: ${rule.fhirPath} | Operation: ${rule.operation}`);
 
         json|fhirpath:FHIRPathError modifiedResourceTemp = modifiedResource;

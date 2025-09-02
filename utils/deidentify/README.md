@@ -62,7 +62,7 @@ The real usage of this package comes with the ability to define de-identificatio
 Config.toml
 ```toml
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.id"
+fhirPaths = ["Patient.id"]
 operation = "mask"
 ```
 
@@ -78,7 +78,7 @@ Ballerina Code
 ```ballerina
 deidentify:DeIdentifyRule[] rules = [
         {
-            "fhirPath": "Patient.id",
+            "fhirPaths": ["Patient.id"],
             "operation": "mask"
         }
     ];
@@ -86,7 +86,7 @@ deidentify:DeIdentifyRule[] rules = [
 json|deidentify:DeIdentificationError result3 = deidentify:deIdentify(patientResource, deIdentifyRules =  rules);
 ```
 
-`fhirPath`: Used to point to the specific element in the FHIR resource you want to de-identify. Check out [FHIRPath documentation](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath/latest) for more details on how to use FHIRPath expressions.
+`fhirPaths`: Used to point to the specific elements in the FHIR resource you want to de-identify. Give a list of FHIR paths to apply the operation. Check out [FHIRPath documentation](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath/latest) for more details on how to use FHIRPath expressions.
 
 `operation`: Specifies the de-identification operation to perform on the targeted element. Similar to `mask`, there are several built-in de-identification operations available in the package, which you can use under `operation` in these rules.
 
@@ -97,11 +97,7 @@ Replaces sensitive data with asterisks (`*****`).
 
 ```toml
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.name"
-operation = "mask"
-
-[[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.address.line"
+fhirPaths = ["Patient.name", "Patient.address.line"]
 operation = "mask"
 ```
 
@@ -110,11 +106,11 @@ Encrypts data using AES-ECB encryption with a configurable key.
 
 ```toml
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.id"
+fhirPaths = ["Patient.id"]
 operation = "encrypt"
 ```
 
-Important: Use `encryptKey` in Config.toml under `[ballerinax.health.fhir.r4utils.deidentify]` to configure the encryption key. 
+Important: Use `encryptKey` in Config.toml under `[ballerinax.health.fhir.r4utils.deidentify]` to configure the encryption key.
 
 ```toml
 [ballerinax.health.fhir.r4utils.deidentify]
@@ -127,7 +123,7 @@ Creates a hash of the data using HMAC-SHA256.
 
 ```toml
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.telecom.value"
+fhirPaths = ["Patient.telecom.value"]
 operation = "hash"
 ```
 
@@ -144,7 +140,7 @@ Completely removes the specified field from the resource.
 
 ```toml
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.address"
+fhirPaths = ["Patient.address"]
 operation = "redact"
 ```
 
@@ -225,23 +221,23 @@ outputFHIRResourceValidation = false
 
 # Custom de-identification rules
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.name.family"
+fhirPaths = ["Patient.name.family"]
 operation = "pseudonymize"
 
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.name.given"
+fhirPaths = ["Patient.name.given"]
 operation = "mask"
 
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.birthDate"
+fhirPaths = ["Patient.birthDate"]
 operation = "removeDay"
 
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.id"
+fhirPaths = ["Patient.id"]
 operation = "encrypt"  # Built-in operation
 
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
-fhirPath = "Patient.address"
+fhirPaths = ["Patient.address"]
 operation = "redact"   # Built-in operation
 ```
 
