@@ -70,17 +70,17 @@ json patient = {
 
 public function main() {
     // Get single value using FHIRPath
-    json|error result = fhirpath:getFhirPathValues(patient, "Patient.name[0].given[0]");
+    json|error result = fhirpath:getValuesFromFhirPath(patient, "Patient.name[0].given[0]");
     if result is json {
         io:println("First given name: ", result);
     }
     // Get all given names from all name records
-    json|error allGivenResult = fhirpath:getFhirPathValues(patient, "Patient.name.given[0]");
+    json|error allGivenResult = fhirpath:getValuesFromFhirPath(patient, "Patient.name.given[0]");
     if allGivenResult is json {
         io:println("All first given names: ", allGivenResult);
     }
     // Handle errors
-    json|error errorResult = fhirpath:getFhirPathValues(patient, "Patient.invalidPath");
+    json|error errorResult = fhirpath:getValuesFromFhirPath(patient, "Patient.invalidPath");
     if errorResult is error {
         io:println("Error: ", errorResult.message());
     }
@@ -117,19 +117,19 @@ public function main() {
     };
 
     // Update a value in the FHIR resource
-    json|error updateResult = fhirpath:setFhirPathValues(patient, "Patient.active", false);
+    json|error updateResult = fhirpath:setValuesToFhirPath(patient, "Patient.active", false);
     if updateResult is json {
         io:println("Updated patient after active status change: ", updateResult);
     }
 
     // Update multiple values in the FHIR resource
-    json|error updatedAddresses = fhirpath:setFhirPathValues(patient, "Patient.address.line", "***", validateFHIRResource = false);
+    json|error updatedAddresses = fhirpath:setValuesToFhirPath(patient, "Patient.address.line", "***", validateFHIRResource = false);
     if updatedAddresses is json {
         io:println("Updated patient after address line masking: ", updatedAddresses);
     }
 
     // Add a new value to the FHIR resource
-    json|error newlyAdded = fhirpath:setFhirPathValues(patient, "Patient.gender", "male", validateFHIRResource = false);
+    json|error newlyAdded = fhirpath:setValuesToFhirPath(patient, "Patient.gender", "male", validateFHIRResource = false);
 
     if newlyAdded is json {
         io:println("Updated patient after gender addition: ", newlyAdded);
@@ -170,19 +170,19 @@ public function main() {
     };
 
     // Remove a simple field
-    json|error result = fhirpath:setFhirPathValues(patient, "Patient.gender", ());
+    json|error result = fhirpath:setValuesToFhirPath(patient, "Patient.gender", ());
     if result is json {
         io:println("Patient after removing gender: ", result);
     }
 
     // Remove multiple elements
-    json|error multipleResult = fhirpath:setFhirPathValues(patient, "Patient.name.given", ());
+    json|error multipleResult = fhirpath:setValuesToFhirPath(patient, "Patient.name.given", ());
     if multipleResult is json {
         io:println("Patient after removing all given names: ", multipleResult);
     }
 
     // Using low-level function for removal
-    json|error directResult = fhirpath:setFhirPathValues(patient, "Patient.active", ());
+    json|error directResult = fhirpath:setValuesToFhirPath(patient, "Patient.active", ());
     if directResult is json {
         io:println("Updated patient resource: ", directResult);
     }
@@ -232,19 +232,19 @@ public function main() {
     };
 
     // Mask all phone numbers
-    json|error maskedPhone = fhirpath:setFhirPathValues(patient, "Patient.telecom[0].value", maskOperation);
+    json|error maskedPhone = fhirpath:setValuesToFhirPath(patient, "Patient.telecom[0].value", maskOperation);
     if maskedPhone is json {
         io:println("Patient with masked phone: ", maskedPhone);
     }
 
     // Hash email addresses
-    json|error hashedId = fhirpath:setFhirPathValues(patient, "Patient.id", hashOperation);
+    json|error hashedId = fhirpath:setValuesToFhirPath(patient, "Patient.id", hashOperation);
     if hashedId is json {
         io:println("Patient with hashed id: ", hashedId);
     }
 
     // Apply function to multiple values
-    json|error maskedNames = fhirpath:setFhirPathValues(patient, "Patient.name.given", maskOperation, validateFHIRResource = false);
+    json|error maskedNames = fhirpath:setValuesToFhirPath(patient, "Patient.name.given", maskOperation, validateFHIRResource = false);
     if maskedNames is json {
         io:println("Patient with masked given names: ", maskedNames);
     }

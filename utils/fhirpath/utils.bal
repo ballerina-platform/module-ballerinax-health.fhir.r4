@@ -109,7 +109,7 @@ public type FHIRPathError distinct error;
 # + errorMsg - the reason for the occurence of error
 # + fhirPath - the fhirpath expression that is being evaluated
 # + return - the error object
-public isolated function createFhirPathError(string errorMsg, string? fhirPath) returns FHIRPathError {
+isolated function createFhirPathError(string errorMsg, string? fhirPath) returns FHIRPathError {
     FHIRPathError fhirPathError = error(errorMsg, fhirPath = fhirPath);
     return fhirPathError;
 }

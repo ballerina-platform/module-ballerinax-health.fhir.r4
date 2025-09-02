@@ -20,7 +20,7 @@ import ballerina/test;
 @test:Config {}
 function testSetSimpleStringValue() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.gender", "female");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.gender", "female");
 
     test:assertTrue(result is json, "Should successfully set gender value");
     if result is json {
@@ -33,7 +33,7 @@ function testSetSimpleStringValue() {
 function testSetSimpleNumberValue() {
     json originalPatient = samplePatient3.clone();
     // Note: FHIR IDs are typically strings, but for testing purposes, we can set a number and set validate = false
-    json|error result = setFhirPathValues(originalPatient, "Patient.id", 999);
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.id", 999);
 
     test:assertTrue(result is json, "Should successfully set id value");
     if result is json {
@@ -45,7 +45,7 @@ function testSetSimpleNumberValue() {
 @test:Config {}
 function testSetBooleanValue() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.active", false);
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.active", false);
 
     test:assertTrue(result is json, "Should successfully set active value");
     if result is json {
@@ -57,7 +57,7 @@ function testSetBooleanValue() {
 @test:Config {}
 function testSetArrayElementValue() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.name[0].family", "NewFamilyName");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.name[0].family", "NewFamilyName");
 
     test:assertTrue(result is json, "Should successfully set family name");
     if result is json {
@@ -71,7 +71,7 @@ function testSetArrayElementValue() {
 @test:Config {}
 function testSetNestedArrayElementValue() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.name[0].given[1]", "NewMiddleName");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.name[0].given[1]", "NewMiddleName");
 
     test:assertTrue(result is json, "Should successfully set given name");
     if result is json {
@@ -86,7 +86,7 @@ function testSetNestedArrayElementValue() {
 @test:Config {}
 function testSetNestedObjectValue() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.managingOrganization.reference", "Organization/999");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.managingOrganization.reference", "Organization/999");
 
     test:assertTrue(result is json, "Should successfully set nested reference");
     if result is json {
@@ -99,7 +99,7 @@ function testSetNestedObjectValue() {
 @test:Config {}
 function testBulkUpdateArrayElements() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.address.city", "NewCity");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.address.city", "NewCity");
 
     test:assertTrue(result is json, "Should successfully update all address cities");
     if result is json {
@@ -117,7 +117,7 @@ function testBulkUpdateArrayElements() {
 @test:Config {}
 function testBulkUpdateNestedArrayElements() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.address.line", "***");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.address.line", "***");
 
     test:assertTrue(result is json, "Should successfully update all line numbers");
     if result is json {
@@ -148,7 +148,7 @@ function addToConfigFile(string value) returns error? {
 @test:Config {}
 function testSkipNonExistentPathWithPathCreationDisabled() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.nonExistentField", "value");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.nonExistentField", "value");
 
     test:assertTrue(result is json, "Should return original resource unchanged");
     if result is json {
@@ -162,7 +162,7 @@ function testSkipNonExistentPathWithPathCreationDisabled() {
 @test:Config {}
 function testSkipNonExistentNestedPath() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.address[0].nonExistent.field", "value");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.address[0].nonExistent.field", "value");
 
     test:assertTrue(result is json, "Should return original resource unchanged");
     if result is json {
@@ -176,7 +176,7 @@ function testSkipNonExistentNestedPath() {
 @test:Config {}
 function testSkipNonExistentArrayIndexWithPathCreationDisabled() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.address[5].city", "value");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.address[5].city", "value");
 
     test:assertTrue(result is json, "Should return original resource unchanged");
     if result is json {
@@ -189,7 +189,7 @@ function testSkipNonExistentArrayIndexWithPathCreationDisabled() {
 @test:Config {}
 function testInvalidEmptyFhirPathExpression() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "", "value");
+    json|error result = setValuesToFhirPath(originalPatient, "", "value");
 
     test:assertTrue(result is error, "Should return error for empty expression");
     if result is error {
@@ -200,7 +200,7 @@ function testInvalidEmptyFhirPathExpression() {
 @test:Config {}
 function testSkipInvalidFhirPath() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "InvalidFormat", "value");
+    json|error result = setValuesToFhirPath(originalPatient, "InvalidFormat", "value");
 
     test:assertTrue(result is error, "Should return error for invalid FHIR Path");
     if result is error {
@@ -211,7 +211,7 @@ function testSkipInvalidFhirPath() {
 @test:Config {}
 function testInvalidArrayIndex() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.name[abc].family", "value");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.name[abc].family", "value");
 
     test:assertTrue(result is error, "Should return error for invalid array index");
     if result is error {
@@ -222,7 +222,7 @@ function testInvalidArrayIndex() {
 @test:Config {}
 function testMalformedArrayAccess() {
     json originalPatient = samplePatient3.clone();
-    json|error result = setFhirPathValues(originalPatient, "Patient.name[0.family", "value");
+    json|error result = setValuesToFhirPath(originalPatient, "Patient.name[0.family", "value");
     if result is error {
         test:assertTrue(result.message().includes("Invalid FHIR Path"), "Should have appropriate error message");
     }
