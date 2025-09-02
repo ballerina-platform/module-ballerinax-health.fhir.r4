@@ -114,6 +114,7 @@ isolated function createFhirPathError(string errorMsg, string? fhirPath) returns
     return fhirPathError;
 }
 
+# Error thrown when a modification function fails
 public type ModificationFunctionError distinct error;
 
 # Function to modify the value at the path
