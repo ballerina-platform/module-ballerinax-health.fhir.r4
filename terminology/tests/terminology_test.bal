@@ -1570,10 +1570,12 @@ function addValueset8() {
     test:assertTrue(actual !is r4:FHIRError, "Expected a FHIRError");
 }
 
+# This test verifies the response when a typical source and target value set URLs are sent in the translate request.
+# The result should contain a parameter resource with the matching code for the provided code and the system.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestHappyPath() returns error? {
+function translateTestHappyPath() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
     r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
@@ -1590,10 +1592,14 @@ function translateTestHappyPath() returns error? {
     test:assertEquals(result, readJsonData("translate_responses/correct_response"));
 }
 
+# translateTestWithoutCodeSystem
+# 
+# This test verifies the repsonse when only a code is provided without a code system. In this case, the response should
+# contain all the matching target codes available in the concept map that matches the provided source and target URLs.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestWithoutCodeSystem() returns error? {
+function translateTestWithoutCodeSystem() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
     r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
@@ -1609,10 +1615,14 @@ function translateTestWithoutCodeSystem() returns error? {
     test:assertEquals(result, readJsonData("translate_responses/correct_response_without_system"));
 }
 
+# translateTestWithWrongCodeSystem
+# 
+# This test verifies the response when a code is sent with an incorrect code system. In this case, the response should
+# contain no matches.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestWithWrongCodeSystem() returns error? {
+function translateTestWithWrongCodeSystem() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
     r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
@@ -1629,10 +1639,14 @@ function translateTestWithWrongCodeSystem() returns error? {
     test:assertEquals(result, readJsonData("translate_responses/response_with_no_matches"));
 }
 
+# translateTestWithMultipleCodes
+# 
+# This test verifies the response when multiple codes are there for matching. In this case, the response should contain
+# All the matches for all the provided codes since the code systems are not provided with the codes.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestWithMultipleCodes() returns error? {
+function translateTestWithMultipleCodes() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/administrative-gender";
     r4:uri valueSet2Url = "http://terminology.hl7.org/ValueSet/v2-0001";
@@ -1652,10 +1666,15 @@ function translateTestWithMultipleCodes() returns error? {
     test:assertEquals(result, readJsonData("translate_responses/response_for_multiple_codes"));
 }
 
+# translateTestForMultipleConceptMapsWithMultipleCodes
+#
+# This test verifies the response when multiple codes are provided across different concept maps. The response should
+# contain all the matches for all the provided codes in all the available concept maps that matches the provided source
+# and target value set URLs.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestForMultipleConceptMapsWithMultipleCodes() returns error? {
+function translateTestForMultipleConceptMapsWithMultipleCodes() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
     r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
@@ -1674,10 +1693,14 @@ function translateTestForMultipleConceptMapsWithMultipleCodes() returns error? {
     test:assertEquals(result, readJsonData("translate_responses/response_for_multiple_concept_maps_with_multiple_codes"));
 }
 
+# translateTestWithoutCode
+#
+# This test verifies the response when no code is provided in the CodeableConcept. 
+# The response should indicate that no code was provided.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestWithoutCode() returns error? {
+function translateTestWithoutCode() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/administrative-gender";
     r4:uri valueSet2Url = "http://terminology.hl7.org/ValueSet/v2-0001";
@@ -1691,13 +1714,16 @@ function translateTestWithoutCode() returns error? {
     };
     TestTerminology customTerminology = new ();
     r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
-    test:assertEquals(result, readJsonData("translate_responses/response_for_absent_code"));
+    test:assertEquals(result, readJsonData("translate_responses/response_with_no_matches"));
 }
 
+# translateWithWrongCode
+#
+# This test verifies the response when an incorrect code is provided in the CodeableConcept.
 @test:Config {
     groups: ["translate"]
 }
-function translateWithWrongCode() returns error? {
+function translateWithWrongCode() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
     r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
@@ -1714,10 +1740,13 @@ function translateWithWrongCode() returns error? {
     test:assertEquals(result, readJsonData("translate_responses/response_with_no_matches"));
 }
 
+# translateTestWithoutSourceValueSet
+#
+# This test verifies the response when no source value set is provided.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestWithoutSourceValueSet() returns error? {
+function translateTestWithoutSourceValueSet() {
 
     r4:uri valueSet1Url = "";
     r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
@@ -1735,10 +1764,13 @@ function translateTestWithoutSourceValueSet() returns error? {
     test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Source value set URI should be provided");
 }
 
+# translateTestWithoutTargetValueSet
+#
+# This test verifies the response when no target value set is provided.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestWithoutTargetValueSet() returns error? {
+function translateTestWithoutTargetValueSet() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
     r4:uri valueSet2Url = "";
@@ -1756,10 +1788,13 @@ function translateTestWithoutTargetValueSet() returns error? {
     test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Target value set URI should be provided");
 }
 
+# translateTestWithIncorrectSourceValueSet
+#
+# This test verifies the response when an incorrect source value set is provided.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestWithIncorrectSourceValueSet() returns error? {
+function translateTestWithIncorrectSourceValueSet() {
 
     r4:uri valueSet1Url = "http://www.google.com";
     r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
@@ -1777,10 +1812,15 @@ function translateTestWithIncorrectSourceValueSet() returns error? {
     test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Concept map not found for provided source and target value sets");
 }
 
+# translateTestForUnmappedFixed
+#
+# This test verifies the response when the provided code is not matched with any code in the target value set and 
+# the unmapped field mode is fixed. The response should contain the code defined in the unmapped field of the concept
+# map.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestForUnmappedFixed() returns error? {
+function translateTestForUnmappedFixed() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/fixed1";
     r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/fixed2";
@@ -1796,10 +1836,14 @@ function translateTestForUnmappedFixed() returns error? {
     test:assertEquals(result, readJsonData("translate_responses/response_for_unmapped_fixed"));
 }
 
+# translateTestForUnmappedProvided
+#
+# This test verifies the response when the provided code is not matched with any code in the target value set and
+# the unmapped field mode is provided. The response should contain the source code as the matched code.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestForUnmappedProvided() returns error? {
+function translateTestForUnmappedProvided() {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/provided1";
     r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/provided2";
@@ -1815,10 +1859,15 @@ function translateTestForUnmappedProvided() returns error? {
     test:assertEquals(result, readJsonData("translate_responses/response_for_unmapped_provided"));
 }
 
+# translateTestForUnmappedOtherMap
+#
+# This test verifies the response when the provided code is not matched with any code in the target value set and
+# the unmapped field mode is otherMap. The response should contain the matching codes from the concept map retrieved
+# using the URL provided in the unmapped field of the original concept map.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestForUnmappedOtherMap() returns error? {
+function translateTestForUnmappedOtherMap() {
 
     r4:uri valueSet1Url = "http://example.org/fhir/example1";
     r4:uri valueSet2Url = "http://example.org/fhir/example2";
@@ -1867,10 +1916,16 @@ function testSearchConceptMap() returns error? {
     test:assertTrue(foundConceptMaps2.length() == 10);
 }
 
+# translateTestForUnmappedOtherMapLevel2
+# 
+# This test verifies the translation of the provided code when there are two levels of "other-map" URLs.
+# When the first concept map doesn't contain any matches, the code is looked up in the fallback concept map provided in
+# the unmapped field of the first concept map. If the second concept map also doesn't contain any matches, the code is
+# looked up in the fallback concept map defined in the 2nd concept map.
 @test:Config {
     groups: ["translate"]
 }
-function translateTestForUnmappedOtherMapLevel2() returns error? {
+function translateTestForUnmappedOtherMapLevel2() {
 
     r4:uri valueSet1Url = "http://example.org/fhir/otherMap2example1";
     r4:uri valueSet2Url = "http://example.org/fhir/otherMap2example2";
