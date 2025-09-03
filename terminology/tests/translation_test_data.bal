@@ -99,6 +99,73 @@ r4:ConceptMap testConceptMap1 = {
     ]
 };
 
+r4:ConceptMap testConceptMap1WithDifferentCodes = {
+    "resourceType": "ConceptMap",
+    "id": "sc-account-status",
+    "text": {
+        "status": "generated",
+        "div": "<div>!-- Snipped for Brevity --></div>"
+    },
+    "url": "http://hl7.org/fhir/ConceptMap/sc-account-status2",
+    "version": "4.0.1",
+    "status": "draft",
+    "sourceCanonical": "http://hl7.org/fhir/ValueSet/account-status",
+    "targetCanonical": "http://hl7.org/fhir/ValueSet/resource-status",
+    "group": [
+        {
+            "source": "http://hl7.org/fhir/account-status2",
+            "target": "http://hl7.org/fhir/resource-status2",
+            "element": [
+                {
+                    "code": "entered-in-error2",
+                    "target": [
+                        {
+                            "code": "error",
+                            "equivalence": "equivalent"
+                        }
+                    ]
+                },
+                {
+                    "code": "active",
+                    "target": [
+                        {
+                            "code": "active2",
+                            "equivalence": "equivalent"
+                        }
+                    ]
+                },
+                {
+                    "code": "on-hold2",
+                    "target": [
+                        {
+                            "code": "suspended",
+                            "equivalence": "equivalent"
+                        }
+                    ]
+                },
+                {
+                    "code": "inactive",
+                    "target": [
+                        {
+                            "code": "inactive2",
+                            "equivalence": "equivalent"
+                        }
+                    ]
+                },
+                {
+                    "code": "unknown2",
+                    "target": [
+                        {
+                            "code": "unknown",
+                            "equivalence": "equivalent"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
 r4:ConceptMap testConceptMap2 = {
     "resourceType": "ConceptMap",
     "id": "cm-administrative-gender-v2",
@@ -388,6 +455,115 @@ r4:ConceptMap otherMap = {
     ]
 };
 
+r4:ConceptMap otherMap2 = {
+    "resourceType": "ConceptMap",
+    "id": "example2",
+    "url": "http://example.org/fhir/ConceptMap/map2-2",
+    "version": "4.0.1",
+    "name": "Other-map-for-test",
+    "status": "draft",
+    "sourceUri": "http://example.org/fhir/otherMap2example1",
+    "targetUri": "http://example.org/fhir/otherMap2example2",
+    "group": [
+        {
+            "source": "http://example.org/fhir/example5",
+            "target": "http://example.org/fhir/example6",
+            "element": [
+                {
+                    "code": "otherMapCodeNoMatch",
+                    "display": "Example Code",
+                    "target": [
+                        {
+                            "code": "otherMapTargetCode",
+                            "display": "Other Map Example Code",
+                            "equivalence": "equivalent"
+                        }
+                    ]
+                }
+            ],
+            "unmapped": {
+                "mode": "other-map",
+                "url": "http://example.org/fhir/ConceptMap/map2-3"
+            }
+        }
+    ]
+};
+
+r4:ConceptMap otherMap3 = {
+    "resourceType": "ConceptMap",
+    "id": "example2",
+    "url": "http://example.org/fhir/ConceptMap/map2-3",
+    "version": "4.0.1",
+    "name": "Other-map-for-test",
+    "status": "draft",
+    "sourceUri": "http://example.org/fhir/otherMap3example1",
+    "targetUri": "http://example.org/fhir/otherMap3example2",
+    "group": [
+        {
+            "source": "http://example.org/fhir/example5",
+            "target": "http://example.org/fhir/example6",
+            "element": [
+                {
+                    "code": "otherMapCodeNoMatch",
+                    "display": "Example Code",
+                    "target": [
+                        {
+                            "code": "otherMap3TargetCode",
+                            "display": "Other Map 3 Example Code",
+                            "equivalence": "equivalent"
+                        }
+                    ]
+                },
+                {
+                    "code": "otherMap3Code",
+                    "display": "Example 3 Code",
+                    "target": [
+                        {
+                            "code": "otherMap3TargetCode",
+                            "display": "Other Map 3 Example Code",
+                            "equivalence": "equivalent"
+                        }
+                    ]
+                }
+            ],
+            "unmapped": {
+                "mode": "other-map",
+                "url": "http://example.org/fhir/ConceptMap/map2-4"
+            }
+        }
+    ]
+};
+
+r4:ConceptMap otherMap4 = {
+    "resourceType": "ConceptMap",
+    "id": "example2",
+    "url": "http://example.org/fhir/ConceptMap/map2-4",
+    "version": "4.0.1",
+    "name": "Other-map-for-test",
+    "status": "draft",
+    "sourceUri": "http://example.org/fhir/otherMap4example1",
+    "targetUri": "http://example.org/fhir/otherMap4example2",
+    "group": [
+        {
+            "source": "http://example.org/fhir/example5",
+            "target": "http://example.org/fhir/example6",
+            "element": [
+                {
+                    "code": "otherMapCode",
+                    "display": "Example 4 Code",
+                    "target": [
+                        {
+                            "code": "otherMap4TargetCode",
+                            "display": "Other Map 4 Example Code",
+                            "equivalence": "equivalent"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
 r4:ValueSet vs5 = {
     status: "draft",
     id: "account-status",
@@ -542,3 +718,5 @@ r4:ValueSet vs16 = {
         ]
     }
 };
+
+r4:ConceptMap sampleSearchConceptMap = {status: "unknown", url: "http://hl7.org/fhir/ConceptMap/cm-address-type-v3"};

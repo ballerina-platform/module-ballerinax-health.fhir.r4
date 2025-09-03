@@ -502,7 +502,7 @@ public isolated function translate(r4:uri sourceValueSetUri, r4:uri targetValueS
         );
     }
     
-    r4:ConceptMap[]|r4:FHIRError matchingConceptMaps = (<Terminology>terminology).findConceptMapBySourceAndTargetValueSets(sourceValueSetUri, targetValueSetUri);
+    r4:ConceptMap[]|r4:FHIRError matchingConceptMaps = (<Terminology>terminology).findConceptMaps(sourceValueSetUri, targetValueSetUri);
     if matchingConceptMaps is r4:FHIRError {
         return r4:errorToOperationOutcome(matchingConceptMaps);
     }
@@ -857,6 +857,6 @@ public isolated function searchConceptMaps(map<r4:RequestSearchParameter[]> para
     return (<Terminology>terminology).searchConceptMap(c, offset = offset, count = count);
 }
 
-public isolated function readConceptMap(r4:uri conceptMapUrl, string? id = (), string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ConceptMap|r4:FHIRError {
-    return (<Terminology>terminology).findConceptMap(conceptMapUrl = conceptMapUrl, id = id, version = version);
+public isolated function readConceptMap(r4:uri conceptMapUrl, string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ConceptMap|r4:FHIRError {
+    return (<Terminology>terminology).getConceptMap(conceptMapUrl = conceptMapUrl, version = version);
 }

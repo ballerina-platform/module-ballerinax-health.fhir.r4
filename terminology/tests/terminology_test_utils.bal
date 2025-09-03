@@ -209,6 +209,11 @@ isolated class TestTerminology {
             self.conceptMap["http://example.org/cm4"] = unmappedConceptMapProvided.clone();
             self.conceptMap["http://hl7.org/fhir/ConceptMap/example2"] = unmappedConceptMapOtherMap.clone();
             self.conceptMap["http://example.org/fhir/ConceptMap/map2"] = otherMap.clone();
+            self.conceptMap["http://example.org/fhir/ConceptMap/map2-2"] = otherMap2.clone();
+            self.conceptMap["http://example.org/fhir/ConceptMap/map2-3"] = otherMap3.clone();
+            self.conceptMap["http://example.org/fhir/ConceptMap/map2-4"] = otherMap4.clone();
+            self.conceptMap["http://hl7.org/fhir/ConceptMap/sc-account-status2"] = testConceptMap1WithDifferentCodes.clone();
+            self.conceptMap["http://hl7.org/fhir/ConceptMap/cm-address-type-v3"] = sampleSearchConceptMap.clone();
         }
     }
 
@@ -441,7 +446,7 @@ isolated class TestTerminology {
             return valueSet.clone();
         }
 
-    public isolated function findConceptMap(r4:uri? conceptMapUrl, string? id, string? version) returns r4:ConceptMap|r4:FHIRError {
+    public isolated function getConceptMap(r4:uri? conceptMapUrl, string? version) returns r4:ConceptMap|r4:FHIRError {
 
         map<r4:ConceptMap> conceptMaps = {};
         lock {
@@ -512,7 +517,7 @@ isolated class TestTerminology {
         return false;
     }
 
-    public isolated function findConceptMapBySourceAndTargetValueSets(r4:uri sourceValueSetUri, r4:uri targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError {
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError {
 
         r4:ConceptMap[] conceptMapsArray = [];
         r4:ConceptMap[] matchingConceptMaps = [];
