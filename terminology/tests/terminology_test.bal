@@ -13,7 +13,6 @@
 import ballerina/log;
 import ballerina/test;
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401 as i4;
 
 @test:Config {
     groups: ["coding", "create_coding", "successful_scenario"]
@@ -1219,8 +1218,8 @@ function codesystemSubsumeTest1() returns error? {
     r4:code codeA = "inactive";
     r4:code codeB = "inactive";
     r4:CodeSystem codeSystem = check readCodeSystemById("account-status");
-    i4:Parameters actaulResult = check subsumes(codeA, codeB, codeSystem);
-    i4:ParametersParameter actual = (<i4:ParametersParameter[]>actaulResult.'parameter)[0];
+    r4:Parameters actaulResult = check subsumes(codeA, codeB, codeSystem);
+    r4:ParametersParameter actual = (<r4:ParametersParameter[]>actaulResult.'parameter)[0];
     test:assertEquals(actual.name, "outcome");
     test:assertEquals(actual.valueCode, "equivalent");
 }
@@ -1231,8 +1230,8 @@ function codesystemSubsumeTest1() returns error? {
 function codesystemSubsumeTest2() returns error? {
     r4:Coding codingA = check createCoding("http://hl7.org/fhir/account-status", "inactive");
     r4:Coding codingB = check createCoding("http://hl7.org/fhir/account-status", "inactive");
-    i4:Parameters actaulResult = check subsumes(codingA, codingB, system = "http://hl7.org/fhir/account-status");
-    i4:ParametersParameter actual = (<i4:ParametersParameter[]>actaulResult.'parameter)[0];
+    r4:Parameters actaulResult = check subsumes(codingA, codingB, system = "http://hl7.org/fhir/account-status");
+    r4:ParametersParameter actual = (<r4:ParametersParameter[]>actaulResult.'parameter)[0];
     test:assertEquals(actual.name, "outcome");
     test:assertEquals(actual.valueCode, "equivalent");
 }
@@ -1243,7 +1242,7 @@ function codesystemSubsumeTest2() returns error? {
 function codesystemSubsumeTest3() returns error? {
     r4:Coding codingA = check createCoding("http://hl7.org/fhir/account-status", "inactive");
     r4:Coding codingB = check createCoding("http://hl7.org/fhir/account-status", "inactive");
-    i4:Parameters|r4:FHIRError actaulResult = subsumes(codingA, codingB);
+    r4:Parameters|r4:FHIRError actaulResult = subsumes(codingA, codingB);
     test:assertTrue(actaulResult is r4:FHIRError, "Expected an error");
     if actaulResult is r4:FHIRError {
         test:assertEquals(actaulResult.message(), "Cannot find a CodeSystem due to CodeSystem record or system URL should be provided as input");
@@ -1256,7 +1255,7 @@ function codesystemSubsumeTest3() returns error? {
 function codesystemSubsumeTest4() returns error? {
     r4:code codeA = "inactive2";
     r4:Coding codingB = check createCoding("http://hl7.org/fhir/account-status", "inactive");
-    i4:Parameters|r4:FHIRError actaulResult = subsumes(codeA, codingB, system = "http://hl7.org/fhir/account-status");
+    r4:Parameters|r4:FHIRError actaulResult = subsumes(codeA, codingB, system = "http://hl7.org/fhir/account-status");
     test:assertTrue(actaulResult is r4:FHIRError, "Expected an error");
     if actaulResult is r4:FHIRError {
         test:assertEquals(actaulResult.message(), string `Code: ${codeA} was not found in the CodeSystem: http://hl7.org/fhir/account-status`);
@@ -1269,7 +1268,7 @@ function codesystemSubsumeTest4() returns error? {
 function codesystemSubsumeTest5() returns error? {
     r4:Coding codingA = check createCoding("http://hl7.org/fhir/account-status", "inactive");
     r4:code codeB = "inactive2";
-    i4:Parameters|r4:FHIRError actaulResult = subsumes(codingA, codeB, system = "http://hl7.org/fhir/account-status");
+    r4:Parameters|r4:FHIRError actaulResult = subsumes(codingA, codeB, system = "http://hl7.org/fhir/account-status");
     test:assertTrue(actaulResult is r4:FHIRError, "Expected an error");
     if actaulResult is r4:FHIRError {
         test:assertEquals(actaulResult.message(), string `Code: ${codeB} was not found in the CodeSystem: http://hl7.org/fhir/account-status`);
@@ -1284,10 +1283,10 @@ function codesystemSubsumeTest6() returns error? {
     r4:code codeA = "A";
     r4:code codeB = "A1";
     TestTerminology customTerminology = new ();
-    i4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
-    test:assertTrue(actualResult is i4:Parameters, "Expected Parameters result");
-    if actualResult is i4:Parameters {
-        i4:ParametersParameter actual = (<i4:ParametersParameter[]>actualResult.'parameter)[0];
+    r4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
+    test:assertTrue(actualResult is r4:Parameters, "Expected Parameters result");
+    if actualResult is r4:Parameters {
+        r4:ParametersParameter actual = (<r4:ParametersParameter[]>actualResult.'parameter)[0];
         test:assertEquals(actual.valueCode, "subsumed");
     }
 }
@@ -1300,10 +1299,10 @@ function codesystemSubsumeTest7() returns error? {
     r4:code codeA = "A1a";
     r4:code codeB = "A2";
     TestTerminology customTerminology = new ();
-    i4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
-    test:assertTrue(actualResult is i4:Parameters, "Expected Parameters result");
-    if actualResult is i4:Parameters {
-        i4:ParametersParameter actual = (<i4:ParametersParameter[]>actualResult.'parameter)[0];
+    r4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
+    test:assertTrue(actualResult is r4:Parameters, "Expected Parameters result");
+    if actualResult is r4:Parameters {
+        r4:ParametersParameter actual = (<r4:ParametersParameter[]>actualResult.'parameter)[0];
         test:assertEquals(actual.valueCode, "not-subsumed");
     }
 }
@@ -1316,10 +1315,10 @@ function codesystemSubsumeTest8() returns error? {
     r4:code codeA = "A1";
     r4:code codeB = "A";
     TestTerminology customTerminology = new ();
-    i4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
-    test:assertTrue(actualResult is i4:Parameters, "Expected Parameters result");
-    if actualResult is i4:Parameters {
-        i4:ParametersParameter actual = (<i4:ParametersParameter[]>actualResult.'parameter)[0];
+    r4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
+    test:assertTrue(actualResult is r4:Parameters, "Expected Parameters result");
+    if actualResult is r4:Parameters {
+        r4:ParametersParameter actual = (<r4:ParametersParameter[]>actualResult.'parameter)[0];
         test:assertEquals(actual.valueCode, "subsumed-by");
     }
 }
@@ -1656,6 +1655,28 @@ function translateTestWithMultipleCodes() returns error? {
 @test:Config {
     groups: ["translate"]
 }
+function translateTestForMultipleConceptMapsWithMultipleCodes() returns error? {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "active"
+            },
+            {
+                code: "inactive"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_multiple_concept_maps_with_multiple_codes"));
+}
+
+@test:Config {
+    groups: ["translate"]
+}
 function translateTestWithoutCode() returns error? {
 
     r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/administrative-gender";
@@ -1821,7 +1842,7 @@ function testAddConceptMap() returns error? {
     r4:ConceptMap conceptMapToAdd = {url: "http://example.org/fhir/ConceptMap/conceptMapToAdd", version: "4.1.0", status: "unknown"};
     TestTerminology customTerminology = new ();
     check addConceptMap(conceptMapToAdd, customTerminology);
-    r4:ConceptMap|r4:FHIRError foundMap = readConceptMap("http://example.org/fhir/ConceptMap/conceptMapToAdd", (), (), customTerminology);
+    r4:ConceptMap|r4:FHIRError foundMap = readConceptMap("http://example.org/fhir/ConceptMap/conceptMapToAdd", (), customTerminology);
     if foundMap is r4:ConceptMap {
         test:assertEquals(foundMap.url, conceptMapToAdd.url);
         test:assertEquals(foundMap.status, conceptMapToAdd.status);
@@ -1834,7 +1855,7 @@ function testAddConceptMap() returns error? {
 function testSearchConceptMap() returns error? {
 
     TestTerminology customTerminology = new ();
-    string conceptMapUrl = "http://hl7.org/fhir/ConceptMap/example2";
+    string conceptMapUrl = "http://hl7.org/fhir/ConceptMap/cm-address-type-v3";
     map<r4:RequestSearchParameter[]> searchParameters = {"url": [{name: "url", value: conceptMapUrl, typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:URI}], "_count": [{name: "_count", value: "10", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]};
     r4:ConceptMap[] foundConceptMaps = check searchConceptMaps(searchParameters, customTerminology);
     test:assertTrue(foundConceptMaps.length() > 0);
@@ -1843,5 +1864,24 @@ function testSearchConceptMap() returns error? {
     string version = "4.0.1";
     map<r4:RequestSearchParameter[]> searchParameters2 = {"version": [{name: "version", value: version, typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:STRING}], "_count": [{name: "_count", value: "10", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]};
     r4:ConceptMap[] foundConceptMaps2 = check searchConceptMaps(searchParameters2, customTerminology);
-    test:assertTrue(foundConceptMaps2.length() == 6);
+    test:assertTrue(foundConceptMaps2.length() == 10);
+}
+
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestForUnmappedOtherMapLevel2() returns error? {
+
+    r4:uri valueSet1Url = "http://example.org/fhir/otherMap2example1";
+    r4:uri valueSet2Url = "http://example.org/fhir/otherMap2example2";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "otherMapCode"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_other_maps_level_two"));
 }

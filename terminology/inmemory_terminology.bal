@@ -179,49 +179,15 @@ isolated class InMemoryTerminology {
         return ();
     }
 
-    public isolated function findConceptMap(r4:uri? conceptMapUrl, string? id, string? version) returns r4:ConceptMap|r4:FHIRError {
+    public isolated function getConceptMap(r4:uri? conceptMapUrl, string? version) returns r4:ConceptMap|r4:FHIRError {
 
         map<r4:ConceptMap> conceptMaps = {};
         lock {
             conceptMaps = self.conceptMapsMap.clone();
         }
-        if id != () {
-            conceptMaps = map from r4:ConceptMap entry in conceptMaps
-                where entry.id == id
-                select [getKey(<string>entry.url, <string>entry.version), entry];
-            if conceptMaps.length() < 1 {
-                return r4:createFHIRError(
-                        string `Unknown concept map Id: '${id}'`,
-                        r4:ERROR,
-                        r4:PROCESSING_NOT_FOUND,
-                        httpStatusCode = http:STATUS_NOT_FOUND
-                    );
-            }
-            if version != () {
-                conceptMaps = map from r4:ConceptMap entry in conceptMaps
-                    where entry.version == version
-                    select [getKey(<string>entry.url, <string>entry.version), entry];
-
-                if conceptMaps.length() < 1 {
-                    return r4:createFHIRError(
-                            string `Unknown version: '${version.toString()}',`,
-                            r4:ERROR,
-                            r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a concept map in the registry with Id: '${id.toString()}' but cannot find version: '${version.toString()}' of it.`,
-                            httpStatusCode = http:STATUS_NOT_FOUND
-                        );
-                }
-            } else {
-                // find an available version. since the id is valid there will be at least one valid code system.
-                conceptMaps = map from r4:ConceptMap entry in conceptMaps
-                    where entry.version > DEFAULT_VERSION
-                    select [getKey(<string>entry.url, <string>entry.version), entry];
-            }
-            return conceptMaps.toArray()[0].clone();
-        }
-
+        
         boolean isIdExistInRegistry = false;
-        if version is string && conceptMapUrl != () {
+        if version is string && conceptMapUrl != "" {
             foreach var item in conceptMaps.keys() {
                 if regexp:isFullMatch(re `${conceptMapUrl}\|${version}$`, item) && conceptMaps[item] is r4:ConceptMap {
                     return <r4:ConceptMap>conceptMaps[item].clone();
@@ -235,11 +201,11 @@ isolated class InMemoryTerminology {
                             string `Unknown version: '${version}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a concept map in the registry with Id: '${conceptMapUrl.toString()}' but cannot find version: '${version}' of it.`,
+                            diagnostic = string `: there is a concept map in the registry with Url: '${conceptMapUrl.toString()}' but cannot find version: '${version}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
             }
-        } else if conceptMapUrl != () {
+        } else if conceptMapUrl != "" {
             r4:ConceptMap conceptMap = {status: "unknown"};
             foreach var item in conceptMaps.keys() {
                 if conceptMapUrl == item
@@ -268,7 +234,7 @@ isolated class InMemoryTerminology {
             );
     }
 
-    public isolated function findConceptMapBySourceAndTargetValueSets(r4:uri sourceValueSetUri, r4:uri targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError {
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError {
 
         r4:ConceptMap[] conceptMapsArray = [];
         r4:ConceptMap[] matchingConceptMaps = [];

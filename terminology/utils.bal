@@ -514,7 +514,7 @@ public type Terminology isolated object {
     # + sourceValueSetUri - URI of the source ValueSet.
     # + targetValueSetUri - URI of the target ValueSet.
     # + return - ConceptMap if found or else FHIRError.
-    public isolated function findConceptMapBySourceAndTargetValueSets(r4:uri sourceValueSetUri, r4:uri targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError;
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError;
 
     # The function definition for Concept Map finder implementations.
     #
@@ -527,36 +527,48 @@ public type Terminology isolated object {
     # The function definition for Concept Map finder implementations.
     #
     # + conceptMapUrl - URI of the ConceptMap to be found.
-    # + id - Id of the ConceptMap to be found (optional).
     # + version - Version of the ConceptMap to be found (optional).
     # + return - ConceptMap if found or else FHIRError.
-    public isolated function findConceptMap(r4:uri conceptMapUrl, string? id = (), string? version = ()) returns r4:ConceptMap|r4:FHIRError;
+    public isolated function getConceptMap(r4:uri conceptMapUrl, string? version = ()) returns r4:ConceptMap|r4:FHIRError;
 };
 
-public isolated function doTranslation(r4:ConceptMap[] conceptMaps, r4:CodeableConcept codesToTranslate, Terminology? terminology = inMemoryTerminology) returns r4:Parameters|r4:FHIRError {
+# Performs the translation of codes using the provided concept maps and codes to translate. Multiple concept maps can 
+# be provided for matching. The codesToTranslate codeable concept can contain an array of code/system pairs. All the codes
+# provided in the codeable concept will be matched with the provided concept map/s.
+# 
+# If the coding has a system, the concept map group that matches the source code system will be filetered and matched.
+# If the coding has no system, all the groups in the concept map will be matched.
+# 
+# When a particular group doesn't have any matches, the unmapped field of that group will be checked for the mode and
+# the matching will be done accordingly.
+# 
+# - When the unmapped mode is "fixed": the code provided insidte the unmapped field is used.
+# - When the unmapped mode is "provided": the source code is used as the target code.
+# - When the unmapped mode is "other-map": the concept map provided inside the unmapped field is used for matching. The 
+# function would recursively match the codes when there are multiple nested "other-map" references.
+# 
+# + conceptMaps - The array of ConceptMap resources to use for translation.
+# + codesToTranslate - The CodeableConcept containing the codes to be translated.
+# + terminology - The Terminology service to use for code translation.
+# + return - A Parameters resource containing the translation results or an FHIRError if an error occurs.
+isolated function doTranslation(r4:ConceptMap[] conceptMaps, r4:CodeableConcept codesToTranslate, Terminology? terminology = inMemoryTerminology) returns r4:Parameters|r4:FHIRError {
 
-    r4:Parameters response = {"resourceType": "Parameters"};
     r4:ParametersParameter[] parameters = [];
+    r4:Coding[]? codes = codesToTranslate.coding;
+    
+    if codes is () || codes.length() == 0 {
+        string msg = "No code found in the request. At least one code is required to perform the translation";
+        log:printError(msg);
+        return r4:createFHIRError(msg, r4:ERROR, r4:PROCESSING_NOT_FOUND, httpStatusCode = http:STATUS_BAD_REQUEST);
+    }
 
     foreach var conceptMap in conceptMaps {
-
-        r4:ConceptMap clonedConceptMap = conceptMap.clone();
-        r4:uri? conceptMapUri = clonedConceptMap.url;
-        r4:CodeableConcept clonedCodesToTranslate = codesToTranslate.clone();
-
-        r4:ConceptMapGroup[]? groups = clonedConceptMap.group;
+        r4:uri? conceptMapUri = conceptMap.url;
+        r4:ConceptMapGroup[]? groups = conceptMap.group;
         if (groups == () || groups.length() == 0) {
-            // If no groups are found, return an error
-            string msg = "No groups found in concept map.";
-            log:printError(msg);
-            return r4:createFHIRError(msg, r4:ERROR, r4:PROCESSING_NOT_FOUND, httpStatusCode = http:STATUS_BAD_REQUEST);
-        }
-
-        r4:Coding[]? codes = clonedCodesToTranslate.coding;
-        if codes is () || codes.length() == 0 {
-            string msg = "No code found in the request. At least one code is required to perform the translation";
-            log:printError(msg);
-            return r4:createFHIRError(msg, r4:ERROR, r4:PROCESSING_NOT_FOUND, httpStatusCode = http:STATUS_BAD_REQUEST);
+            // If no groups are found in the current concept map, continue to the next concept map
+            log:printWarn(string`No groups found in concept map: ${conceptMap.id.toString()}. Proceeding to the next one`);
+            continue;
         }
 
         foreach var code in codes {
@@ -589,26 +601,22 @@ public isolated function doTranslation(r4:ConceptMap[] conceptMaps, r4:CodeableC
                             log:printDebug("No unmapped element found in the current group, proceeding to the next group.");
                             continue;
                         }
-                        check matchWithUnmappedField(parameters, unmappedField, sourceCode, terminology, sourceCodeSystem);
+                        matchWithUnmappedField(parameters, unmappedField, sourceCode, terminology, sourceCodeSystem);
                     }
                 }
             }
         }
     }
 
-    if !haveMatchParameters(parameters) {
-        if !haveResultParameter(parameters) {
-            parameters.push(getNegativeResultParameter());
-        }
-        parameters.push({name: "message", valueString: "No translation found for in any concept map."});
-    } else {
-        if !haveResultParameter(parameters) {
-            parameters.push(getPositiveResultParameter());
+    if !haveResultParameter(parameters) {
+        if !haveMatchParameters(parameters) {
+            parameters.push({name: "result", valueBoolean: false});
+            parameters.push({name: "message", valueString: "No translation found for in any concept map."});
+        } else {
+            parameters.push({name: "result", valueBoolean: true});
         }
     }
-
-    response.'parameter = parameters;
-    return response;
+    return {'parameter: parameters};
 }
 
 # Checks if the source code system matches with the provided concept map group
@@ -633,8 +641,8 @@ isolated function doesGroupHasMatchingSystem(r4:ConceptMapGroup group, r4:uri so
 # + return - an optional FHIRError if an error occurs during matching
 isolated function matchWithAllGroups(r4:ConceptMapGroup[] groups, r4:code codeToTranslate, r4:ParametersParameter[] parameters, r4:uri? conceptMapUri = (), Terminology? terminology = inMemoryTerminology, r4:uri? sourceSystem = ()) returns r4:FHIRError? {
 
-    int initialMatchCount = countMatchParameters(parameters);
     foreach var group in groups {
+        int initialMatchCount = countMatchParameters(parameters);
         r4:ConceptMapGroupElement[]? elements = group.element;
         r4:uri? targetSystem = group.target;
 
@@ -653,7 +661,7 @@ isolated function matchWithAllGroups(r4:ConceptMapGroup[] groups, r4:code codeTo
                 log:printDebug("No unmapped element found in the current group, proceeding to the next group.");
                 continue;
             }
-            check matchWithUnmappedField(parameters, unmappedField, codeToTranslate, terminology);
+            matchWithUnmappedField(parameters, unmappedField, codeToTranslate, terminology);
         }
     }
 }
@@ -665,8 +673,7 @@ isolated function matchWithAllGroups(r4:ConceptMapGroup[] groups, r4:code codeTo
 # + codeToTranslate - the code to translate
 # + terminology - the terminology service
 # + sourceSystem - the URI of the source system
-# + return - an optional FHIRError if an error occurs during unmapped field processing
-isolated function matchWithUnmappedField(r4:ParametersParameter[] parameters, r4:ConceptMapGroupUnmapped unmappedField, r4:code? codeToTranslate, Terminology? terminology = inMemoryTerminology, r4:uri? sourceSystem = ()) returns r4:FHIRError? {
+isolated function matchWithUnmappedField(r4:ParametersParameter[] parameters, r4:ConceptMapGroupUnmapped unmappedField, r4:code? codeToTranslate, Terminology? terminology = inMemoryTerminology, r4:uri? sourceSystem = ()) {
 
     r4:ConceptMapGroupUnmappedMode mode = unmappedField.mode;
 
@@ -678,7 +685,7 @@ isolated function matchWithUnmappedField(r4:ParametersParameter[] parameters, r4
             handleFixedMode(unmappedField, parameters);
         }
         r4:CODE_MODE_OTHER_MAP => {
-            check handleOtherMapMode(unmappedField, parameters, codeToTranslate, sourceSystem, terminology);
+            handleOtherMapMode(unmappedField, parameters, codeToTranslate, sourceSystem, terminology);
         }
     }
 }
@@ -724,8 +731,7 @@ isolated function handleFixedMode(r4:ConceptMapGroupUnmapped unmappedField, r4:P
 # + codeToTranslate - the code to translate
 # + sourceSystem - the URI of the source system
 # + terminology - the terminology service to use for translation
-# + return - an optional FHIRError if an error occurs during other map translation
-isolated function handleOtherMapMode(r4:ConceptMapGroupUnmapped unmappedField, r4:ParametersParameter[] parameters, r4:code? codeToTranslate = (), r4:uri? sourceSystem = (), Terminology? terminology = inMemoryTerminology) returns r4:FHIRError? {
+isolated function handleOtherMapMode(r4:ConceptMapGroupUnmapped unmappedField, r4:ParametersParameter[] parameters, r4:code? codeToTranslate = (), r4:uri? sourceSystem = (), Terminology? terminology = inMemoryTerminology) {
 
     // Retrieve the fallback concept map from the URL
     r4:uri? otherConceptMapUri = unmappedField.url;
@@ -733,35 +739,22 @@ isolated function handleOtherMapMode(r4:ConceptMapGroupUnmapped unmappedField, r
         log:printWarn("No other concept map URI provided for the 'other-map' mode, cannot proceed with the translation.");
         return;
     }
-    r4:ConceptMap|r4:FHIRError? fallbackConceptMap = (<Terminology>terminology).findConceptMap(otherConceptMapUri);
-    if fallbackConceptMap is r4:FHIRError {
-        log:printError("No fallback concept map found for the 'other-map' mode, cannot proceed with the translation.");
-        return fallbackConceptMap;
-    }
-
-    if fallbackConceptMap is () {
-        log:printWarn("No fallback concept map provided for the 'other-map' mode, cannot proceed with the translation.");
+    r4:ConceptMap|r4:FHIRError? fallbackConceptMap = (<Terminology>terminology).getConceptMap(otherConceptMapUri);
+    if fallbackConceptMap is r4:FHIRError || fallbackConceptMap is () {
+        log:printWarn("No fallback concept map found for the 'other-map' mode");
         return;
     }
 
     r4:ConceptMap[] fallbackConceptMapArray = [fallbackConceptMap];
-    r4:CodeableConcept code = {
-        coding: [
-            {
-                code: codeToTranslate,
-                system: sourceSystem
-            }
-        ]
-    };
-
-    r4:Parameters|r4:FHIRError fallbackResponse = doTranslation(fallbackConceptMapArray, code, ());
+    r4:Parameters|r4:FHIRError fallbackResponse = doTranslation(fallbackConceptMapArray, 
+                                                {coding: [{code: codeToTranslate, system: sourceSystem}]}, terminology);
 
     if fallbackResponse is r4:FHIRError {
-        return fallbackResponse;
+        return;
     }
 
     r4:ParametersParameter[]? fallbackParameters = fallbackResponse.'parameter;
-    if fallbackParameters !is () {
+    if fallbackParameters !is () && fallbackParameters.length() > 0 {
         foreach r4:ParametersParameter item in fallbackParameters {
             parameters.push(item);
         }
@@ -811,28 +804,6 @@ isolated function matchWithGroupElementTarget(r4:ConceptMapGroupElementTarget[] 
         };
         parameters.push(getMatchParameter(conceptCoding, conceptMapUri, target.equivalence.toString()));
     }
-}
-
-# Returns a parameter indicating the result of the mapping.
-#
-# + return - a parameter indicating the result of the mapping
-isolated function getPositiveResultParameter() returns r4:ParametersParameter {
-
-    return {
-        name: "result",
-        valueBoolean: true
-    };
-}
-
-# Returns a parameter indicating the equivalence of the concept.
-#
-# + return - a parameter indicating the equivalence of the concept
-isolated function getNegativeResultParameter() returns r4:ParametersParameter {
-
-    return {
-        name: "result",
-        valueBoolean: false
-    };
 }
 
 # Returns a match parameter for the given concept coding and concept map URI.
