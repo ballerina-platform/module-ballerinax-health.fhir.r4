@@ -20,6 +20,7 @@ isolated class InMemoryTerminology {
     # Global records to store Terminologies across different profiles and packages.
     private map<r4:CodeSystem> codeSystemMap = {};
     private map<r4:ValueSet> valueSetMap = {};
+    private map<r4:ConceptMap> conceptMapsMap = {};
 
     isolated function init() {
 
@@ -34,6 +35,10 @@ isolated class InMemoryTerminology {
 
         // https://terminology.hl7.org/5.4.0/valuesets-fhir.html
         json externalFhirValueSets = [];
+
+        // https://hl7.org/fhir/R4/terminologies-conceptmaps.html
+        json internalFhirConceptMaps = [];
+
         do {
             // We should create terminology as json string constants
             // We can't pack those static files with r4 modules to Ballerina central.
@@ -42,6 +47,7 @@ isolated class InMemoryTerminology {
             internalFhirValueSets = check DEFAULT_FHIR_VALUE_SETS.fromJsonString();
             externalFhirCodeSystems = check EXTERNAL_FHIR_CODE_SYSTEMS.fromJsonString();
             externalFhirValueSets = check EXTERNAL_FHIR_VALUE_SETS.fromJsonString();
+            internalFhirConceptMaps = check DEFAULT_FHIR_CONCEPT_MAPS.fromJsonString();
         } on fail var e {
             r4:FHIRError fhirError = r4:createFHIRError(
                                     "Error occurred while type casting json string Terminologies json objects",
@@ -57,6 +63,7 @@ isolated class InMemoryTerminology {
             // Call the populateCodeSystemMap function
             self.codeSystemMap = self.populateCodeSystemMap(internalFhirCodeSystems, externalFhirCodeSystems, self.codeSystemMap).clone();
             self.valueSetMap = self.populateValueSetMap(internalFhirValueSets, externalFhirValueSets, self.valueSetMap).clone();
+            self.conceptMapsMap = self.populateConceptMapsMap(internalFhirConceptMaps, self.conceptMapsMap).clone();
         }
 
         // Initialiase terminology processor
@@ -88,6 +95,32 @@ isolated class InMemoryTerminology {
 
         // Return the updated codeSystemMap
         return resultedCodeSystemMap;
+    }
+
+    isolated function populateConceptMapsMap(json internalFhirConceptMaps, map<r4:ConceptMap> conceptMapsMap) returns map<r4:ConceptMap> {
+        // Implementation logic goes here
+        map<r4:ConceptMap> resultedConceptMapsMap = conceptMapsMap;
+        // Populate the resultedConceptMapsMap with the concept maps from internalFhirConceptMaps
+        foreach json conceptMap in [internalFhirConceptMaps] {
+            foreach json jConceptMap in <json[]>conceptMap {
+                r4:ConceptMap|error c = jConceptMap.cloneWithType();
+                if c is error {
+                    r4:FHIRError fHIRError = r4:createFHIRError(
+                                            "Error occurred while type casting json concept map to ConceptMap type", r4:ERROR,
+                                            r4:PROCESSING,
+                                            diagnostic = c.message(),
+                                            cause = c
+                                        );
+                    log:printError(fHIRError.toBalString());
+                } else {
+                    string key = getKey(<string>c.url, <string?>c.version ?: "");
+                    resultedConceptMapsMap[key] = c;
+                }
+            }
+        }
+
+        // Return the updated conceptMapsMap
+        return resultedConceptMapsMap;
     }
 
     isolated function populateValueSetMap(json internalFhirValueSets, json externalFhirValueSets, map<r4:ValueSet> valueSetMap) returns map<r4:ValueSet> {
@@ -129,6 +162,133 @@ isolated class InMemoryTerminology {
             self.valueSetMap[getKey(<string>valueSet.url, <string>valueSet.version)] = valueSet.clone();
         }
         return ();
+    }
+
+    public isolated function isConceptMapExist(r4:uri system, string version) returns boolean {
+
+        string key = getKey(system, version);
+        lock {
+            return self.conceptMapsMap.hasKey(key);
+        }
+    }
+
+    public isolated function addConceptMap(r4:ConceptMap conceptMap) returns r4:FHIRError? {
+        lock {
+            self.conceptMapsMap[getKey(<string>conceptMap.url, <string>conceptMap.version)] = conceptMap.clone();
+        }
+        return ();
+    }
+
+    public isolated function getConceptMap(r4:uri? conceptMapUrl, string? version) returns r4:ConceptMap|r4:FHIRError {
+
+        map<r4:ConceptMap> conceptMaps = {};
+        lock {
+            conceptMaps = self.conceptMapsMap.clone();
+        }
+        
+        boolean isIdExistInRegistry = false;
+        if version is string && conceptMapUrl != "" {
+            foreach var item in conceptMaps.keys() {
+                if regexp:isFullMatch(re `${conceptMapUrl}\|${version}$`, item) && conceptMaps[item] is r4:ConceptMap {
+                    return <r4:ConceptMap>conceptMaps[item].clone();
+                } else if regexp:isFullMatch(re `${conceptMapUrl}\|.*`, item) {
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return r4:createFHIRError(
+                            string `Unknown version: '${version}',`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            diagnostic = string `: there is a concept map in the registry with Url: '${conceptMapUrl.toString()}' but cannot find version: '${version}' of it.`,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
+            }
+        } else if conceptMapUrl != "" {
+            r4:ConceptMap conceptMap = {status: "unknown"};
+            foreach var item in conceptMaps.keys() {
+                if conceptMapUrl == item
+                && conceptMaps[item] is r4:ConceptMap {
+                    conceptMap = <r4:ConceptMap>conceptMaps[item];
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return conceptMap.clone();
+            } else {
+                return r4:createFHIRError(
+                            string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                        );
+            }
+        }
+        return r4:createFHIRError(
+                string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND,
+                httpStatusCode = http:STATUS_NOT_FOUND
+            );
+    }
+
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError {
+
+        r4:ConceptMap[] conceptMapsArray = [];
+        r4:ConceptMap[] matchingConceptMaps = [];
+        lock {
+            conceptMapsArray = self.conceptMapsMap.clone().toArray();
+        }
+        foreach var conceptMap in conceptMapsArray {
+            if conceptMap.sourceCanonical == sourceValueSetUri && conceptMap.targetCanonical == targetValueSetUri {
+                matchingConceptMaps.push(conceptMap.clone());
+            }
+        }
+
+        if matchingConceptMaps.length() == 0 {
+            return r4:createFHIRError(
+                    "Concept map not found for provided source and target value sets",
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_FOUND,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+        return matchingConceptMaps;
+    }
+
+    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset, int? count) returns r4:ConceptMap[]|r4:FHIRError {
+
+        r4:ConceptMap[] conceptMapsArray = [];
+        lock {
+            conceptMapsArray = self.conceptMapsMap.clone().toArray();
+        }
+        foreach var searchParam in params.cloneReadOnly().keys() {
+            r4:RequestSearchParameter[] searchParamValues = params.cloneReadOnly()[searchParam] ?: [];
+            r4:ConceptMap[] filteredList = [];
+            if searchParamValues.length() != 0 {
+                foreach var queriedValue in searchParamValues {
+                    r4:ConceptMap[] result = from r4:ConceptMap entry in conceptMapsArray
+                        where entry[CONCEPT_MAPS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
+                        select entry;
+                    filteredList.push(...result);
+                }
+                conceptMapsArray = filteredList.cloneReadOnly();
+            }
+        }
+
+        int total = conceptMapsArray.length();
+        int validatedCount = count ?: TERMINOLOGY_SEARCH_DEFAULT_COUNT;
+
+        if total >= offset + validatedCount {
+            return conceptMapsArray.slice(offset ?: 0, (offset ?: 0) + validatedCount).clone();
+        } else if total >= offset {
+            return conceptMapsArray.slice(offset ?: 0).clone();
+        } else {
+            return [];
+        }
     }
 
     public isolated function findCodeSystem(r4:uri? system, string? id, string? version) returns r4:CodeSystem|r4:FHIRError {
@@ -235,7 +395,7 @@ isolated class InMemoryTerminology {
             conceptDetails = findConceptInCodeSystem(findCodeSystemResult, code);
             if conceptDetails is CodeConceptDetails {
                 return conceptDetails;
-            } 
+            }
         }
 
         if conceptDetails is () && valuesetConceptDetails is () {

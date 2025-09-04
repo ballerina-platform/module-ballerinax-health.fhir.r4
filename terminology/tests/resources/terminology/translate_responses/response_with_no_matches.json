@@ -1,0 +1,13 @@
+{
+    "resourceType": "Parameters",
+    "parameter": [
+        {
+            "name": "result",
+            "valueBoolean": false
+        },
+        {
+            "name": "message",
+            "valueString": "No translation found for in any concept map."
+        }
+    ]
+}

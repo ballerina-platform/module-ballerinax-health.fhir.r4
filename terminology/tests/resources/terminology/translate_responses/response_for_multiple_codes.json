@@ -1,0 +1,72 @@
+{
+    "resourceType": "Parameters",
+    "parameter": [
+        {
+            "name": "match",
+            "part": [
+                {
+                    "valueCode": "wider",
+                    "name": "equivalent"
+                },
+                {
+                    "name": "concept",
+                    "valueCoding": {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0001",
+                        "code": "A",
+                        "userSelected": false
+                    }
+                },
+                {
+                    "name": "source",
+                    "valueUri": "http://hl7.org/fhir/ConceptMap/cm-administrative-gender-v2"
+                }
+            ]
+        },
+        {
+            "name": "match",
+            "part": [
+                {
+                    "valueCode": "wider",
+                    "name": "equivalent"
+                },
+                {
+                    "name": "concept",
+                    "valueCoding": {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0001",
+                        "code": "O",
+                        "userSelected": false
+                    }
+                },
+                {
+                    "name": "source",
+                    "valueUri": "http://hl7.org/fhir/ConceptMap/cm-administrative-gender-v2"
+                }
+            ]
+        },
+        {
+            "name": "match",
+            "part": [
+                {
+                    "valueCode": "equal",
+                    "name": "equivalent"
+                },
+                {
+                    "name": "concept",
+                    "valueCoding": {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0001",
+                        "code": "F",
+                        "userSelected": false
+                    }
+                },
+                {
+                    "name": "source",
+                    "valueUri": "http://hl7.org/fhir/ConceptMap/cm-administrative-gender-v2"
+                }
+            ]
+        },
+        {
+            "name": "result",
+            "valueBoolean": true
+        }
+    ]
+}

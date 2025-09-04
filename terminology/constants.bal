@@ -28,6 +28,18 @@ public const map<string> CODESYSTEMS_SEARCH_PARAMS = {
     publisher: "publisher"
 };
 
+# This is a map of implemented search params for CodeSystems.
+# These are defined as a map because to make the search process ease.
+public const map<string> CONCEPT_MAPS_SEARCH_PARAMS = {
+    id: "id",
+    name: "name",
+    title: "title",
+    url: "url",
+    version: "version",
+    status: "status",
+    publisher: "publisher"
+};
+
 # This is a map of implemented search params for ValueSets.
 # These define as a map because to make the search process ease
 public const map<string> VALUESETS_SEARCH_PARAMS = {
