@@ -32,11 +32,11 @@ isolated function encryptOperation(json value) returns json|fhirpath:Modificatio
     if value is string {
         string|DeIdentificationError encryptedValue = encryptWithKey(value);
         if encryptedValue is DeIdentificationError {
-            return fhirpath:createModificationFunctionError("Error occurred during encryption.", (), value);
+            return error("Error occurred during encryption.", value = value);
         }
         return encryptedValue;
     }
-    return fhirpath:createModificationFunctionError("Invalid input provided for encryptOperation.", (), value.toString());
+    return error("Invalid input provided for encryptOperation.", value = value.toString());
 }
 
 # Hash Operation
@@ -47,9 +47,9 @@ isolated function hashOperation(json value) returns json|fhirpath:ModificationFu
     if value is string {
         string|DeIdentificationError hashedValue = hashWithKey(value);
         if hashedValue is DeIdentificationError {
-            return fhirpath:createModificationFunctionError("Error occurred during hashing.", (), value);
+            return error("Error occurred during hashing.", value = value);
         }
         return hashedValue;
     }
-    return fhirpath:createModificationFunctionError("Invalid input provided for hashOperation.", (), value.toString());
+    return error("Invalid input provided for hashOperation.", value = value.toString());
 }

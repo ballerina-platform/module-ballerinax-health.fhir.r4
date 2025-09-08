@@ -338,7 +338,7 @@ function testBundleWithMissingResourceFieldNoSkip() {
         ]
     };
 
-    json|DeIdentificationError result = deIdentify(bundleWithMissingResource, skipError = false);
+    json|DeIdentificationError result = deIdentify(bundleWithMissingResource, validateInputFHIRResource = true, skipError = false);
 
     test:assertTrue(result is DeIdentificationError, msg = "Expected error with skipError=false");
 }
