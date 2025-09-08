@@ -22,9 +22,12 @@ compliant with http://hl7.org/fhir/uv/patient-corrections/ implementation guide.
 |------------------|---------------------------------------------|
 | 1). PatientCorrectionTask | [[Definition]][s1] [[Ballerina Record]][m1] |
 | 2). PatientCorrectionCommunication | [[Definition]][s2] [[Ballerina Record]][m2] |
+| 2). PatientCorrectionBundle | [[Definition]][s3] [[Ballerina Record]][m3] |
 
 [m1]: https://lib.ballerina.io/healthcare/health.fhir.r4.patient.corrections/1.0.0#PatientCorrectionTask
 [m2]: https://lib.ballerina.io/healthcare/health.fhir.r4.patient.corrections/1.0.0#PatientCorrectionCommunication
+[m3]: https://lib.ballerina.io/healthcare/health.fhir.r4.patient.corrections/1.0.0#PatientCorrectionBundle
 
 [s1]: http://hl7.org/fhir/uv/patient-corrections/StructureDefinition/patient-correction-task
 [s2]: http://hl7.org/fhir/uv/patient-corrections/StructureDefinition/patient-correction-communication
+[s3]: http://hl7.org/fhir/uv/patient-corrections/StructureDefinition/patient-correction-bundle
