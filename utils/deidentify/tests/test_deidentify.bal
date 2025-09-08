@@ -137,9 +137,9 @@ function testDeIdentifyWithObservationResource() {
     test:assertEquals(result, observationResource, msg = "Expected Observation resource to remain unchanged");
 }
 
-// Test custom operation registration
+// Test custom operation
 @test:Config {}
-function testCustomOperationRegistration() {
+function testDeIdentifyWithCustomOperation() {
     // Register a custom operation
     fhirpath:ModificationFunction customMaskFunction = isolated function(json value) returns json|fhirpath:ModificationFunctionError {
         return "CUSTOM_MASKED";
@@ -149,12 +149,47 @@ function testCustomOperationRegistration() {
         "customMask": customMaskFunction
     };
 
+    // Define rules that use the custom operation
+    DeIdentifyRule[] customRules = [
+        {
+            fhirPaths: ["Patient.name.family"],
+            operation: "customMask"
+        },
+        {
+            fhirPaths: ["Patient.id"],
+            operation: "customMask"
+        }
+    ];
 
-    // Test that the custom operation is now available
-    // Note: This would require modifying the configuration to use the custom operation
-    // For this test, we'll just verify the registration doesn't cause errors
-    json|DeIdentificationError result = deIdentify(patientResource, operations = customOperations);
-    test:assertTrue(result is json, msg = "Expected successful processing after custom operation registration");
+    // Test that the custom operation is now available and works correctly
+    json|DeIdentificationError result = deIdentify(
+            patientResource,
+            operations = customOperations,
+            deIdentifyRules = customRules
+    );
+
+    test:assertTrue(result is json, msg = "Expected successful processing with custom operation");
+
+    if result is json {
+        // Verify that the custom operation was applied to the family name
+        json|error nameField = result.name;
+        test:assertTrue(nameField is json[], msg = "Expected name to be an array");
+
+        if nameField is json[] && nameField.length() > 0 {
+            json firstNameEntry = nameField[0];
+            if firstNameEntry is map<json> {
+                json|error familyName = firstNameEntry.get("family");
+                if familyName is json {
+                    test:assertEquals(familyName, "CUSTOM_MASKED", msg = "Expected family name to be custom masked");
+                }
+            }
+        }
+
+        // Verify that the custom operation was applied to the ID
+        json|error idField = result.id;
+        test:assertTrue(idField is string, msg = "Expected id to be a string");
+        test:assertEquals(idField, "CUSTOM_MASKED", msg = "Expected id to be custom masked");
+    }
 }
 
 // Test with complex nested FHIR resource
@@ -383,4 +418,96 @@ function testErrorRecoveryScenarios() {
 
     // Should handle gracefully with skipOnError=true
     test:assertTrue(result is json, msg = "Expected graceful handling of problematic resource");
+}
+
+// Custom Patient type definition for type-safe testing
+public type PatientName record {
+    string use?;
+    string family?;
+    string[] given?;
+};
+
+public type Patient record {
+    string resourceType;
+    string id?;
+    PatientName[] name?;
+    string gender?;
+    string birthDate?;
+    boolean active?;
+};
+
+// Test validation success scenario using custom Patient type with cloneWithType
+@test:Config {}
+function testValidationWithCustomPatientType() {
+    // Create a Patient record using custom type
+    Patient validPatientRecord = {
+        resourceType: "Patient",
+        id: "type-safe-test-456",
+        name: [
+            {
+                use: "official",
+                family: "TypeSafeTest",
+                given: ["Jane", "Marie"]
+            }
+        ],
+        gender: "female",
+        birthDate: "1992-07-20",
+        active: true
+    };
+
+    // Convert to json for the deIdentify function
+    json validPatientJson = validPatientRecord.toJson();
+
+    // Define a rule to mask only the family name
+    DeIdentifyRule[] rules = [
+        {
+            fhirPaths: ["Patient.name.family"],
+            operation: "mask"
+        }
+    ];
+
+    // Enable both input and output validation, disable skipError to ensure strict validation
+    json|DeIdentificationError result = deIdentify(
+            validPatientJson,
+            deIdentifyRules = rules,
+            validateInputFHIRResource = true,
+            validateOutputFHIRResource = true,
+            skipError = false
+    );
+
+    test:assertTrue(result is json, msg = "Expected successful de-identification with validation enabled");
+
+    if result is json {
+        // Use cloneWithType to convert back to custom Patient type for type-safe validation
+        Patient|error typedResult = result.cloneWithType(Patient);
+        test:assertTrue(typedResult is Patient, msg = "Expected result to be convertible to Patient type");
+
+        if typedResult is Patient {
+            // Type-safe validation using custom Patient record
+            test:assertEquals(typedResult.resourceType, "Patient", msg = "Expected resourceType to be Patient");
+            test:assertEquals(typedResult.id, "type-safe-test-456", msg = "Expected id to be preserved");
+            test:assertEquals(typedResult.gender, "female", msg = "Expected gender to be preserved");
+            test:assertEquals(typedResult.birthDate, "1992-07-20", msg = "Expected birthDate to be preserved");
+            test:assertEquals(typedResult.active, true, msg = "Expected active status to be preserved");
+
+            // Verify that the name field exists and family name was masked
+            PatientName[]? nameArray = typedResult.name;
+            test:assertTrue(nameArray is PatientName[], msg = "Expected name to be an array");
+
+            if nameArray is PatientName[] && nameArray.length() > 0 {
+                PatientName firstName = nameArray[0];
+                test:assertEquals(firstName.use, "official", msg = "Expected name use to be preserved");
+                test:assertEquals(firstName.family, "*****", msg = "Expected family name to be masked");
+
+                // Verify given names are preserved
+                string[]? givenNames = firstName.given;
+                test:assertTrue(givenNames is string[], msg = "Expected given names to be preserved");
+                if givenNames is string[] {
+                    test:assertEquals(givenNames.length(), 2, msg = "Expected two given names");
+                    test:assertEquals(givenNames[0], "Jane", msg = "Expected first given name to be preserved");
+                    test:assertEquals(givenNames[1], "Marie", msg = "Expected second given name to be preserved");
+                }
+            }
+        }
+    }
 }
