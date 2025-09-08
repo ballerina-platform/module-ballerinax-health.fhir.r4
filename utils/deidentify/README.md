@@ -57,7 +57,7 @@ public function main() {
 
 The real usage of this package comes with the ability to define de-identification rules. There are two approaches:
 
-1. You can provide de-identification rules in the `Config.toml` file under the `rules` section. Each rule consists of a FHIRPath expression and the desired operation to perform.
+1. You can provide de-identification rules in the `Config.toml` file under the `rules` section. Each rule consists of a list of FHIRPath expressions and a desired operation to perform.
 
 Config.toml
 ```toml
