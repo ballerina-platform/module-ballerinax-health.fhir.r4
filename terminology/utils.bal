@@ -514,7 +514,7 @@ public type Terminology isolated object {
     # + sourceValueSetUri - URI of the source ValueSet.
     # + targetValueSetUri - URI of the target ValueSet.
     # + return - ConceptMap if found or else FHIRError.
-    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError;
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri? targetValueSetUri = ()) returns r4:ConceptMap[]|r4:FHIRError;
 
     # The function definition for Concept Map finder implementations.
     #

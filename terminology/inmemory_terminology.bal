@@ -234,16 +234,26 @@ isolated class InMemoryTerminology {
             );
     }
 
-    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError {
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri? targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError {
 
         r4:ConceptMap[] conceptMapsArray = [];
         r4:ConceptMap[] matchingConceptMaps = [];
         lock {
             conceptMapsArray = self.conceptMapsMap.clone().toArray();
         }
-        foreach var conceptMap in conceptMapsArray {
-            if conceptMap.sourceCanonical == sourceValueSetUri && conceptMap.targetCanonical == targetValueSetUri {
-                matchingConceptMaps.push(conceptMap.clone());
+
+        if targetValueSetUri == () {
+            foreach var conceptMap in conceptMapsArray {
+                if conceptMap.sourceCanonical == sourceValueSetUri || conceptMap.sourceUri == sourceValueSetUri {
+                    matchingConceptMaps.push(conceptMap.clone());
+                }
+            }
+        } else {
+            foreach var conceptMap in conceptMapsArray {
+                if (conceptMap.sourceCanonical == sourceValueSetUri && conceptMap.targetCanonical == targetValueSetUri)
+                        || (conceptMap.sourceUri == sourceValueSetUri && conceptMap.targetUri == targetValueSetUri) {
+                    matchingConceptMaps.push(conceptMap.clone());
+                }
             }
         }
 

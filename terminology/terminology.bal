@@ -469,31 +469,28 @@ public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding 
 
 # This function translates codes from a source value set to a target value set using the concept maps in the terminology service.
 # 
+# When both source value set URI and target value set URI are provided, the function looks for concept maps that match both value sets.
+# Then matches the provided codes with the found concept maps and returns the response. The response will contain the target codes from all the matching concept maps.
+# 
+# When only the source value set URI is provided, the function looks for all concept maps that match the source value set.
+# Then matches the provided codes with the found concept maps and returns the response. The response will contain the target codes from all the matching concept maps.
+# 
+# The codeable concept can contain multiple codings. The system and code of each coding will be used to find matches in the concept maps. When the system is not provided,
+# the code will be used to match the concept maps ignoring the code system. When the system is present, both the system and code will be used to find matches.
+# 
 # This function is implemented based on: https://hl7.org/fhir/R4/terminology-service.html#translate
 #
 # + sourceValueSetUri - the URL of the source value set
-# + targetValueSetUri - the URL of the target value set
+# + targetValueSetUri - the URL of the target value set (optional)
 # + codesToTranslate - the codes to translate
 # + terminology - the terminology service to use
 # + return - an r4:Parameters resource containing the translation results, or an r4:OperationOutcome resource if an error occurs
-public isolated function translate(r4:uri sourceValueSetUri, r4:uri targetValueSetUri, r4:CodeableConcept codesToTranslate, Terminology? terminology = inMemoryTerminology) returns r4:Parameters|r4:OperationOutcome {
+public isolated function translate(r4:uri sourceValueSetUri, r4:uri? targetValueSetUri, r4:CodeableConcept codesToTranslate, Terminology? terminology = inMemoryTerminology) returns r4:Parameters|r4:OperationOutcome {
 
     if sourceValueSetUri == "" {
         return r4:errorToOperationOutcome(
             r4:createFHIRError(
                 "Source value set URI should be provided",
-                r4:ERROR,
-                r4:PROCESSING_NOT_SUPPORTED,
-                errorType = r4:PROCESSING_ERROR,
-                httpStatusCode = http:STATUS_BAD_REQUEST
-            )
-        );
-    }
-
-    if targetValueSetUri == "" {
-        return r4:errorToOperationOutcome(
-            r4:createFHIRError(
-                "Target value set URI should be provided",
                 r4:ERROR,
                 r4:PROCESSING_NOT_SUPPORTED,
                 errorType = r4:PROCESSING_ERROR,
@@ -507,15 +504,27 @@ public isolated function translate(r4:uri sourceValueSetUri, r4:uri targetValueS
         return r4:errorToOperationOutcome(matchingConceptMaps);
     }
     if matchingConceptMaps.length() == 0 {
-        return r4:errorToOperationOutcome(
-            r4:createFHIRError(
-                string `A concept map with the provided value set URLs was not found:  sourceValueSetUrl: ${sourceValueSetUri}, targetValueSetUrl: ${targetValueSetUri}`,
-                r4:ERROR,
-                r4:PROCESSING_NOT_FOUND,
-                errorType = r4:PROCESSING_ERROR,
-                httpStatusCode = http:STATUS_NOT_FOUND
-            )
-        );
+        if targetValueSetUri is () {
+            return r4:errorToOperationOutcome(
+                r4:createFHIRError(
+                    string `A concept map with the provided value set URLs was not found:  sourceValueSetUrl: ${sourceValueSetUri}`,
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_FOUND,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                )
+            );
+        } else {
+            return r4:errorToOperationOutcome(
+                r4:createFHIRError(
+                    string `A concept map with the provided value set URLs was not found:  sourceValueSetUrl: ${sourceValueSetUri}, targetValueSetUrl: ${targetValueSetUri}`,
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_FOUND,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                )
+            );
+        }
     }
     r4:Parameters|r4:FHIRError response = doTranslation(matchingConceptMaps, codesToTranslate, terminology);
     if response is r4:FHIRError {

@@ -1592,6 +1592,28 @@ function translateTestHappyPath() {
     test:assertEquals(result, readJsonData("translate_responses/correct_response"));
 }
 
+# This test verifies the response when a only the source value set URL is sent in the translate request.
+# The result should contain a parameter resource with all the matching codes for the provided code and the system.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestHappyPathWithoutTargetValueSetUri() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri? valueSet2Url = ();
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/correct_response"));
+}
+
 # translateTestWithoutCodeSystem
 # 
 # This test verifies the repsonse when only a code is provided without a code system. In this case, the response should
@@ -1762,30 +1784,6 @@ function translateTestWithoutSourceValueSet() {
     r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
     test:assertTrue(result is r4:OperationOutcome);
     test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Source value set URI should be provided");
-}
-
-# translateTestWithoutTargetValueSet
-#
-# This test verifies the response when no target value set is provided.
-@test:Config {
-    groups: ["translate"]
-}
-function translateTestWithoutTargetValueSet() {
-
-    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
-    r4:uri valueSet2Url = "";
-    r4:CodeableConcept codeableConcept = {
-        coding: [
-            {
-                system: "http://hl7.org/fhir/account-status",
-                code: "active"
-            }
-        ]
-    };
-    TestTerminology customTerminology = new ();
-    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
-    test:assertTrue(result is r4:OperationOutcome);
-    test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Target value set URI should be provided");
 }
 
 # translateTestWithIncorrectSourceValueSet
