@@ -1,0 +1,93 @@
+{
+    "resourceType": "Parameters",
+    "parameter": [
+        {
+            "name": "match",
+            "part": [
+                {
+                    "valueCode": "equivalent",
+                    "name": "equivalent"
+                },
+                {
+                    "name": "concept",
+                    "valueCoding": {
+                        "system": "http://hl7.org/fhir/resource-status",
+                        "code": "active",
+                        "userSelected": false
+                    }
+                },
+                {
+                    "name": "source",
+                    "valueUri": "http://hl7.org/fhir/ConceptMap/sc-account-status"
+                }
+            ]
+        },
+        {
+            "name": "match",
+            "part": [
+                {
+                    "valueCode": "equivalent",
+                    "name": "equivalent"
+                },
+                {
+                    "name": "concept",
+                    "valueCoding": {
+                        "system": "http://hl7.org/fhir/resource-status",
+                        "code": "inactive",
+                        "userSelected": false
+                    }
+                },
+                {
+                    "name": "source",
+                    "valueUri": "http://hl7.org/fhir/ConceptMap/sc-account-status"
+                }
+            ]
+        },
+        {
+            "name": "match",
+            "part": [
+                {
+                    "valueCode": "equivalent",
+                    "name": "equivalent"
+                },
+                {
+                    "name": "concept",
+                    "valueCoding": {
+                        "system": "http://hl7.org/fhir/resource-status2",
+                        "code": "active2",
+                        "userSelected": false
+                    }
+                },
+                {
+                    "name": "source",
+                    "valueUri": "http://hl7.org/fhir/ConceptMap/sc-account-status2"
+                }
+            ]
+        },
+        {
+            "name": "match",
+            "part": [
+                {
+                    "valueCode": "equivalent",
+                    "name": "equivalent"
+                },
+                {
+                    "name": "concept",
+                    "valueCoding": {
+                        "system": "http://hl7.org/fhir/resource-status2",
+                        "code": "inactive2",
+                        "userSelected": false
+                    }
+                },
+                {
+                    "name": "source",
+                    "valueUri": "http://hl7.org/fhir/ConceptMap/sc-account-status2"
+                }
+            ]
+        },
+        {
+            "name": "result",
+            "valueBoolean": true
+        }
+    ]
+}

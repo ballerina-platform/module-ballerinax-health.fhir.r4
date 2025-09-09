@@ -10,11 +10,12 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
+import ballerina/http;
 import ballerina/io;
+import ballerina/lang.regexp;
 import ballerina/test;
 import ballerinax/health.fhir.r4;
-import ballerina/lang.regexp;
-import ballerina/http;
 
 function returnCodeSystemData(string fileName) returns r4:CodeSystem {
     string filePath = string `tests/resources/terminology/code_systems/${fileName}.json`;
@@ -64,6 +65,7 @@ isolated class TestTerminology {
     # Global records to store Terminologies across different profiles and packages.
     private map<r4:CodeSystem> codeSystemMap = {};
     private map<r4:ValueSet> valueSetMap = {};
+    private map<r4:ConceptMap> conceptMap = {};
 
     function init() {
         // Add a CodeSystem object for http://xyz.org
@@ -186,9 +188,32 @@ isolated class TestTerminology {
             self.valueSetMap["http://example.org/vs2"] = vs2.clone();
             self.valueSetMap["http://example.org/vs3"] = vs3.clone();
             self.valueSetMap["http://example.org/vs4"] = vs4.clone();
+            self.valueSetMap["http://hl7.org/fhir/ValueSet/account-status"] = vs5.clone();
+            self.valueSetMap["http://hl7.org/fhir/ValueSet/resource-status"] = vs6.clone();
+            self.valueSetMap["http://hl7.org/fhir/ValueSet/administrative-gender"] = vs7.clone();
+            self.valueSetMap["http://terminology.hl7.org/ValueSet/v2-0001"] = vs8.clone();
+            self.valueSetMap["http://hl7.org/fhir/ValueSet/fixed1"] = vs9.clone();
+            self.valueSetMap["http://hl7.org/fhir/ValueSet/fixed2"] = vs10.clone();
+            self.valueSetMap["http://hl7.org/fhir/ValueSet/provided1"] = vs11.clone();
+            self.valueSetMap["http://hl7.org/fhir/ValueSet/provided2"] = vs12.clone();
+            self.valueSetMap["http://example.org/fhir/example1"] = vs13.clone();
+            self.valueSetMap["http://example.org/fhir/example2"] = vs14.clone();
+            self.valueSetMap["http://example.org/fhir/otherMapexample1"] = vs15.clone();
+            self.valueSetMap["http://example.org/fhir/otherMapexample1"] = vs16.clone();
             self.codeSystemMap["http://loinc.org"] = csLoinc.clone();
             self.codeSystemMap["http://xyz.org"] = csXyz.clone();
             self.codeSystemMap["http://example.org/recursive-codesystem"] = csRecursive.clone();
+            self.conceptMap["http://hl7.org/fhir/ConceptMap/sc-account-status"] = testConceptMap1.clone();
+            self.conceptMap["http://hl7.org/fhir/ConceptMap/cm-administrative-gender-v2"] = testConceptMap2.clone();
+            self.conceptMap["http://example.org/cm3"] = unmappedConceptMapFixed.clone();
+            self.conceptMap["http://example.org/cm4"] = unmappedConceptMapProvided.clone();
+            self.conceptMap["http://hl7.org/fhir/ConceptMap/example2"] = unmappedConceptMapOtherMap.clone();
+            self.conceptMap["http://example.org/fhir/ConceptMap/map2"] = otherMap.clone();
+            self.conceptMap["http://example.org/fhir/ConceptMap/map2-2"] = otherMap2.clone();
+            self.conceptMap["http://example.org/fhir/ConceptMap/map2-3"] = otherMap3.clone();
+            self.conceptMap["http://example.org/fhir/ConceptMap/map2-4"] = otherMap4.clone();
+            self.conceptMap["http://hl7.org/fhir/ConceptMap/sc-account-status2"] = testConceptMap1WithDifferentCodes.clone();
+            self.conceptMap["http://hl7.org/fhir/ConceptMap/cm-address-type-v3"] = sampleSearchConceptMap.clone();
         }
     }
 
@@ -420,5 +445,111 @@ isolated class TestTerminology {
             }
             return valueSet.clone();
         }
+
+    public isolated function getConceptMap(r4:uri? conceptMapUrl, string? version) returns r4:ConceptMap|r4:FHIRError {
+
+        map<r4:ConceptMap> conceptMaps = {};
+        lock {
+            conceptMaps = self.conceptMap.clone();
+        }
+        boolean isIdExistInRegistry = false;
+        if conceptMapUrl != () {
+            r4:ConceptMap conceptMap = {status: "unknown"};
+            foreach var item in conceptMaps.keys() {
+                if conceptMapUrl == item
+                && conceptMaps[item] is r4:ConceptMap {
+                    conceptMap = <r4:ConceptMap>conceptMaps[item];
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return conceptMap.clone();
+            } else {
+                return r4:createFHIRError(
+                            string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                        );
+            }
+        }
+        return r4:createFHIRError(
+                string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND,
+                httpStatusCode = http:STATUS_NOT_FOUND
+            );
+    }
+
+    public isolated function addConceptMap(r4:ConceptMap conceptMap) returns r4:FHIRError? {
+        lock {
+            self.conceptMap[getKey(<string>conceptMap.url, <string>conceptMap.version)] = conceptMap.clone();
+        }
+        return ();
+    }
+
+    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset, int? count) returns r4:ConceptMap[]|r4:FHIRError {
+
+        r4:ConceptMap[] conceptMapsArray = [];
+        lock {
+            conceptMapsArray = self.conceptMap.clone().toArray();
+        }
+
+        foreach var searchParam in params.keys() {
+            r4:RequestSearchParameter[] searchParamValues = params[searchParam] ?: [];
+
+            r4:ConceptMap[] filteredList = [];
+            if searchParamValues.length() != 0 {
+                foreach var queriedValue in searchParamValues {
+                    r4:ConceptMap[] result = from r4:ConceptMap entry in conceptMapsArray
+                        where entry[CONCEPT_MAPS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
+                        select entry;
+                    filteredList.push(...result);
+                }
+                conceptMapsArray = filteredList;
+            }
+        }
+        return conceptMapsArray;
+    }
+
+    public isolated function isConceptMapExist(r4:uri system, string version) returns boolean {
+        return false;
+    }
+
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri? targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError {
+
+        r4:ConceptMap[] conceptMapsArray = [];
+        r4:ConceptMap[] matchingConceptMaps = [];
+        lock {
+            conceptMapsArray = self.conceptMap.clone().toArray();
+        }
+        
+        if targetValueSetUri == () {
+            foreach var conceptMap in conceptMapsArray {
+                if conceptMap.sourceCanonical == sourceValueSetUri|| conceptMap.sourceUri == sourceValueSetUri {
+                    matchingConceptMaps.push(conceptMap.clone());
+                }
+            }
+        } else {
+            foreach var conceptMap in conceptMapsArray {
+                if (conceptMap.sourceCanonical == sourceValueSetUri && conceptMap.targetCanonical == targetValueSetUri)
+                        || (conceptMap.sourceUri == sourceValueSetUri && conceptMap.targetUri == targetValueSetUri) {
+                    matchingConceptMaps.push(conceptMap.clone());
+                }
+            }
+        }
+
+        if matchingConceptMaps.length() == 0 {
+            return r4:createFHIRError(
+                "Concept map not found for provided source and target value sets",
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND,
+                errorType = r4:PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+        return matchingConceptMaps;
+    }
 }
 

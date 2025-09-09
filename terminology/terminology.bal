@@ -467,6 +467,73 @@ public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding 
     }
 }
 
+# This function translates codes from a source value set to a target value set using the concept maps in the terminology service.
+# 
+# When both source value set URI and target value set URI are provided, the function looks for concept maps that match both value sets.
+# Then matches the provided codes with the found concept maps and returns the response. The response will contain the target codes from all the matching concept maps.
+# 
+# When only the source value set URI is provided, the function looks for all concept maps that match the source value set.
+# Then matches the provided codes with the found concept maps and returns the response. The response will contain the target codes from all the matching concept maps.
+# 
+# The codeable concept can contain multiple codings. The system and code of each coding will be used to find matches in the concept maps. When the system is not provided,
+# the code will be used to match the concept maps ignoring the code system. When the system is present, both the system and code will be used to find matches.
+# 
+# This function is implemented based on: https://hl7.org/fhir/R4/terminology-service.html#translate
+#
+# + sourceValueSetUri - the URL of the source value set
+# + targetValueSetUri - the URL of the target value set (optional)
+# + codesToTranslate - the codes to translate
+# + terminology - the terminology service to use
+# + return - an r4:Parameters resource containing the translation results, or an r4:OperationOutcome resource if an error occurs
+public isolated function translate(r4:uri sourceValueSetUri, r4:uri? targetValueSetUri, r4:CodeableConcept codesToTranslate, Terminology? terminology = inMemoryTerminology) returns r4:Parameters|r4:OperationOutcome {
+
+    if sourceValueSetUri == "" {
+        return r4:errorToOperationOutcome(
+            r4:createFHIRError(
+                "Source value set URI should be provided",
+                r4:ERROR,
+                r4:PROCESSING_NOT_SUPPORTED,
+                errorType = r4:PROCESSING_ERROR,
+                httpStatusCode = http:STATUS_BAD_REQUEST
+            )
+        );
+    }
+    
+    r4:ConceptMap[]|r4:FHIRError matchingConceptMaps = (<Terminology>terminology).findConceptMaps(sourceValueSetUri, targetValueSetUri);
+    if matchingConceptMaps is r4:FHIRError {
+        return r4:errorToOperationOutcome(matchingConceptMaps);
+    }
+    if matchingConceptMaps.length() == 0 {
+        if targetValueSetUri is () {
+            return r4:errorToOperationOutcome(
+                r4:createFHIRError(
+                    string `A concept map with the provided value set URLs was not found:  sourceValueSetUrl: ${sourceValueSetUri}`,
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_FOUND,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                )
+            );
+        } else {
+            return r4:errorToOperationOutcome(
+                r4:createFHIRError(
+                    string `A concept map with the provided value set URLs was not found:  sourceValueSetUrl: ${sourceValueSetUri}, targetValueSetUrl: ${targetValueSetUri}`,
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_FOUND,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_NOT_FOUND
+                )
+            );
+        }
+    }
+    r4:Parameters|r4:FHIRError response = doTranslation(matchingConceptMaps, codesToTranslate, terminology);
+    if response is r4:FHIRError {
+        return r4:errorToOperationOutcome(response);
+    } else {
+        return response;
+    }
+}
+
 # Create CodeableConcept data type for given code in a given system.
 #
 # + system - system uri of the code system or value set  
@@ -725,4 +792,80 @@ public isolated function addValueSet(r4:ValueSet valueSet, Terminology? terminol
     if result is r4:FHIRError {
         return result;
     }
+}
+
+public isolated function addConceptMap(i4:ConceptMap conceptMap, Terminology? terminology = inMemoryTerminology) returns r4:FHIRError? {
+    if conceptMap.url == () {
+        return r4:createFHIRError(
+                    string `Cannot find the URL of the ConceptMap with name: ${conceptMap.name.toString()}`,
+                    r4:ERROR,
+                    r4:INVALID_REQUIRED,
+                    diagnostic = "Add a proper URL for the resource: https://hl7.org/fhir/R4/conceptmap-definitions.html#ConceptMap.url",
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
+    }
+    if conceptMap.version == () {
+        return r4:createFHIRError(
+                    string `Cannot find the version of the ConceptMap with name: ${conceptMap.name.toString()}`,
+                    r4:ERROR,
+                    r4:INVALID_REQUIRED,
+                    diagnostic = string `Add appropriate version for the resource: https://hl7.org/fhir/R4/conceptmap-definitions.html#ConceptMap.version`,
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
+    }
+    string url = <string>conceptMap.url;
+    string rVersion = <string>conceptMap.version;
+    r4:FHIRValidationError? validateResult = validator:validate(conceptMap.clone(), r4:ValueSet);
+
+    if validateResult is r4:FHIRValidationError {
+        return r4:createFHIRError(
+                    "Validation failed",
+                    r4:ERROR,
+                    r4:INVALID,
+                    diagnostic = string `Check whether the data conforms to the specification: https://hl7.org/fhir/R4/conceptmap-definitions.html`,
+                    errorType = r4:VALIDATION_ERROR,
+                    cause = validateResult,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+                );
+    }
+    if (<Terminology>terminology).isConceptMapExist(url, rVersion) {
+        return r4:createFHIRError(
+                    "Duplicate entry",
+                    r4:ERROR,
+                    r4:PROCESSING_DUPLICATE,
+                    diagnostic = string `Already there is a ConceptMap exists in the registry with the URL: ${url}`,
+                    errorType = r4:VALIDATION_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+    }
+    r4:FHIRError? result = (<Terminology>terminology).addConceptMap(conceptMap.clone());
+    if result is r4:FHIRError {
+        return result;
+    }
+}
+
+public isolated function searchConceptMaps(map<r4:RequestSearchParameter[]> params, Terminology? terminology = inMemoryTerminology) returns r4:FHIRError|r4:ConceptMap[] {
+    record {map<r4:RequestSearchParameter[]> searchParameters; int count; int offset;} paginationData = check modifySearchParamsWithPagination(params.clone());
+
+    // Validate the requested search parameters in the allowed list
+    foreach var param in paginationData.searchParameters.keys() {
+        if !CONCEPT_MAPS_SEARCH_PARAMS.hasKey(param) {
+            return r4:createFHIRError(
+                        string `Invalid search parameter: ${param}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_SUPPORTED,
+                        diagnostic = string `Allowed search parameters: ${CONCEPT_MAPS_SEARCH_PARAMS.keys().toString()}`,
+                        errorType = r4:VALIDATION_ERROR
+                    );
+        }
+    }
+    map<r4:RequestSearchParameter[]> c = paginationData.searchParameters.clone();
+    int offset = paginationData.offset;
+    int count = paginationData.count;
+    return (<Terminology>terminology).searchConceptMap(c, offset = offset, count = count);
+}
+
+public isolated function readConceptMap(r4:uri conceptMapUrl, string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ConceptMap|r4:FHIRError {
+    return (<Terminology>terminology).getConceptMap(conceptMapUrl = conceptMapUrl, version = version);
 }
