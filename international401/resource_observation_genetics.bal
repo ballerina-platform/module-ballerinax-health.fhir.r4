@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_OBSERVATION_GENETICS = "http://hl7.org/fhir/StructureDefinition/observation-genetics";
 public const RESOURCE_NAME_OBSERVATION_GENETICS = "Observation";
 
+public type Observation_geneticsExtensions (DiagnosticReportRisk|EventEventHistory|EventLocation|EventStatusReason|r4:Extension|ObservationAnalysisDateTime|ObservationBodyPosition|ObservationDelta|ObservationDeviceCode|ObservationFocusCode|ObservationGatewayDevice|ObservationGeneticsAllele|ObservationGeneticsAminoAcidChange|ObservationGeneticsAncestry|ObservationGeneticsCopyNumberEvent|ObservationGeneticsDNARegionName|ObservationGeneticsGene|ObservationGeneticsGenomicSourceClass|ObservationGeneticsInterpretation|ObservationGeneticsPhaseSet|ObservationGeneticsVariant|ObservationNatureOfAbnormalTest|ObservationPrecondition|ObservationReagent|ObservationReplaces|ObservationSecondaryFinding|ObservationSequelTo|ObservationSpecimenCode|ObservationStructureType|ObservationVSubid|WorkflowAdheresTo|WorkflowEpisodeOfCare|WorkflowInstantiatesCanonical|WorkflowInstantiatesUri|WorkflowReason|WorkflowReasonCode|WorkflowReasonReference|WorkflowRelatedArtifact|WorkflowResearchStudy|WorkflowSupportingInfo|WorkflowTriggeredBy);
+
 # FHIR Observation_genetics resource record.
 #
 # + resourceType - The type of the resource describes
@@ -31,47 +33,6 @@ public const RESOURCE_NAME_OBSERVATION_GENETICS = "Observation";
 # + note - Comments about the observation or the results.
 # + valueTime - The information determined as a result of making the observation, if the information has a simple value.
 # + extension - An Extension
-# * extension Slicings
-# 1) Extension: AminoAcidChange
-#       - min = 0
-#       - max = 1
-#
-# 2) Extension: HGNC gene symbol
-#       - min = 0
-#       - max = 1
-#
-# 3) Extension: Ancestry
-#       - min = 0
-#       - max = 1
-#
-# 4) Extension: Copy number variation
-#       - min = 0
-#       - max = 1
-#
-# 5) Extension: Genomic source class
-#       - min = 0
-#       - max = 1
-#
-# 6) Extension: Clinical interpretations for variant
-#       - min = 0
-#       - max = 1
-#
-# 7) Extension: Variant
-#       - min = 0
-#       - max = 1
-#
-# 8) Extension: DNA region name
-#       - min = 0
-#       - max = 1
-#
-# 9) Extension: Phase set
-#       - min = 0
-#       - max = *
-#
-# 10) Extension: Allele
-#       - min = 0
-#       - max = 1
-#
 # + code - Describes what was observed. Sometimes this is called the observation 'name'.
 # + subject - The patient, or group of patients, location, or device this observation is about and into whose record the observation is placed. If the actual focus of the observation is different from the subject (or a sample of, part, or region of the subject), the `focus` element or the `code` itself specifies the actual focus of the observation.
 # + valueRange - The information determined as a result of making the observation, if the information has a simple value.
@@ -678,6 +639,7 @@ public type Observation_geneticsReferenceRange record {|
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + valueCodeableConcept - The information determined as a result of making the observation, if the information has a simple value.
 # + valueRatio - The information determined as a result of making the observation, if the information has a simple value.
+# + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range.
 # + valueString - The information determined as a result of making the observation, if the information has a simple value.
 # + interpretation - A categorical assessment of an observation value. For example, high, low, normal.
 # + valueSampledData - The information determined as a result of making the observation, if the information has a simple value.
@@ -771,6 +733,17 @@ public type Observation_geneticsReferenceRange record {|
             description: "The information determined as a result of making the observation, if the information has a simple value.",
             path: "Observation.component.value[x]"
         },
+
+        "referenceRange": {
+            name: "referenceRange",
+            dataType: Observation_geneticsReferenceRange,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Guidance on how to interpret the value by comparison to a normal or recommended range.",
+            path: "Observation.component.referenceRange"
+        },
+
         "valueString": {
             name: "valueString",
             dataType: string,
@@ -861,6 +834,7 @@ public type Observation_geneticsComponent record {|
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept valueCodeableConcept?;
     r4:Ratio valueRatio?;
+    Observation_geneticsReferenceRange[] referenceRange?;
     string valueString?;
     r4:CodeableConcept[] interpretation?;
     r4:SampledData valueSampledData?;

@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_NUTRITIONORDER = "http://hl7.org/fhir/StructureDefinition/NutritionOrder";
 public const RESOURCE_NAME_NUTRITIONORDER = "NutritionOrder";
+
+public type NutritionOrderExtensions (r4:Extension|RequestDoNotPerform|RequestInsurance|RequestRelevantHistory|RequestReplaces|RequestStatusReason|WorkflowCompliesWith|WorkflowEpisodeOfCare|WorkflowGeneratedFrom|WorkflowReason|WorkflowReasonCode|WorkflowReasonReference|WorkflowReleaseDate|WorkflowShallComplyWith|WorkflowTriggeredBy);
 
 # FHIR NutritionOrder resource record.
 #
@@ -664,11 +666,12 @@ public type NutritionOrderOralDietNutrient record {|
 #
 # + schedule - The time period and frequency at which the enteral formula should be delivered to the patient.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + rateRatio - The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.
 # + quantity - The volume of formula to provide to the patient per the specified administration schedule.
+# + rateQuantity - The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + rateNutritionOrderRatio - The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + rateNutritionOrderQuantity - The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.
+
 @r4:DataTypeDefinition {
     name: "NutritionOrderEnteralFormulaAdministration",
     baseType: (),
@@ -691,6 +694,17 @@ public type NutritionOrderOralDietNutrient record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "NutritionOrder.enteralFormula.administration.extension"
         },
+
+        "rateRatio": {
+            name: "rateRatio",
+            dataType: r4:Ratio,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.",
+            path: "NutritionOrder.enteralFormula.administration.rate[x]"
+        },
+
         "quantity": {
             name: "quantity",
             dataType: r4:Quantity,
@@ -700,6 +714,17 @@ public type NutritionOrderOralDietNutrient record {|
             description: "The volume of formula to provide to the patient per the specified administration schedule.",
             path: "NutritionOrder.enteralFormula.administration.quantity"
         },
+
+        "rateQuantity": {
+            name: "rateQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.",
+            path: "NutritionOrder.enteralFormula.administration.rate[x]"
+        },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -709,15 +734,7 @@ public type NutritionOrderOralDietNutrient record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "NutritionOrder.enteralFormula.administration.modifierExtension"
         },
-        "rateNutritionOrderRatio": {
-            name: "rateNutritionOrderRatio",
-            dataType: r4:Ratio,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.",
-            path: "NutritionOrder.enteralFormula.administration.rate[x]"
-        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -726,15 +743,6 @@ public type NutritionOrderOralDietNutrient record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "NutritionOrder.enteralFormula.administration.id"
-        },
-        "rateNutritionOrderQuantity": {
-            name: "rateNutritionOrderQuantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The rate of administration of formula via a feeding pump, e.g. 60 mL per hour, according to the specified schedule.",
-            path: "NutritionOrder.enteralFormula.administration.rate[x]"
         }
     },
     serializers: {
@@ -747,11 +755,11 @@ public type NutritionOrderEnteralFormulaAdministration record {|
 
     r4:Timing schedule?;
     r4:Extension[] extension?;
+    r4:Ratio rateRatio?;
     r4:Quantity quantity?;
+    r4:Quantity rateQuantity?;
     r4:Extension[] modifierExtension?;
-    r4:Ratio rateNutritionOrderRatio?;
     string id?;
-    r4:Quantity rateNutritionOrderQuantity?;
 |};
 
 # FHIR NutritionOrderOralDietTexture datatype record.

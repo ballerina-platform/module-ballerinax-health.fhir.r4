@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_INVOICE = "http://hl7.org/fhir/StructureDefinition/Invoice";
 public const RESOURCE_NAME_INVOICE = "Invoice";
 
+public type InvoiceExtensions (r4:Extension|WorkflowEpisodeOfCare);
+
 # FHIR Invoice resource record.
 #
 # + resourceType - The type of the resource describes
@@ -33,6 +35,7 @@ public const RESOURCE_NAME_INVOICE = "Invoice";
 # + subject - The individual or set of individuals receiving the goods and services billed in this invoice.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + language - The base language in which the resource is written.
+# + totalPriceComponent - The total amount for the Invoice may be calculated as the sum of the line items with surcharges/deductions that apply in certain conditions. The priceComponent element can be used to offer transparency to the recipient of the Invoice of how the total price was calculated.
 # + 'type - Type of Invoice depending on domain, realm an usage (e.g. internal/external, dental, preliminary).
 # + issuer - The organizationissuing the Invoice.
 # + participant - Indicates who or what performed or participated in the charged service.
@@ -118,6 +121,16 @@ public const RESOURCE_NAME_INVOICE = "Invoice";
             path: "Invoice.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
+
+        "totalPriceComponent": {
+            name: "totalPriceComponent",
+            dataType: InvoiceLineItemPriceComponent,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            path: "Invoice.totalPriceComponent"
+        },
+
         "type" : {
             name: "type",
             dataType: r4:CodeableConcept,
@@ -258,6 +271,7 @@ public type Invoice record {|
     r4:Reference subject?;
     r4:Extension[] modifierExtension?;
     r4:code language?;
+    InvoiceLineItemPriceComponent[] totalPriceComponent?;
     r4:CodeableConcept 'type?;
     r4:Reference issuer?;
     InvoiceParticipant[] participant?;
@@ -527,13 +541,13 @@ public type InvoiceLineItemPriceComponent record {|
 public type InvoiceLineItem record {|
     *r4:BackboneElement;
 
-    r4:CodeableConcept chargeItemCodeableConcept;
+    r4:CodeableConcept chargeItemCodeableConcept?;
     r4:positiveInt sequence?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
     InvoiceLineItemPriceComponent[] priceComponent?;
-    r4:Reference chargeItemReference;
+    r4:Reference chargeItemReference?;
 |};
 
 # InvoiceLineItemPriceComponentType enum

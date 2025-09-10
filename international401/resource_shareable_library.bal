@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -19,10 +19,12 @@
 
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_SHAREABLE_LIBRARY = "http://hl7.org/fhir/StructureDefinition/shareablelibrary";
-public const RESOURCE_NAME_SHAREABLE_LIBRARY = "Library";
+public const string PROFILE_BASE_SHAREABLELIBRARY = "http://hl7.org/fhir/StructureDefinition/shareablelibrary";
+public const RESOURCE_NAME_SHAREABLELIBRARY = "Library";
 
-# FHIR Shareable_Library resource record.
+public type ShareableLibraryExtensions (CqfCqlOptions|CqfExpansionParameters|CqfInputParameters|CqfModelInfoSettings|CqfPartOf|CqfTestArtifact|r4:Extension|Replaces);
+
+# FHIR ShareableLibrary resource record.
 #
 # + resourceType - The type of the resource describes
 # + date - The date (and optionally time) when the library was published. The date must change when the business version changes and it must change if the status code changes. In addition, it should change when the substantive content of the library changes.
@@ -390,7 +392,7 @@ public const RESOURCE_NAME_SHAREABLE_LIBRARY = "Library";
         },
         "status" : {
             name: "status",
-            dataType: Shareable_LibraryStatus,
+            dataType: ShareableLibraryStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -403,10 +405,11 @@ public const RESOURCE_NAME_SHAREABLE_LIBRARY = "Library";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type Shareable_Library record {|
+
+public type ShareableLibrary record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_SHAREABLE_LIBRARY resourceType = RESOURCE_NAME_SHAREABLE_LIBRARY;
+    RESOURCE_NAME_SHAREABLELIBRARY resourceType = RESOURCE_NAME_SHAREABLELIBRARY;
 
     r4:dateTime date?;
     r4:markdown copyright?;
@@ -447,12 +450,12 @@ public type Shareable_Library record {|
     string publisher;
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
-    Shareable_LibraryStatus status;
+    ShareableLibraryStatus status;
     r4:Element ...;
 |};
 
-# Shareable_LibraryStatus enum
-public enum Shareable_LibraryStatus {
+# ShareableLibraryStatus enum
+public enum ShareableLibraryStatus {
    CODE_STATUS_DRAFT = "draft",
    CODE_STATUS_ACTIVE = "active",
    CODE_STATUS_RETIRED = "retired",

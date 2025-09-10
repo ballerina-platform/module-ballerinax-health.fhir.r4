@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_DEVICEREQUEST = "http://hl7.org/fhir/StructureDefinition/DeviceRequest";
 public const RESOURCE_NAME_DEVICEREQUEST = "DeviceRequest";
+
+public type DeviceRequestExtensions (DevicerequestPatientInstruction|r4:Extension|ProcedureApproachBodyStructure|RequestStatusReason|WorkflowCompliesWith|WorkflowEpisodeOfCare|WorkflowFollowOnOf|WorkflowGeneratedFrom|WorkflowReleaseDate|WorkflowShallComplyWith|WorkflowTriggeredBy);
 
 # FHIR DeviceRequest resource record.
 #
@@ -374,7 +376,7 @@ public type DeviceRequest record {|
     r4:Reference[] priorRequest?;
     r4:uri[] instantiatesUri?;
     r4:Reference[] relevantHistory?;
-    r4:Reference codeReference;
+    r4:Reference codeReference?;
     r4:Reference[] supportingInfo?;
     DeviceRequestParameter[] 'parameter?;
     string id?;
@@ -397,7 +399,7 @@ public type DeviceRequest record {|
     r4:uri implicitRules?;
     r4:dateTime occurrenceDateTime?;
     r4:Identifier groupIdentifier?;
-    r4:CodeableConcept codeCodeableConcept;
+    r4:CodeableConcept codeCodeableConcept?;
     DeviceRequestStatus status?;
     r4:Element ...;
 |};

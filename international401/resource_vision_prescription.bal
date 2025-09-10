@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_VISIONPRESCRIPTION = "http://hl7.org/fhir/StructureDefinition/VisionPrescription";
 public const RESOURCE_NAME_VISIONPRESCRIPTION = "VisionPrescription";
+
+public type VisionPrescriptionExtensions (r4:Extension|WorkflowEpisodeOfCare|WorkflowShallComplyWith);
 
 # FHIR VisionPrescription resource record.
 #
@@ -196,7 +198,10 @@ public type VisionPrescription record {|
     r4:code language?;
     r4:Reference encounter?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.VisionPrescription.lensSpecification constraint. This field must be an array containing at least one item."
+        }
     }
     VisionPrescriptionLensSpecification[] lensSpecification;
     r4:dateTime dateWritten;

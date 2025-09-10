@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -206,7 +206,10 @@ public type MedicinalProductPackaged record {|
     r4:Reference[] manufacturer?;
     r4:MarketingStatus[] marketingStatus?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.MedicinalProductPackaged.packageItem constraint. This field must be an array containing at least one item."
+        }
     }
     MedicinalProductPackagedPackageItem[] packageItem;
     r4:Resource[] contained?;
@@ -302,6 +305,7 @@ public type MedicinalProductPackagedBatchIdentifier record {|
 # + physicalCharacteristics - Dimensions, color etc.
 # + 'type - The physical type of the container of the medicine.
 # + manufacturer - Manufacturer of this Package Item.
+# + packageItem - Allows containers within containers.
 # + material - Material type of the package item.
 # + shelfLifeStorage - Shelf Life and storage information.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
@@ -392,6 +396,17 @@ public type MedicinalProductPackagedBatchIdentifier record {|
             description: "Manufacturer of this Package Item.",
             path: "MedicinalProductPackaged.packageItem.manufacturer"
         },
+
+        "packageItem": {
+            name: "packageItem",
+            dataType: MedicinalProductPackagedPackageItem,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Allows containers within containers.",
+            path: "MedicinalProductPackaged.packageItem.packageItem"
+        },
+
         "material": {
             name: "material",
             dataType: r4:CodeableConcept,
@@ -455,6 +470,7 @@ public type MedicinalProductPackagedPackageItem record {|
     r4:ProdCharacteristic physicalCharacteristics?;
     r4:CodeableConcept 'type;
     r4:Reference[] manufacturer?;
+    MedicinalProductPackagedPackageItem[] packageItem?;
     r4:CodeableConcept[] material?;
     r4:ProductShelfLife[] shelfLifeStorage?;
     string id?;

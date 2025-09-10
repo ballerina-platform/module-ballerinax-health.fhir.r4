@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -20,20 +20,17 @@
 import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_CLINICAL_DOCUMENT = "http://hl7.org/fhir/StructureDefinition/clinicaldocument";
-public const RESOURCE_NAME_CLINICAL_DOCUMENT = "Composition";
+public const string PROFILE_BASE_CLINICALDOCUMENT = "http://hl7.org/fhir/StructureDefinition/clinicaldocument";
+public const RESOURCE_NAME_CLINICALDOCUMENT = "Composition";
 
-# FHIR Clinical_Document resource record.
+public type ClinicalDocumentExtensions (CompositionClinicaldocumentOtherConfidentiality|CompositionClinicaldocumentVersionNumber|CqmValidityPeriod|EventBasedOn|r4:Extension|WorkflowEpisodeOfCare|WorkflowResearchStudy);
+
+# FHIR ClinicalDocument resource record.
 #
 # + resourceType - The type of the resource describes
 # + date - The composition editing time, when the composition was last logically changed by the author.
 # + identifier - A version-independent identifier for the Composition. This identifier stays constant as the composition is changed over time.
 # + extension - An Extension
-# * extension Slicings
-# 1) Extension: Version-specific identifier for composition
-#       - min = 0
-#       - max = *
-#
 # + custodian - Identifies the organization or group who is responsible for ongoing maintenance of and access to the composition/document information.
 # + author - Identifies who is responsible for the information in the composition, not necessarily who typed it in.
 # + subject - Who or what the composition is about. The composition can be about a person, (patient or healthcare practitioner), a device (e.g. a machine) or even a group of subjects (such as a document about a herd of livestock, or a set of patients that share a common exposure).
@@ -135,7 +132,7 @@ public const RESOURCE_NAME_CLINICAL_DOCUMENT = "Composition";
         },
         "section" : {
             name: "section",
-            dataType: Clinical_DocumentSection,
+            dataType: ClinicalDocumentSection,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -168,7 +165,7 @@ public const RESOURCE_NAME_CLINICAL_DOCUMENT = "Composition";
         },
         "attester" : {
             name: "attester",
-            dataType: Clinical_DocumentAttester,
+            dataType: ClinicalDocumentAttester,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -225,7 +222,7 @@ public const RESOURCE_NAME_CLINICAL_DOCUMENT = "Composition";
         },
         "event" : {
             name: "event",
-            dataType: Clinical_DocumentEvent,
+            dataType: ClinicalDocumentEvent,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -233,7 +230,7 @@ public const RESOURCE_NAME_CLINICAL_DOCUMENT = "Composition";
         },
         "relatesTo" : {
             name: "relatesTo",
-            dataType: Clinical_DocumentRelatesTo,
+            dataType: ClinicalDocumentRelatesTo,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -241,7 +238,7 @@ public const RESOURCE_NAME_CLINICAL_DOCUMENT = "Composition";
         },
         "status" : {
             name: "status",
-            dataType: Clinical_DocumentStatus,
+            dataType: ClinicalDocumentStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -254,83 +251,262 @@ public const RESOURCE_NAME_CLINICAL_DOCUMENT = "Composition";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type Clinical_Document record {|
+
+public type ClinicalDocument record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_CLINICAL_DOCUMENT resourceType = RESOURCE_NAME_CLINICAL_DOCUMENT;
+    RESOURCE_NAME_CLINICALDOCUMENT resourceType = RESOURCE_NAME_CLINICALDOCUMENT;
 
     r4:dateTime date;
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     r4:Reference custodian?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Composition.author constraint. This field must be an array containing at least one item."
+        }
     }
     r4:Reference[] author;
     r4:Reference subject?;
     r4:code confidentiality?;
     r4:Extension[] modifierExtension?;
     r4:code language?;
-    Clinical_DocumentSection[] section?;
+    ClinicalDocumentSection[] section?;
     r4:Reference encounter?;
     string title;
     r4:CodeableConcept 'type;
-    Clinical_DocumentAttester[] attester?;
+    ClinicalDocumentAttester[] attester?;
     r4:Resource[] contained?;
     r4:Meta meta?;
     r4:uri implicitRules?;
     string id?;
     r4:Narrative text?;
     r4:CodeableConcept[] category?;
-    Clinical_DocumentEvent[] event?;
-    Clinical_DocumentRelatesTo[] relatesTo?;
-    Clinical_DocumentStatus status;
+    ClinicalDocumentEvent[] event?;
+    ClinicalDocumentRelatesTo[] relatesTo?;
+    ClinicalDocumentStatus status;
     r4:Element ...;
 |};
 
-# Clinical_DocumentSectionMode enum
-public enum Clinical_DocumentSectionMode {
-   CODE_MODE_CHANGES = "changes",
-   CODE_MODE_WORKING = "working",
-   CODE_MODE_SNAPSHOT = "snapshot"
-}
-
-# FHIR Clinical_DocumentSection datatype record.
+# FHIR ClinicalDocumentEvent datatype record.
 #
-# + mode - How the entry list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.
-# + entry - A reference to the actual resource from which the narrative in the section is derived.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - A code identifying the kind of content contained within the section. This must be consistent with the section title.
-# + emptyReason - If the section is empty, why the list is empty. An empty section typically has some text explaining the empty reason.
-# + orderedBy - Specifies the order applied to the items in the section entries.
-# + author - Identifies who is responsible for the information in this section, not necessarily who typed it in.
+# + period - The period of time covered by the documentation. There is no assertion that the documentation is a complete representation for this period, only that it documents events during this time.
+# + code - This list of codes represents the main clinical acts, such as a colonoscopy or an appendectomy, being documented. In some cases, the event is inherent in the typeCode, such as a 'History and Physical Report' in which the procedure being documented is necessarily a 'History and Physical' act.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + focus - The actual focus of the section when it is not the subject of the composition, but instead represents something or someone associated with the subject such as (for a patient subject) a spouse, parent, fetus, or donor. If not focus is specified, the focus is assumed to be focus of the parent section, or, for a section in the Composition itself, the subject of the composition. Sections with a focus SHALL only include resources where the logical subject (patient, subject, focus, etc.) matches the section focus, or the resources have no logical subject (few resources).
+# + detail - The description and/or reference of the event(s) being documented. For example, this could be used to document such a colonoscopy or an appendectomy.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + text - A human-readable narrative that contains the attested content of the section, used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative.
-# + title - The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.
+
 @r4:DataTypeDefinition {
-    name: "Clinical_DocumentSection",
+    name: "ClinicalDocumentEvent",
     baseType: (),
     elements: {
-        "mode": {
-            name: "mode",
-            dataType: Clinical_DocumentSectionMode,
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Composition.event.extension"
+        },
+
+        "period": {
+            name: "period",
+            dataType: r4:Period,
             min: 0,
             max: 1,
             isArray: false,
-            description: "How the entry list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.",
-            path: "Composition.section.mode"
+            description: "The period of time covered by the documentation. There is no assertion that the documentation is a complete representation for this period, only that it documents events during this time.",
+            path: "Composition.event.period"
         },
-        "entry": {
-            name: "entry",
+
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "This list of codes represents the main clinical acts, such as a colonoscopy or an appendectomy, being documented. In some cases, the event is inherent in the typeCode, such as a 'History and Physical Report' in which the procedure being documented is necessarily a 'History and Physical' act.",
+            path: "Composition.event.code"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Composition.event.modifierExtension"
+        },
+
+        "detail": {
+            name: "detail",
             dataType: r4:Reference,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
-            description: "A reference to the actual resource from which the narrative in the section is derived.",
-            path: "Composition.section.entry"
+            description: "The description and/or reference of the event(s) being documented. For example, this could be used to document such a colonoscopy or an appendectomy.",
+            path: "Composition.event.detail"
         },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Composition.event.id"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type ClinicalDocumentEvent record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Period period?;
+    r4:CodeableConcept[] code?;
+    r4:Extension[] modifierExtension?;
+    r4:Reference[] detail?;
+    string id?;
+|};
+
+# ClinicalDocumentRelatesToCode enum
+public enum ClinicalDocumentRelatesToCode {
+    CODE_CODE_SIGNS = "signs",
+    CODE_CODE_REPLACES = "replaces",
+    CODE_CODE_TRANSFORMS = "transforms",
+    CODE_CODE_APPENDS = "appends"
+}
+
+# FHIR ClinicalDocumentRelatesTo datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + targetIdentifier - The target composition/document of this relationship.
+# + code - The type of relationship that this composition has with anther composition or document.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + targetReference - The target composition/document of this relationship.
+
+@r4:DataTypeDefinition {
+    name: "ClinicalDocumentRelatesTo",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Composition.relatesTo.extension"
+        },
+
+        "targetIdentifier": {
+            name: "targetIdentifier",
+            dataType: r4:Identifier,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target composition/document of this relationship.",
+            path: "Composition.relatesTo.target[x]"
+        },
+
+        "code": {
+            name: "code",
+            dataType: ClinicalDocumentRelatesToCode,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The type of relationship that this composition has with anther composition or document.",
+            path: "Composition.relatesTo.code"
+        },
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Composition.relatesTo.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Composition.relatesTo.id"
+        },
+
+        "targetReference": {
+            name: "targetReference",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The target composition/document of this relationship.",
+            path: "Composition.relatesTo.target[x]"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type ClinicalDocumentRelatesTo record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Identifier targetIdentifier?;
+    ClinicalDocumentRelatesToCode code;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:Reference targetReference?;
+|};
+
+# ClinicalDocumentSectionMode enum
+public enum ClinicalDocumentSectionMode {
+    CODE_MODE_CHANGES = "changes",
+    CODE_MODE_WORKING = "working",
+    CODE_MODE_SNAPSHOT = "snapshot"
+}
+
+# ClinicalDocumentAttesterMode enum
+public enum ClinicalDocumentAttesterMode {
+    CODE_MODE_LEGAL = "legal",
+    CODE_MODE_OFFICIAL = "official",
+    CODE_MODE_PERSONAL = "personal",
+    CODE_MODE_PROFESSIONAL = "professional"
+}
+
+# FHIR ClinicalDocumentSection datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - A code identifying the kind of content contained within the section. This must be consistent with the section title.
+# + emptyReason - If the section is empty, why the list is empty. An empty section typically has some text explaining the empty reason.
+# + author - Identifies who is responsible for the information in this section, not necessarily who typed it in.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + focus - The actual focus of the section when it is not the subject of the composition, but instead represents something or someone associated with the subject such as (for a patient subject) a spouse, parent, fetus, or donor. If not focus is specified, the focus is assumed to be focus of the parent section, or, for a section in the Composition itself, the subject of the composition. Sections with a focus SHALL only include resources where the logical subject (patient, subject, focus, etc.) matches the section focus, or the resources have no logical subject (few resources).
+# + section - A nested sub-section within this section.
+# + title - The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.
+# + mode - How the entry list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.
+# + entry - A reference to the actual resource from which the narrative in the section is derived.
+# + orderedBy - Specifies the order applied to the items in the section entries.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - A human-readable narrative that contains the attested content of the section, used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative.
+@r4:DataTypeDefinition {
+    name: "ClinicalDocumentSection",
+    baseType: (),
+    elements: {
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -340,6 +516,7 @@ public enum Clinical_DocumentSectionMode {
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "Composition.section.extension"
         },
+
         "code": {
             name: "code",
             dataType: r4:CodeableConcept,
@@ -349,6 +526,7 @@ public enum Clinical_DocumentSectionMode {
             description: "A code identifying the kind of content contained within the section. This must be consistent with the section title.",
             path: "Composition.section.code"
         },
+
         "emptyReason": {
             name: "emptyReason",
             dataType: r4:CodeableConcept,
@@ -358,15 +536,7 @@ public enum Clinical_DocumentSectionMode {
             description: "If the section is empty, why the list is empty. An empty section typically has some text explaining the empty reason.",
             path: "Composition.section.emptyReason"
         },
-        "orderedBy": {
-            name: "orderedBy",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Specifies the order applied to the items in the section entries.",
-            path: "Composition.section.orderedBy"
-        },
+
         "author": {
             name: "author",
             dataType: r4:Reference,
@@ -385,6 +555,7 @@ public enum Clinical_DocumentSectionMode {
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "Composition.section.modifierExtension"
         },
+
         "focus": {
             name: "focus",
             dataType: r4:Reference,
@@ -394,6 +565,57 @@ public enum Clinical_DocumentSectionMode {
             description: "The actual focus of the section when it is not the subject of the composition, but instead represents something or someone associated with the subject such as (for a patient subject) a spouse, parent, fetus, or donor. If not focus is specified, the focus is assumed to be focus of the parent section, or, for a section in the Composition itself, the subject of the composition. Sections with a focus SHALL only include resources where the logical subject (patient, subject, focus, etc.) matches the section focus, or the resources have no logical subject (few resources).",
             path: "Composition.section.focus"
         },
+
+        "section": {
+            name: "section",
+            dataType: ClinicalDocumentSection,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A nested sub-section within this section.",
+            path: "Composition.section.section"
+        },
+
+        "title": {
+            name: "title",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.",
+            path: "Composition.section.title"
+        },
+
+        "mode": {
+            name: "mode",
+            dataType: ClinicalDocumentSectionMode,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "How the entry list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.",
+            path: "Composition.section.mode"
+        },
+
+        "entry": {
+            name: "entry",
+            dataType: r4:Reference,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to the actual resource from which the narrative in the section is derived.",
+            path: "Composition.section.entry"
+        },
+
+        "orderedBy": {
+            name: "orderedBy",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies the order applied to the items in the section entries.",
+            path: "Composition.section.orderedBy"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -403,6 +625,7 @@ public enum Clinical_DocumentSectionMode {
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "Composition.section.id"
         },
+
         "text": {
             name: "text",
             dataType: r4:Narrative,
@@ -411,15 +634,6 @@ public enum Clinical_DocumentSectionMode {
             isArray: false,
             description: "A human-readable narrative that contains the attested content of the section, used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative.",
             path: "Composition.section.text"
-        },
-        "title": {
-            name: "title",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.",
-            path: "Composition.section.title"
         }
     },
     serializers: {
@@ -427,32 +641,34 @@ public enum Clinical_DocumentSectionMode {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Clinical_DocumentSection record {|
+
+public type ClinicalDocumentSection record {|
     *r4:BackboneElement;
 
-    Clinical_DocumentSectionMode mode?;
-    r4:Reference[] entry?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:CodeableConcept emptyReason?;
-    r4:CodeableConcept orderedBy?;
     r4:Reference[] author?;
     r4:Extension[] modifierExtension?;
     r4:Reference focus?;
+    ClinicalDocumentSection[] section?;
+    string title?;
+    ClinicalDocumentSectionMode mode?;
+    r4:Reference[] entry?;
+    r4:CodeableConcept orderedBy?;
     string id?;
     r4:Narrative text?;
-    string title?;
 |};
 
-# Clinical_DocumentStatus enum
-public enum Clinical_DocumentStatus {
-   CODE_STATUS_AMENDED = "amended",
-   CODE_STATUS_FINAL = "final",
-   CODE_STATUS_PRELIMINARY = "preliminary",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
+# ClinicalDocumentStatus enum
+public enum ClinicalDocumentStatus {
+    CODE_STATUS_AMENDED = "amended",
+    CODE_STATUS_FINAL = "final",
+    CODE_STATUS_PRELIMINARY = "preliminary",
+    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
 }
 
-# FHIR Clinical_DocumentAttester datatype record.
+# FHIR ClinicalDocumentAttester datatype record.
 #
 # + mode - The type of attestation the authenticator offers.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -460,19 +676,21 @@ public enum Clinical_DocumentStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + time - When the composition was attested by the party.
 # + party - Who attested the composition in the specified way.
+
 @r4:DataTypeDefinition {
-    name: "Clinical_DocumentAttester",
+    name: "ClinicalDocumentAttester",
     baseType: (),
     elements: {
         "mode": {
             name: "mode",
-            dataType: Clinical_DocumentAttesterMode,
+            dataType: ClinicalDocumentAttesterMode,
             min: 1,
             max: 1,
             isArray: false,
             description: "The type of attestation the authenticator offers.",
             path: "Composition.attester.mode"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -500,6 +718,7 @@ public enum Clinical_DocumentStatus {
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "Composition.attester.id"
         },
+
         "time": {
             name: "time",
             dataType: r4:dateTime,
@@ -509,6 +728,7 @@ public enum Clinical_DocumentStatus {
             description: "When the composition was attested by the party.",
             path: "Composition.attester.time"
         },
+
         "party": {
             name: "party",
             dataType: r4:Reference,
@@ -524,196 +744,15 @@ public enum Clinical_DocumentStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Clinical_DocumentAttester record {|
+
+public type ClinicalDocumentAttester record {|
     *r4:BackboneElement;
 
-    Clinical_DocumentAttesterMode mode;
+    ClinicalDocumentAttesterMode mode;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
     r4:dateTime time?;
     r4:Reference party?;
-|};
-
-# FHIR Clinical_DocumentRelatesTo datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + targetIdentifier - The target composition/document of this relationship.
-# + code - The type of relationship that this composition has with anther composition or document.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + targetReference - The target composition/document of this relationship.
-@r4:DataTypeDefinition {
-    name: "Clinical_DocumentRelatesTo",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Composition.relatesTo.extension"
-        },
-        "targetIdentifier": {
-            name: "targetIdentifier",
-            dataType: r4:Identifier,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The target composition/document of this relationship.",
-            path: "Composition.relatesTo.target[x]"
-        },
-        "code": {
-            name: "code",
-            dataType: Clinical_DocumentRelatesToCode,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The type of relationship that this composition has with anther composition or document.",
-            path: "Composition.relatesTo.code"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Composition.relatesTo.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Composition.relatesTo.id"
-        },
-        "targetReference": {
-            name: "targetReference",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The target composition/document of this relationship.",
-            path: "Composition.relatesTo.target[x]"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Clinical_DocumentRelatesTo record {|
-    *r4:BackboneElement;
-
-    r4:Extension[] extension?;
-    r4:Identifier targetIdentifier;
-    Clinical_DocumentRelatesToCode code;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:Reference targetReference;
-|};
-
-# Clinical_DocumentAttesterMode enum
-public enum Clinical_DocumentAttesterMode {
-   CODE_MODE_LEGAL = "legal",
-   CODE_MODE_OFFICIAL = "official",
-   CODE_MODE_PERSONAL = "personal",
-   CODE_MODE_PROFESSIONAL = "professional"
-}
-
-# Clinical_DocumentRelatesToCode enum
-public enum Clinical_DocumentRelatesToCode {
-   CODE_CODE_SIGNS = "signs",
-   CODE_CODE_REPLACES = "replaces",
-   CODE_CODE_TRANSFORMS = "transforms",
-   CODE_CODE_APPENDS = "appends"
-}
-
-# FHIR Clinical_DocumentEvent datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + period - The period of time covered by the documentation. There is no assertion that the documentation is a complete representation for this period, only that it documents events during this time.
-# + code - This list of codes represents the main clinical acts, such as a colonoscopy or an appendectomy, being documented. In some cases, the event is inherent in the typeCode, such as a 'History and Physical Report' in which the procedure being documented is necessarily a 'History and Physical' act.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + detail - The description and/or reference of the event(s) being documented. For example, this could be used to document such a colonoscopy or an appendectomy.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-@r4:DataTypeDefinition {
-    name: "Clinical_DocumentEvent",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Composition.event.extension"
-        },
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The period of time covered by the documentation. There is no assertion that the documentation is a complete representation for this period, only that it documents events during this time.",
-            path: "Composition.event.period"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "This list of codes represents the main clinical acts, such as a colonoscopy or an appendectomy, being documented. In some cases, the event is inherent in the typeCode, such as a 'History and Physical Report' in which the procedure being documented is necessarily a 'History and Physical' act.",
-            path: "Composition.event.code"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Composition.event.modifierExtension"
-        },
-        "detail": {
-            name: "detail",
-            dataType: r4:Reference,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The description and/or reference of the event(s) being documented. For example, this could be used to document such a colonoscopy or an appendectomy.",
-            path: "Composition.event.detail"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Composition.event.id"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Clinical_DocumentEvent record {|
-    *r4:BackboneElement;
-
-    r4:Extension[] extension?;
-    r4:Period period?;
-    r4:CodeableConcept[] code?;
-    r4:Extension[] modifierExtension?;
-    r4:Reference[] detail?;
-    string id?;
 |};
 

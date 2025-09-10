@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -260,9 +260,9 @@ public type MedicinalProductInteraction record {|
 public type MedicinalProductInteractionInteractant record {|
     *r4:BackboneElement;
 
-    r4:Reference itemReference;
+    r4:Reference itemReference?;
     r4:Extension[] extension?;
-    r4:CodeableConcept itemCodeableConcept;
+    r4:CodeableConcept itemCodeableConcept?;
     r4:Extension[] modifierExtension?;
     string id?;
 |};

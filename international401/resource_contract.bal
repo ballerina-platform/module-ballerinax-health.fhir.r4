@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_CONTRACT = "http://hl7.org/fhir/StructureDefinition/Contract";
 public const RESOURCE_NAME_CONTRACT = "Contract";
+
+public type ContractExtensions (r4:Extension|WorkflowReleaseDate);
 
 # FHIR Contract resource record.
 #
@@ -549,9 +551,9 @@ public type ContractLegal record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
-    r4:Reference contentReference;
+    r4:Reference contentReference?;
     r4:Extension[] modifierExtension?;
-    r4:Attachment contentAttachment;
+    r4:Attachment contentAttachment?;
     string id?;
 |};
 
@@ -621,7 +623,14 @@ public type ContractTermActionSubject record {|
     *r4:BackboneElement;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Contract.term.action.subject.reference constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Contract.term.action.subject.reference constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Reference[] reference;
     r4:Extension[] extension?;
@@ -641,6 +650,7 @@ public type ContractTermActionSubject record {|
 # + condition - Description of the quality and completeness of the asset that imay be a factor in its valuation.
 # + linkId - Id [identifier??] of the clause or question text about the asset in the referenced form or QuestionnaireResponse.
 # + periodType - Type of Asset availability for use or ownership.
+# + answer - Response to assets.
 # + subtype - May be a subtype or part of an offered asset.
 # + scope - Differentiates the kind of the asset .
 # + context - Circumstance of the asset.
@@ -734,6 +744,17 @@ public type ContractTermActionSubject record {|
             description: "Type of Asset availability for use or ownership.",
             path: "Contract.term.asset.periodType"
         },
+
+        "answer": {
+            name: "answer",
+            dataType: ContractTermOfferAnswer,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Response to assets.",
+            path: "Contract.term.asset.answer"
+        },
+
         "subtype": {
             name: "subtype",
             dataType: r4:CodeableConcept,
@@ -824,6 +845,7 @@ public type ContractTermAsset record {|
     string condition?;
     string[] linkId?;
     r4:CodeableConcept[] periodType?;
+    ContractTermOfferAnswer[] answer?;
     r4:CodeableConcept[] subtype?;
     r4:CodeableConcept scope?;
     ContractTermAssetContext[] context?;
@@ -1154,7 +1176,14 @@ public type ContractSigner record {|
 
     r4:Extension[] extension?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Contract.signer.signature constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Contract.signer.signature constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Signature[] signature;
     r4:Extension[] modifierExtension?;
@@ -1184,25 +1213,46 @@ public enum ContractStatus {
 
 # FHIR ContractTermOfferAnswer datatype record.
 #
+# + valueBoolean - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueCoding - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + valueContractCoding - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
-# + valueContractInteger - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
-# + valueContractBoolean - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueTime - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueReference - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + valueContractUri - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
-# + valueContractDate - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
-# + valueContractAttachment - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
-# + valueContractTime - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueDecimal - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueUri - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueDate - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueAttachment - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueString - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueDateTime - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + valueContractDecimal - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
-# + valueContractDateTime - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
-# + valueContractString - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
-# + valueContractQuantity - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
-# + valueContractReference - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueInteger - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+# + valueQuantity - Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.
+
 @r4:DataTypeDefinition {
     name: "ContractTermOfferAnswer",
     baseType: (),
     elements: {
+        "valueBoolean": {
+            name: "valueBoolean",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
+            path: "Contract.term.offer.answer.value[x]"
+        },
+
+        "valueCoding": {
+            name: "valueCoding",
+            dataType: r4:Coding,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
+            path: "Contract.term.offer.answer.value[x]"
+        },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -1212,27 +1262,20 @@ public enum ContractStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "Contract.term.offer.answer.extension"
         },
-        "valueContractCoding": {
-            name: "valueContractCoding",
-            dataType: r4:Coding,
+
+        "valueTime": {
+            name: "valueTime",
+            dataType: r4:time,
             min: 0,
             max: 1,
             isArray: false,
             description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
             path: "Contract.term.offer.answer.value[x]"
         },
-        "valueContractInteger": {
-            name: "valueContractInteger",
-            dataType: r4:integer,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
-            path: "Contract.term.offer.answer.value[x]"
-        },
-        "valueContractBoolean": {
-            name: "valueContractBoolean",
-            dataType: boolean,
+
+        "valueReference": {
+            name: "valueReference",
+            dataType: r4:Reference,
             min: 0,
             max: 1,
             isArray: false,
@@ -1248,8 +1291,19 @@ public enum ContractStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "Contract.term.offer.answer.modifierExtension"
         },
-        "valueContractUri": {
-            name: "valueContractUri",
+
+        "valueDecimal": {
+            name: "valueDecimal",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
+            path: "Contract.term.offer.answer.value[x]"
+        },
+
+        "valueUri": {
+            name: "valueUri",
             dataType: r4:uri,
             min: 0,
             max: 1,
@@ -1257,8 +1311,9 @@ public enum ContractStatus {
             description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
             path: "Contract.term.offer.answer.value[x]"
         },
-        "valueContractDate": {
-            name: "valueContractDate",
+
+        "valueDate": {
+            name: "valueDate",
             dataType: r4:date,
             min: 0,
             max: 1,
@@ -1266,8 +1321,9 @@ public enum ContractStatus {
             description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
             path: "Contract.term.offer.answer.value[x]"
         },
-        "valueContractAttachment": {
-            name: "valueContractAttachment",
+
+        "valueAttachment": {
+            name: "valueAttachment",
             dataType: r4:Attachment,
             min: 0,
             max: 1,
@@ -1275,15 +1331,27 @@ public enum ContractStatus {
             description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
             path: "Contract.term.offer.answer.value[x]"
         },
-        "valueContractTime": {
-            name: "valueContractTime",
-            dataType: r4:time,
+
+        "valueString": {
+            name: "valueString",
+            dataType: string,
             min: 0,
             max: 1,
             isArray: false,
             description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
             path: "Contract.term.offer.answer.value[x]"
         },
+
+        "valueDateTime": {
+            name: "valueDateTime",
+            dataType: r4:dateTime,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
+            path: "Contract.term.offer.answer.value[x]"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -1293,45 +1361,20 @@ public enum ContractStatus {
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "Contract.term.offer.answer.id"
         },
-        "valueContractDecimal": {
-            name: "valueContractDecimal",
-            dataType: decimal,
+
+        "valueInteger": {
+            name: "valueInteger",
+            dataType: r4:integer,
             min: 0,
             max: 1,
             isArray: false,
             description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
             path: "Contract.term.offer.answer.value[x]"
         },
-        "valueContractDateTime": {
-            name: "valueContractDateTime",
-            dataType: r4:dateTime,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
-            path: "Contract.term.offer.answer.value[x]"
-        },
-        "valueContractString": {
-            name: "valueContractString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
-            path: "Contract.term.offer.answer.value[x]"
-        },
-        "valueContractQuantity": {
-            name: "valueContractQuantity",
+
+        "valueQuantity": {
+            name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Response to an offer clause or question text, which enables selection of values to be agreed to, e.g., the period of participation, the date of occupancy of a rental, warrently duration, or whether biospecimen may be used for further research.",
-            path: "Contract.term.offer.answer.value[x]"
-        },
-        "valueContractReference": {
-            name: "valueContractReference",
-            dataType: r4:Reference,
             min: 0,
             max: 1,
             isArray: false,
@@ -1347,21 +1390,21 @@ public enum ContractStatus {
 public type ContractTermOfferAnswer record {|
     *r4:BackboneElement;
 
+    boolean valueBoolean?;
+    r4:Coding valueCoding?;
     r4:Extension[] extension?;
-    r4:Coding valueContractCoding;
-    r4:integer valueContractInteger;
-    boolean valueContractBoolean;
+    r4:time valueTime?;
+    r4:Reference valueReference?;
     r4:Extension[] modifierExtension?;
-    r4:uri valueContractUri;
-    r4:date valueContractDate;
-    r4:Attachment valueContractAttachment;
-    r4:time valueContractTime;
+    decimal valueDecimal?;
+    r4:uri valueUri?;
+    r4:date valueDate?;
+    r4:Attachment valueAttachment?;
+    string valueString?;
+    r4:dateTime valueDateTime?;
     string id?;
-    decimal valueContractDecimal;
-    r4:dateTime valueContractDateTime;
-    string valueContractString;
-    r4:Quantity valueContractQuantity;
-    r4:Reference valueContractReference;
+    r4:integer valueInteger?;
+    r4:Quantity valueQuantity?;
 |};
 
 # FHIR ContractTerm datatype record.
@@ -1381,6 +1424,8 @@ public type ContractTermOfferAnswer record {|
 # + text - Statement of a provision in a policy or a contract.
 # + asset - Contract Term Asset List.
 # + issued - When this Contract Provision was issued.
+# + group - Nested group of Contract Provisions.
+
 @r4:DataTypeDefinition {
     name: "ContractTerm",
     baseType: (),
@@ -1519,6 +1564,16 @@ public type ContractTermOfferAnswer record {|
             isArray: false,
             description: "When this Contract Provision was issued.",
             path: "Contract.term.issued"
+        },
+
+        "group": {
+            name: "group",
+            dataType: ContractTerm,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Nested group of Contract Provisions.",
+            path: "Contract.term.group"
         }
     },
     serializers: {
@@ -1544,6 +1599,7 @@ public type ContractTerm record {|
     string text?;
     ContractTermAsset[] asset?;
     r4:dateTime issued?;
+    ContractTerm[] group?;
 |};
 
 # FHIR ContractFriendly datatype record.
@@ -1612,9 +1668,9 @@ public type ContractFriendly record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
-    r4:Reference contentReference;
+    r4:Reference contentReference?;
     r4:Extension[] modifierExtension?;
-    r4:Attachment contentAttachment;
+    r4:Attachment contentAttachment?;
     string id?;
 |};
 
@@ -1684,7 +1740,14 @@ public type ContractTermOfferParty record {|
     *r4:BackboneElement;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Contract.term.offer.party.reference constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Contract.term.offer.party.reference constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Reference[] reference;
     r4:Extension[] extension?;
@@ -1699,12 +1762,13 @@ public type ContractTermOfferParty record {|
 # + identifier - Identifies a Contract Valued Item instance.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + quantity - Specifies the units by which the Contract Valued Item is measured or counted, and quantifies the countable or measurable Contract Valued Item instances.
-# + entityContractCodeableConcept - Specific type of Contract Valued Item that may be priced.
 # + effectiveTime - Indicates the time during which this Contract ValuedItem information is effective.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + entityCodeableConcept - Specific type of Contract Valued Item that may be priced.
 # + securityLabelNumber - A set of security labels that define which terms are controlled by this condition.
 # + points - An amount that expresses the weighting (based on difficulty, cost and/or resource intensiveness) associated with the Contract Valued Item delivered. The concept of Points allows for assignment of point values for a Contract Valued Item, such that a monetary amount can be assigned to each point.
 # + linkId - Id of the clause or question text related to the context of this valuedItem in the referenced form or QuestionnaireResponse.
+# + entityReference - Specific type of Contract Valued Item that may be priced.
 # + responsible - Who will make payment.
 # + recipient - Who will receive payment.
 # + payment - Terms of valuation.
@@ -1712,7 +1776,7 @@ public type ContractTermOfferParty record {|
 # + factor - A real number that represents a multiplier used in determining the overall value of the Contract Valued Item delivered. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.
 # + net - Expresses the product of the Contract Valued Item unitQuantity and the unitPriceAmt. For example, the formula: unit Quantity * unit Price (Cost per Point) * factor Number * points = net Amount. Quantity, factor and points are assumed to be 1 if not supplied.
 # + paymentDate - When payment is due.
-# + entityContractReference - Specific type of Contract Valued Item that may be priced.
+
 @r4:DataTypeDefinition {
     name: "ContractTermAssetValuedItem",
     baseType: (),
@@ -1753,15 +1817,7 @@ public type ContractTermOfferParty record {|
             description: "Specifies the units by which the Contract Valued Item is measured or counted, and quantifies the countable or measurable Contract Valued Item instances.",
             path: "Contract.term.asset.valuedItem.quantity"
         },
-        "entityContractCodeableConcept": {
-            name: "entityContractCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Specific type of Contract Valued Item that may be priced.",
-            path: "Contract.term.asset.valuedItem.entity[x]"
-        },
+
         "effectiveTime": {
             name: "effectiveTime",
             dataType: r4:dateTime,
@@ -1780,6 +1836,17 @@ public type ContractTermOfferParty record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "Contract.term.asset.valuedItem.modifierExtension"
         },
+
+        "entityCodeableConcept": {
+            name: "entityCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specific type of Contract Valued Item that may be priced.",
+            path: "Contract.term.asset.valuedItem.entity[x]"
+        },
+
         "securityLabelNumber": {
             name: "securityLabelNumber",
             dataType: r4:unsignedInt,
@@ -1807,6 +1874,17 @@ public type ContractTermOfferParty record {|
             description: "Id of the clause or question text related to the context of this valuedItem in the referenced form or QuestionnaireResponse.",
             path: "Contract.term.asset.valuedItem.linkId"
         },
+
+        "entityReference": {
+            name: "entityReference",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specific type of Contract Valued Item that may be priced.",
+            path: "Contract.term.asset.valuedItem.entity[x]"
+        },
+
         "responsible": {
             name: "responsible",
             dataType: r4:Reference,
@@ -1869,15 +1947,6 @@ public type ContractTermOfferParty record {|
             isArray: false,
             description: "When payment is due.",
             path: "Contract.term.asset.valuedItem.paymentDate"
-        },
-        "entityContractReference": {
-            name: "entityContractReference",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Specific type of Contract Valued Item that may be priced.",
-            path: "Contract.term.asset.valuedItem.entity[x]"
         }
     },
     serializers: {
@@ -1892,12 +1961,13 @@ public type ContractTermAssetValuedItem record {|
     r4:Identifier identifier?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
-    r4:CodeableConcept entityContractCodeableConcept?;
     r4:dateTime effectiveTime?;
     r4:Extension[] modifierExtension?;
+    r4:CodeableConcept entityCodeableConcept?;
     r4:unsignedInt[] securityLabelNumber?;
     decimal points?;
     string[] linkId?;
+    r4:Reference entityReference?;
     r4:Reference responsible?;
     r4:Reference recipient?;
     string payment?;
@@ -1905,7 +1975,6 @@ public type ContractTermAssetValuedItem record {|
     decimal factor?;
     r4:Money net?;
     r4:dateTime paymentDate?;
-    r4:Reference entityContractReference?;
 |};
 
 # FHIR ContractTermSecurityLabel datatype record.
@@ -2010,7 +2079,6 @@ public type ContractTermSecurityLabel record {|
 # + subject - Entity of the action.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + reasonReference - Indicates another resource whose existence justifies permitting or not permitting this action.
-# + occurrenceContractDateTime - When action happens.
 # + performerLinkId - Id [identifier??] of the clause or question text related to the reason type or reference of this action in the referenced form or QuestionnaireResponse.
 # + 'type - Activity or service obligation to be done or not done, performed or not performed, effectuated or not by this Contract term.
 # + contextLinkId - Id [identifier??] of the clause or question text related to the requester of this action in the referenced form or QuestionnaireResponse.
@@ -2022,12 +2090,13 @@ public type ContractTermSecurityLabel record {|
 # + performer - Indicates who or what is being asked to perform (or not perform) the ction.
 # + performerRole - The type of role or competency of an individual desired or required to perform or not perform the action.
 # + securityLabelNumber - Security labels that protects the action.
+# + occurrenceTiming - When action happens.
 # + intent - Reason or purpose for the action stipulated by this Contract Provision.
 # + performerType - The type of individual that is desired or required to perform or not perform the action.
 # + requesterLinkId - Id [identifier??] of the clause or question text related to the requester of this action in the referenced form or QuestionnaireResponse.
-# + occurrenceContractPeriod - When action happens.
 # + linkId - Id [identifier??] of the clause or question text related to this action in the referenced form or QuestionnaireResponse.
-# + occurrenceContractTiming - When action happens.
+# + occurrencePeriod - When action happens.
+# + occurrenceDateTime - When action happens.
 # + reasonLinkId - Id [identifier??] of the clause or question text related to the reason type or reference of this action in the referenced form or QuestionnaireResponse.
 # + status - Current state of the term action.
 @r4:DataTypeDefinition {
@@ -2088,15 +2157,7 @@ public type ContractTermSecurityLabel record {|
             description: "Indicates another resource whose existence justifies permitting or not permitting this action.",
             path: "Contract.term.action.reasonReference"
         },
-        "occurrenceContractDateTime": {
-            name: "occurrenceContractDateTime",
-            dataType: r4:dateTime,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "When action happens.",
-            path: "Contract.term.action.occurrence[x]"
-        },
+
         "performerLinkId": {
             name: "performerLinkId",
             dataType: string,
@@ -2196,6 +2257,17 @@ public type ContractTermSecurityLabel record {|
             description: "Security labels that protects the action.",
             path: "Contract.term.action.securityLabelNumber"
         },
+
+        "occurrenceTiming": {
+            name: "occurrenceTiming",
+            dataType: r4:Timing,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "When action happens.",
+            path: "Contract.term.action.occurrence[x]"
+        },
+
         "intent": {
             name: "intent",
             dataType: r4:CodeableConcept,
@@ -2223,15 +2295,7 @@ public type ContractTermSecurityLabel record {|
             description: "Id [identifier??] of the clause or question text related to the requester of this action in the referenced form or QuestionnaireResponse.",
             path: "Contract.term.action.requesterLinkId"
         },
-        "occurrenceContractPeriod": {
-            name: "occurrenceContractPeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "When action happens.",
-            path: "Contract.term.action.occurrence[x]"
-        },
+
         "linkId": {
             name: "linkId",
             dataType: string,
@@ -2241,9 +2305,20 @@ public type ContractTermSecurityLabel record {|
             description: "Id [identifier??] of the clause or question text related to this action in the referenced form or QuestionnaireResponse.",
             path: "Contract.term.action.linkId"
         },
-        "occurrenceContractTiming": {
-            name: "occurrenceContractTiming",
-            dataType: r4:Timing,
+
+        "occurrencePeriod": {
+            name: "occurrencePeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "When action happens.",
+            path: "Contract.term.action.occurrence[x]"
+        },
+
+        "occurrenceDateTime": {
+            name: "occurrenceDateTime",
+            dataType: r4:dateTime,
             min: 0,
             max: 1,
             isArray: false,
@@ -2283,7 +2358,6 @@ public type ContractTermAction record {|
     ContractTermActionSubject[] subject?;
     r4:Extension[] modifierExtension?;
     r4:Reference[] reasonReference?;
-    r4:dateTime occurrenceContractDateTime?;
     string[] performerLinkId?;
     r4:CodeableConcept 'type;
     string[] contextLinkId?;
@@ -2295,12 +2369,13 @@ public type ContractTermAction record {|
     r4:Reference performer?;
     r4:CodeableConcept performerRole?;
     r4:unsignedInt[] securityLabelNumber?;
+    r4:Timing occurrenceTiming?;
     r4:CodeableConcept intent;
     r4:CodeableConcept[] performerType?;
     string[] requesterLinkId?;
-    r4:Period occurrenceContractPeriod?;
     string[] linkId?;
-    r4:Timing occurrenceContractTiming?;
+    r4:Period occurrencePeriod?;
+    r4:dateTime occurrenceDateTime?;
     string[] reasonLinkId?;
     r4:CodeableConcept status;
 |};
@@ -2371,9 +2446,9 @@ public type ContractRule record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
-    r4:Reference contentReference;
+    r4:Reference contentReference?;
     r4:Extension[] modifierExtension?;
-    r4:Attachment contentAttachment;
+    r4:Attachment contentAttachment?;
     string id?;
 |};
 

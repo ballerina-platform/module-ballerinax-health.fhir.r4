@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_APPOINTMENT = "http://hl7.org/fhir/StructureDefinition/Appointment";
 public const RESOURCE_NAME_APPOINTMENT = "Appointment";
+
+public type AppointmentExtensions (r4:Extension|WorkflowEpisodeOfCare|WorkflowReleaseDate|WorkflowShallComplyWith);
 
 # FHIR Appointment resource record.
 #
@@ -331,7 +333,10 @@ public type Appointment record {|
     r4:positiveInt minutesDuration?;
     r4:Reference[] slot?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Appointment.participant constraint. This field must be an array containing at least one item."
+        }
     }
     AppointmentParticipant[] participant;
     r4:CodeableConcept[] serviceCategory?;

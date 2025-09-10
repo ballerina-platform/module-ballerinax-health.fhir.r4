@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_IMMUNIZATION = "http://hl7.org/fhir/StructureDefinition/Immunization";
 public const RESOURCE_NAME_IMMUNIZATION = "Immunization";
+
+public type ImmunizationExtensions (r4:Extension|ImmunizationProcedure|WorkflowAdheresTo|WorkflowEpisodeOfCare|WorkflowResearchStudy|WorkflowTriggeredBy);
 
 # FHIR Immunization resource record.
 #
@@ -418,8 +420,8 @@ public type Immunization record {|
     r4:uri implicitRules?;
     r4:CodeableConcept reportOrigin?;
     r4:Reference location?;
-    r4:dateTime occurrenceDateTime;
-    string occurrenceString;
+    r4:dateTime occurrenceDateTime?;
+    string occurrenceString?;
     r4:CodeableConcept fundingSource?;
     ImmunizationStatus status;
     r4:Element ...;
@@ -796,12 +798,12 @@ public type ImmunizationReaction record {|
 public type ImmunizationProtocolApplied record {|
     *r4:BackboneElement;
 
-    string doseNumberString;
+    string doseNumberString?;
     r4:Extension[] extension?;
     r4:positiveInt seriesDosesPositiveInt?;
     string series?;
     r4:Reference authority?;
-    r4:positiveInt doseNumberPositiveInt;
+    r4:positiveInt doseNumberPositiveInt?;
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept[] targetDisease?;
     string seriesDosesString?;

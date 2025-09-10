@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_OBSERVATION_BP = "http://hl7.org/fhir/StructureDefinition/bp";
 public const RESOURCE_NAME_OBSERVATION_BP = "Observation";
+
+public type observation_bpExtensions (DiagnosticReportRisk|EventEventHistory|EventLocation|EventStatusReason|r4:Extension|ObservationAnalysisDateTime|ObservationBodyPosition|ObservationDelta|ObservationDeviceCode|ObservationFocusCode|ObservationGatewayDevice|ObservationGeneticsAllele|ObservationGeneticsAminoAcidChange|ObservationGeneticsAncestry|ObservationGeneticsCopyNumberEvent|ObservationGeneticsDNARegionName|ObservationGeneticsGene|ObservationGeneticsGenomicSourceClass|ObservationGeneticsInterpretation|ObservationGeneticsPhaseSet|ObservationGeneticsVariant|ObservationNatureOfAbnormalTest|ObservationPrecondition|ObservationReagent|ObservationReplaces|ObservationSecondaryFinding|ObservationSequelTo|ObservationSpecimenCode|ObservationStructureType|ObservationVSubid|WorkflowAdheresTo|WorkflowEpisodeOfCare|WorkflowInstantiatesCanonical|WorkflowInstantiatesUri|WorkflowReason|WorkflowReasonCode|WorkflowReasonReference|WorkflowRelatedArtifact|WorkflowResearchStudy|WorkflowSupportingInfo|WorkflowTriggeredBy);
 
 # FHIR observation_bp resource record.
 #
@@ -379,28 +381,101 @@ public type observation_bp record {|
     r4:Quantity valueQuantity?;
     r4:Identifier[] identifier?;
     r4:Reference[] performer?;
-    r4:Period effectivePeriod;
+    r4:Period effectivePeriod?;
     r4:CodeableConcept method?;
     r4:Reference[] hasMember?;
     r4:Reference encounter?;
     r4:CodeableConcept bodySite?;
     @constraint:Array {
-       minLength: 2
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Observation.component constraint. This field must be an array containing at least one item."
+        }
     }
     Observation_bpComponent[] component;
     r4:Resource[] contained?;
     Observation_bpReferenceRange[] referenceRange?;
-    r4:dateTime effectiveDateTime;
+    r4:dateTime effectiveDateTime?;
     r4:CodeableConcept[] interpretation?;
     r4:Meta meta?;
     r4:uri implicitRules?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Observation.category constraint. This field must be an array containing at least one item."
+        }
     }
     r4:CodeableConcept[] category;
     r4:Reference device?;
     Observation_bpStatus status;
     r4:Element ...;
+|};
+
+# FHIR Observation_bpCode datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.
+
+@r4:DataTypeDefinition {
+    name: "Observation_bpCode",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: r4:Coding,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Observation.code.coding"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.code.extension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.code.id"
+        },
+
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.",
+            path: "Observation.code.text"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type Observation_bpCode record {|
+    *r4:CodeableConcept;
+
+    r4:Coding[] coding?;
+    r4:Extension[] extension?;
+    string id?;
+    string text?;
 |};
 
 # Observation_bpStatus enum
@@ -413,7 +488,6 @@ public enum Observation_bpStatus {
 
 # FHIR Observation_bpComponentCodeOne datatype record.
 #
-# + DBPCode - Diastolic Blood Pressure.
 # + coding - Diastolic Blood Pressure.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
@@ -422,15 +496,6 @@ public enum Observation_bpStatus {
     name: "Observation_bpComponentCodeOne",
     baseType: (),
     elements: {
-        "DBPCode": {
-            name: "DBPCode",
-            dataType: Observation_bpComponentCodeCodingDBPCode,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Diastolic Blood Pressure.",
-            path: "Observation.component.code.coding"
-        },
         "coding": {
             name: "coding",
             dataType: r4:Coding,
@@ -476,7 +541,6 @@ public enum Observation_bpStatus {
 public type Observation_bpComponentCodeOne record {|
     *r4:CodeableConcept;
 
-    Observation_bpComponentCodeCodingDBPCode DBPCode;
     r4:Coding[] coding?;
     r4:Extension[] extension?;
     string id?;
@@ -487,6 +551,7 @@ public type Observation_bpComponentCodeOne record {|
 #
 # + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range.
 # + code - Describes what was observed. Sometimes this is called the observation 'code'.
 # + interpretation - A categorical assessment of an observation value. For example, high, low, normal.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -514,6 +579,17 @@ public type Observation_bpComponentCodeOne record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "Observation.component.extension"
         },
+
+        "referenceRange": {
+            name: "referenceRange",
+            dataType: Observation_bpReferenceRange,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Guidance on how to interpret the value by comparison to a normal or recommended range.",
+            path: "Observation.component.referenceRange"
+        },
+
         "code": {
             name: "code",
             dataType: Observation_bpComponentCodeOne,
@@ -552,7 +628,7 @@ public type Observation_bpComponentCodeOne record {|
         },
         "valueQuantity": {
             name: "valueQuantity",
-            dataType: Observation_bpComponentValue,
+            dataType: r4:Quantity,
             min: 0,
             max: 1,
             isArray: false,
@@ -566,15 +642,16 @@ public type Observation_bpComponentCodeOne record {|
     }
 }
 public type Observation_bpComponentDiastolicBP record {|
-    *r4:BackboneElement;
+    *Observation_bpComponent;
 
     r4:CodeableConcept dataAbsentReason?;
     r4:Extension[] extension?;
+    Observation_bpReferenceRange[] referenceRange?;
     Observation_bpComponentCodeOne code;
     r4:CodeableConcept[] interpretation?;
     r4:Extension[] modifierExtension?;
     string id?;
-    Observation_bpComponentValue valueQuantity?;
+    r4:Quantity valueQuantity?;
 |};
 
 # FHIR Observation_bpCategoryCoding datatype record.
@@ -682,6 +759,7 @@ public type Observation_bpCategoryCoding record {|
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + valueCodeableConcept - Vital Sign Value recorded with UCUM.
 # + valueRatio - Vital Sign Value recorded with UCUM.
+# + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range.
 # + valueString - Vital Sign Value recorded with UCUM.
 # + interpretation - A categorical assessment of an observation value. For example, high, low, normal.
 # + valueSampledData - Vital Sign Value recorded with UCUM.
@@ -775,6 +853,17 @@ public type Observation_bpCategoryCoding record {|
             description: "Vital Sign Value recorded with UCUM.",
             path: "Observation.component.value[x]"
         },
+
+        "referenceRange": {
+            name: "referenceRange",
+            dataType: Observation_bpReferenceRange,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Guidance on how to interpret the value by comparison to a normal or recommended range.",
+            path: "Observation.component.referenceRange"
+        },
+
         "valueString": {
             name: "valueString",
             dataType: string,
@@ -865,6 +954,7 @@ public type Observation_bpComponent record {|
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept valueCodeableConcept?;
     r4:Ratio valueRatio?;
+    Observation_bpReferenceRange[] referenceRange?;
     string valueString?;
     r4:CodeableConcept[] interpretation?;
     r4:SampledData valueSampledData?;
@@ -875,176 +965,9 @@ public type Observation_bpComponent record {|
     r4:Quantity valueQuantity?;
 |};
 
-# FHIR Observation_bpComponentValue datatype record.
-#
-# + comparator - How the value should be understood and represented - whether the actual value is greater or less than the stated value due to measurement issues; e.g. if the comparator is '<' , then the real value is < stated value.
-# + unit - A human-readable form of the unit.
-# + code - Coded responses from the common UCUM units for vital signs value set.
-# + system - The identification of the system that provides the coded form of the unit.
-# + value - The value of the measured amount. The value includes an implicit precision in the presentation of the value.
-@r4:DataTypeDefinition {
-    name: "Observation_bpComponentValue",
-    baseType: (),
-    elements: {
-        "comparator": {
-            name: "comparator",
-            dataType: Observation_bpComponentValueComparator,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "How the value should be understood and represented - whether the actual value is greater or less than the stated value due to measurement issues; e.g. if the comparator is '<' , then the real value is < stated value.",
-            path: "Observation.component.value[x].comparator"
-        },
-        "unit": {
-            name: "unit",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A human-readable form of the unit.",
-            path: "Observation.component.value[x].unit"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Coded responses from the common UCUM units for vital signs value set.",
-            path: "Observation.component.value[x].code"
-        },
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the system that provides the coded form of the unit.",
-            path: "Observation.component.value[x].system"
-        },
-        "value": {
-            name: "value",
-            dataType: decimal,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The value of the measured amount. The value includes an implicit precision in the presentation of the value.",
-            path: "Observation.component.value[x].value"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Observation_bpComponentValue record {|
-    *r4:Quantity;
-
-    Observation_bpComponentValueComparator comparator?;
-    string unit;
-    r4:code code = "mm[Hg]";
-    r4:uri system = "http://unitsofmeasure.org";
-    decimal value;
-|};
-
-# FHIR Observation_bpComponentCodeCodingDBPCode datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + userSelected - Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).
-# + display - A representation of the meaning of the code in the system, following the rules of the system.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'version - The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.
-@r4:DataTypeDefinition {
-    name: "Observation_bpComponentCodeCodingDBPCode",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Observation.component.code.coding.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "Observation.component.code.coding.code"
-        },
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "Observation.component.code.coding.system"
-        },
-        "userSelected": {
-            name: "userSelected",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).",
-            path: "Observation.component.code.coding.userSelected"
-        },
-        "display": {
-            name: "display",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A representation of the meaning of the code in the system, following the rules of the system.",
-            path: "Observation.component.code.coding.display"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Observation.component.code.coding.id"
-        },
-        "version": {
-            name: "version",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.",
-            path: "Observation.component.code.coding.version"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Observation_bpComponentCodeCodingDBPCode record {|
-    *r4:Coding;
-
-    r4:Extension[] extension?;
-    r4:code code = "8462-4";
-    r4:uri system = "http://loinc.org";
-    boolean userSelected?;
-    string display?;
-    string id?;
-    string 'version?;
-|};
-
 # FHIR Observation_bpComponentCode datatype record.
 #
 # + coding - Systolic Blood Pressure.
-# + SBPCode - Systolic Blood Pressure.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + text - A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.
@@ -1061,15 +984,7 @@ public type Observation_bpComponentCodeCodingDBPCode record {|
             description: "Systolic Blood Pressure.",
             path: "Observation.component.code.coding"
         },
-        "SBPCode": {
-            name: "SBPCode",
-            dataType: Observation_bpComponentCodeCodingSBPCode,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Systolic Blood Pressure.",
-            path: "Observation.component.code.coding"
-        },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -1107,7 +1022,6 @@ public type Observation_bpComponentCode record {|
     *r4:CodeableConcept;
 
     r4:Coding[] coding?;
-    Observation_bpComponentCodeCodingSBPCode SBPCode;
     r4:Extension[] extension?;
     string id?;
     string text?;
@@ -1285,269 +1199,19 @@ public type Observation_bpCategoryVSCat record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Observation.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Observation.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     Observation_bpCategoryCoding[] coding;
     r4:Extension[] extension?;
     string id?;
     string text?;
-|};
-
-# Observation_bpComponentValueComparator enum
-public enum Observation_bpComponentValueComparator {
-   CODE_COMPARATOR_LESS_THAN_OR_EQUAL = "<=",
-   CODE_COMPARATOR_LESS_THAN = "<",
-   CODE_COMPARATOR_GREATER_THAN = ">",
-   CODE_COMPARATOR_GREATER_THAN_OR_EQUAL = ">="
-}
-
-# FHIR Observation_bpComponentSystolicBP datatype record.
-#
-# + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - Describes what was observed. Sometimes this is called the observation 'code'.
-# + interpretation - A categorical assessment of an observation value. For example, high, low, normal.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + valueQuantity - Vital Sign Value recorded with UCUM.
-@r4:DataTypeDefinition {
-    name: "Observation_bpComponentSystolicBP",
-    baseType: (),
-    elements: {
-        "dataAbsentReason": {
-            name: "dataAbsentReason",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Provides a reason why the expected value in the element Observation.component.value[x] is missing.",
-            path: "Observation.component.dataAbsentReason"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Observation.component.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: Observation_bpComponentCode,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Describes what was observed. Sometimes this is called the observation 'code'.",
-            path: "Observation.component.code"
-        },
-        "interpretation": {
-            name: "interpretation",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A categorical assessment of an observation value. For example, high, low, normal.",
-            path: "Observation.component.interpretation"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Observation.component.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Observation.component.id"
-        },
-        "valueQuantity": {
-            name: "valueQuantity",
-            dataType: Observation_bpComponentValue,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Vital Sign Value recorded with UCUM.",
-            path: "Observation.component.value[x]"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Observation_bpComponentSystolicBP record {|
-    *r4:BackboneElement;
-
-    r4:CodeableConcept dataAbsentReason?;
-    r4:Extension[] extension?;
-    Observation_bpComponentCode code;
-    r4:CodeableConcept[] interpretation?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    Observation_bpComponentValue valueQuantity?;
-|};
-
-# FHIR Observation_bpCode datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + text - A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.
-@r4:DataTypeDefinition {
-    name: "Observation_bpCode",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: r4:Coding,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "Observation.code.coding"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Observation.code.extension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Observation.code.id"
-        },
-        "text": {
-            name: "text",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.",
-            path: "Observation.code.text"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Observation_bpCode record {|
-    *r4:CodeableConcept;
-
-    r4:Coding[] coding?;
-    r4:Extension[] extension?;
-    string id?;
-    string text?;
-|};
-
-# FHIR Observation_bpComponentCodeCodingSBPCode datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + userSelected - Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).
-# + display - A representation of the meaning of the code in the system, following the rules of the system.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'version - The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.
-@r4:DataTypeDefinition {
-    name: "Observation_bpComponentCodeCodingSBPCode",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Observation.component.code.coding.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "Observation.component.code.coding.code"
-        },
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "Observation.component.code.coding.system"
-        },
-        "userSelected": {
-            name: "userSelected",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Indicates that this coding was chosen by a user directly - e.g. off a pick list of available items (codes or displays).",
-            path: "Observation.component.code.coding.userSelected"
-        },
-        "display": {
-            name: "display",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A representation of the meaning of the code in the system, following the rules of the system.",
-            path: "Observation.component.code.coding.display"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Observation.component.code.coding.id"
-        },
-        "version": {
-            name: "version",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The version of the code system which was used when choosing this code. Note that a well-maintained code system does not need the version reported, because the meaning of codes is consistent across versions. However this cannot consistently be assured, and when the meaning is not guaranteed to be consistent, the version SHOULD be exchanged.",
-            path: "Observation.component.code.coding.version"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Observation_bpComponentCodeCodingSBPCode record {|
-    *r4:Coding;
-
-    r4:Extension[] extension?;
-    r4:code code = "8480-6";
-    r4:uri system = "http://loinc.org";
-    boolean userSelected?;
-    string display?;
-    string id?;
-    string 'version?;
 |};
 
 # FHIR Observation_bpCodeCodingBPCode datatype record.
@@ -1632,6 +1296,7 @@ public type Observation_bpComponentCodeCodingSBPCode record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
+
 public type Observation_bpCodeCodingBPCode record {|
     *r4:Coding;
 
@@ -1642,5 +1307,116 @@ public type Observation_bpCodeCodingBPCode record {|
     string display?;
     string id?;
     string 'version?;
+|};
+
+# FHIR Observation_bpComponentSystolicBP datatype record.
+#
+# + dataAbsentReason - Provides a reason why the expected value in the element Observation.component.value[x] is missing.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range.
+# + code - Describes what was observed. Sometimes this is called the observation 'code'.
+# + interpretation - A categorical assessment of an observation value. For example, high, low, normal.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + valueQuantity - Vital Sign Value recorded with UCUM.
+@r4:DataTypeDefinition {
+    name: "Observation_bpComponentSystolicBP",
+    baseType: (),
+    elements: {
+        "dataAbsentReason": {
+            name: "dataAbsentReason",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides a reason why the expected value in the element Observation.component.value[x] is missing.",
+            path: "Observation.component.dataAbsentReason"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Observation.component.extension"
+        },
+
+        "referenceRange": {
+            name: "referenceRange",
+            dataType: Observation_bpReferenceRange,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Guidance on how to interpret the value by comparison to a normal or recommended range.",
+            path: "Observation.component.referenceRange"
+        },
+        "code": {
+            name: "code",
+            dataType: Observation_bpComponentCode,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Describes what was observed. Sometimes this is called the observation 'code'.",
+            path: "Observation.component.code"
+        },
+
+        "interpretation": {
+            name: "interpretation",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A categorical assessment of an observation value. For example, high, low, normal.",
+            path: "Observation.component.interpretation"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Observation.component.modifierExtension"
+        },
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Observation.component.id"
+        },
+
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Vital Sign Value recorded with UCUM.",
+            path: "Observation.component.value[x]"
+        }
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type Observation_bpComponentSystolicBP record {|
+    *Observation_bpComponent;
+
+    r4:CodeableConcept dataAbsentReason?;
+    r4:Extension[] extension?;
+    Observation_bpReferenceRange[] referenceRange?;
+    Observation_bpComponentCode code;
+    r4:CodeableConcept[] interpretation?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:Quantity valueQuantity?;
 |};
 

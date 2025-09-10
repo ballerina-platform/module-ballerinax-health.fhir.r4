@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
@@ -126,6 +126,7 @@ public type Parameters record {|
 # + valueExpression - If the parameter is a data type.
 # + valueReference - If the parameter is a data type.
 # + valueRange - If the parameter is a data type.
+# + part - A named part of a multi-part parameter.
 # + valueUri - If the parameter is a data type.
 # + valueDistance - If the parameter is a data type.
 # + valueUrl - If the parameter is a data type.
@@ -147,7 +148,7 @@ public type Parameters record {|
 # + valueDuration - If the parameter is a data type.
 # + valueDataRequirement - If the parameter is a data type.
 # + valueAnnotation - If the parameter is a data type.
-# + part - Parts of a nested Parameter.
+
 @r4:DataTypeDefinition {
     name: "ParametersParameter",
     baseType: (),
@@ -458,6 +459,17 @@ public type Parameters record {|
             description: "If the parameter is a data type.",
             path: "Parameters.parameter.value[x]"
         },
+
+        "part": {
+            name: "part",
+            dataType: ParametersParameter,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A named part of a multi-part parameter.",
+            path: "Parameters.parameter.part"
+        },
+
         "valueUri": {
             name: "valueUri",
             dataType: r4:uri,
@@ -646,15 +658,6 @@ public type Parameters record {|
             isArray: false,
             description: "If the parameter is a data type.",
             path: "Parameters.parameter.value[x]"
-        },
-        "part": {
-            name: "part",
-            dataType: ParametersParameter,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Parts of a nested Parameter.",
-            path: "Parameters.parameter.part"
         }
     },
     serializers: {
@@ -699,6 +702,7 @@ public type ParametersParameter record {|
     r4:Expression valueExpression?;
     r4:Reference valueReference?;
     r4:Range valueRange?;
+    ParametersParameter[] part?;
     r4:uri valueUri?;
     r4:Distance valueDistance?;
     r4:urlType valueUrl?;
@@ -720,5 +724,4 @@ public type ParametersParameter record {|
     r4:Duration valueDuration?;
     r4:DataRequirement valueDataRequirement?;
     r4:Annotation valueAnnotation?;
-    ParametersParameter[] part?;
 |};

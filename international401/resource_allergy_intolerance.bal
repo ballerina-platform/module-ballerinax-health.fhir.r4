@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_ALLERGYINTOLERANCE = "http://hl7.org/fhir/StructureDefinition/AllergyIntolerance";
 public const RESOURCE_NAME_ALLERGYINTOLERANCE = "AllergyIntolerance";
+
+public type AllergyIntoleranceExtensions (AllergyintoleranceAbatement|AllergyintoleranceAssertedDate|AllergyintoleranceReasonRefuted|AllergyintoleranceResolutionAge|AllergyintoleranceSubstanceExposureRisk|ConditionAssertedDate|r4:Extension|OpenEHRTest);
 
 # FHIR AllergyIntolerance resource record.
 #
@@ -458,7 +460,14 @@ public type AllergyIntoleranceReaction record {|
     r4:Annotation[] note?;
     r4:Extension[] extension?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.AllergyIntolerance.reaction.manifestation constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.AllergyIntolerance.reaction.manifestation constraint. This field must be an array containing at most one item."
+        }
     }
     r4:CodeableConcept[] manifestation;
     r4:Extension[] modifierExtension?;

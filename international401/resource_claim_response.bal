@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -37,6 +37,7 @@ public const RESOURCE_NAME_CLAIMRESPONSE = "ClaimResponse";
 # + 'error - Errors encountered during the processing of the adjudication.
 # + 'type - A finer grained suite of claim type codes which may convey additional information such as Inpatient vs Outpatient and/or a specialty service.
 # + processNote - A note that describes or explains adjudication results in a human readable form.
+# + adjudication - The adjudication results which are presented at the header level rather than at the line-item or add-item levels.
 # + addItem - The first-tier service adjudications for payor added product or service lines.
 # + total - Categorized monetary totals for the adjudication.
 # + fundsReserve - A code, used only on a response to a preauthorization, to indicate whether the benefits payable have been reserved and for whom.
@@ -157,6 +158,16 @@ public const RESOURCE_NAME_CLAIMRESPONSE = "ClaimResponse";
             isArray: true,
             path: "ClaimResponse.processNote"
         },
+
+        "adjudication": {
+            name: "adjudication",
+            dataType: ClaimResponseItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            path: "ClaimResponse.adjudication"
+        },
+
         "addItem" : {
             name: "addItem",
             dataType: ClaimResponseAddItem,
@@ -368,6 +379,7 @@ public type ClaimResponse record {|
     ClaimResponseError[] 'error?;
     r4:CodeableConcept 'type;
     ClaimResponseProcessNote[] processNote?;
+    ClaimResponseItemAdjudication[] adjudication?;
     ClaimResponseAddItem[] addItem?;
     ClaimResponseTotal[] total?;
     r4:CodeableConcept fundsReserve?;
@@ -690,7 +702,14 @@ public type ClaimResponseItem record {|
     *r4:BackboneElement;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.item.adjudication constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.item.adjudication constraint. This field must be an array containing at most one item."
+        }
     }
     ClaimResponseItemAdjudication[] adjudication;
     r4:positiveInt itemSequence;
@@ -902,6 +921,7 @@ public type ClaimResponseProcessNote record {|
 # + productOrService - When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.
 # + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
 # + servicedPeriod - The date or dates when the service or product was supplied, performed or completed.
+# + adjudication - The adjudication results.
 # + itemSequence - Claim items which this service line is intended to replace.
 # + bodySite - Physical service site on the patient (limb, tooth, etc.).
 # + locationCodeableConcept - Where the product or service was provided.
@@ -1017,6 +1037,17 @@ public type ClaimResponseProcessNote record {|
             description: "The date or dates when the service or product was supplied, performed or completed.",
             path: "ClaimResponse.addItem.serviced[x]"
         },
+
+        "adjudication": {
+            name: "adjudication",
+            dataType: ClaimResponseItemAdjudication,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ClaimResponse.addItem.adjudication"
+        },
+
         "itemSequence": {
             name: "itemSequence",
             dataType: r4:positiveInt,
@@ -1145,6 +1176,17 @@ public type ClaimResponseAddItem record {|
     r4:CodeableConcept productOrService;
     r4:positiveInt[] noteNumber?;
     r4:Period servicedPeriod?;
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.addItem.adjudication constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.addItem.adjudication constraint. This field must be an array containing at most one item."
+        }
+    }
+    ClaimResponseItemAdjudication[] adjudication;
     r4:positiveInt[] itemSequence?;
     r4:CodeableConcept bodySite?;
     r4:CodeableConcept locationCodeableConcept?;
@@ -1161,6 +1203,7 @@ public type ClaimResponseAddItem record {|
 
 # FHIR ClaimResponseAddItemDetailSubDetail datatype record.
 #
+# + adjudication - The adjudication results.
 # + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + quantity - The number of repetitions of a service or product.
@@ -1175,6 +1218,16 @@ public type ClaimResponseAddItem record {|
     name: "ClaimResponseAddItemDetailSubDetail",
     baseType: (),
     elements: {
+        "adjudication": {
+            name: "adjudication",
+            dataType: ClaimResponseItemAdjudication,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ClaimResponse.addItem.detail.subDetail.adjudication"
+        },
+
         "unitPrice": {
             name: "unitPrice",
             dataType: r4:Money,
@@ -1274,6 +1327,17 @@ public type ClaimResponseAddItem record {|
 public type ClaimResponseAddItemDetailSubDetail record {|
     *r4:BackboneElement;
 
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.addItem.detail.subDetail.adjudication constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.addItem.detail.subDetail.adjudication constraint. This field must be an array containing at most one item."
+        }
+    }
+    ClaimResponseItemAdjudication[] adjudication;
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -1296,6 +1360,7 @@ public enum ClaimResponseStatus {
 
 # FHIR ClaimResponseItemDetail datatype record.
 #
+# + adjudication - The adjudication results.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + detailSequence - A number to uniquely reference the claim detail entry.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -1306,6 +1371,16 @@ public enum ClaimResponseStatus {
     name: "ClaimResponseItemDetail",
     baseType: (),
     elements: {
+        "adjudication": {
+            name: "adjudication",
+            dataType: ClaimResponseItemAdjudication,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ClaimResponse.item.detail.adjudication"
+        },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -1369,6 +1444,17 @@ public enum ClaimResponseStatus {
 public type ClaimResponseItemDetail record {|
     *r4:BackboneElement;
 
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.item.detail.adjudication constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.item.detail.adjudication constraint. This field must be an array containing at most one item."
+        }
+    }
+    ClaimResponseItemAdjudication[] adjudication;
     r4:Extension[] extension?;
     r4:positiveInt detailSequence;
     r4:Extension[] modifierExtension?;
@@ -1394,6 +1480,7 @@ public enum ClaimResponseOutcome {
 
 # FHIR ClaimResponseItemDetailSubDetail datatype record.
 #
+# + adjudication - The adjudication results.
 # + subDetailSequence - A number to uniquely reference the claim sub-detail entry.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -1403,6 +1490,16 @@ public enum ClaimResponseOutcome {
     name: "ClaimResponseItemDetailSubDetail",
     baseType: (),
     elements: {
+        "adjudication": {
+            name: "adjudication",
+            dataType: ClaimResponseItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ClaimResponse.item.detail.subDetail.adjudication"
+        },
+
         "subDetailSequence": {
             name: "subDetailSequence",
             dataType: r4:positiveInt,
@@ -1457,6 +1554,7 @@ public enum ClaimResponseOutcome {
 public type ClaimResponseItemDetailSubDetail record {|
     *r4:BackboneElement;
 
+    ClaimResponseItemAdjudication[] adjudication?;
     r4:positiveInt subDetailSequence;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
@@ -1571,6 +1669,7 @@ public type ClaimResponseInsurance record {|
 
 # FHIR ClaimResponseAddItemDetail datatype record.
 #
+# + adjudication - The adjudication results.
 # + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + quantity - The number of repetitions of a service or product.
@@ -1586,6 +1685,16 @@ public type ClaimResponseInsurance record {|
     name: "ClaimResponseAddItemDetail",
     baseType: (),
     elements: {
+        "adjudication": {
+            name: "adjudication",
+            dataType: ClaimResponseItemAdjudication,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ClaimResponse.addItem.detail.adjudication"
+        },
+
         "unitPrice": {
             name: "unitPrice",
             dataType: r4:Money,
@@ -1694,6 +1803,17 @@ public type ClaimResponseInsurance record {|
 public type ClaimResponseAddItemDetail record {|
     *r4:BackboneElement;
 
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.addItem.detail.adjudication constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ClaimResponse.addItem.detail.adjudication constraint. This field must be an array containing at most one item."
+        }
+    }
+    ClaimResponseItemAdjudication[] adjudication;
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;

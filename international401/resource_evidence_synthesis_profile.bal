@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -20,10 +20,12 @@
 import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_EVIDENCE_SYNTHESIS_PROFILE = "http://hl7.org/fhir/StructureDefinition/synthesis";
-public const RESOURCE_NAME_EVIDENCE_SYNTHESIS_PROFILE = "Evidence";
+public const string PROFILE_BASE_EVIDENCESYNTHESISPROFILE = "http://hl7.org/fhir/StructureDefinition/synthesis";
+public const RESOURCE_NAME_EVIDENCESYNTHESISPROFILE = "Evidence";
 
-# FHIR Evidence_Synthesis_Profile resource record.
+public type EvidenceSynthesisProfileExtensions (r4:Extension|Replaces);
+
+# FHIR EvidenceSynthesisProfile resource record.
 #
 # + resourceType - The type of the resource describes
 # + date - The date (and optionally time) when the evidence was published. The date must change when the business version changes and it must change if the status code changes. In addition, it should change when the substantive content of the evidence changes.
@@ -352,7 +354,7 @@ public const RESOURCE_NAME_EVIDENCE_SYNTHESIS_PROFILE = "Evidence";
         },
         "status" : {
             name: "status",
-            dataType: Evidence_Synthesis_ProfileStatus,
+            dataType: EvidenceSynthesisProfileStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -365,10 +367,11 @@ public const RESOURCE_NAME_EVIDENCE_SYNTHESIS_PROFILE = "Evidence";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type Evidence_Synthesis_Profile record {|
+
+public type EvidenceSynthesisProfile record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_EVIDENCE_SYNTHESIS_PROFILE resourceType = RESOURCE_NAME_EVIDENCE_SYNTHESIS_PROFILE;
+    RESOURCE_NAME_EVIDENCESYNTHESISPROFILE resourceType = RESOURCE_NAME_EVIDENCESYNTHESISPROFILE;
 
     r4:dateTime date?;
     r4:Annotation[] note?;
@@ -386,7 +389,10 @@ public type Evidence_Synthesis_Profile record {|
     string id?;
     r4:Narrative text?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Evidence.outcome constraint. This field must be an array containing at least one item."
+        }
     }
     r4:Reference[] outcome;
     r4:ContactDetail[] editor?;
@@ -396,8 +402,14 @@ public type Evidence_Synthesis_Profile record {|
     r4:ContactDetail[] author?;
     r4:ContactDetail[] reviewer?;
     @constraint:Array {
-       minLength: 1,
-       maxLength: 2
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Evidence.exposureVariant constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Evidence.exposureVariant constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Reference[] exposureVariant;
     string 'version?;
@@ -412,12 +424,12 @@ public type Evidence_Synthesis_Profile record {|
     string publisher?;
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
-    Evidence_Synthesis_ProfileStatus status;
+    EvidenceSynthesisProfileStatus status;
     r4:Element ...;
 |};
 
-# Evidence_Synthesis_ProfileStatus enum
-public enum Evidence_Synthesis_ProfileStatus {
+# EvidenceSynthesisProfileStatus enum
+public enum EvidenceSynthesisProfileStatus {
    CODE_STATUS_DRAFT = "draft",
    CODE_STATUS_ACTIVE = "active",
    CODE_STATUS_RETIRED = "retired",

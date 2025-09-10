@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_ENDPOINT = "http://hl7.org/fhir/StructureDefinition/Endpoint";
 public const RESOURCE_NAME_ENDPOINT = "Endpoint";
+
+public type EndpointExtensions (EndpointFhirVersion|r4:Extension|WorkflowReleaseDate);
 
 # FHIR Endpoint resource record.
 #
@@ -228,7 +230,10 @@ public type Endpoint record {|
     r4:Resource[] contained?;
     r4:Reference managingOrganization?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Endpoint.payloadType constraint. This field must be an array containing at least one item."
+        }
     }
     r4:CodeableConcept[] payloadType;
     r4:Meta meta?;

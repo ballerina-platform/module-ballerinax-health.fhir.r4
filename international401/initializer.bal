@@ -130,7 +130,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/familymemberhistory-genetic": {
                 url: "http://hl7.org/fhir/StructureDefinition/familymemberhistory-genetic",
                 resourceType: "FamilyMemberHistory",
-                modelType: Family_member_history_for_genetics_analysis
+                modelType: Familymemberhistoryforgeneticsanalysis
             },
             "http://hl7.org/fhir/StructureDefinition/Subscription": {
                 url: "http://hl7.org/fhir/StructureDefinition/Subscription",
@@ -150,7 +150,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/shareablelibrary": {
                 url: "http://hl7.org/fhir/StructureDefinition/shareablelibrary",
                 resourceType: "Library",
-                modelType: Shareable_Library
+                modelType: ShareableLibrary
             },
             "http://hl7.org/fhir/StructureDefinition/Parameters": {
                 url: "http://hl7.org/fhir/StructureDefinition/Parameters",
@@ -170,7 +170,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/actualgroup": {
                 url: "http://hl7.org/fhir/StructureDefinition/actualgroup",
                 resourceType: "Group",
-                modelType: Actual_Group
+                modelType: ActualGroup
             },
             "http://hl7.org/fhir/StructureDefinition/SubstanceReferenceInformation": {
                 url: "http://hl7.org/fhir/StructureDefinition/SubstanceReferenceInformation",
@@ -200,7 +200,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/provenance-relevant-history": {
                 url: "http://hl7.org/fhir/StructureDefinition/provenance-relevant-history",
                 resourceType: "Provenance",
-                modelType: Provenance_Relevant_History
+                modelType: ProvenanceRelevantHistory
             },
             "http://hl7.org/fhir/StructureDefinition/Practitioner": {
                 url: "http://hl7.org/fhir/StructureDefinition/Practitioner",
@@ -215,7 +215,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/groupdefinition": {
                 url: "http://hl7.org/fhir/StructureDefinition/groupdefinition",
                 resourceType: "Group",
-                modelType: Group_Definition
+                modelType: GroupDefinition
             },
             "http://hl7.org/fhir/StructureDefinition/bp": {
                 url: "http://hl7.org/fhir/StructureDefinition/bp",
@@ -235,7 +235,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/shareableplandefinition": {
                 url: "http://hl7.org/fhir/StructureDefinition/shareableplandefinition",
                 resourceType: "PlanDefinition",
-                modelType: Shareable_PlanDefinition
+                modelType: ShareablePlanDefinition
             },
             "http://hl7.org/fhir/StructureDefinition/Slot": {
                 url: "http://hl7.org/fhir/StructureDefinition/Slot",
@@ -260,7 +260,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/cdshooksserviceplandefinition": {
                 url: "http://hl7.org/fhir/StructureDefinition/cdshooksserviceplandefinition",
                 resourceType: "PlanDefinition",
-                modelType: CDS_Hooks_Service_PlanDefinition
+                modelType: CDSHooksServicePlanDefinition
             },
             "http://hl7.org/fhir/StructureDefinition/Group": {
                 url: "http://hl7.org/fhir/StructureDefinition/Group",
@@ -320,7 +320,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/ehrsrle-auditevent": {
                 url: "http://hl7.org/fhir/StructureDefinition/ehrsrle-auditevent",
                 resourceType: "AuditEvent",
-                modelType: EHRS_FM_Record_Lifecycle_Event___Audit_Event
+                modelType: EHRSFMRecordLifecycleEvent_AuditEvent
             },
             "http://hl7.org/fhir/StructureDefinition/ResearchElementDefinition": {
                 url: "http://hl7.org/fhir/StructureDefinition/ResearchElementDefinition",
@@ -355,7 +355,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/shareableactivitydefinition": {
                 url: "http://hl7.org/fhir/StructureDefinition/shareableactivitydefinition",
                 resourceType: "ActivityDefinition",
-                modelType: Shareable_ActivityDefinition
+                modelType: ShareableActivityDefinition
             },
             "http://hl7.org/fhir/StructureDefinition/SearchParameter": {
                 url: "http://hl7.org/fhir/StructureDefinition/SearchParameter",
@@ -365,7 +365,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/hlaresult": {
                 url: "http://hl7.org/fhir/StructureDefinition/hlaresult",
                 resourceType: "DiagnosticReport",
-                modelType: Profile_for_HLA_Genotyping_Results
+                modelType: ProfileforHLAGenotypingResults
             },
             "http://hl7.org/fhir/StructureDefinition/Communication": {
                 url: "http://hl7.org/fhir/StructureDefinition/Communication",
@@ -385,7 +385,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/lipidprofile": {
                 url: "http://hl7.org/fhir/StructureDefinition/lipidprofile",
                 resourceType: "DiagnosticReport",
-                modelType: Example_Lipid_Profile
+                modelType: ExampleLipidProfile
             },
             "http://hl7.org/fhir/StructureDefinition/Linkage": {
                 url: "http://hl7.org/fhir/StructureDefinition/Linkage",
@@ -395,7 +395,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/ehrsrle-provenance": {
                 url: "http://hl7.org/fhir/StructureDefinition/ehrsrle-provenance",
                 resourceType: "Provenance",
-                modelType: EHRS_FM_Record_Lifecycle_Event___Provenance
+                modelType: EHRSFMRecordLifecycleEvent_Provenance
             },
             "http://hl7.org/fhir/StructureDefinition/observation-genetics": {
                 url: "http://hl7.org/fhir/StructureDefinition/observation-genetics",
@@ -425,7 +425,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/synthesis": {
                 url: "http://hl7.org/fhir/StructureDefinition/synthesis",
                 resourceType: "Evidence",
-                modelType: Evidence_Synthesis_Profile
+                modelType: EvidenceSynthesisProfile
             },
             "http://hl7.org/fhir/StructureDefinition/RequestGroup": {
                 url: "http://hl7.org/fhir/StructureDefinition/RequestGroup",
@@ -470,12 +470,12 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/picoelement": {
                 url: "http://hl7.org/fhir/StructureDefinition/picoelement",
                 resourceType: "EvidenceVariable",
-                modelType: PICO_Element_Profile
+                modelType: PICOElementProfile
             },
             "http://hl7.org/fhir/StructureDefinition/computableplandefinition": {
                 url: "http://hl7.org/fhir/StructureDefinition/computableplandefinition",
                 resourceType: "PlanDefinition",
-                modelType: Computable_PlanDefinition
+                modelType: ComputablePlanDefinition
             },
             "http://hl7.org/fhir/StructureDefinition/ExplanationOfBenefit": {
                 url: "http://hl7.org/fhir/StructureDefinition/ExplanationOfBenefit",
@@ -545,7 +545,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/cdshooksrequestgroup": {
                 url: "http://hl7.org/fhir/StructureDefinition/cdshooksrequestgroup",
                 resourceType: "RequestGroup",
-                modelType: CDS_Hooks_RequestGroup
+                modelType: CDSHooksRequestGroup
             },
             "http://hl7.org/fhir/StructureDefinition/OperationDefinition": {
                 url: "http://hl7.org/fhir/StructureDefinition/OperationDefinition",
@@ -580,7 +580,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/shareablemeasure": {
                 url: "http://hl7.org/fhir/StructureDefinition/shareablemeasure",
                 resourceType: "Measure",
-                modelType: Shareable_Measure
+                modelType: ShareableMeasure
             },
             "http://hl7.org/fhir/StructureDefinition/VisionPrescription": {
                 url: "http://hl7.org/fhir/StructureDefinition/VisionPrescription",
@@ -615,7 +615,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/clinicaldocument": {
                 url: "http://hl7.org/fhir/StructureDefinition/clinicaldocument",
                 resourceType: "Composition",
-                modelType: Clinical_Document
+                modelType: ClinicalDocument
             },
             "http://hl7.org/fhir/StructureDefinition/DeviceMetric": {
                 url: "http://hl7.org/fhir/StructureDefinition/DeviceMetric",
@@ -655,7 +655,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/devicemetricobservation": {
                 url: "http://hl7.org/fhir/StructureDefinition/devicemetricobservation",
                 resourceType: "Observation",
-                modelType: Device_Metric_Observation_Profile
+                modelType: DeviceMetricObservationProfile
             },
             "http://hl7.org/fhir/StructureDefinition/StructureMap": {
                 url: "http://hl7.org/fhir/StructureDefinition/StructureMap",
@@ -670,7 +670,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/cqllibrary": {
                 url: "http://hl7.org/fhir/StructureDefinition/cqllibrary",
                 resourceType: "Library",
-                modelType: CQL_Library
+                modelType: CQLLibrary
             },
             "http://hl7.org/fhir/StructureDefinition/GuidanceResponse": {
                 url: "http://hl7.org/fhir/StructureDefinition/GuidanceResponse",
@@ -780,7 +780,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/catalog": {
                 url: "http://hl7.org/fhir/StructureDefinition/catalog",
                 resourceType: "Composition",
-                modelType: Profile_for_Catalog
+                modelType: ProfileforCatalog
             },
             "http://hl7.org/fhir/StructureDefinition/NutritionOrder": {
                 url: "http://hl7.org/fhir/StructureDefinition/NutritionOrder",
@@ -795,7 +795,7 @@ function init() returns r4:FHIRError? {
             "http://hl7.org/fhir/StructureDefinition/cdshooksguidanceresponse": {
                 url: "http://hl7.org/fhir/StructureDefinition/cdshooksguidanceresponse",
                 resourceType: "GuidanceResponse",
-                modelType: CDS_Hooks_GuidanceResponse
+                modelType: CDSHooksGuidanceResponse
             },
             "http://hl7.org/fhir/StructureDefinition/Evidence": {
                 url: "http://hl7.org/fhir/StructureDefinition/Evidence",

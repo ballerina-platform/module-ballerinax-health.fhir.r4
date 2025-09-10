@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_MEDICATIONDISPENSE = "http://hl7.org/fhir/StructureDefinition/MedicationDispense";
 public const RESOURCE_NAME_MEDICATIONDISPENSE = "MedicationDispense";
+
+public type MedicationDispenseExtensions (EventLocation|r4:Extension|MedicationdispenseQuantityRemaining|MedicationdispenseRefillsRemaining|WorkflowEpisodeOfCare|WorkflowReleaseDate|WorkflowResearchStudy);
 
 # FHIR MedicationDispense resource record.
 #
@@ -366,7 +368,7 @@ public type MedicationDispense record {|
     r4:Reference statusReasonReference?;
     r4:CodeableConcept statusReasonCodeableConcept?;
     r4:CodeableConcept 'type?;
-    r4:Reference medicationReference;
+    r4:Reference medicationReference?;
     r4:Reference context?;
     string id?;
     r4:Narrative text?;
@@ -380,7 +382,7 @@ public type MedicationDispense record {|
     r4:SimpleQuantity daysSupply?;
     r4:Reference[] supportingInformation?;
     r4:dateTime whenHandedOver?;
-    r4:CodeableConcept medicationCodeableConcept;
+    r4:CodeableConcept medicationCodeableConcept?;
     r4:Resource[] contained?;
     r4:Dosage[] dosageInstruction?;
     r4:Meta meta?;
