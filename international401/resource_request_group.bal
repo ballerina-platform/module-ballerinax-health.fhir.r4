@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -446,6 +446,7 @@ public enum RequestGroupActionConditionKind {
 # + 'type - The type of action to perform (create, update, remove).
 # + groupingBehavior - Defines the grouping behavior for the action and its children.
 # + participant - The participant that should perform or be responsible for this action.
+# + action - Sub actions.
 # + timingAge - An optional value describing when the action should be performed.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + relatedAction - A relationship to another action such as 'before' or '30-60 minutes after start of'.
@@ -556,6 +557,17 @@ public enum RequestGroupActionConditionKind {
             description: "The participant that should perform or be responsible for this action.",
             path: "RequestGroup.action.participant"
         },
+
+        "action": {
+            name: "action",
+            dataType: RequestGroupAction,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Sub actions.",
+            path: "RequestGroup.action.action"
+        },
+
         "timingAge": {
             name: "timingAge",
             dataType: r4:Age,
@@ -719,6 +731,7 @@ public type RequestGroupAction record {|
     r4:CodeableConcept 'type?;
     RequestGroupActionGroupingBehavior groupingBehavior?;
     r4:Reference[] participant?;
+    RequestGroupAction[] action?;
     r4:Age timingAge?;
     string id?;
     RequestGroupActionRelatedAction[] relatedAction?;
@@ -740,11 +753,11 @@ public type RequestGroupAction record {|
 # FHIR RequestGroupActionRelatedAction datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + offsetRequestGroupDuration - A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + actionId - The element id of the action this is related to.
+# + offsetDuration - A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.
+# + offsetRange - A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + offsetRequestGroupRange - A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.
 # + relationship - The relationship of this action to the related action.
 @r4:DataTypeDefinition {
     name: "RequestGroupActionRelatedAction",
@@ -759,15 +772,7 @@ public type RequestGroupAction record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "RequestGroup.action.relatedAction.extension"
         },
-        "offsetRequestGroupDuration": {
-            name: "offsetRequestGroupDuration",
-            dataType: r4:Duration,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.",
-            path: "RequestGroup.action.relatedAction.offset[x]"
-        },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -786,6 +791,27 @@ public type RequestGroupAction record {|
             description: "The element id of the action this is related to.",
             path: "RequestGroup.action.relatedAction.actionId"
         },
+
+        "offsetDuration": {
+            name: "offsetDuration",
+            dataType: r4:Duration,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.",
+            path: "RequestGroup.action.relatedAction.offset[x]"
+        },
+
+        "offsetRange": {
+            name: "offsetRange",
+            dataType: r4:Range,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.",
+            path: "RequestGroup.action.relatedAction.offset[x]"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -795,15 +821,7 @@ public type RequestGroupAction record {|
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "RequestGroup.action.relatedAction.id"
         },
-        "offsetRequestGroupRange": {
-            name: "offsetRequestGroupRange",
-            dataType: r4:Range,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A duration or range of durations to apply to the relationship. For example, 30-60 minutes before.",
-            path: "RequestGroup.action.relatedAction.offset[x]"
-        },
+
         "relationship": {
             name: "relationship",
             dataType: RequestGroupActionRelatedActionRelationship,
@@ -823,11 +841,11 @@ public type RequestGroupActionRelatedAction record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
-    r4:Duration offsetRequestGroupDuration?;
     r4:Extension[] modifierExtension?;
     r4:id actionId;
+    r4:Duration offsetDuration?;
+    r4:Range offsetRange?;
     string id?;
-    r4:Range offsetRequestGroupRange?;
     RequestGroupActionRelatedActionRelationship relationship;
 |};
 

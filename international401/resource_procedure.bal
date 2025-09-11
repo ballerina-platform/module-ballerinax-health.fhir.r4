@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_PROCEDURE = "http://hl7.org/fhir/StructureDefinition/Procedure";
 public const RESOURCE_NAME_PROCEDURE = "Procedure";
+
+public type ProcedureExtensions (r4:Extension|ProcedureApproachBodyStructure|ProcedureCausedBy|ProcedureDirectedBy|ProcedureIncisionDateTime|ProcedureMethod|ProcedureProgressStatus|ProcedureSchedule|ProcedureTargetBodyStructure|WorkflowAdheresTo|WorkflowEpisodeOfCare|WorkflowFollowOnOf|WorkflowGeneratedFrom|WorkflowReleaseDate|WorkflowResearchStudy|WorkflowTriggeredBy);
 
 # FHIR Procedure resource record.
 #

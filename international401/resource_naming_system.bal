@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_NAMINGSYSTEM = "http://hl7.org/fhir/StructureDefinition/NamingSystem";
 public const RESOURCE_NAME_NAMINGSYSTEM = "NamingSystem";
+
+public type NamingSystemExtensions (r4:Extension|NamingsystemCheckDigit|Replaces|ResourceApprovalDate|ResourceEffectivePeriod|ResourceLastReviewDate);
 
 # FHIR NamingSystem resource record.
 #
@@ -256,7 +258,10 @@ public type NamingSystem record {|
     r4:Narrative text?;
     r4:UsageContext[] useContext?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.NamingSystem.uniqueId constraint. This field must be an array containing at least one item."
+        }
     }
     NamingSystemUniqueId[] uniqueId;
     NamingSystemStatus status;

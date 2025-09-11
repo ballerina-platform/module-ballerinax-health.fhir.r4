@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_CONCEPTMAP = "http://hl7.org/fhir/StructureDefinition/ConceptMap";
 public const RESOURCE_NAME_CONCEPTMAP = "ConceptMap";
+
+public type ConceptMapExtensions (ConceptBidirectional|r4:Extension|Replaces|ResourceApprovalDate|ResourceEffectivePeriod|ResourceLastReviewDate|WorkflowRelatedArtifact);
 
 # FHIR ConceptMap resource record.
 #
@@ -440,7 +442,14 @@ public type ConceptMapGroup record {|
     r4:uri 'source?;
     ConceptMapGroupUnmapped unmapped?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ConceptMap.group.element constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ConceptMap.group.element constraint. This field must be an array containing at most one item."
+        }
     }
     ConceptMapGroupElement[] element;
     r4:uri target?;
@@ -559,6 +568,7 @@ public type ConceptMapGroupUnmapped record {|
 #
 # + equivalence - The equivalence between the source and target concepts (counting for the dependencies and products). The equivalence is read from target to source (e.g. the target is 'wider' than the source).
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + product - A set of additional outcomes from this mapping to other elements. To properly execute this mapping, the specified element must be mapped to some data element or source that is in context. The mapping may still be useful without a place for the additional data elements, but the equivalence cannot be relied on.
 # + code - Identity (code or path) or the element/item that the map refers to.
 # + dependsOn - A set of additional dependencies for this mapping to hold. This mapping is only applicable if the specified element can be resolved, and it has the specified value.
 # + display - The display for the code. The display is only provided to help editors when editing the concept map.
@@ -587,6 +597,17 @@ public type ConceptMapGroupUnmapped record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ConceptMap.group.element.target.extension"
         },
+
+        "product": {
+            name: "product",
+            dataType: ConceptMapGroupElementTargetDependsOn,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A set of additional outcomes from this mapping to other elements. To properly execute this mapping, the specified element must be mapped to some data element or source that is in context. The mapping may still be useful without a place for the additional data elements, but the equivalence cannot be relied on.",
+            path: "ConceptMap.group.element.target.product"
+        },
+
         "code": {
             name: "code",
             dataType: r4:code,
@@ -652,6 +673,7 @@ public type ConceptMapGroupElementTarget record {|
 
     ConceptMapGroupElementTargetEquivalence equivalence;
     r4:Extension[] extension?;
+    ConceptMapGroupElementTargetDependsOn[] product?;
     r4:code code?;
     ConceptMapGroupElementTargetDependsOn[] dependsOn?;
     string display?;

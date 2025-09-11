@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_SUPPLYREQUEST = "http://hl7.org/fhir/StructureDefinition/SupplyRequest";
 public const RESOURCE_NAME_SUPPLYREQUEST = "SupplyRequest";
+
+public type SupplyRequestExtensions (r4:Extension|RequestReplaces|RequestStatusReason|WorkflowCompliesWith|WorkflowEpisodeOfCare|WorkflowGeneratedFrom|WorkflowInstantiatesCanonical|WorkflowInstantiatesUri|WorkflowReleaseDate|WorkflowShallComplyWith|WorkflowTriggeredBy);
 
 # FHIR SupplyRequest resource record.
 #
@@ -288,7 +290,7 @@ public type SupplyRequest record {|
     r4:Reference[] reasonReference?;
     r4:code language?;
     r4:Reference deliverTo?;
-    r4:CodeableConcept itemCodeableConcept;
+    r4:CodeableConcept itemCodeableConcept?;
     SupplyRequestParameter[] 'parameter?;
     r4:Reference[] supplier?;
     string id?;
@@ -300,7 +302,7 @@ public type SupplyRequest record {|
     r4:Quantity quantity;
     r4:Timing occurrenceTiming?;
     SupplyRequestPriority priority?;
-    r4:Reference itemReference;
+    r4:Reference itemReference?;
     r4:Resource[] contained?;
     r4:Period occurrencePeriod?;
     r4:Meta meta?;

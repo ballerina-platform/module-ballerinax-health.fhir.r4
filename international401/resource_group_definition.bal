@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -19,10 +19,12 @@
 
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_GROUP_DEFINITION = "http://hl7.org/fhir/StructureDefinition/groupdefinition";
-public const RESOURCE_NAME_GROUP_DEFINITION = "Group";
+public const string PROFILE_BASE_GROUPDEFINITION = "http://hl7.org/fhir/StructureDefinition/groupdefinition";
+public const RESOURCE_NAME_GROUPDEFINITION = "Group";
 
-# FHIR Group_Definition resource record.
+public type GroupDefinitionExtensions (ArtifactEditor|ArtifactEndorser|ArtifactReviewer|CharacteristicExpression|CqfInputParameters|CqfTestArtifact|r4:Extension|ResourceApprovalDate|ResourceEffectivePeriod|ResourceLastReviewDate);
+
+# FHIR GroupDefinition resource record.
 #
 # + resourceType - The type of the resource describes
 # + actual - If true, indicates that the resource refers to a specific group of real individuals. If false, the group defines a set of intended individuals.
@@ -115,7 +117,7 @@ public const RESOURCE_NAME_GROUP_DEFINITION = "Group";
         },
         "type" : {
             name: "type",
-            dataType: Group_DefinitionType,
+            dataType: GroupDefinitionType,
             min: 1,
             max: 1,
             isArray: false,
@@ -124,7 +126,7 @@ public const RESOURCE_NAME_GROUP_DEFINITION = "Group";
         },
         "characteristic" : {
             name: "characteristic",
-            dataType: Group_DefinitionCharacteristic,
+            dataType: GroupDefinitionCharacteristic,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -156,10 +158,10 @@ public const RESOURCE_NAME_GROUP_DEFINITION = "Group";
         },
         "member" : {
             name: "member",
-            dataType: Group_DefinitionMember,
+            dataType: GroupDefinitionMember,
             min: 0,
             max: 0,
-            isArray: false,
+            isArray: true,
             path: "Group.member"
         },
         "name" : {
@@ -200,10 +202,11 @@ public const RESOURCE_NAME_GROUP_DEFINITION = "Group";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type Group_Definition record {|
+
+public type GroupDefinition record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_GROUP_DEFINITION resourceType = RESOURCE_NAME_GROUP_DEFINITION;
+    RESOURCE_NAME_GROUPDEFINITION resourceType = RESOURCE_NAME_GROUPDEFINITION;
 
     boolean actual;
     r4:Identifier[] identifier?;
@@ -213,12 +216,12 @@ public type Group_Definition record {|
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:code language?;
-    Group_DefinitionType 'type;
-    Group_DefinitionCharacteristic[] characteristic?;
+    GroupDefinitionType 'type;
+    GroupDefinitionCharacteristic[] characteristic?;
     r4:Reference managingEntity?;
     r4:Resource[] contained?;
     r4:Meta meta?;
-    Group_DefinitionMember member?;
+    GroupDefinitionMember[] member?;
     string name?;
     r4:uri implicitRules?;
     string id?;
@@ -226,7 +229,17 @@ public type Group_Definition record {|
     r4:Element ...;
 |};
 
-# FHIR Group_DefinitionCharacteristic datatype record.
+# GroupDefinitionType enum
+public enum GroupDefinitionType {
+    CODE_TYPE_PRACTITIONER = "practitioner",
+    CODE_TYPE_PERSON = "person",
+    CODE_TYPE_SUBSTANCE = "substance",
+    CODE_TYPE_ANIMAL = "animal",
+    CODE_TYPE_MEDICATION = "medication",
+    CODE_TYPE_DEVICE = "device"
+}
+
+# FHIR GroupDefinitionCharacteristic datatype record.
 #
 # + valueCodeableConcept - The value of the trait that holds (or does not hold - see 'exclude') for members of the group.
 # + valueBoolean - The value of the trait that holds (or does not hold - see 'exclude') for members of the group.
@@ -240,7 +253,7 @@ public type Group_Definition record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + valueQuantity - The value of the trait that holds (or does not hold - see 'exclude') for members of the group.
 @r4:DataTypeDefinition {
-    name: "Group_DefinitionCharacteristic",
+    name: "GroupDefinitionCharacteristic",
     baseType: (),
     elements: {
         "valueCodeableConcept": {
@@ -348,23 +361,24 @@ public type Group_Definition record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Group_DefinitionCharacteristic record {|
+
+public type GroupDefinitionCharacteristic record {|
     *r4:BackboneElement;
 
-    r4:CodeableConcept valueCodeableConcept;
-    boolean valueBoolean;
+    r4:CodeableConcept valueCodeableConcept?;
+    boolean valueBoolean?;
     r4:Extension[] extension?;
     r4:Period period?;
     r4:CodeableConcept code;
-    r4:Reference valueReference;
-    r4:Range valueRange;
+    r4:Reference valueReference?;
+    r4:Range valueRange?;
     r4:Extension[] modifierExtension?;
     boolean exclude;
     string id?;
-    r4:Quantity valueQuantity;
+    r4:Quantity valueQuantity?;
 |};
 
-# FHIR Group_DefinitionMember datatype record.
+# FHIR GroupDefinitionMember datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + period - The period that the member was in the group, if known.
@@ -373,7 +387,7 @@ public type Group_DefinitionCharacteristic record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + entity - A reference to the entity that is a member of the group. Must be consistent with Group.type. If the entity is another group, then the type must be the same.
 @r4:DataTypeDefinition {
-    name: "Group_DefinitionMember",
+    name: "GroupDefinitionMember",
     baseType: (),
     elements: {
         "extension": {
@@ -436,7 +450,8 @@ public type Group_DefinitionCharacteristic record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Group_DefinitionMember record {|
+
+public type GroupDefinitionMember record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
@@ -446,14 +461,4 @@ public type Group_DefinitionMember record {|
     string id?;
     r4:Reference entity;
 |};
-
-# Group_DefinitionType enum
-public enum Group_DefinitionType {
-   CODE_TYPE_PRACTITIONER = "practitioner",
-   CODE_TYPE_PERSON = "person",
-   CODE_TYPE_SUBSTANCE = "substance",
-   CODE_TYPE_ANIMAL = "animal",
-   CODE_TYPE_MEDICATION = "medication",
-   CODE_TYPE_DEVICE = "device"
-}
 

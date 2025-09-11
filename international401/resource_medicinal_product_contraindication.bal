@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -270,11 +270,11 @@ public type MedicinalProductContraindication record {|
 public type MedicinalProductContraindicationOtherTherapy record {|
     *r4:BackboneElement;
 
-    r4:Reference medicationReference;
+    r4:Reference medicationReference?;
     r4:Extension[] extension?;
     r4:CodeableConcept therapyRelationshipType;
     r4:Extension[] modifierExtension?;
     string id?;
-    r4:CodeableConcept medicationCodeableConcept;
+    r4:CodeableConcept medicationCodeableConcept?;
 |};
 

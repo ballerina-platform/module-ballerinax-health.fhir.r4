@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -428,6 +428,8 @@ public type TestReportSetupActionAssert record {|
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + operation - An operation would involve a REST request to a server.
+
 @r4:DataTypeDefinition {
     name: "TestReportTeardownAction",
     baseType: (),
@@ -458,6 +460,16 @@ public type TestReportSetupActionAssert record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "TestReport.teardown.action.id"
+        },
+
+        "operation": {
+            name: "operation",
+            dataType: TestReportSetupActionOperation,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "An operation would involve a REST request to a server.",
+            path: "TestReport.teardown.action.operation"
         }
     },
     serializers: {
@@ -471,6 +483,7 @@ public type TestReportTeardownAction record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
+    TestReportSetupActionOperation operation;
 |};
 
 # TestReportResult enum
@@ -559,7 +572,14 @@ public type TestReportTest record {|
     r4:Extension[] modifierExtension?;
     string name?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.TestReport.test.action constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.TestReport.test.action constraint. This field must be an array containing at most one item."
+        }
     }
     TestReportTestAction[] action;
     string description?;
@@ -650,8 +670,11 @@ public type TestReportSetupAction record {|
 # FHIR TestReportTestAction datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + assert - The results of the assertion performed on the previous operations.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + operation - An operation would involve a REST request to a server.
+
 @r4:DataTypeDefinition {
     name: "TestReportTestAction",
     baseType: (),
@@ -665,6 +688,17 @@ public type TestReportSetupAction record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "TestReport.test.action.extension"
         },
+
+        "assert": {
+            name: "assert",
+            dataType: TestReportSetupActionAssert,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The results of the assertion performed on the previous operations.",
+            path: "TestReport.test.action.assert"
+        },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -682,6 +716,16 @@ public type TestReportSetupAction record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "TestReport.test.action.id"
+        },
+
+        "operation": {
+            name: "operation",
+            dataType: TestReportSetupActionOperation,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "An operation would involve a REST request to a server.",
+            path: "TestReport.test.action.operation"
         }
     },
     serializers: {
@@ -693,8 +737,10 @@ public type TestReportTestAction record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
+    TestReportSetupActionAssert assert?;
     r4:Extension[] modifierExtension?;
     string id?;
+    TestReportSetupActionOperation operation?;
 |};
 
 # FHIR TestReportTeardown datatype record.
@@ -755,7 +801,14 @@ public type TestReportTeardown record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.TestReport.teardown.action constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.TestReport.teardown.action constraint. This field must be an array containing at most one item."
+        }
     }
     TestReportTeardownAction[] action;
     string id?;
@@ -819,7 +872,14 @@ public type TestReportSetup record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.TestReport.setup.action constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.TestReport.setup.action constraint. This field must be an array containing at most one item."
+        }
     }
     TestReportSetupAction[] action;
     string id?;

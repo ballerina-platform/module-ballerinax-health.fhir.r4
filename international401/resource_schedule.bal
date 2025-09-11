@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -200,7 +200,10 @@ public type Schedule record {|
     r4:CodeableConcept[] serviceCategory?;
     r4:Period planningHorizon?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Schedule.actor constraint. This field must be an array containing at least one item."
+        }
     }
     r4:Reference[] actor;
     r4:Resource[] contained?;

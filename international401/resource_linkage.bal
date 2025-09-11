@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -145,7 +145,10 @@ public type Linkage record {|
     r4:Resource[] contained?;
     r4:Extension[] extension?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Linkage.item constraint. This field must be an array containing at least one item."
+        }
     }
     LinkageItem[] item;
     r4:Reference author?;

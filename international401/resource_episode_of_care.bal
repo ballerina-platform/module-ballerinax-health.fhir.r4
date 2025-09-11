@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_EPISODEOFCARE = "http://hl7.org/fhir/StructureDefinition/EpisodeOfCare";
 public const RESOURCE_NAME_EPISODEOFCARE = "EpisodeOfCare";
+
+public type EpisodeOfCareExtensions (EventBasedOn|r4:Extension|WorkflowReleaseDate);
 
 # FHIR EpisodeOfCare resource record.
 #

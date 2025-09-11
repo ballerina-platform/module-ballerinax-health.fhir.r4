@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -352,16 +352,27 @@ public type MedicationKnowledge record {|
 
 # FHIR MedicationKnowledgeAdministrationGuidelinesPatientCharacteristics datatype record.
 #
+# + characteristicQuantity - Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + characteristicMedicationKnowledgeQuantity - Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).
-# + characteristicMedicationKnowledgeCodeableConcept - Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + value - The specific characteristic (e.g. height, weight, gender, etc.).
+# + characteristicCodeableConcept - Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).
+
 @r4:DataTypeDefinition {
     name: "MedicationKnowledgeAdministrationGuidelinesPatientCharacteristics",
     baseType: (),
     elements: {
+        "characteristicQuantity": {
+            name: "characteristicQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
+            path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.characteristic[x]"
+        },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -370,24 +381,6 @@ public type MedicationKnowledge record {|
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.extension"
-        },
-        "characteristicMedicationKnowledgeQuantity": {
-            name: "characteristicMedicationKnowledgeQuantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
-            path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.characteristic[x]"
-        },
-        "characteristicMedicationKnowledgeCodeableConcept": {
-            name: "characteristicMedicationKnowledgeCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
-            path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.characteristic[x]"
         },
         "modifierExtension": {
             name: "modifierExtension",
@@ -415,6 +408,16 @@ public type MedicationKnowledge record {|
             isArray: true,
             description: "The specific characteristic (e.g. height, weight, gender, etc.).",
             path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.value"
+        },
+
+        "characteristicCodeableConcept": {
+            name: "characteristicCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specific characteristic that is relevant to the administration guideline (e.g. height, weight, gender).",
+            path: "MedicationKnowledge.administrationGuidelines.patientCharacteristics.characteristic[x]"
         }
     },
     serializers: {
@@ -425,12 +428,12 @@ public type MedicationKnowledge record {|
 public type MedicationKnowledgeAdministrationGuidelinesPatientCharacteristics record {|
     *r4:BackboneElement;
 
+    r4:Quantity characteristicQuantity?;
     r4:Extension[] extension?;
-    r4:Quantity characteristicMedicationKnowledgeQuantity;
-    r4:CodeableConcept characteristicMedicationKnowledgeCodeableConcept;
     r4:Extension[] modifierExtension?;
     string id?;
     string[] value?;
+    r4:CodeableConcept characteristicCodeableConcept?;
 |};
 
 # FHIR MedicationKnowledgeKinetics datatype record.
@@ -745,10 +748,10 @@ public type MedicationKnowledgeMonograph record {|
 public type MedicationKnowledgeIngredient record {|
     *r4:BackboneElement;
 
-    r4:Reference itemReference;
+    r4:Reference itemReference?;
     r4:Extension[] extension?;
     r4:Ratio strength?;
-    r4:CodeableConcept itemCodeableConcept;
+    r4:CodeableConcept itemCodeableConcept?;
     r4:Extension[] modifierExtension?;
     string id?;
     boolean isActive?;
@@ -1545,7 +1548,14 @@ public type MedicationKnowledgeRelatedMedicationKnowledge record {|
     *r4:BackboneElement;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.MedicationKnowledge.relatedMedicationKnowledge.reference constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.MedicationKnowledge.relatedMedicationKnowledge.reference constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Reference[] reference;
     r4:Extension[] extension?;
@@ -1627,7 +1637,14 @@ public type MedicationKnowledgeAdministrationGuidelinesDosage record {|
     *r4:BackboneElement;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.MedicationKnowledge.administrationGuidelines.dosage.dosage constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.MedicationKnowledge.administrationGuidelines.dosage.dosage constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Dosage[] dosage;
     r4:Extension[] extension?;

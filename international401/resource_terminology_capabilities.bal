@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_TERMINOLOGYCAPABILITIES = "http://hl7.org/fhir/StructureDefinition/TerminologyCapabilities";
 public const RESOURCE_NAME_TERMINOLOGYCAPABILITIES = "TerminologyCapabilities";
+
+public type TerminologyCapabilitiesExtensions (r4:Extension|Replaces);
 
 # FHIR TerminologyCapabilities resource record.
 #
@@ -1080,7 +1082,14 @@ public type TerminologyCapabilitiesCodeSystemVersionFilter record {|
     *r4:BackboneElement;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.TerminologyCapabilities.codeSystem.version.filter.op constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.TerminologyCapabilities.codeSystem.version.filter.op constraint. This field must be an array containing at most one item."
+        }
     }
     r4:code[] op;
     r4:Extension[] extension?;

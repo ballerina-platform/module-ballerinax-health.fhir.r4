@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_IMMUNIZATIONRECOMMENDATION = "http://hl7.org/fhir/StructureDefinition/ImmunizationRecommendation";
 public const RESOURCE_NAME_IMMUNIZATIONRECOMMENDATION = "ImmunizationRecommendation";
+
+public type ImmunizationRecommendationExtensions (r4:Extension|WorkflowCompliesWith|WorkflowEpisodeOfCare|WorkflowGeneratedFrom|WorkflowShallComplyWith|WorkflowTriggeredBy);
 
 # FHIR ImmunizationRecommendation resource record.
 #
@@ -165,7 +167,10 @@ public type ImmunizationRecommendation record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ImmunizationRecommendation.recommendation constraint. This field must be an array containing at least one item."
+        }
     }
     ImmunizationRecommendationRecommendation[] recommendation;
     r4:code language?;
