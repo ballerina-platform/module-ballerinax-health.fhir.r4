@@ -1,7 +1,7 @@
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org.au/fhir/ implementation guide.
 
-# FHIR R4 AUBase package
+# FHIR R4 health_fhir_r4_aubase410 package
 
 ## Package Overview
 
@@ -52,37 +52,37 @@ compliant with http://hl7.org.au/fhir/ implementation guide.
 | 30). AUBaseProcedure | [[Definition]][s30] [[Ballerina Record]][m30] |
 | 31). AUBaseEncounter | [[Definition]][s31] [[Ballerina Record]][m31] |
 
-[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseComposition
-[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseMedicationRequest
-[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBasePathologyResult
-[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBasePatient
-[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseDiagnosticResult
-[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBasePractitioner
-[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseLocation
-[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseHealthcareService
-[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseDiagnosticImagingResult
-[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseMedication
-[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseDiagnosticReport
-[m12]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUMedicineList
-[m13]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseDiagnosticRequest
-[m14]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseMedicationAdministration
-[m15]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseMedicationStatement
-[m16]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseSpecimen
-[m17]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseBodyStructure
-[m18]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseMedicationDispense
-[m19]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseCondition
-[m20]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseDiagnosticImagingReport
-[m21]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUHealthProgramParticipationSummary
-[m22]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseRelatedPerson
-[m23]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBasePathologyReport
-[m24]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseSubstance
-[m25]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBasePractitionerRole
-[m26]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseOrganisation
-[m27]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseAllergyIntolerance
-[m28]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseImmunisation
-[m29]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUAssertionNoRelevantFinding
-[m30]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseProcedure
-[m31]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.1.0#AUBaseEncounter
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseComposition
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseMedicationRequest
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBasePathologyResult
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBasePatient
+[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseDiagnosticResult
+[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBasePractitioner
+[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseLocation
+[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseHealthcareService
+[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseDiagnosticImagingResult
+[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseMedication
+[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseDiagnosticReport
+[m12]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUMedicineList
+[m13]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseDiagnosticRequest
+[m14]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseMedicationAdministration
+[m15]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseMedicationStatement
+[m16]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseSpecimen
+[m17]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseBodyStructure
+[m18]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseMedicationDispense
+[m19]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseCondition
+[m20]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseDiagnosticImagingReport
+[m21]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUHealthProgramParticipationSummary
+[m22]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseRelatedPerson
+[m23]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBasePathologyReport
+[m24]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseSubstance
+[m25]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBasePractitionerRole
+[m26]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseOrganisation
+[m27]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseAllergyIntolerance
+[m28]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseImmunisation
+[m29]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUAssertionNoRelevantFinding
+[m30]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseProcedure
+[m31]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aubase410/1.0.0#AUBaseEncounter
 
 [s1]: http://hl7.org.au/fhir/StructureDefinition/au-composition
 [s2]: http://hl7.org.au/fhir/StructureDefinition/au-medicationrequest

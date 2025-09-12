@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -42,6 +42,17 @@ import ballerinax/health.fhir.r4;
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuAustraliancompanynumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -68,16 +79,9 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
+        }
+
         },    
-        "AuAustraliancompanynumberUse": {
-            name: "AuAustraliancompanynumberUse",
-            dataType: AuAustraliancompanynumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -92,10 +96,10 @@ public type AuAustraliancompanynumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuAustraliancompanynumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
-    AuAustraliancompanynumberUse AuAustraliancompanynumberUse?;
 |};
 
 public enum AuAustraliancompanynumberUse {
@@ -264,7 +268,9 @@ public enum AuAustraliancompanynumberUse {
             isArray: false,
             description: "Instructions in terms that are understood by the patient or consumer.",
             path: "Dosage.patientInstruction"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -320,8 +326,9 @@ public type AuDosage record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuNatasitenumberUse": {
-            name: "AuNatasitenumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuNatasitenumberUse,
             min: 0,
             max: 1,
@@ -355,7 +362,9 @@ public type AuDosage record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -370,7 +379,7 @@ public type AuNatasitenumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuNatasitenumberUse AuNatasitenumberUse?;
+    AuNatasitenumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -383,76 +392,6 @@ public enum AuNatasitenumberUse {
     CODE_AUNATASITENUMBERUSE_OLD = "old",
     CODE_AUNATASITENUMBERUSE_OFFICIAL = "official"
 };
-
-
-@r4:DataTypeDefinition {
-    name: "AhpraRegistrationDetails",
-    baseType: (),
-    elements: {
-    
-        "valueCodeableConcept": {
-            name: "valueCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Ahpra notation type value.",
-            path: "Extension.extension.extension.value[x]"
-        },    
-        "valueBase64Binary": {
-            name: "valueBase64Binary",
-            dataType: r4:base64Binary,
-            min: 0,
-            max: 0,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Ahpra notation descriptive details value.",
-            path: "Extension.extension.extension.value[x]"
-        },    
-        "valueDate": {
-            name: "valueDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Ahpra notation last edit date value.",
-            path: "Extension.extension.extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AhpraregistrationDetails record {|
-    *r4:Base64BinaryExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:CodeableConcept valueCodeableConcept?;
-    string valueString?;
-    r4:date valueDate?;
-    string url;
-|};
-
 
 @r4:DataTypeDefinition {
     name: "AUETPPrescriptionIdentifier",
@@ -495,6 +434,17 @@ public type AhpraregistrationDetails record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuEtpprescriptionidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "display": {
             name: "display",
             dataType: string,
@@ -530,16 +480,9 @@ public type AhpraregistrationDetails record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
+        }
+
         },    
-        "AuEtpprescriptionidentifierUse": {
-            name: "AuEtpprescriptionidentifierUse",
-            dataType: AuEtpprescriptionidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -556,11 +499,11 @@ public type AuEtpprescriptionidentifier record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
+    AuEtpprescriptionidentifierUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
     string value;
-    AuEtpprescriptionidentifierUse AuEtpprescriptionidentifierUse?;
 |};
 
 public enum AuEtpprescriptionidentifierUse {
@@ -595,8 +538,9 @@ public enum AuEtpprescriptionidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuCspregistrationnumberUse": {
-            name: "AuCspregistrationnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuCspregistrationnumberUse,
             min: 0,
             max: 1,
@@ -630,7 +574,9 @@ public enum AuEtpprescriptionidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -645,7 +591,7 @@ public type AuCspregistrationnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuCspregistrationnumberUse AuCspregistrationnumberUse?;
+    AuCspregistrationnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -664,16 +610,6 @@ public enum AuCspregistrationnumberUse {
     name: "AUHPIO",
     baseType: (),
     elements: {
-    
-        "AuHpioUse": {
-            name: "AuHpioUse",
-            dataType: AuHpioUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -692,6 +628,17 @@ public enum AuCspregistrationnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuHpioUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -718,7 +665,9 @@ public enum AuCspregistrationnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -731,9 +680,10 @@ public type AuHpio record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuHpioUse AuHpioUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuHpioUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -771,8 +721,9 @@ public enum AuHpioUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuHealthcarecardnumberUse": {
-            name: "AuHealthcarecardnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuHealthcarecardnumberUse,
             min: 0,
             max: 1,
@@ -806,7 +757,9 @@ public enum AuHpioUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -821,7 +774,7 @@ public type AuHealthcarecardnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuHealthcarecardnumberUse AuHealthcarecardnumberUse?;
+    AuHealthcarecardnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -859,6 +812,17 @@ public enum AuHealthcarecardnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuHpiiUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -868,15 +832,7 @@ public enum AuHealthcarecardnumberUse {
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuHpiiUse": {
-            name: "AuHpiiUse",
-            dataType: AuHpiiUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -894,7 +850,9 @@ public enum AuHealthcarecardnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -909,8 +867,8 @@ public type AuHpii record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuHpiiUse use?;
     r4:Reference assigner?;
-    AuHpiiUse AuHpiiUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -925,87 +883,7 @@ public enum AuHpiiUse {
 
 
 @r4:DataTypeDefinition {
-    name: "MedicationType",
-    baseType: (),
-    elements: {
-    
-        "valueCoding": {
-            name: "valueCoding",
-            dataType: r4:Coding,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type MedicationType record {|
-    *r4:CodingExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Coding valueCoding;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "AuthorRelatedPerson",
-    baseType: (),
-    elements: {
-    
-        "valueReference": {
-            name: "valueReference",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuthorRelatedPerson record {|
-    *r4:ReferenceExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Reference valueReference;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "AUAustralianRegisteredBodyNumber",
+    name: "AUDVANumber",
     baseType: (),
     elements: {
     
@@ -1027,8 +905,285 @@ public type AuthorRelatedPerson record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuAustralianregistredbodynumberUse": {
-            name: "AuAustralianregistredbodynumberUse",
+
+        "use": {
+            name: "use",
+            dataType: AuDvanumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },    
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },    
+        "'type": {
+            name: "'type",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Entitlement type associated with a DVA issued Veteran Card.",
+            path: "Identifier.type"
+        },    
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+        }
+
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AuDvanumber record {|
+    *r4:Identifier;
+
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
+    string id?;
+    r4:Extension[] extension?;
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+    r4:Period period?;
+    r4:uri system;
+    AuDvanumberUse use?;
+    r4:Reference assigner?;
+    r4:CodeableConcept 'type;
+    string value;
+|};
+
+public enum AuDvanumberUse {
+    CODE_AUDVANUMBERUSE_SECONDARY = "secondary",
+    CODE_AUDVANUMBERUSE_TEMP = "temp",
+    CODE_AUDVANUMBERUSE_USUAL = "usual",
+    CODE_AUDVANUMBERUSE_OLD = "old",
+    CODE_AUDVANUMBERUSE_OFFICIAL = "official"
+};
+
+
+@r4:DataTypeDefinition {
+    name: "AULocationSpecificPracticeNumber",
+    baseType: (),
+    elements: {
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
+        },    
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
+        },    
+
+        "use": {
+            name: "use",
+            dataType: AuLocationspecificpracticenumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },    
+        "'type": {
+            name: "'type",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Identifier.type"
+        },    
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+        }
+
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AuLocationspecificpracticenumber record {|
+    *r4:Identifier;
+
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
+    string id?;
+    r4:Extension[] extension?;
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
+    r4:Period period?;
+    r4:uri system;
+    AuLocationspecificpracticenumberUse use?;
+    r4:Reference assigner?;
+    r4:CodeableConcept 'type;
+    string value;
+|};
+
+public enum AuLocationspecificpracticenumberUse {
+    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_SECONDARY = "secondary",
+    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_TEMP = "temp",
+    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_USUAL = "usual",
+    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_OLD = "old",
+    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_OFFICIAL = "official"
+};
+
+
+@r4:DataTypeDefinition {
+    name: "AUNationalProviderIdentifierAtOrganisation",
+    baseType: (),
+    elements: {
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
+        },    
+
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
+        },
+    
+        "use": {
+            name: "use",
+            dataType: AuNationalprovideridentifieratorganisationUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },    
+
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },
+    
+        "'type": {
+            name: "'type",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Identifier.type"
+        },    
+
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+}
+    
+        },    
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AuNationalprovideridentifieratorganisation record {|
+    *r4:Identifier;
+
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
+    string id?;
+    r4:Extension[] extension?;
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
+    r4:Period period?;
+    r4:uri system;
+    AuNationalprovideridentifieratorganisationUse use?;
+    r4:Reference assigner?;
+    r4:CodeableConcept 'type;
+    string value;
+|};
+
+public enum AuNationalprovideridentifieratorganisationUse {
+    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_SECONDARY = "secondary",
+    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_TEMP = "temp",
+    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_USUAL = "usual",
+    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_OLD = "old",
+    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_OFFICIAL = "official"
+};
+
+@r4:DataTypeDefinition {
+    name: "AUAustralianRegisteredBodyNumber",
+    baseType: (),
+    elements: {
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
+        },    
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
+        },    
+
+        "use": {
+            name: "use",
             dataType: AuAustralianregistredbodynumberUse,
             min: 0,
             max: 1,
@@ -1045,6 +1200,7 @@ public type AuthorRelatedPerson record {|
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -1062,7 +1218,9 @@ public type AuthorRelatedPerson record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1075,9 +1233,10 @@ public type AuAustralianregistredbodynumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
     r4:Period period?;
     r4:uri system;
-    AuAustralianregistredbodynumberUse AuAustralianregistredbodynumberUse?;
+    AuAustralianregistredbodynumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -1091,21 +1250,11 @@ public enum AuAustralianregistredbodynumberUse {
     CODE_AUAUSTRALIANREGISTREDBODYNUMBERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "AUIHI",
     baseType: (),
     elements: {
     
-        "AuIhiUse": {
-            name: "AuIhiUse",
-            dataType: AuIhiUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -1124,6 +1273,17 @@ public enum AuAustralianregistredbodynumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuIhiUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1150,7 +1310,9 @@ public enum AuAustralianregistredbodynumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+        },    
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1163,9 +1325,9 @@ public type AuIhi record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuIhiUse AuIhiUse?;
     r4:Period period?;
     r4:uri system;
+    AuIhiUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -1181,163 +1343,279 @@ public enum AuIhiUse {
 
 
 @r4:DataTypeDefinition {
-    name: "ContactPurpose",
+    name: "AUPAIDIdentifier",
     baseType: (),
     elements: {
     
-        "valueCodeableConcept": {
-            name: "valueCodeableConcept",
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
+        },    
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
+        },    
+
+        "use": {
+            name: "use",
+            dataType: AuPaididentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },    
+        "'type": {
+            name: "'type",
             dataType: r4:CodeableConcept,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Identifier.type"
         },    
-        "url": {
-            name: "url",
+        "value": {
+            name: "value",
             dataType: string,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+        }
+
+        },    
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type ContactPurpose record {|
-    *r4:CodeableConceptExtension;
+public type AuPaididentifier record {|
+    *r4:Identifier;
 
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:CodeableConcept valueCodeableConcept;
-    string url;
+    r4:Period period?;
+    r4:uri system;
+    AuPaididentifierUse use?;
+    r4:Reference assigner?;
+    r4:CodeableConcept 'type;
+    string value;
 |};
+
+public enum AuPaididentifierUse {
+    CODE_AUPAIDIDENTIFIERUSE_SECONDARY = "secondary",
+    CODE_AUPAIDIDENTIFIERUSE_TEMP = "temp",
+    CODE_AUPAIDIDENTIFIERUSE_USUAL = "usual",
+    CODE_AUPAIDIDENTIFIERUSE_OLD = "old",
+    CODE_AUPAIDIDENTIFIERUSE_OFFICIAL = "official"
+};
 
 
 @r4:DataTypeDefinition {
-    name: "MedicationGenericName",
+    name: "AUNATAAccreditationNumber",
     baseType: (),
     elements: {
-    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 1,
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
             max: 1,
             isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
         },    
-        "url": {
-            name: "url",
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
+        },    
+
+        "use": {
+            name: "use",
+            dataType: AuNataaccreditationnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },    
+
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },    
+        "'type": {
+            name: "'type",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Identifier.type"
+        },    
+        "value": {
+            name: "value",
             dataType: string,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type MedicationGenericName record {|
-    *r4:StringExtension;
+public type AuNataaccreditationnumber record {|
+    *r4:Identifier;
 
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString;
-    string url;
+
+    r4:Period period?;
+    r4:uri system;
+    AuNataaccreditationnumberUse use?;
+    r4:Reference assigner?;
+    r4:CodeableConcept 'type;
+    string value;
 |};
 
+public enum AuNataaccreditationnumberUse {
+    CODE_AUNATAACCREDITATIONNUMBERUSE_SECONDARY = "secondary",
+    CODE_AUNATAACCREDITATIONNUMBERUSE_TEMP = "temp",
+    CODE_AUNATAACCREDITATIONNUMBERUSE_USUAL = "usual",
+    CODE_AUNATAACCREDITATIONNUMBERUSE_OLD = "old",
+    CODE_AUNATAACCREDITATIONNUMBERUSE_OFFICIAL = "official"
+};
 
 @r4:DataTypeDefinition {
-    name: "AddressIdentifier",
+    name: "AUAhpraRegistrationNumber",
     baseType: (),
     elements: {
     
-        "valueIdentifier": {
-            name: "valueIdentifier",
-            dataType: r4:Identifier,
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
+        },    
+        "system": {
+            name: "system",
+            dataType: r4:uri,
             min: 1,
             max: 1,
             isArray: false,
-            description: "An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.",
-            path: "Extension.value[x]"
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
         },    
-        "url": {
-            name: "url",
+
+        "use": {
+            name: "use",
+            dataType: AuAhpraregistrationnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },    
+
+        "'type": {
+            name: "'type",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Identifier.type"
+        },    
+        "value": {
+            name: "value",
             dataType: string,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type AddressIdentifier record {|
-    *r4:IdentifierExtension;
+public type AuAhpraregistrationnumber record {|
+    *r4:Identifier;
 
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Identifier valueIdentifier;
-    string url;
+    r4:Period period?;
+    r4:uri system;
+    AuAhpraregistrationnumberUse use?;
+    r4:Reference assigner?;
+    r4:CodeableConcept 'type;
+    string value;
 |};
 
-
-@r4:DataTypeDefinition {
-    name: "AustralianIndigenousStatus",
-    baseType: (),
-    elements: {
-    
-        "valueCoding": {
-            name: "valueCoding",
-            dataType: r4:Coding,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "NHDD based indigenous status code.",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type IndigenousStatus record {|
-    *r4:CodingExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Coding valueCoding;
-    string url;
-|};
+public enum AuAhpraregistrationnumberUse {
+    CODE_AUAHPRAREGISTRATIONNUMBERUSE_SECONDARY = "secondary",
+    CODE_AUAHPRAREGISTRATIONNUMBERUSE_TEMP = "temp",
+    CODE_AUAHPRAREGISTRATIONNUMBERUSE_USUAL = "usual",
+    CODE_AUAHPRAREGISTRATIONNUMBERUSE_OLD = "old",
+    CODE_AUAHPRAREGISTRATIONNUMBERUSE_OFFICIAL = "official"
+};
 
 
 @r4:DataTypeDefinition {
@@ -1381,6 +1659,16 @@ public type IndigenousStatus record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuEmployeenumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },    
         "display": {
             name: "display",
             dataType: string,
@@ -1399,15 +1687,6 @@ public type IndigenousStatus record {|
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuEmployeenumberUse": {
-            name: "AuEmployeenumberUse",
-            dataType: AuEmployeenumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "'type": {
             name: "'type",
             dataType: r4:uri,
@@ -1425,7 +1704,9 @@ public type IndigenousStatus record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1442,9 +1723,9 @@ public type AuEmployeenumber record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
+    AuEmployeenumberUse use?;
     string display;
     r4:Reference assigner;
-    AuEmployeenumberUse AuEmployeenumberUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -1456,46 +1737,6 @@ public enum AuEmployeenumberUse {
     CODE_AUEMPLOYEENUMBERUSE_OLD = "old",
     CODE_AUEMPLOYEENUMBERUSE_OFFICIAL = "official"
 };
-
-
-@r4:DataTypeDefinition {
-    name: "Ethnicity",
-    baseType: (),
-    elements: {
-    
-        "valueCodeableConcept": {
-            name: "valueCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Ethnicity record {|
-    *r4:CodeableConceptExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:CodeableConcept valueCodeableConcept;
-    string url;
-|};
 
 
 @r4:DataTypeDefinition {
@@ -1521,6 +1762,16 @@ public type Ethnicity record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuDeliverypointidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },    
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1547,16 +1798,9 @@ public type Ethnicity record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        },    
-        "AuDeliverypointidentifierUse": {
-            name: "AuDeliverypointidentifierUse",
-            dataType: AuDeliverypointidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1571,10 +1815,10 @@ public type AuDeliverypointidentifier record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuDeliverypointidentifierUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
-    AuDeliverypointidentifierUse AuDeliverypointidentifierUse?;
 |};
 
 public enum AuDeliverypointidentifierUse {
@@ -1590,7 +1834,6 @@ public enum AuDeliverypointidentifierUse {
     name: "AUGNAFIdentifier",
     baseType: (),
     elements: {
-    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -1600,6 +1843,7 @@ public enum AuDeliverypointidentifierUse {
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
         },    
+
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -1608,6 +1852,16 @@ public enum AuDeliverypointidentifierUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
+        },    
+
+        "use": {
+            name: "use",
+            dataType: AuGnafidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
         },    
         "assigner": {
             name: "assigner",
@@ -1635,16 +1889,9 @@ public enum AuDeliverypointidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        },    
-        "AuGnafidentifierUse": {
-            name: "AuGnafidentifierUse",
-            dataType: AuGnafidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1657,12 +1904,13 @@ public type AuGnafidentifier record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
     r4:Period period?;
     r4:uri system;
+    AuGnafidentifierUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
-    AuGnafidentifierUse AuGnafidentifierUse?;
 |};
 
 public enum AuGnafidentifierUse {
@@ -1678,7 +1926,6 @@ public enum AuGnafidentifierUse {
     name: "AULocalDispenseIdentifier",
     baseType: (),
     elements: {
-    
         "reference": {
             name: "reference",
             dataType: string,
@@ -1688,6 +1935,7 @@ public enum AuGnafidentifierUse {
             description: "A reference to a location at which the other resource is found. The reference may be a relative reference, in which case it is relative to the service base URL, or an absolute URL that resolves to the location where the resource is found. The reference may be version specific or not. If the reference is not to a FHIR RESTful server, then it should be assumed to be version specific. Internal fragment references (start with '#') refer to contained resources.",
             path: "Identifier.assigner.reference"
         },    
+
         "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
@@ -1697,6 +1945,7 @@ public enum AuGnafidentifierUse {
             description: "An identifier for the target resource. This is used when there is no way to reference the other resource directly, either because the entity it represents is not available through a FHIR server, or because there is no way for the author of the resource to convert a known identifier to an actual location. There is no requirement that a Reference.identifier point to something that is actually exposed as a FHIR instance, but it SHALL point to a business concept that would be expected to be exposed as a FHIR instance, and that instance would need to be of a FHIR resource type allowed by the reference.",
             path: "Identifier.assigner.identifier"
         },    
+    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -1715,8 +1964,9 @@ public enum AuGnafidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuLocaldispenseidentifierUse": {
-            name: "AuLocaldispenseidentifierUse",
+
+        "use": {
+            name: "use",
             dataType: AuLocaldispenseidentifierUse,
             min: 0,
             max: 1,
@@ -1724,6 +1974,7 @@ public enum AuGnafidentifierUse {
             description: "The purpose of this identifier.",
             path: "Identifier.use"
         },    
+
         "display": {
             name: "display",
             dataType: string,
@@ -1732,7 +1983,8 @@ public enum AuGnafidentifierUse {
             isArray: false,
             description: "Plain text narrative that identifies the resource in addition to the resource reference.",
             path: "Identifier.assigner.display"
-        },    
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1759,7 +2011,9 @@ public enum AuGnafidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1772,11 +2026,12 @@ public type AuLocaldispenseidentifier record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
     string reference?;
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
-    AuLocaldispenseidentifierUse AuLocaldispenseidentifierUse?;
+    AuLocaldispenseidentifierUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -1793,133 +2048,147 @@ public enum AuLocaldispenseidentifierUse {
 
 
 @r4:DataTypeDefinition {
-    name: "HL7V2ReceivingApplication",
+    name: "AustralianAddress",
     baseType: (),
     elements: {
-    
-        "valueBase64Binary": {
-            name: "valueBase64Binary",
-            dataType: r4:base64Binary,
-            min: 0,
-            max: 0,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "valueString": {
-            name: "valueString",
+        "country": {
+            name: "country",
             dataType: string,
             min: 0,
             max: 1,
             isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.extension.value[x]"
+            description: "Fixed value if present otherwise assumed to be Australia in this context.",
+            path: "Address.country"
         },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
             max: 1,
             isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuReceivingapplication record {|
-    *r4:Base64BinaryExtension;
+            description: "Time period when address was/is in use.",
+            path: "Address.period"
+        },    
 
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString?;
-    r4:uri url;
-|};
+        "city": {
+            name: "city",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the city, town, suburb, village or other community or delivery center.",
+            path: "Address.city"
+        },    
 
+        "use": {
+            name: "use",
+            dataType: AuAddressUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this address.",
+            path: "Address.use"
+        },    
 
-@r4:DataTypeDefinition {
-    name: "InformationRecipient",
-    baseType: (),
-    elements: {
+        "line": {
+            name: "line",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.",
+            path: "Address.line"
+        },    
+
+        "district": {
+            name: "district",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The name of the administrative area (county).",
+            path: "Address.district"
+        },    
+
+        "postalCode": {
+            name: "postalCode",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A postal code designating a region defined by the postal service.",
+            path: "Address.postalCode"
+        },    
+
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.",
+            path: "Address.text"
+        },
     
-        "valueReference": {
-            name: "valueReference",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
+        "state": {
+            name: "state",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
+            description: "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).",
+            path: "Address.state"
+        },    
+
+        "'type": {
+            name: "'type",
+            dataType: AuAddressType,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
+            path: "Address.type"
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type InformationRecipient record {|
-    *r4:ReferenceExtension;
+public type AuAddress record {|
+    *r4:Address;
 
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Reference valueReference;
-    string url;
+
+    string country?;
+    r4:Period period?;
+    string city?;
+    AuAddressUse use?;
+    string[] line?;
+    string district?;
+    string postalCode?;
+    string text?;
+    string state?;
+    AuAddressType 'type?;
 |};
 
+public enum AuAddressUse {
+    CODE_AUADDRESSUSE_TEMP = "temp",
+    CODE_AUADDRESSUSE_WORK = "work",
+    CODE_AUADDRESSUSE_OLD = "old",
+    CODE_AUADDRESSUSE_HOME = "home",
+    CODE_AUADDRESSUSE_BILLING = "billing"
+};
 
-@r4:DataTypeDefinition {
-    name: "AssociatedHealthcareService",
-    baseType: (),
-    elements: {
-    
-        "valueReference": {
-            name: "valueReference",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AssociatedHealthcareservice record {|
-    *r4:ReferenceExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Reference valueReference;
-    string url;
-|};
-
+public enum AuAddressType {
+    CODE_AUADDRESSTYPE_POSTAL = "postal",
+    CODE_AUADDRESSTYPE_PHYSICAL = "physical",
+    CODE_AUADDRESSTYPE_BOTH = "both"
+};
 
 @r4:DataTypeDefinition {
     name: "AUCwlthSeniorsHealthCardNumber",
@@ -1944,6 +2213,17 @@ public type AssociatedHealthcareservice record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuCwlthseniorshealthcardnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1953,15 +2233,7 @@ public type AssociatedHealthcareservice record {|
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuCwlthseniorshealthcardnumberUse": {
-            name: "AuCwlthseniorshealthcardnumberUse",
-            dataType: AuCwlthseniorshealthcardnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -1979,7 +2251,9 @@ public type AssociatedHealthcareservice record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1994,8 +2268,8 @@ public type AuCwlthseniorshealthcardnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuCwlthseniorshealthcardnumberUse use?;
     r4:Reference assigner?;
-    AuCwlthseniorshealthcardnumberUse AuCwlthseniorshealthcardnumberUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -2050,8 +2324,9 @@ public enum AuCwlthseniorshealthcardnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuLocalreportidentifierUse": {
-            name: "AuLocalreportidentifierUse",
+
+        "use": {
+            name: "use",
             dataType: AuLocalreportidentifierUse,
             min: 0,
             max: 1,
@@ -2094,7 +2369,9 @@ public enum AuCwlthseniorshealthcardnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2111,7 +2388,7 @@ public type AuLocalreportidentifier record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
-    AuLocalreportidentifierUse AuLocalreportidentifierUse?;
+    AuLocalreportidentifierUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -2150,8 +2427,9 @@ public enum AuLocalreportidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuAustralianbusinessnumberUse": {
-            name: "AuAustralianbusinessnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuAustralianbusinessnumberUse,
             min: 0,
             max: 1,
@@ -2185,7 +2463,9 @@ public enum AuLocalreportidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2200,7 +2480,7 @@ public type AuAustralianbusinessnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuAustralianbusinessnumberUse AuAustralianbusinessnumberUse?;
+    AuAustralianbusinessnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -2247,15 +2527,6 @@ public enum AuAustralianbusinessnumberUse {
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
         },    
-        "AuLocalorderidentifierUse": {
-            name: "AuLocalorderidentifierUse",
-            dataType: AuLocalorderidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -2264,6 +2535,16 @@ public enum AuAustralianbusinessnumberUse {
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
+        },    
+
+        "use": {
+            name: "use",
+            dataType: AuLocalorderidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
         },    
         "display": {
             name: "display",
@@ -2300,7 +2581,9 @@ public enum AuAustralianbusinessnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2316,8 +2599,8 @@ public type AuLocalorderidentifier record {|
     string reference?;
     r4:Identifier identifier?;
     r4:Period period?;
-    AuLocalorderidentifierUse AuLocalorderidentifierUse?;
     r4:uri system;
+    AuLocalorderidentifierUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -2334,130 +2617,134 @@ public enum AuLocalorderidentifierUse {
 
 
 @r4:DataTypeDefinition {
-    name: "IHIVerifiedDate",
+    name: "AULocalPrescriptionIdentifier",
     baseType: (),
     elements: {
+        "reference": {
+            name: "reference",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A reference to a location at which the other resource is found. The reference may be a relative reference, in which case it is relative to the service base URL, or an absolute URL that resolves to the location where the resource is found. The reference may be version specific or not. If the reference is not to a FHIR RESTful server, then it should be assumed to be version specific. Internal fragment references (start with '#') refer to contained resources.",
+            path: "Identifier.assigner.reference"
+        },
+
+        "identifier": {
+            name: "identifier",
+            dataType: r4:Identifier,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "An identifier for the target resource. This is used when there is no way to reference the other resource directly, either because the entity it represents is not available through a FHIR server, or because there is no way for the author of the resource to convert a known identifier to an actual location. There is no requirement that a Reference.identifier point to something that is actually exposed as a FHIR instance, but it SHALL point to a business concept that would be expected to be exposed as a FHIR instance, and that instance would need to be of a FHIR resource type allowed by the reference.",
+            path: "Identifier.assigner.identifier"
+        },
     
-        "valueDateTime": {
-            name: "valueDateTime",
-            dataType: r4:dateTime,
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
+        },    
+
+        "system": {
+            name: "system",
+            dataType: r4:uri,
             min: 1,
             max: 1,
             isArray: false,
-            description: "The date that the IHI was verified with HI Services.",
-            path: "Extension.value[x]"
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
+        },
+
+        "use": {
+            name: "use",
+            dataType: AuLocalprescriptionidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
         },    
-        "url": {
-            name: "url",
+
+        "display": {
+            name: "display",
             dataType: string,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
+            description: "Plain text narrative that identifies the resource in addition to the resource reference.",
+            path: "Identifier.assigner.display"
+        },    
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },    
+        "'type": {
+            name: "'type",
+            dataType: r4:uri,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The expected type of the target of the reference. If both Reference.type and Reference.reference are populated and Reference.reference is a FHIR URL, both SHALL be consistent. The type is the Canonical URL of Resource Definition that is the type this reference refers to. References are URLs that are relative to http://hl7.org/fhir/StructureDefinition/ e.g. 'Patient' is a reference to http://hl7.org/fhir/StructureDefinition/Patient. Absolute URLs are only allowed for logical models (and can only be used in references in logical models, not resources).",
+            path: "Identifier.assigner.type"
+        },    
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type IhiVerifiedDate record {|
-    *r4:DateTimeExtension;
+public type AuLocalprescriptionidentifier record {|
+    *r4:Identifier;
 
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:dateTime valueDateTime;
-    string url;
+
+    string reference?;
+    r4:Identifier identifier?;
+    r4:Period period?;
+    r4:uri system;
+    AuLocalprescriptionidentifierUse use?;
+    string display;
+    r4:Reference assigner;
+    r4:CodeableConcept 'type;
+    string value;
 |};
 
-
-@r4:DataTypeDefinition {
-    name: "DispenseNumber",
-    baseType: (),
-    elements: {
-    
-        "valueInteger": {
-            name: "valueInteger",
-            dataType: r4:integer,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type DispenseNumber record {|
-    *r4:IntegerExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:integer valueInteger;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "EncounterDescription",
-    baseType: (),
-    elements: {
-    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type EncounterDescription record {|
-    *r4:StringExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString;
-    string url;
-|};
+public enum AuLocalprescriptionidentifierUse {
+    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_SECONDARY = "secondary",
+    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_TEMP = "temp",
+    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_USUAL = "usual",
+    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_OLD = "old",
+    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_OFFICIAL = "official"
+};
 
 
 @r4:DataTypeDefinition {
     name: "AUPharmacyApprovalNumber",
     baseType: (),
     elements: {
-    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -2476,15 +2763,17 @@ public type EncounterDescription record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuPharmacyapprovalnumberUse": {
-            name: "AuPharmacyapprovalnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuPharmacyapprovalnumberUse,
             min: 0,
             max: 1,
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -2511,7 +2800,9 @@ public type EncounterDescription record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2524,9 +2815,10 @@ public type AuPharmacyapprovalnumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
     r4:Period period?;
     r4:uri system;
-    AuPharmacyapprovalnumberUse AuPharmacyapprovalnumberUse?;
+    AuPharmacyapprovalnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -2540,21 +2832,11 @@ public enum AuPharmacyapprovalnumberUse {
     CODE_AUPHARMACYAPPROVALNUMBERUSE_OFFICIAL = "official"
 };
 
-
 @r4:DataTypeDefinition {
     name: "AUMedicareCardNumber",
     baseType: (),
     elements: {
     
-        "AuMedicarecardnumberUse": {
-            name: "AuMedicarecardnumberUse",
-            dataType: AuMedicarecardnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -2573,6 +2855,17 @@ public enum AuPharmacyapprovalnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuMedicarecardnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -2582,6 +2875,7 @@ public enum AuPharmacyapprovalnumberUse {
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
+
         "end": {
             name: "end",
             dataType: r4:dateTime,
@@ -2591,6 +2885,7 @@ public enum AuPharmacyapprovalnumberUse {
             description: "The expiry date for the Medicare card. While this is typically only month and year, the day date part may be included when the card is a temporary Medicare card.",
             path: "Identifier.period.end"
         },    
+
         "'start": {
             name: "'start",
             dataType: r4:dateTime,
@@ -2599,7 +2894,8 @@ public enum AuPharmacyapprovalnumberUse {
             isArray: false,
             description: "The start of the period. The boundary is inclusive.",
             path: "Identifier.period.start"
-        },    
+        },
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -2617,7 +2913,9 @@ public enum AuPharmacyapprovalnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2630,9 +2928,9 @@ public type AuMedicarecardnumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuMedicarecardnumberUse AuMedicarecardnumberUse?;
     r4:Period period?;
     r4:uri system;
+    AuMedicarecardnumberUse use?;
     r4:Reference assigner?;
     r4:dateTime end?;
     r4:dateTime 'start?;
@@ -2650,43 +2948,95 @@ public enum AuMedicarecardnumberUse {
 
 
 @r4:DataTypeDefinition {
-    name: "EncryptionCertificatePEMx509",
+    name: "AUPBSPrescriberNumber",
     baseType: (),
     elements: {
-    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 1,
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
             max: 1,
             isArray: false,
-            description: "Base64 encoded string containing PEM (RFC 7468) formatted X509 certificate.",
-            path: "Extension.value[x]"
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
         },    
-        "url": {
-            name: "url",
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
+        },    
+
+        "use": {
+            name: "use",
+            dataType: AuPbsprescribernumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },    
+        "'type": {
+            name: "'type",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Identifier.type"
+        },    
+        "value": {
+            name: "value",
             dataType: string,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type EncryptionCertificatePemX record {|
-    *r4:StringExtension;
+public type AuPbsprescribernumber record {|
+    *r4:Identifier;
 
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString;
-    string url;
+
+    r4:Period period?;
+    r4:uri system;
+    AuPbsprescribernumberUse use?;
+    r4:Reference assigner?;
+    r4:CodeableConcept 'type;
+    string value;
 |};
+
+public enum AuPbsprescribernumberUse {
+    CODE_AUPBSPRESCRIBERNUMBERUSE_SECONDARY = "secondary",
+    CODE_AUPBSPRESCRIBERNUMBERUSE_TEMP = "temp",
+    CODE_AUPBSPRESCRIBERNUMBERUSE_USUAL = "usual",
+    CODE_AUPBSPRESCRIBERNUMBERUSE_OLD = "old",
+    CODE_AUPBSPRESCRIBERNUMBERUSE_OFFICIAL = "official"
+};
 
 
 @r4:DataTypeDefinition {
@@ -2712,6 +3062,16 @@ public type EncryptionCertificatePemX record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuPaioidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },    
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -2720,15 +3080,6 @@ public type EncryptionCertificatePemX record {|
             isArray: false,
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
-        },    
-        "AuPaioidentifierUse": {
-            name: "AuPaioidentifierUse",
-            dataType: AuPaioidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
         },    
         "'type": {
             name: "'type",
@@ -2747,7 +3098,9 @@ public type EncryptionCertificatePemX record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2762,8 +3115,8 @@ public type AuPaioidentifier record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuPaioidentifierUse use?;
     r4:Reference assigner?;
-    AuPaioidentifierUse AuPaioidentifierUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -2781,7 +3134,6 @@ public enum AuPaioidentifierUse {
     name: "AUMedicalRecordNumber",
     baseType: (),
     elements: {
-    
         "reference": {
             name: "reference",
             dataType: string,
@@ -2791,6 +3143,7 @@ public enum AuPaioidentifierUse {
             description: "A reference to a location at which the other resource is found. The reference may be a relative reference, in which case it is relative to the service base URL, or an absolute URL that resolves to the location where the resource is found. The reference may be version specific or not. If the reference is not to a FHIR RESTful server, then it should be assumed to be version specific. Internal fragment references (start with '#') refer to contained resources.",
             path: "Identifier.assigner.reference"
         },    
+
         "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
@@ -2800,6 +3153,7 @@ public enum AuPaioidentifierUse {
             description: "An identifier for the target resource. This is used when there is no way to reference the other resource directly, either because the entity it represents is not available through a FHIR server, or because there is no way for the author of the resource to convert a known identifier to an actual location. There is no requirement that a Reference.identifier point to something that is actually exposed as a FHIR instance, but it SHALL point to a business concept that would be expected to be exposed as a FHIR instance, and that instance would need to be of a FHIR resource type allowed by the reference.",
             path: "Identifier.assigner.identifier"
         },    
+    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -2818,8 +3172,9 @@ public enum AuPaioidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuMedicalrecordnumberUse": {
-            name: "AuMedicalrecordnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuMedicalrecordnumberUse,
             min: 0,
             max: 1,
@@ -2827,6 +3182,7 @@ public enum AuPaioidentifierUse {
             description: "The purpose of this identifier.",
             path: "Identifier.use"
         },    
+
         "display": {
             name: "display",
             dataType: string,
@@ -2862,7 +3218,9 @@ public enum AuPaioidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2875,11 +3233,12 @@ public type AuMedicalrecordnumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
     string reference?;
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
-    AuMedicalrecordnumberUse AuMedicalrecordnumberUse?;
+    AuMedicalrecordnumberUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -2893,46 +3252,6 @@ public enum AuMedicalrecordnumberUse {
     CODE_AUMEDICALRECORDNUMBERUSE_OLD = "old",
     CODE_AUMEDICALRECORDNUMBERUSE_OFFICIAL = "official"
 };
-
-
-@r4:DataTypeDefinition {
-    name: "IHIStatus",
-    baseType: (),
-    elements: {
-    
-        "valueCoding": {
-            name: "valueCoding",
-            dataType: r4:Coding,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "IHI number status associated with an IHI identifier.",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type IhiStatus record {|
-    *r4:CodingExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Coding valueCoding;
-    string url;
-|};
 
 
 @r4:DataTypeDefinition {
@@ -2958,15 +3277,17 @@ public type IhiStatus record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuPensionerconcessioncardnumberUse": {
-            name: "AuPensionerconcessioncardnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuPensionerconcessioncardnumberUse,
             min: 0,
             max: 1,
             isArray: false,
             description: "The purpose of this identifier.",
             path: "Identifier.use"
-        },    
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -2976,6 +3297,7 @@ public type IhiStatus record {|
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -2993,7 +3315,9 @@ public type IhiStatus record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3008,7 +3332,7 @@ public type AuPensionerconcessioncardnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuPensionerconcessioncardnumberUse AuPensionerconcessioncardnumberUse?;
+    AuPensionerconcessioncardnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -3024,50 +3348,9 @@ public enum AuPensionerconcessioncardnumberUse {
 
 
 @r4:DataTypeDefinition {
-    name: "VaccineSerialNumber",
-    baseType: (),
-    elements: {
-    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type VaccineSerialNumber record {|
-    *r4:StringExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
     name: "AUInsuranceMemberNumber",
     baseType: (),
     elements: {
-    
         "reference": {
             name: "reference",
             dataType: string,
@@ -3077,6 +3360,7 @@ public type VaccineSerialNumber record {|
             description: "A reference to a location at which the other resource is found. The reference may be a relative reference, in which case it is relative to the service base URL, or an absolute URL that resolves to the location where the resource is found. The reference may be version specific or not. If the reference is not to a FHIR RESTful server, then it should be assumed to be version specific. Internal fragment references (start with '#') refer to contained resources.",
             path: "Identifier.assigner.reference"
         },    
+    
         "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
@@ -3095,6 +3379,7 @@ public type VaccineSerialNumber record {|
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
         },    
+
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -3104,8 +3389,9 @@ public type VaccineSerialNumber record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuInsurancemembernumberUse": {
-            name: "AuInsurancemembernumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuInsurancemembernumberUse,
             min: 0,
             max: 1,
@@ -3113,6 +3399,7 @@ public type VaccineSerialNumber record {|
             description: "The purpose of this identifier.",
             path: "Identifier.use"
         },    
+
         "display": {
             name: "display",
             dataType: string,
@@ -3122,6 +3409,7 @@ public type VaccineSerialNumber record {|
             description: "Plain text narrative that identifies the resource in addition to the resource reference.",
             path: "Identifier.assigner.display"
         },    
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -3131,6 +3419,7 @@ public type VaccineSerialNumber record {|
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
+
         "'type": {
             name: "'type",
             dataType: r4:uri,
@@ -3140,6 +3429,7 @@ public type VaccineSerialNumber record {|
             description: "The expected type of the target of the reference. If both Reference.type and Reference.reference are populated and Reference.reference is a FHIR URL, both SHALL be consistent. The type is the Canonical URL of Resource Definition that is the type this reference refers to. References are URLs that are relative to http://hl7.org/fhir/StructureDefinition/ e.g. 'Patient' is a reference to http://hl7.org/fhir/StructureDefinition/Patient. Absolute URLs are only allowed for logical models (and can only be used in references in logical models, not resources).",
             path: "Identifier.assigner.type"
         },    
+
         "value": {
             name: "value",
             dataType: string,
@@ -3148,7 +3438,9 @@ public type VaccineSerialNumber record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+}
+
+        },    
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3161,11 +3453,12 @@ public type AuInsurancemembernumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
     string reference?;
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
-    AuInsurancemembernumberUse AuInsurancemembernumberUse?;
+    AuInsurancemembernumberUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -3179,1738 +3472,6 @@ public enum AuInsurancemembernumberUse {
     CODE_AUINSURANCEMEMBERNUMBERUSE_OLD = "old",
     CODE_AUINSURANCEMEMBERNUMBERUSE_OFFICIAL = "official"
 };
-
-
-@r4:DataTypeDefinition {
-    name: "AUCareAgencyEmployeeIdentifier",
-    baseType: (),
-    elements: {
-    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "AuCareagencyemployeeidentifierUse": {
-            name: "AuCareagencyemployeeidentifierUse",
-            dataType: AuCareagencyemployeeidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-            path: "Identifier.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuCareagencyemployeeidentifier record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Period period?;
-    AuCareagencyemployeeidentifierUse AuCareagencyemployeeidentifierUse?;
-    r4:uri system;
-    r4:Reference assigner?;
-    r4:CodeableConcept 'type;
-    string value;
-|};
-
-public enum AuCareagencyemployeeidentifierUse {
-    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_SECONDARY = "secondary",
-    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_TEMP = "temp",
-    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_USUAL = "usual",
-    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_OLD = "old",
-    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "AUMedicareProviderNumber",
-    baseType: (),
-    elements: {
-    
-        "AuMedicareprovidernumberUse": {
-            name: "AuMedicareprovidernumberUse",
-            dataType: AuMedicareprovidernumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-            path: "Identifier.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuMedicareprovidernumber record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuMedicareprovidernumberUse AuMedicareprovidernumberUse?;
-    r4:Period period?;
-    r4:uri system;
-    r4:Reference assigner?;
-    r4:CodeableConcept 'type;
-    string value;
-|};
-
-public enum AuMedicareprovidernumberUse {
-    CODE_AUMEDICAREPROVIDERNUMBERUSE_SECONDARY = "secondary",
-    CODE_AUMEDICAREPROVIDERNUMBERUSE_TEMP = "temp",
-    CODE_AUMEDICAREPROVIDERNUMBERUSE_USUAL = "usual",
-    CODE_AUMEDICAREPROVIDERNUMBERUSE_OLD = "old",
-    CODE_AUMEDICAREPROVIDERNUMBERUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "IHIRecordStatus",
-    baseType: (),
-    elements: {
-    
-        "valueCoding": {
-            name: "valueCoding",
-            dataType: r4:Coding,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type IhiRecordStatus record {|
-    *r4:CodingExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Coding valueCoding;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "MedicationLongTerm",
-    baseType: (),
-    elements: {
-    
-        "valueBoolean": {
-            name: "valueBoolean",
-            dataType: boolean,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type MedicationLongTerm record {|
-    *r4:BooleanExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    boolean valueBoolean;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "AustralianTimeZone",
-    baseType: (),
-    elements: {
-    
-        "valueCodeableConcept": {
-            name: "valueCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuTimezone record {|
-    *r4:CodeableConceptExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:CodeableConcept valueCodeableConcept;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "HL7V2ReceivingFacility",
-    baseType: (),
-    elements: {
-    
-        "valueBase64Binary": {
-            name: "valueBase64Binary",
-            dataType: r4:base64Binary,
-            min: 0,
-            max: 0,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuReceivingfacility record {|
-    *r4:Base64BinaryExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString?;
-    r4:uri url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "HL7V2AssigningAuthority",
-    baseType: (),
-    elements: {
-    
-        "valueBase64Binary": {
-            name: "valueBase64Binary",
-            dataType: r4:base64Binary,
-            min: 0,
-            max: 0,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuAssigningauthority record {|
-    *r4:Base64BinaryExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString?;
-    r4:uri url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "NoFixedAddress",
-    baseType: (),
-    elements: {
-    
-        "valueBoolean": {
-            name: "valueBoolean",
-            dataType: boolean,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type NoFixedAddress record {|
-    *r4:BooleanExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    boolean valueBoolean;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "AUDVANumber",
-    baseType: (),
-    elements: {
-    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "AuDvanumberUse": {
-            name: "AuDvanumberUse",
-            dataType: AuDvanumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Entitlement type associated with a DVA issued Veteran Card.",
-            path: "Identifier.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuDvanumber record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Period period?;
-    r4:uri system;
-    r4:Reference assigner?;
-    AuDvanumberUse AuDvanumberUse?;
-    r4:CodeableConcept 'type;
-    string value;
-|};
-
-public enum AuDvanumberUse {
-    CODE_AUDVANUMBERUSE_SECONDARY = "secondary",
-    CODE_AUDVANUMBERUSE_TEMP = "temp",
-    CODE_AUDVANUMBERUSE_USUAL = "usual",
-    CODE_AUDVANUMBERUSE_OLD = "old",
-    CODE_AUDVANUMBERUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "AULocationSpecificPracticeNumber",
-    baseType: (),
-    elements: {
-    
-        "AuLocationspecificpracticenumberUse": {
-            name: "AuLocationspecificpracticenumberUse",
-            dataType: AuLocationspecificpracticenumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-            path: "Identifier.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuLocationspecificpracticenumber record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuLocationspecificpracticenumberUse AuLocationspecificpracticenumberUse?;
-    r4:Period period?;
-    r4:uri system;
-    r4:Reference assigner?;
-    r4:CodeableConcept 'type;
-    string value;
-|};
-
-public enum AuLocationspecificpracticenumberUse {
-    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_SECONDARY = "secondary",
-    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_TEMP = "temp",
-    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_USUAL = "usual",
-    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_OLD = "old",
-    CODE_AULOCATIONSPECIFICPRACTICENUMBERUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "AUNationalProviderIdentifierAtOrganisation",
-    baseType: (),
-    elements: {
-    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "AuNationalprovideridentifieratorganisationUse": {
-            name: "AuNationalprovideridentifieratorganisationUse",
-            dataType: AuNationalprovideridentifieratorganisationUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-            path: "Identifier.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuNationalprovideridentifieratorganisation record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Period period?;
-    r4:uri system;
-    AuNationalprovideridentifieratorganisationUse AuNationalprovideridentifieratorganisationUse?;
-    r4:Reference assigner?;
-    r4:CodeableConcept 'type;
-    string value;
-|};
-
-public enum AuNationalprovideridentifieratorganisationUse {
-    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_SECONDARY = "secondary",
-    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_TEMP = "temp",
-    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_USUAL = "usual",
-    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_OLD = "old",
-    CODE_AUNATIONALPROVIDERIDENTIFIERATORGANISATIONUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "GroundsForConcurrentSupplyOfMedication",
-    baseType: (),
-    elements: {
-    
-        "valueCoding": {
-            name: "valueCoding",
-            dataType: r4:Coding,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type SubsidisedConcurrentSupply record {|
-    *r4:CodingExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Coding valueCoding;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "DateAccuracyIndicator",
-    baseType: (),
-    elements: {
-    
-        "valueCoding": {
-            name: "valueCoding",
-            dataType: r4:Coding,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Coding of the accuracy of a date.",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type DateAccuracyIndicator record {|
-    *r4:CodingExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Coding valueCoding;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "MedicationStrength",
-    baseType: (),
-    elements: {
-    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type MedicationStrength record {|
-    *r4:StringExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "AUPAIDIdentifier",
-    baseType: (),
-    elements: {
-    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-            path: "Identifier.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        },    
-        "AuPaididentifierUse": {
-            name: "AuPaididentifierUse",
-            dataType: AuPaididentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuPaididentifier record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Period period?;
-    r4:uri system;
-    r4:Reference assigner?;
-    r4:CodeableConcept 'type;
-    string value;
-    AuPaididentifierUse AuPaididentifierUse?;
-|};
-
-public enum AuPaididentifierUse {
-    CODE_AUPAIDIDENTIFIERUSE_SECONDARY = "secondary",
-    CODE_AUPAIDIDENTIFIERUSE_TEMP = "temp",
-    CODE_AUPAIDIDENTIFIERUSE_USUAL = "usual",
-    CODE_AUPAIDIDENTIFIERUSE_OLD = "old",
-    CODE_AUPAIDIDENTIFIERUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "AUNATAAccreditationNumber",
-    baseType: (),
-    elements: {
-    
-        "AuNataaccreditationnumberUse": {
-            name: "AuNataaccreditationnumberUse",
-            dataType: AuNataaccreditationnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-            path: "Identifier.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuNataaccreditationnumber record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuNataaccreditationnumberUse AuNataaccreditationnumberUse?;
-    r4:Period period?;
-    r4:uri system;
-    r4:Reference assigner?;
-    r4:CodeableConcept 'type;
-    string value;
-|};
-
-public enum AuNataaccreditationnumberUse {
-    CODE_AUNATAACCREDITATIONNUMBERUSE_SECONDARY = "secondary",
-    CODE_AUNATAACCREDITATIONNUMBERUSE_TEMP = "temp",
-    CODE_AUNATAACCREDITATIONNUMBERUSE_USUAL = "usual",
-    CODE_AUNATAACCREDITATIONNUMBERUSE_OLD = "old",
-    CODE_AUNATAACCREDITATIONNUMBERUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "AUAhpraRegistrationNumber",
-    baseType: (),
-    elements: {
-    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "AuAhpraregistrationnumberUse": {
-            name: "AuAhpraregistrationnumberUse",
-            dataType: AuAhpraregistrationnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-            path: "Identifier.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuAhpraregistrationnumber record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Period period?;
-    r4:uri system;
-    r4:Reference assigner?;
-    AuAhpraregistrationnumberUse AuAhpraregistrationnumberUse?;
-    r4:CodeableConcept 'type;
-    string value;
-|};
-
-public enum AuAhpraregistrationnumberUse {
-    CODE_AUAHPRAREGISTRATIONNUMBERUSE_SECONDARY = "secondary",
-    CODE_AUAHPRAREGISTRATIONNUMBERUSE_TEMP = "temp",
-    CODE_AUAHPRAREGISTRATIONNUMBERUSE_USUAL = "usual",
-    CODE_AUAHPRAREGISTRATIONNUMBERUSE_OLD = "old",
-    CODE_AUAHPRAREGISTRATIONNUMBERUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "AhpraProfessionDetails",
-    baseType: (),
-    elements: {
-    
-        "valueCodeableConcept": {
-            name: "valueCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Practitioner testing and work practice cautions type value.",
-            path: "Extension.extension.extension.value[x]"
-        },    
-        "valueBase64Binary": {
-            name: "valueBase64Binary",
-            dataType: r4:base64Binary,
-            min: 0,
-            max: 0,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Practitioner testing and work practice cautions description value.",
-            path: "Extension.extension.extension.value[x]"
-        },    
-        "valueDate": {
-            name: "valueDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Practitioner testing and work practice cautions last edited date value.",
-            path: "Extension.extension.extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AhpraprofessionDetails record {|
-    *r4:Base64BinaryExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:CodeableConcept valueCodeableConcept?;
-    string valueString?;
-    r4:date valueDate?;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "ResultCopiesTo",
-    baseType: (),
-    elements: {
-    
-        "valueReference": {
-            name: "valueReference",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type ResultCopiesTo record {|
-    *r4:ReferenceExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Reference valueReference;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "AustralianAddress",
-    baseType: (),
-    elements: {
-    
-        "country": {
-            name: "country",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Fixed value if present otherwise assumed to be Australia in this context.",
-            path: "Address.country"
-        },    
-        "valueIdentifier": {
-            name: "valueIdentifier",
-            dataType: r4:Identifier,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.",
-            path: "Address.extension.value[x]"
-        },    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period when address was/is in use.",
-            path: "Address.period"
-        },    
-        "city": {
-            name: "city",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The name of the city, town, suburb, village or other community or delivery center.",
-            path: "Address.city"
-        },    
-        "AuAddressUse": {
-            name: "AuAddressUse",
-            dataType: AuAddressUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this address.",
-            path: "Address.use"
-        },    
-        "line": {
-            name: "line",
-            dataType: string,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information.",
-            path: "Address.line"
-        },    
-        "district": {
-            name: "district",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The name of the administrative area (county).",
-            path: "Address.district"
-        },    
-        "postalCode": {
-            name: "postalCode",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A postal code designating a region defined by the postal service.",
-            path: "Address.postalCode"
-        },    
-        "text": {
-            name: "text",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Specifies the entire address as it should be displayed e.g. on a postal label. This may be provided instead of or as well as the specific parts.",
-            path: "Address.text"
-        },    
-        "state": {
-            name: "state",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).",
-            path: "Address.state"
-        },    
-        "AuAddressType": {
-            name: "AuAddressType",
-            dataType: AuAddressType,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
-            path: "Address.type"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Address.extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuAddress record {|
-    *r4:Address;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string country?;
-    r4:Identifier valueIdentifier;
-    r4:Period period?;
-    string city?;
-    AuAddressUse AuAddressUse?;
-    string[] line?;
-    string district?;
-    string postalCode?;
-    string text?;
-    string state?;
-    AuAddressType AuAddressType?;
-    string url;
-|};
-
-public enum AuAddressUse {
-    CODE_AUADDRESSUSE_TEMP = "temp",
-    CODE_AUADDRESSUSE_WORK = "work",
-    CODE_AUADDRESSUSE_OLD = "old",
-    CODE_AUADDRESSUSE_HOME = "home",
-    CODE_AUADDRESSUSE_BILLING = "billing"
-};
-
-public enum AuAddressType {
-    CODE_AUADDRESSTYPE_POSTAL = "postal",
-    CODE_AUADDRESSTYPE_PHYSICAL = "physical",
-    CODE_AUADDRESSTYPE_BOTH = "both"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "MedicationBrandName",
-    baseType: (),
-    elements: {
-    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type MedicationBrandName record {|
-    *r4:StringExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "AULocalPrescriptionIdentifier",
-    baseType: (),
-    elements: {
-    
-        "reference": {
-            name: "reference",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A reference to a location at which the other resource is found. The reference may be a relative reference, in which case it is relative to the service base URL, or an absolute URL that resolves to the location where the resource is found. The reference may be version specific or not. If the reference is not to a FHIR RESTful server, then it should be assumed to be version specific. Internal fragment references (start with '#') refer to contained resources.",
-            path: "Identifier.assigner.reference"
-        },    
-        "identifier": {
-            name: "identifier",
-            dataType: r4:Identifier,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "An identifier for the target resource. This is used when there is no way to reference the other resource directly, either because the entity it represents is not available through a FHIR server, or because there is no way for the author of the resource to convert a known identifier to an actual location. There is no requirement that a Reference.identifier point to something that is actually exposed as a FHIR instance, but it SHALL point to a business concept that would be expected to be exposed as a FHIR instance, and that instance would need to be of a FHIR resource type allowed by the reference.",
-            path: "Identifier.assigner.identifier"
-        },    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "AuLocalprescriptionidentifierUse": {
-            name: "AuLocalprescriptionidentifierUse",
-            dataType: AuLocalprescriptionidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "display": {
-            name: "display",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Plain text narrative that identifies the resource in addition to the resource reference.",
-            path: "Identifier.assigner.display"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:uri,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The expected type of the target of the reference. If both Reference.type and Reference.reference are populated and Reference.reference is a FHIR URL, both SHALL be consistent. The type is the Canonical URL of Resource Definition that is the type this reference refers to. References are URLs that are relative to http://hl7.org/fhir/StructureDefinition/ e.g. 'Patient' is a reference to http://hl7.org/fhir/StructureDefinition/Patient. Absolute URLs are only allowed for logical models (and can only be used in references in logical models, not resources).",
-            path: "Identifier.assigner.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuLocalprescriptionidentifier record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string reference?;
-    r4:Identifier identifier?;
-    r4:Period period?;
-    AuLocalprescriptionidentifierUse AuLocalprescriptionidentifierUse?;
-    r4:uri system;
-    string display;
-    r4:Reference assigner;
-    r4:CodeableConcept 'type;
-    string value;
-|};
-
-public enum AuLocalprescriptionidentifierUse {
-    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_SECONDARY = "secondary",
-    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_TEMP = "temp",
-    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_USUAL = "usual",
-    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_OLD = "old",
-    CODE_AULOCALPRESCRIPTIONIDENTIFIERUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "AUPBSPrescriberNumber",
-    baseType: (),
-    elements: {
-    
-        "AuPbsprescribernumberUse": {
-            name: "AuPbsprescribernumberUse",
-            dataType: AuPbsprescribernumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "Identifier.period"
-        },    
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "Identifier.system"
-        },    
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "Identifier.assigner"
-        },    
-        "'type": {
-            name: "'type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-            path: "Identifier.type"
-        },    
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "Identifier.value"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type AuPbsprescribernumber record {|
-    *r4:Identifier;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuPbsprescribernumberUse AuPbsprescribernumberUse?;
-    r4:Period period?;
-    r4:uri system;
-    r4:Reference assigner?;
-    r4:CodeableConcept 'type;
-    string value;
-|};
-
-public enum AuPbsprescribernumberUse {
-    CODE_AUPBSPRESCRIBERNUMBERUSE_SECONDARY = "secondary",
-    CODE_AUPBSPRESCRIBERNUMBERUSE_TEMP = "temp",
-    CODE_AUPBSPRESCRIBERNUMBERUSE_USUAL = "usual",
-    CODE_AUPBSPRESCRIBERNUMBERUSE_OLD = "old",
-    CODE_AUPBSPRESCRIBERNUMBERUSE_OFFICIAL = "official"
-};
-
-
-@r4:DataTypeDefinition {
-    name: "DateOfArrivalAustralia",
-    baseType: (),
-    elements: {
-    
-        "valueCoding": {
-            name: "valueCoding",
-            dataType: r4:Coding,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Coding of the accuracy of a date.",
-            path: "Extension.value[x].extension.value[x]"
-        },    
-        "valueDate": {
-            name: "valueDate",
-            dataType: r4:date,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "value": {
-            name: "value",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The actual value",
-            path: "Extension.value[x].value"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.value[x].extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type DateOfArrival record {|
-    *r4:CodingExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:Coding valueCoding;
-    r4:date valueDate;
-    r4:date value?;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "ChangeDescription",
-    baseType: (),
-    elements: {
-    
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type ChangeDescription record {|
-    *r4:StringExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    string valueString;
-    string url;
-|};
-
-
-@r4:DataTypeDefinition {
-    name: "ClosingTheGapRegistration",
-    baseType: (),
-    elements: {
-    
-        "valueBoolean": {
-            name: "valueBoolean",
-            dataType: boolean,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type ClosingTheGapRegistration record {|
-    *r4:BooleanExtension;
-
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
-    string id?;
-    r4:Extension[] extension?;
-    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    boolean valueBoolean;
-    string url;
-|};
-
 
 @r4:DataTypeDefinition {
     name: "AUAccessionNumber",
@@ -4944,6 +3505,7 @@ public type ClosingTheGapRegistration record {|
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
         },    
+
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -4953,6 +3515,17 @@ public type ClosingTheGapRegistration record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuAccessionnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "display": {
             name: "display",
             dataType: string,
@@ -4971,15 +3544,6 @@ public type ClosingTheGapRegistration record {|
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuAccessionnumberUse": {
-            name: "AuAccessionnumberUse",
-            dataType: AuAccessionnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "'type": {
             name: "'type",
             dataType: r4:uri,
@@ -4997,7 +3561,9 @@ public type ClosingTheGapRegistration record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -5014,9 +3580,9 @@ public type AuAccessionnumber record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
+    AuAccessionnumberUse use?;
     string display;
     r4:Reference assigner;
-    AuAccessionnumberUse AuAccessionnumberUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -5031,19 +3597,9 @@ public enum AuAccessionnumberUse {
 
 
 @r4:DataTypeDefinition {
-    name: "AUResidentialAgedCareServiceIdentifier",
+    name: "AUCareAgencyEmployeeIdentifier",
     baseType: (),
     elements: {
-    
-        "AuResidentialagedcareserviceidentifierUse": {
-            name: "AuResidentialagedcareserviceidentifierUse",
-            dataType: AuResidentialagedcareserviceidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -5062,6 +3618,17 @@ public enum AuAccessionnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuCareagencyemployeeidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -5088,7 +3655,100 @@ public enum AuAccessionnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type AuCareagencyemployeeidentifier record {|
+    *r4:Identifier;
+
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
+    string id?;
+    r4:Extension[] extension?;
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
+    r4:Period period?;
+    r4:uri system;
+    AuCareagencyemployeeidentifierUse use?;
+    r4:Reference assigner?;
+    r4:CodeableConcept 'type;
+    string value;
+|};
+
+public enum AuCareagencyemployeeidentifierUse {
+    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_SECONDARY = "secondary",
+    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_TEMP = "temp",
+    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_USUAL = "usual",
+    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_OLD = "old",
+    CODE_AUCAREAGENCYEMPLOYEEIDENTIFIERUSE_OFFICIAL = "official"
+};
+
+@r4:DataTypeDefinition {
+    name: "AUResidentialAgedCareServiceIdentifier",
+    baseType: (),
+    elements: {
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
+        },    
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
+        },    
+
+        "use": {
+            name: "use",
+            dataType: AuResidentialagedcareserviceidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },    
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },    
+
+        "'type": {
+            name: "'type",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Identifier.type"
+        },    
+        "value": {
+            name: "value",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -5101,9 +3761,10 @@ public type AuResidentialagedcareserviceidentifier record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuResidentialagedcareserviceidentifierUse AuResidentialagedcareserviceidentifierUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuResidentialagedcareserviceidentifierUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -5119,71 +3780,93 @@ public enum AuResidentialagedcareserviceidentifierUse {
 
 
 @r4:DataTypeDefinition {
-    name: "IdentifierRoutability",
+    name: "AUMedicareProviderNumber",
     baseType: (),
     elements: {
-    
-        "valueBoolean": {
-            name: "valueBoolean",
-            dataType: boolean,
-            min: 1,
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
             max: 1,
             isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.extension.value[x]"
+            description: "Time period during which identifier is/was valid for use.",
+            path: "Identifier.period"
         },    
-        "valueBase64Binary": {
-            name: "valueBase64Binary",
-            dataType: r4:base64Binary,
-            min: 0,
-            max: 0,
-            isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.value[x]"
-        },    
-        "valueUri": {
-            name: "valueUri",
+        "system": {
+            name: "system",
             dataType: r4:uri,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.extension.value[x]"
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "Identifier.system"
         },    
-        "valueUnsignedInt": {
-            name: "valueUnsignedInt",
-            dataType: r4:unsignedInt,
+
+        "use": {
+            name: "use",
+            dataType: AuMedicareprovidernumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "Identifier.assigner"
+        },    
+        "'type": {
+            name: "'type",
+            dataType: r4:CodeableConcept,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Value of extension - must be one of a constrained set of the data types (see [Extensibility](http://hl7.org/fhir/R4/extensibility.html) for a list).",
-            path: "Extension.extension.value[x]"
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "Identifier.type"
         },    
-        "url": {
-            name: "url",
+        "value": {
+            name: "value",
             dataType: string,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Extension.url"
-        }        },
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "Identifier.value"
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type IdentifierRoutability record {|
-    *r4:Base64BinaryExtension;
+public type AuMedicareprovidernumber record {|
+    *r4:Identifier;
 
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    boolean valueBoolean;
-    r4:uri valueUri;
-    r4:unsignedInt valueUnsignedInt;
-    string url;
+
+    r4:Period period?;
+    r4:uri system;
+    AuMedicareprovidernumberUse use?;
+    r4:Reference assigner?;
+    r4:CodeableConcept 'type;
+    string value;
 |};
 
+public enum AuMedicareprovidernumberUse {
+    CODE_AUMEDICAREPROVIDERNUMBERUSE_SECONDARY = "secondary",
+    CODE_AUMEDICAREPROVIDERNUMBERUSE_TEMP = "temp",
+    CODE_AUMEDICAREPROVIDERNUMBERUSE_USUAL = "usual",
+    CODE_AUMEDICAREPROVIDERNUMBERUSE_OLD = "old",
+    CODE_AUMEDICAREPROVIDERNUMBERUSE_OFFICIAL = "official"
+};
 
