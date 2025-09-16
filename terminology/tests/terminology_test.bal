@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2023 - 2025, WSO2 LLC. (http://www.wso2.com).
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
@@ -13,7 +13,6 @@
 import ballerina/log;
 import ballerina/test;
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401 as i4;
 
 @test:Config {
     groups: ["coding", "create_coding", "successful_scenario"]
@@ -70,9 +69,9 @@ function createCoding5() {
     groups: ["coding", "create_coding", "successful_scenario"]
 }
 function createCoding6() {
-    r4:ValueSet vs1 = {id: "vs1", status: "active", url: "http://example.org/vs1", version: "1.0.0", compose: {include: []}};
+    r4:ValueSet vs1 = {id: "vs1", status: "active", url: "http://example.org/vs1", 'version: "1.0.0", compose: {include: []}};
     vs1.compose.include = [{valueSet: ["http://example.org/vs2"]}];
-    r4:ValueSet vs2 = {id: "vs2", status: "active", url: "http://example.org/vs2", version: "1.0.0", compose: {include: []}};
+    r4:ValueSet vs2 = {id: "vs2", status: "active", url: "http://example.org/vs2", 'version: "1.0.0", compose: {include: []}};
     vs2.compose.include = [
         {
             "system": "http://loinc.org",
@@ -90,9 +89,9 @@ function createCoding6() {
             ]
         }
     ];
-    r4:ValueSet vs3 = {id: "vs3", status: "active", url: "http://example.org/vs3", version: "1.0.0", compose: {include: []}};
+    r4:ValueSet vs3 = {id: "vs3", status: "active", url: "http://example.org/vs3", 'version: "1.0.0", compose: {include: []}};
     vs3.compose.include = [{system: "http://hl7.org/fhir/relationship"}];
-    r4:ValueSet vs4 = {id: "vs4", status: "active", url: "http://example.org/vs4", version: "1.0.0", compose: {include: []}};
+    r4:ValueSet vs4 = {id: "vs4", status: "active", url: "http://example.org/vs4", 'version: "1.0.0", compose: {include: []}};
     vs4.compose.include = [{valueSet: ["http://example.org/vs3"]}];
     _ = checkpanic addValueSet(vs1);
     _ = checkpanic addValueSet(vs2);
@@ -1219,8 +1218,8 @@ function codesystemSubsumeTest1() returns error? {
     r4:code codeA = "inactive";
     r4:code codeB = "inactive";
     r4:CodeSystem codeSystem = check readCodeSystemById("account-status");
-    i4:Parameters actaulResult = check subsumes(codeA, codeB, codeSystem);
-    i4:ParametersParameter actual = (<i4:ParametersParameter[]>actaulResult.'parameter)[0];
+    r4:Parameters actaulResult = check subsumes(codeA, codeB, codeSystem);
+    r4:ParametersParameter actual = (<r4:ParametersParameter[]>actaulResult.'parameter)[0];
     test:assertEquals(actual.name, "outcome");
     test:assertEquals(actual.valueCode, "equivalent");
 }
@@ -1231,8 +1230,8 @@ function codesystemSubsumeTest1() returns error? {
 function codesystemSubsumeTest2() returns error? {
     r4:Coding codingA = check createCoding("http://hl7.org/fhir/account-status", "inactive");
     r4:Coding codingB = check createCoding("http://hl7.org/fhir/account-status", "inactive");
-    i4:Parameters actaulResult = check subsumes(codingA, codingB, system = "http://hl7.org/fhir/account-status");
-    i4:ParametersParameter actual = (<i4:ParametersParameter[]>actaulResult.'parameter)[0];
+    r4:Parameters actaulResult = check subsumes(codingA, codingB, system = "http://hl7.org/fhir/account-status");
+    r4:ParametersParameter actual = (<r4:ParametersParameter[]>actaulResult.'parameter)[0];
     test:assertEquals(actual.name, "outcome");
     test:assertEquals(actual.valueCode, "equivalent");
 }
@@ -1243,7 +1242,7 @@ function codesystemSubsumeTest2() returns error? {
 function codesystemSubsumeTest3() returns error? {
     r4:Coding codingA = check createCoding("http://hl7.org/fhir/account-status", "inactive");
     r4:Coding codingB = check createCoding("http://hl7.org/fhir/account-status", "inactive");
-    i4:Parameters|r4:FHIRError actaulResult = subsumes(codingA, codingB);
+    r4:Parameters|r4:FHIRError actaulResult = subsumes(codingA, codingB);
     test:assertTrue(actaulResult is r4:FHIRError, "Expected an error");
     if actaulResult is r4:FHIRError {
         test:assertEquals(actaulResult.message(), "Cannot find a CodeSystem due to CodeSystem record or system URL should be provided as input");
@@ -1256,7 +1255,7 @@ function codesystemSubsumeTest3() returns error? {
 function codesystemSubsumeTest4() returns error? {
     r4:code codeA = "inactive2";
     r4:Coding codingB = check createCoding("http://hl7.org/fhir/account-status", "inactive");
-    i4:Parameters|r4:FHIRError actaulResult = subsumes(codeA, codingB, system = "http://hl7.org/fhir/account-status");
+    r4:Parameters|r4:FHIRError actaulResult = subsumes(codeA, codingB, system = "http://hl7.org/fhir/account-status");
     test:assertTrue(actaulResult is r4:FHIRError, "Expected an error");
     if actaulResult is r4:FHIRError {
         test:assertEquals(actaulResult.message(), string `Code: ${codeA} was not found in the CodeSystem: http://hl7.org/fhir/account-status`);
@@ -1269,7 +1268,7 @@ function codesystemSubsumeTest4() returns error? {
 function codesystemSubsumeTest5() returns error? {
     r4:Coding codingA = check createCoding("http://hl7.org/fhir/account-status", "inactive");
     r4:code codeB = "inactive2";
-    i4:Parameters|r4:FHIRError actaulResult = subsumes(codingA, codeB, system = "http://hl7.org/fhir/account-status");
+    r4:Parameters|r4:FHIRError actaulResult = subsumes(codingA, codeB, system = "http://hl7.org/fhir/account-status");
     test:assertTrue(actaulResult is r4:FHIRError, "Expected an error");
     if actaulResult is r4:FHIRError {
         test:assertEquals(actaulResult.message(), string `Code: ${codeB} was not found in the CodeSystem: http://hl7.org/fhir/account-status`);
@@ -1284,10 +1283,10 @@ function codesystemSubsumeTest6() returns error? {
     r4:code codeA = "A";
     r4:code codeB = "A1";
     TestTerminology customTerminology = new ();
-    i4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
-    test:assertTrue(actualResult is i4:Parameters, "Expected Parameters result");
-    if actualResult is i4:Parameters {
-        i4:ParametersParameter actual = (<i4:ParametersParameter[]>actualResult.'parameter)[0];
+    r4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
+    test:assertTrue(actualResult is r4:Parameters, "Expected Parameters result");
+    if actualResult is r4:Parameters {
+        r4:ParametersParameter actual = (<r4:ParametersParameter[]>actualResult.'parameter)[0];
         test:assertEquals(actual.valueCode, "subsumed");
     }
 }
@@ -1300,10 +1299,10 @@ function codesystemSubsumeTest7() returns error? {
     r4:code codeA = "A1a";
     r4:code codeB = "A2";
     TestTerminology customTerminology = new ();
-    i4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
-    test:assertTrue(actualResult is i4:Parameters, "Expected Parameters result");
-    if actualResult is i4:Parameters {
-        i4:ParametersParameter actual = (<i4:ParametersParameter[]>actualResult.'parameter)[0];
+    r4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
+    test:assertTrue(actualResult is r4:Parameters, "Expected Parameters result");
+    if actualResult is r4:Parameters {
+        r4:ParametersParameter actual = (<r4:ParametersParameter[]>actualResult.'parameter)[0];
         test:assertEquals(actual.valueCode, "not-subsumed");
     }
 }
@@ -1316,10 +1315,10 @@ function codesystemSubsumeTest8() returns error? {
     r4:code codeA = "A1";
     r4:code codeB = "A";
     TestTerminology customTerminology = new ();
-    i4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
-    test:assertTrue(actualResult is i4:Parameters, "Expected Parameters result");
-    if actualResult is i4:Parameters {
-        i4:ParametersParameter actual = (<i4:ParametersParameter[]>actualResult.'parameter)[0];
+    r4:Parameters|r4:FHIRError actualResult = subsumes(codeA, codeB, system = "http://example.org/recursive-codesystem", terminology = customTerminology);
+    test:assertTrue(actualResult is r4:Parameters, "Expected Parameters result");
+    if actualResult is r4:Parameters {
+        r4:ParametersParameter actual = (<r4:ParametersParameter[]>actualResult.'parameter)[0];
         test:assertEquals(actual.valueCode, "subsumed-by");
     }
 }
@@ -1569,4 +1568,373 @@ function addValueset8() {
     };
     r4:FHIRError? actual = addValueSet(vs);
     test:assertTrue(actual !is r4:FHIRError, "Expected a FHIRError");
+}
+
+# This test verifies the response when a typical source and target value set URLs are sent in the translate request.
+# The result should contain a parameter resource with the matching code for the provided code and the system.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestHappyPath() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/correct_response"));
+}
+
+# This test verifies the response when a only the source value set URL is sent in the translate request.
+# The result should contain a parameter resource with all the matching codes for the provided code and the system.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestHappyPathWithoutTargetValueSetUri() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri? valueSet2Url = ();
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/correct_response"));
+}
+
+# translateTestWithoutCodeSystem
+# 
+# This test verifies the repsonse when only a code is provided without a code system. In this case, the response should
+# contain all the matching target codes available in the concept map that matches the provided source and target URLs.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithoutCodeSystem() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/correct_response_without_system"));
+}
+
+# translateTestWithWrongCodeSystem
+# 
+# This test verifies the response when a code is sent with an incorrect code system. In this case, the response should
+# contain no matches.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithWrongCodeSystem() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "wrongCodeSystem",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_with_no_matches"));
+}
+
+# translateTestWithMultipleCodes
+# 
+# This test verifies the response when multiple codes are there for matching. In this case, the response should contain
+# All the matches for all the provided codes since the code systems are not provided with the codes.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithMultipleCodes() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/administrative-gender";
+    r4:uri valueSet2Url = "http://terminology.hl7.org/ValueSet/v2-0001";
+
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "other"
+            },
+            {
+                code: "female"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_multiple_codes"));
+}
+
+# translateTestForMultipleConceptMapsWithMultipleCodes
+#
+# This test verifies the response when multiple codes are provided across different concept maps. The response should
+# contain all the matches for all the provided codes in all the available concept maps that matches the provided source
+# and target value set URLs.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestForMultipleConceptMapsWithMultipleCodes() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "active"
+            },
+            {
+                code: "inactive"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_multiple_concept_maps_with_multiple_codes"));
+}
+
+# translateTestWithoutCode
+#
+# This test verifies the response when no code is provided in the CodeableConcept. 
+# The response should indicate that no code was provided.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithoutCode() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/administrative-gender";
+    r4:uri valueSet2Url = "http://terminology.hl7.org/ValueSet/v2-0001";
+
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/administrative-gender"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_with_no_matches"));
+}
+
+# translateWithWrongCode
+#
+# This test verifies the response when an incorrect code is provided in the CodeableConcept.
+@test:Config {
+    groups: ["translate"]
+}
+function translateWithWrongCode() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "wrongCode"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_with_no_matches"));
+}
+
+# translateTestWithoutSourceValueSet
+#
+# This test verifies the response when no source value set is provided.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithoutSourceValueSet() {
+
+    r4:uri valueSet1Url = "";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertTrue(result is r4:OperationOutcome);
+    test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Source value set URI should be provided");
+}
+
+# translateTestWithIncorrectSourceValueSet
+#
+# This test verifies the response when an incorrect source value set is provided.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestWithIncorrectSourceValueSet() {
+
+    r4:uri valueSet1Url = "http://www.google.com";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertTrue(result is r4:OperationOutcome);
+    test:assertEquals((<r4:OperationOutcome>result).issue[0].details?.text, "Concept map not found for provided source and target value sets");
+}
+
+# translateTestForUnmappedFixed
+#
+# This test verifies the response when the provided code is not matched with any code in the target value set and 
+# the unmapped field mode is fixed. The response should contain the code defined in the unmapped field of the concept
+# map.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestForUnmappedFixed() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/fixed1";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/fixed2";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "fixed"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_unmapped_fixed"));
+}
+
+# translateTestForUnmappedProvided
+#
+# This test verifies the response when the provided code is not matched with any code in the target value set and
+# the unmapped field mode is provided. The response should contain the source code as the matched code.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestForUnmappedProvided() {
+
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/provided1";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/provided2";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "provided"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_unmapped_provided"));
+}
+
+# translateTestForUnmappedOtherMap
+#
+# This test verifies the response when the provided code is not matched with any code in the target value set and
+# the unmapped field mode is otherMap. The response should contain the matching codes from the concept map retrieved
+# using the URL provided in the unmapped field of the original concept map.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestForUnmappedOtherMap() {
+
+    r4:uri valueSet1Url = "http://example.org/fhir/example1";
+    r4:uri valueSet2Url = "http://example.org/fhir/example2";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "otherMapCode"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_unmapped_other_map"));
+}
+
+@test:Config {
+    groups: ["conceptmap"]
+}
+function testAddConceptMap() returns error? {
+
+    r4:ConceptMap conceptMapToAdd = {url: "http://example.org/fhir/ConceptMap/conceptMapToAdd", 'version: "4.1.0", status: "unknown"};
+    TestTerminology customTerminology = new ();
+    check addConceptMap(conceptMapToAdd, customTerminology);
+    r4:ConceptMap|r4:FHIRError foundMap = readConceptMap("http://example.org/fhir/ConceptMap/conceptMapToAdd", (), customTerminology);
+    if foundMap is r4:ConceptMap {
+        test:assertEquals(foundMap.url, conceptMapToAdd.url);
+        test:assertEquals(foundMap.status, conceptMapToAdd.status);
+    }  
+}
+
+@test:Config {
+    groups: ["conceptmap"]
+}
+function testSearchConceptMap() returns error? {
+
+    TestTerminology customTerminology = new ();
+    string conceptMapUrl = "http://hl7.org/fhir/ConceptMap/cm-address-type-v3";
+    map<r4:RequestSearchParameter[]> searchParameters = {"url": [{name: "url", value: conceptMapUrl, typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:URI}], "_count": [{name: "_count", value: "10", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]};
+    r4:ConceptMap[] foundConceptMaps = check searchConceptMaps(searchParameters, customTerminology);
+    test:assertTrue(foundConceptMaps.length() > 0);
+    test:assertEquals(conceptMapUrl, foundConceptMaps[0].url);
+
+    string version = "4.0.1";
+    map<r4:RequestSearchParameter[]> searchParameters2 = {"version": [{name: "version", value: version, typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:STRING}], "_count": [{name: "_count", value: "10", typedValue: {modifier: r4:MODIFIER_EXACT}, 'type: r4:NUMBER}]};
+    r4:ConceptMap[] foundConceptMaps2 = check searchConceptMaps(searchParameters2, customTerminology);
+    test:assertTrue(foundConceptMaps2.length() == 10);
+}
+
+# translateTestForUnmappedOtherMapLevel2
+# 
+# This test verifies the translation of the provided code when there are two levels of "other-map" URLs.
+# When the first concept map doesn't contain any matches, the code is looked up in the fallback concept map provided in
+# the unmapped field of the first concept map. If the second concept map also doesn't contain any matches, the code is
+# looked up in the fallback concept map defined in the 2nd concept map.
+@test:Config {
+    groups: ["translate"]
+}
+function translateTestForUnmappedOtherMapLevel2() {
+
+    r4:uri valueSet1Url = "http://example.org/fhir/otherMap2example1";
+    r4:uri valueSet2Url = "http://example.org/fhir/otherMap2example2";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                code: "otherMapCode"
+            }
+        ]
+    };
+    TestTerminology customTerminology = new ();
+    r4:Parameters|r4:OperationOutcome result = translate(valueSet1Url, valueSet2Url, codeableConcept, customTerminology);
+    test:assertEquals(result, readJsonData("translate_responses/response_for_other_maps_level_two"));
 }
