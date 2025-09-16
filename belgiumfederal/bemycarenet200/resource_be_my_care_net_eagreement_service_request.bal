@@ -394,7 +394,7 @@ public const RESOURCE_NAME_BEMYCARENETEAGREEMENTSERVICEREQUEST = "ServiceRequest
 
         "contained" : {
             name: "contained",
-            dataType: r4:Binary,
+            dataType: r4:Resource,
             min: 0,
             max: 1,
             isArray: true,
@@ -545,7 +545,7 @@ public type BeMyCareNetEagreementServiceRequest record {|
             message: "Validation failed for $.ServiceRequest.contained constraint. This field must be an array containing at most one item."
         }
     }
-    r4:BeEagreementservicerequestBinary [] contained?;
+    r4:Resource [] contained?;
     r4:Period occurrencePeriod?;
     BeMyCareNetEagreementServiceRequestMeta meta;
     r4:uri implicitRules?;

@@ -1403,7 +1403,7 @@ public type MyBeMyCareNetEagreementClaimKineInsurance record {|
 
     r4:Reference coverage;
     r4:Identifier identifier?;
-    r4:positiveInt sequence = "1";
+    r4:positiveInt sequence = 1;
     r4:Extension [] extension?;
     string businessArrangement?;
     r4:Reference claimResponse?;

@@ -523,7 +523,7 @@ public type BeObservationLaboratory record {|
     r4:Reference [] partOf?;
     r4:Extension [] extension?;
     r4:time valueTime?;
-    r4:BeObservationcodeableconcept code;
+    BeObservationLaboratoryCode code;
     r4:Reference subject?;
     r4:Range valueRange?;
     r4:Extension [] modifierExtension?;
