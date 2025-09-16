@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -42,6 +42,17 @@ import ballerinax/health.fhir.r4;
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuAustraliancompanynumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -68,16 +79,9 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
+        }
+
         },    
-        "AuAustraliancompanynumberUse": {
-            name: "AuAustraliancompanynumberUse",
-            dataType: AuAustraliancompanynumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -92,10 +96,10 @@ public type AuAustraliancompanynumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuAustraliancompanynumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
-    AuAustraliancompanynumberUse AuAustraliancompanynumberUse?;
 |};
 
 public enum AuAustraliancompanynumberUse {
@@ -264,7 +268,9 @@ public enum AuAustraliancompanynumberUse {
             isArray: false,
             description: "Instructions in terms that are understood by the patient or consumer.",
             path: "Dosage.patientInstruction"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -320,8 +326,9 @@ public type AuDosage record {|
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuNatasitenumberUse": {
-            name: "AuNatasitenumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuNatasitenumberUse,
             min: 0,
             max: 1,
@@ -355,7 +362,9 @@ public type AuDosage record {|
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -370,7 +379,7 @@ public type AuNatasitenumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuNatasitenumberUse AuNatasitenumberUse?;
+    AuNatasitenumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -426,6 +435,17 @@ public enum AuNatasitenumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuEtpprescriptionidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "display": {
             name: "display",
             dataType: string,
@@ -461,16 +481,9 @@ public enum AuNatasitenumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
+        }
+
         },    
-        "AuEtpprescriptionidentifierUse": {
-            name: "AuEtpprescriptionidentifierUse",
-            dataType: AuEtpprescriptionidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -487,11 +500,11 @@ public type AuEtpprescriptionidentifier record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
+    AuEtpprescriptionidentifierUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
     string value;
-    AuEtpprescriptionidentifierUse AuEtpprescriptionidentifierUse?;
 |};
 
 public enum AuEtpprescriptionidentifierUse {
@@ -526,8 +539,9 @@ public enum AuEtpprescriptionidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuCspregistrationnumberUse": {
-            name: "AuCspregistrationnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuCspregistrationnumberUse,
             min: 0,
             max: 1,
@@ -561,7 +575,9 @@ public enum AuEtpprescriptionidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -576,7 +592,7 @@ public type AuCspregistrationnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuCspregistrationnumberUse AuCspregistrationnumberUse?;
+    AuCspregistrationnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -595,16 +611,6 @@ public enum AuCspregistrationnumberUse {
     name: "AUHPIO",
     baseType: (),
     elements: {
-    
-        "AuHpioUse": {
-            name: "AuHpioUse",
-            dataType: AuHpioUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -623,6 +629,17 @@ public enum AuCspregistrationnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuHpioUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -649,7 +666,9 @@ public enum AuCspregistrationnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -662,9 +681,10 @@ public type AuHpio record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuHpioUse AuHpioUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuHpioUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -702,8 +722,9 @@ public enum AuHpioUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuHealthcarecardnumberUse": {
-            name: "AuHealthcarecardnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuHealthcarecardnumberUse,
             min: 0,
             max: 1,
@@ -737,7 +758,9 @@ public enum AuHpioUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -752,7 +775,7 @@ public type AuHealthcarecardnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuHealthcarecardnumberUse AuHealthcarecardnumberUse?;
+    AuHealthcarecardnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -790,6 +813,17 @@ public enum AuHealthcarecardnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuHpiiUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -799,15 +833,7 @@ public enum AuHealthcarecardnumberUse {
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuHpiiUse": {
-            name: "AuHpiiUse",
-            dataType: AuHpiiUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -825,7 +851,9 @@ public enum AuHealthcarecardnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -840,8 +868,8 @@ public type AuHpii record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuHpiiUse use?;
     r4:Reference assigner?;
-    AuHpiiUse AuHpiiUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -878,6 +906,17 @@ public enum AuHpiiUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuDvanumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -887,15 +926,7 @@ public enum AuHpiiUse {
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuDvanumberUse": {
-            name: "AuDvanumberUse",
-            dataType: AuDvanumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -913,7 +944,9 @@ public enum AuHpiiUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -928,8 +961,8 @@ public type AuDvanumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuDvanumberUse use?;
     r4:Reference assigner?;
-    AuDvanumberUse AuDvanumberUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -947,16 +980,6 @@ public enum AuDvanumberUse {
     name: "AULocationSpecificPracticeNumber",
     baseType: (),
     elements: {
-    
-        "AuLocationspecificpracticenumberUse": {
-            name: "AuLocationspecificpracticenumberUse",
-            dataType: AuLocationspecificpracticenumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -975,6 +998,17 @@ public enum AuDvanumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuLocationspecificpracticenumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1001,7 +1035,9 @@ public enum AuDvanumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1014,9 +1050,10 @@ public type AuLocationspecificpracticenumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuLocationspecificpracticenumberUse AuLocationspecificpracticenumberUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuLocationspecificpracticenumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -1054,8 +1091,9 @@ public enum AuLocationspecificpracticenumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuNationalprovideridentifieratorganisationUse": {
-            name: "AuNationalprovideridentifieratorganisationUse",
+
+        "use": {
+            name: "use",
             dataType: AuNationalprovideridentifieratorganisationUse,
             min: 0,
             max: 1,
@@ -1089,7 +1127,9 @@ public enum AuLocationspecificpracticenumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1104,7 +1144,7 @@ public type AuNationalprovideridentifieratorganisation record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuNationalprovideridentifieratorganisationUse AuNationalprovideridentifieratorganisationUse?;
+    AuNationalprovideridentifieratorganisationUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -1142,8 +1182,9 @@ public enum AuNationalprovideridentifieratorganisationUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuAustralianregistredbodynumberUse": {
-            name: "AuAustralianregistredbodynumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuAustralianregistredbodynumberUse,
             min: 0,
             max: 1,
@@ -1177,7 +1218,9 @@ public enum AuNationalprovideridentifieratorganisationUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1192,7 +1235,7 @@ public type AuAustralianregistredbodynumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuAustralianregistredbodynumberUse AuAustralianregistredbodynumberUse?;
+    AuAustralianregistredbodynumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -1211,16 +1254,6 @@ public enum AuAustralianregistredbodynumberUse {
     name: "AUIHI",
     baseType: (),
     elements: {
-    
-        "AuIhiUse": {
-            name: "AuIhiUse",
-            dataType: AuIhiUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -1239,6 +1272,17 @@ public enum AuAustralianregistredbodynumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuIhiUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1265,7 +1309,9 @@ public enum AuAustralianregistredbodynumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1278,9 +1324,10 @@ public type AuIhi record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuIhiUse AuIhiUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuIhiUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -1318,6 +1365,17 @@ public enum AuIhiUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuPaididentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1344,16 +1402,9 @@ public enum AuIhiUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
+        }
+
         },    
-        "AuPaididentifierUse": {
-            name: "AuPaididentifierUse",
-            dataType: AuPaididentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1368,10 +1419,10 @@ public type AuPaididentifier record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuPaididentifierUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
-    AuPaididentifierUse AuPaididentifierUse?;
 |};
 
 public enum AuPaididentifierUse {
@@ -1387,16 +1438,6 @@ public enum AuPaididentifierUse {
     name: "AUNATAAccreditationNumber",
     baseType: (),
     elements: {
-    
-        "AuNataaccreditationnumberUse": {
-            name: "AuNataaccreditationnumberUse",
-            dataType: AuNataaccreditationnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -1415,6 +1456,17 @@ public enum AuPaididentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuNataaccreditationnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1441,7 +1493,9 @@ public enum AuPaididentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1454,9 +1508,10 @@ public type AuNataaccreditationnumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuNataaccreditationnumberUse AuNataaccreditationnumberUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuNataaccreditationnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -1494,6 +1549,17 @@ public enum AuNataaccreditationnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuAhpraregistrationnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1503,15 +1569,7 @@ public enum AuNataaccreditationnumberUse {
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuAhpraregistrationnumberUse": {
-            name: "AuAhpraregistrationnumberUse",
-            dataType: AuAhpraregistrationnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -1529,7 +1587,9 @@ public enum AuNataaccreditationnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1544,8 +1604,8 @@ public type AuAhpraregistrationnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuAhpraregistrationnumberUse use?;
     r4:Reference assigner?;
-    AuAhpraregistrationnumberUse AuAhpraregistrationnumberUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -1600,6 +1660,17 @@ public enum AuAhpraregistrationnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuEmployeenumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "display": {
             name: "display",
             dataType: string,
@@ -1618,15 +1689,7 @@ public enum AuAhpraregistrationnumberUse {
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuEmployeenumberUse": {
-            name: "AuEmployeenumberUse",
-            dataType: AuEmployeenumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:uri,
@@ -1644,7 +1707,9 @@ public enum AuAhpraregistrationnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1661,9 +1726,9 @@ public type AuEmployeenumber record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
+    AuEmployeenumberUse use?;
     string display;
     r4:Reference assigner;
-    AuEmployeenumberUse AuEmployeenumberUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -1700,6 +1765,17 @@ public enum AuEmployeenumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuDeliverypointidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1726,16 +1802,9 @@ public enum AuEmployeenumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
+        }
+
         },    
-        "AuDeliverypointidentifierUse": {
-            name: "AuDeliverypointidentifierUse",
-            dataType: AuDeliverypointidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1750,10 +1819,10 @@ public type AuDeliverypointidentifier record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuDeliverypointidentifierUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
-    AuDeliverypointidentifierUse AuDeliverypointidentifierUse?;
 |};
 
 public enum AuDeliverypointidentifierUse {
@@ -1788,6 +1857,17 @@ public enum AuDeliverypointidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuGnafidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -1814,16 +1894,9 @@ public enum AuDeliverypointidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
+        }
+
         },    
-        "AuGnafidentifierUse": {
-            name: "AuGnafidentifierUse",
-            dataType: AuGnafidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        }        },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1838,10 +1911,10 @@ public type AuGnafidentifier record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuGnafidentifierUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
-    AuGnafidentifierUse AuGnafidentifierUse?;
 |};
 
 public enum AuGnafidentifierUse {
@@ -1894,8 +1967,9 @@ public enum AuGnafidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuLocaldispenseidentifierUse": {
-            name: "AuLocaldispenseidentifierUse",
+
+        "use": {
+            name: "use",
             dataType: AuLocaldispenseidentifierUse,
             min: 0,
             max: 1,
@@ -1938,7 +2012,9 @@ public enum AuGnafidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -1955,7 +2031,7 @@ public type AuLocaldispenseidentifier record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
-    AuLocaldispenseidentifierUse AuLocaldispenseidentifierUse?;
+    AuLocaldispenseidentifierUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -1985,15 +2061,7 @@ public enum AuLocaldispenseidentifierUse {
             description: "Fixed value if present otherwise assumed to be Australia in this context.",
             path: "Address.country"
         },    
-        "valueIdentifier": {
-            name: "valueIdentifier",
-            dataType: r4:Identifier,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers.",
-            path: "Address.extension.value[x]"
-        },    
+
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -2012,8 +2080,9 @@ public enum AuLocaldispenseidentifierUse {
             description: "The name of the city, town, suburb, village or other community or delivery center.",
             path: "Address.city"
         },    
-        "AuAddressUse": {
-            name: "AuAddressUse",
+
+        "use": {
+            name: "use",
             dataType: AuAddressUse,
             min: 0,
             max: 1,
@@ -2066,24 +2135,18 @@ public enum AuLocaldispenseidentifierUse {
             description: "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (e.g. US 2 letter state codes).",
             path: "Address.state"
         },    
-        "AuAddressType": {
-            name: "AuAddressType",
+
+        "'type": {
+            name: "'type",
             dataType: AuAddressType,
             min: 0,
             max: 1,
             isArray: false,
             description: "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
             path: "Address.type"
+        }
+
         },    
-        "url": {
-            name: "url",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            path: "Address.extension.url"
-        }        },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2097,17 +2160,15 @@ public type AuAddress record {|
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     string country?;
-    r4:Identifier valueIdentifier;
     r4:Period period?;
     string city?;
-    AuAddressUse AuAddressUse?;
+    AuAddressUse use?;
     string[] line?;
     string district?;
     string postalCode?;
     string text?;
     string state?;
-    AuAddressType AuAddressType?;
-    string url;
+    AuAddressType 'type?;
 |};
 
 public enum AuAddressUse {
@@ -2148,6 +2209,17 @@ public enum AuAddressType {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuCwlthseniorshealthcardnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -2157,15 +2229,7 @@ public enum AuAddressType {
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuCwlthseniorshealthcardnumberUse": {
-            name: "AuCwlthseniorshealthcardnumberUse",
-            dataType: AuCwlthseniorshealthcardnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -2183,7 +2247,9 @@ public enum AuAddressType {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2198,8 +2264,8 @@ public type AuCwlthseniorshealthcardnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuCwlthseniorshealthcardnumberUse use?;
     r4:Reference assigner?;
-    AuCwlthseniorshealthcardnumberUse AuCwlthseniorshealthcardnumberUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -2254,8 +2320,9 @@ public enum AuCwlthseniorshealthcardnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuLocalreportidentifierUse": {
-            name: "AuLocalreportidentifierUse",
+
+        "use": {
+            name: "use",
             dataType: AuLocalreportidentifierUse,
             min: 0,
             max: 1,
@@ -2298,7 +2365,9 @@ public enum AuCwlthseniorshealthcardnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2315,7 +2384,7 @@ public type AuLocalreportidentifier record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
-    AuLocalreportidentifierUse AuLocalreportidentifierUse?;
+    AuLocalreportidentifierUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -2354,8 +2423,9 @@ public enum AuLocalreportidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuAustralianbusinessnumberUse": {
-            name: "AuAustralianbusinessnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuAustralianbusinessnumberUse,
             min: 0,
             max: 1,
@@ -2389,7 +2459,9 @@ public enum AuLocalreportidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2404,7 +2476,7 @@ public type AuAustralianbusinessnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuAustralianbusinessnumberUse AuAustralianbusinessnumberUse?;
+    AuAustralianbusinessnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -2451,15 +2523,7 @@ public enum AuAustralianbusinessnumberUse {
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
         },    
-        "AuLocalorderidentifierUse": {
-            name: "AuLocalorderidentifierUse",
-            dataType: AuLocalorderidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -2469,6 +2533,17 @@ public enum AuAustralianbusinessnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuLocalorderidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "display": {
             name: "display",
             dataType: string,
@@ -2504,7 +2579,9 @@ public enum AuAustralianbusinessnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2520,8 +2597,8 @@ public type AuLocalorderidentifier record {|
     string reference?;
     r4:Identifier identifier?;
     r4:Period period?;
-    AuLocalorderidentifierUse AuLocalorderidentifierUse?;
     r4:uri system;
+    AuLocalorderidentifierUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -2569,15 +2646,7 @@ public enum AuLocalorderidentifierUse {
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
         },    
-        "AuLocalprescriptionidentifierUse": {
-            name: "AuLocalprescriptionidentifierUse",
-            dataType: AuLocalprescriptionidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -2587,6 +2656,17 @@ public enum AuLocalorderidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuLocalprescriptionidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "display": {
             name: "display",
             dataType: string,
@@ -2622,7 +2702,9 @@ public enum AuLocalorderidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2638,8 +2720,8 @@ public type AuLocalprescriptionidentifier record {|
     string reference?;
     r4:Identifier identifier?;
     r4:Period period?;
-    AuLocalprescriptionidentifierUse AuLocalprescriptionidentifierUse?;
     r4:uri system;
+    AuLocalprescriptionidentifierUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -2678,8 +2760,9 @@ public enum AuLocalprescriptionidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuPharmacyapprovalnumberUse": {
-            name: "AuPharmacyapprovalnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuPharmacyapprovalnumberUse,
             min: 0,
             max: 1,
@@ -2713,7 +2796,9 @@ public enum AuLocalprescriptionidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2728,7 +2813,7 @@ public type AuPharmacyapprovalnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuPharmacyapprovalnumberUse AuPharmacyapprovalnumberUse?;
+    AuPharmacyapprovalnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -2747,16 +2832,6 @@ public enum AuPharmacyapprovalnumberUse {
     name: "AUMedicareCardNumber",
     baseType: (),
     elements: {
-    
-        "AuMedicarecardnumberUse": {
-            name: "AuMedicarecardnumberUse",
-            dataType: AuMedicarecardnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -2775,6 +2850,17 @@ public enum AuPharmacyapprovalnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuMedicarecardnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -2819,7 +2905,9 @@ public enum AuPharmacyapprovalnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2832,9 +2920,10 @@ public type AuMedicarecardnumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuMedicarecardnumberUse AuMedicarecardnumberUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuMedicarecardnumberUse use?;
     r4:Reference assigner?;
     r4:dateTime end?;
     r4:dateTime 'start?;
@@ -2855,16 +2944,6 @@ public enum AuMedicarecardnumberUse {
     name: "AUPBSPrescriberNumber",
     baseType: (),
     elements: {
-    
-        "AuPbsprescribernumberUse": {
-            name: "AuPbsprescribernumberUse",
-            dataType: AuPbsprescribernumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -2883,6 +2962,17 @@ public enum AuMedicarecardnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuPbsprescribernumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -2909,7 +2999,9 @@ public enum AuMedicarecardnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -2922,9 +3014,10 @@ public type AuPbsprescribernumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuPbsprescribernumberUse AuPbsprescribernumberUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuPbsprescribernumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -2962,6 +3055,17 @@ public enum AuPbsprescribernumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuPaioidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -2971,15 +3075,7 @@ public enum AuPbsprescribernumberUse {
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuPaioidentifierUse": {
-            name: "AuPaioidentifierUse",
-            dataType: AuPaioidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -2997,7 +3093,9 @@ public enum AuPbsprescribernumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3012,8 +3110,8 @@ public type AuPaioidentifier record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
+    AuPaioidentifierUse use?;
     r4:Reference assigner?;
-    AuPaioidentifierUse AuPaioidentifierUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -3068,8 +3166,9 @@ public enum AuPaioidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuMedicalrecordnumberUse": {
-            name: "AuMedicalrecordnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuMedicalrecordnumberUse,
             min: 0,
             max: 1,
@@ -3112,7 +3211,9 @@ public enum AuPaioidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3129,7 +3230,7 @@ public type AuMedicalrecordnumber record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
-    AuMedicalrecordnumberUse AuMedicalrecordnumberUse?;
+    AuMedicalrecordnumberUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -3168,8 +3269,9 @@ public enum AuMedicalrecordnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuPensionerconcessioncardnumberUse": {
-            name: "AuPensionerconcessioncardnumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuPensionerconcessioncardnumberUse,
             min: 0,
             max: 1,
@@ -3203,7 +3305,9 @@ public enum AuMedicalrecordnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3218,7 +3322,7 @@ public type AuPensionerconcessioncardnumber record {|
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
     r4:uri system;
-    AuPensionerconcessioncardnumberUse AuPensionerconcessioncardnumberUse?;
+    AuPensionerconcessioncardnumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -3274,8 +3378,9 @@ public enum AuPensionerconcessioncardnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
-        "AuInsurancemembernumberUse": {
-            name: "AuInsurancemembernumberUse",
+
+        "use": {
+            name: "use",
             dataType: AuInsurancemembernumberUse,
             min: 0,
             max: 1,
@@ -3318,7 +3423,9 @@ public enum AuPensionerconcessioncardnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3335,7 +3442,7 @@ public type AuInsurancemembernumber record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
-    AuInsurancemembernumberUse AuInsurancemembernumberUse?;
+    AuInsurancemembernumberUse use?;
     string display;
     r4:Reference assigner;
     r4:CodeableConcept 'type;
@@ -3392,6 +3499,17 @@ public enum AuInsurancemembernumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuAccessionnumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "display": {
             name: "display",
             dataType: string,
@@ -3410,15 +3528,7 @@ public enum AuInsurancemembernumberUse {
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "AuAccessionnumberUse": {
-            name: "AuAccessionnumberUse",
-            dataType: AuAccessionnumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:uri,
@@ -3436,7 +3546,9 @@ public enum AuInsurancemembernumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3453,9 +3565,9 @@ public type AuAccessionnumber record {|
     r4:Identifier identifier?;
     r4:Period period?;
     r4:uri system;
+    AuAccessionnumberUse use?;
     string display;
     r4:Reference assigner;
-    AuAccessionnumberUse AuAccessionnumberUse?;
     r4:CodeableConcept 'type;
     string value;
 |};
@@ -3483,15 +3595,7 @@ public enum AuAccessionnumberUse {
             description: "Time period during which identifier is/was valid for use.",
             path: "Identifier.period"
         },    
-        "AuCareagencyemployeeidentifierUse": {
-            name: "AuCareagencyemployeeidentifierUse",
-            dataType: AuCareagencyemployeeidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "system": {
             name: "system",
             dataType: r4:uri,
@@ -3501,6 +3605,17 @@ public enum AuAccessionnumberUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuCareagencyemployeeidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -3527,7 +3642,9 @@ public enum AuAccessionnumberUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3541,8 +3658,8 @@ public type AuCareagencyemployeeidentifier record {|
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
-    AuCareagencyemployeeidentifierUse AuCareagencyemployeeidentifierUse?;
     r4:uri system;
+    AuCareagencyemployeeidentifierUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -3561,16 +3678,6 @@ public enum AuCareagencyemployeeidentifierUse {
     name: "AUResidentialAgedCareServiceIdentifier",
     baseType: (),
     elements: {
-    
-        "AuResidentialagedcareserviceidentifierUse": {
-            name: "AuResidentialagedcareserviceidentifierUse",
-            dataType: AuResidentialagedcareserviceidentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -3589,6 +3696,17 @@ public enum AuCareagencyemployeeidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuResidentialagedcareserviceidentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -3615,7 +3733,9 @@ public enum AuCareagencyemployeeidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3628,9 +3748,10 @@ public type AuResidentialagedcareserviceidentifier record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuResidentialagedcareserviceidentifierUse AuResidentialagedcareserviceidentifierUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuResidentialagedcareserviceidentifierUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
@@ -3649,16 +3770,6 @@ public enum AuResidentialagedcareserviceidentifierUse {
     name: "AUMedicareProviderNumber",
     baseType: (),
     elements: {
-    
-        "AuMedicareprovidernumberUse": {
-            name: "AuMedicareprovidernumberUse",
-            dataType: AuMedicareprovidernumberUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
         "period": {
             name: "period",
             dataType: r4:Period,
@@ -3677,6 +3788,17 @@ public enum AuResidentialagedcareserviceidentifierUse {
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: AuMedicareprovidernumberUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -3703,7 +3825,9 @@ public enum AuResidentialagedcareserviceidentifierUse {
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -3716,9 +3840,10 @@ public type AuMedicareprovidernumber record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    AuMedicareprovidernumberUse AuMedicareprovidernumberUse?;
+
     r4:Period period?;
     r4:uri system;
+    AuMedicareprovidernumberUse use?;
     r4:Reference assigner?;
     r4:CodeableConcept 'type;
     string value;
