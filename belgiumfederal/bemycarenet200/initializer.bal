@@ -20,7 +20,7 @@
 import ballerinax/health.fhir.r4;
 import ballerina/log;
 
-const FHIR_IG = "health_fhir_r4_be_mucarenet200";
+const FHIR_IG = "health_fhir_r4_be_mycarenet200";
 
 # Initializer for the module
 # + return - returns error if error occurred
@@ -33,8 +33,8 @@ function init() returns r4:FHIRError? {
     r4:Terminology terminology = check terminologyLoader.load();
 
     readonly & r4:IGInfoRecord baseIgRecord = {
-        title: "health_fhir_r4_be_mucarenet200",
-        name: "health_fhir_r4_be_mucarenet200",
+        title: "health_fhir_r4_be_mycarenet200",
+        name: "health_fhir_r4_be_mycarenet200",
         terminology: terminology,
         profiles: {
             "https://www.ehealth.fgov.be/standards/fhir/mycarenet/StructureDefinition/be-messageheader": {

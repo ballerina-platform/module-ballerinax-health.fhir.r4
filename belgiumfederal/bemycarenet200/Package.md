@@ -1,7 +1,7 @@
 Ballerina package containing FHIR resource data models
 compliant with https://www.ehealth.fgov.be/standards/fhir/mycarenet/ implementation guide.
 
-# FHIR R4 health_fhir_r4_be_mucarenet200 package
+# FHIR R4 health_fhir_r4_be_mycarenet200 package
 
 ## Package Overview
 
@@ -27,12 +27,12 @@ compliant with https://www.ehealth.fgov.be/standards/fhir/mycarenet/ implementat
 | 5). MyBeMyCareNetEagreementClaimKine | [[Definition]][s5] [[Ballerina Record]][m5] |
 | 6). BeMyCareNetEagreementClaimResponse | [[Definition]][s6] [[Ballerina Record]][m6] |
 
-[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mucarenet200/1.0.0#BeMyCareNetMessageHeader
-[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mucarenet200/1.0.0#BeMyCareNetEagreementServiceRequest
-[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mucarenet200/1.0.0#BeMyCareNetEagreementClaim
-[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mucarenet200/1.0.0#BeMyCareNetEagreementServiceRequestBinary
-[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mucarenet200/1.0.0#MyBeMyCareNetEagreementClaimKine
-[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mucarenet200/1.0.0#BeMyCareNetEagreementClaimResponse
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mycarenet200/1.0.0#BeMyCareNetMessageHeader
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mycarenet200/1.0.0#BeMyCareNetEagreementServiceRequest
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mycarenet200/1.0.0#BeMyCareNetEagreementClaim
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mycarenet200/1.0.0#BeMyCareNetEagreementServiceRequestBinary
+[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mycarenet200/1.0.0#MyBeMyCareNetEagreementClaimKine
+[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.be.mycarenet200/1.0.0#BeMyCareNetEagreementClaimResponse
 
 [s1]: https://www.ehealth.fgov.be/standards/fhir/mycarenet/StructureDefinition/be-messageheader
 [s2]: https://www.ehealth.fgov.be/standards/fhir/mycarenet/StructureDefinition/be-eagreementservicerequest
