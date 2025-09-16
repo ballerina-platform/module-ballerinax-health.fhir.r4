@@ -26,7 +26,7 @@ final InMemoryTerminology inMemoryTerminology = new ();
 # + terminology - Terminology - optional parameter allowing you to pass a custom implementation of the Terminology and by default we use InMemoryTerminology.
 # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided Id
 public isolated function readCodeSystemById(string id, string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:CodeSystem|r4:FHIRError {
-    return (<Terminology>terminology).findCodeSystem(id = id, version = version);
+    return (<Terminology>terminology).findCodeSystem(id = id, version = 'version);
 }
 
 # Find a ValueSet for a provided Id and version.
@@ -37,7 +37,7 @@ public isolated function readCodeSystemById(string id, string? version = (), Ter
 # + terminology - Terminology - optional parameter allowing you to pass a custom implementation of the Terminology and by default we use InMemoryTerminology.
 # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided Id
 public isolated function readValueSetById(string id, string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ValueSet|r4:FHIRError {
-    return (<Terminology>terminology).findValueSet(id = id, version = version);
+    return (<Terminology>terminology).findValueSet(id = id, version = 'version);
 }
 
 # Find a CodeSystem based on the provided URL and version.
@@ -48,7 +48,7 @@ public isolated function readValueSetById(string id, string? version = (), Termi
 # + terminology - Terminology - optional parameter allowing you to pass a custom implementation of the Terminology and by default we use InMemoryTerminology.
 # + return - Return CodeSystem data if the request is successful, return FHIR error if no data found for the provided URL
 public isolated function readCodeSystemByUrl(r4:uri url, string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:CodeSystem|r4:FHIRError {
-    return (<Terminology>terminology).findCodeSystem(system = url, version = version);
+    return (<Terminology>terminology).findCodeSystem(system = url, version = 'version);
 }
 
 # Find a ValueSet for a provided URL and version.
@@ -59,7 +59,7 @@ public isolated function readCodeSystemByUrl(r4:uri url, string? version = (), T
 # + terminology - Terminology - optional parameter allowing you to pass a custom implementation of the Terminology and by default we use InMemoryTerminology.
 # + return - Return ValueSet data if the request is successful, return FHIR error if no data found for the provided URL
 public isolated function readValueSetByUrl(r4:uri url, string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ValueSet|r4:FHIRError {
-    return (<Terminology>terminology).findValueSet(system = url, version = version);
+    return (<Terminology>terminology).findValueSet(system = url, version = 'version);
 }
 
 # Search for Code systems based on the provided search parameters.
@@ -132,7 +132,7 @@ public isolated function codeSystemLookUp(r4:code|r4:Coding codeValue, r4:CodeSy
         codeSystemUrl = <r4:uri>ensured.url;
     } else if codeValue is r4:code && system is r4:uri {
         boolean isExist;
-        if version is string {
+        if 'version is string {
             isExist = (<Terminology>terminology).isCodeSystemExist(system, version);
         } else {
             r4:CodeSystem|r4:FHIRError tmpValueSet = (<Terminology>terminology).findCodeSystem(system, version);
@@ -150,7 +150,7 @@ public isolated function codeSystemLookUp(r4:code|r4:Coding codeValue, r4:CodeSy
         }
     } else if codeValue is r4:Coding {
         boolean isExist;
-        if version is string {
+        if 'version is string {
             isExist = (<Terminology>terminology).isCodeSystemExist(<r4:uri>codeValue.system, version);
         } else {
             r4:CodeSystem|r4:FHIRError tmpValueSet = (<Terminology>terminology).findCodeSystem(codeValue.system, version);
@@ -223,7 +223,7 @@ public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept cod
         valueSetVersion = ensured.version;
     } else if system is r4:uri {
         boolean isExist;
-        if version is string {
+        if 'version is string {
             isExist = (<Terminology>terminology).isValueSetExist(system, version);
         } else {
             r4:ValueSet|r4:FHIRError tmpValueSet = (<Terminology>terminology).findValueSet(system, version);
@@ -231,9 +231,9 @@ public isolated function valueSetLookUp(r4:code|r4:Coding|r4:CodeableConcept cod
         }
         if isExist {
             valueSerUrl = system;
-            valueSetVersion = version;
+            valueSetVersion = 'version;
         } else {
-            return r4:createFHIRError(string `Cannot find a ValueSet for the provided system URL: ${system}${version is string ? "|" + version : ""}`,
+            return r4:createFHIRError(string `Cannot find a ValueSet for the provided system URL: ${system}${'version is string ? "|" + 'version : ""}`,
                         r4:ERROR,
                         r4:INVALID,
                         errorType = r4:PROCESSING_ERROR,
@@ -544,7 +544,7 @@ public isolated function translate(r4:uri sourceValueSetUri, r4:uri? targetValue
 # + return - Created CodeableConcept record or FHIRError if not found
 public isolated function createCodeableConcept(r4:uri system, r4:code code, string? version = ()
         , Terminology? terminology = inMemoryTerminology) returns r4:CodeableConcept|r4:FHIRError {
-    CodeConceptDetails|r4:FHIRError conceptResult = (<Terminology>terminology).findConcept(system, code, version = version);
+    CodeConceptDetails|r4:FHIRError conceptResult = (<Terminology>terminology).findConcept(system, code, version = 'version);
     if conceptResult is CodeConceptDetails {
         return conceptToCodeableConcept(conceptResult.concept.clone(), system.clone());
     } else {
@@ -867,5 +867,5 @@ public isolated function searchConceptMaps(map<r4:RequestSearchParameter[]> para
 }
 
 public isolated function readConceptMap(r4:uri conceptMapUrl, string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:ConceptMap|r4:FHIRError {
-    return (<Terminology>terminology).getConceptMap(conceptMapUrl = conceptMapUrl, version = version);
+    return (<Terminology>terminology).getConceptMap(conceptMapUrl = conceptMapUrl, version = 'version);
 }

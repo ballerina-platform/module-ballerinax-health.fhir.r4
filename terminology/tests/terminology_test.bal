@@ -69,9 +69,9 @@ function createCoding5() {
     groups: ["coding", "create_coding", "successful_scenario"]
 }
 function createCoding6() {
-    r4:ValueSet vs1 = {id: "vs1", status: "active", url: "http://example.org/vs1", version: "1.0.0", compose: {include: []}};
+    r4:ValueSet vs1 = {id: "vs1", status: "active", url: "http://example.org/vs1", 'version: "1.0.0", compose: {include: []}};
     vs1.compose.include = [{valueSet: ["http://example.org/vs2"]}];
-    r4:ValueSet vs2 = {id: "vs2", status: "active", url: "http://example.org/vs2", version: "1.0.0", compose: {include: []}};
+    r4:ValueSet vs2 = {id: "vs2", status: "active", url: "http://example.org/vs2", 'version: "1.0.0", compose: {include: []}};
     vs2.compose.include = [
         {
             "system": "http://loinc.org",
@@ -89,9 +89,9 @@ function createCoding6() {
             ]
         }
     ];
-    r4:ValueSet vs3 = {id: "vs3", status: "active", url: "http://example.org/vs3", version: "1.0.0", compose: {include: []}};
+    r4:ValueSet vs3 = {id: "vs3", status: "active", url: "http://example.org/vs3", 'version: "1.0.0", compose: {include: []}};
     vs3.compose.include = [{system: "http://hl7.org/fhir/relationship"}];
-    r4:ValueSet vs4 = {id: "vs4", status: "active", url: "http://example.org/vs4", version: "1.0.0", compose: {include: []}};
+    r4:ValueSet vs4 = {id: "vs4", status: "active", url: "http://example.org/vs4", 'version: "1.0.0", compose: {include: []}};
     vs4.compose.include = [{valueSet: ["http://example.org/vs3"]}];
     _ = checkpanic addValueSet(vs1);
     _ = checkpanic addValueSet(vs2);
@@ -1886,7 +1886,7 @@ function translateTestForUnmappedOtherMap() {
 }
 function testAddConceptMap() returns error? {
 
-    r4:ConceptMap conceptMapToAdd = {url: "http://example.org/fhir/ConceptMap/conceptMapToAdd", version: "4.1.0", status: "unknown"};
+    r4:ConceptMap conceptMapToAdd = {url: "http://example.org/fhir/ConceptMap/conceptMapToAdd", 'version: "4.1.0", status: "unknown"};
     TestTerminology customTerminology = new ();
     check addConceptMap(conceptMapToAdd, customTerminology);
     r4:ConceptMap|r4:FHIRError foundMap = readConceptMap("http://example.org/fhir/ConceptMap/conceptMapToAdd", (), customTerminology);

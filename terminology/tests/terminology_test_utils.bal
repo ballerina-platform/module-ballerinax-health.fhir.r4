@@ -73,7 +73,7 @@ isolated class TestTerminology {
             id: "cs-xyz",
             status: "active",
             url: "http://xyz.org",
-            version: "2.36",
+            'version: "2.36",
             content: "complete",
             concept: [
                 {code: "1", display: "Cholesterol xyz [Moles/Volume]"},
@@ -85,7 +85,7 @@ isolated class TestTerminology {
             id: "loinc",
             status: "active",
             url: "http://loinc.org",
-            version: "2.36",
+            'version: "2.36",
             content: "complete",
             concept: [
                 {code: "1", display: "Cholesterol [Moles/Volume]"},
@@ -99,7 +99,7 @@ isolated class TestTerminology {
             id: "cs-recursive",
             status: "active",
             url: "http://example.org/recursive-codesystem",
-            version: "1.0.0",
+            'version: "1.0.0",
             content: "complete",
             concept: [
                 {
@@ -128,9 +128,9 @@ isolated class TestTerminology {
                 }
             ]
         };
-        r4:ValueSet vs1 = {id: "vs1", status: "active", url: "http://example.org/vs1", version: "1.0.0", compose: {include: []}};
+        r4:ValueSet vs1 = {id: "vs1", status: "active", url: "http://example.org/vs1", 'version: "1.0.0", compose: {include: []}};
         vs1.compose.include = [{valueSet: ["http://example.org/vs2"]}];
-        r4:ValueSet vs2 = {id: "vs2", status: "active", url: "http://example.org/vs2", version: "1.0.0", compose: {include: []}};
+        r4:ValueSet vs2 = {id: "vs2", status: "active", url: "http://example.org/vs2", 'version: "1.0.0", compose: {include: []}};
         vs2.compose.include = [
             {
                 "system": "http://loinc.org",
@@ -181,7 +181,7 @@ isolated class TestTerminology {
                 ]
             }
         ];
-        r4:ValueSet vs4 = {id: "vs4", status: "active", url: "http://example.org/vs4", version: "1.0.0", compose: {include: []}};
+        r4:ValueSet vs4 = {id: "vs4", status: "active", url: "http://example.org/vs4", 'version: "1.0.0", compose: {include: []}};
         vs4.compose.include = [{valueSet: ["http://example.org/vs3"]}];
         lock {
             self.valueSetMap["http://example.org/vs1"] = vs1.clone();
@@ -232,7 +232,7 @@ isolated class TestTerminology {
                 string systemKey = system.toString();
                 if self.codeSystemMap.hasKey(systemKey) {
                     r4:CodeSystem cs = <r4:CodeSystem>self.codeSystemMap[systemKey];
-                    if version is () || (cs.version is string && cs.version == version) {
+                    if 'version is () || (cs.version is string && cs.version == version) {
                         return cs.clone();
                     }
                 }
@@ -242,7 +242,7 @@ isolated class TestTerminology {
                 foreach var [_, csValue] in self.codeSystemMap.entries() {
                     r4:CodeSystem cs = <r4:CodeSystem>csValue;
                     if cs.id is string && cs.id == id {
-                        if version is () || (cs.version is string && cs.version == version) {
+                        if 'version is () || (cs.version is string && cs.version == version) {
                             return cs.clone();
                         }
                     }
@@ -250,7 +250,7 @@ isolated class TestTerminology {
             }
         }
         return r4:createFHIRError(
-            string `CodeSystem not found for system: ${system is r4:uri ? system.toString() : ""}${id is string ? ", id: " + id : ""}${version == () ? "" : "|" + version}`,
+            string `CodeSystem not found for system: ${system is r4:uri ? system.toString() : ""}${id is string ? ", id: " + id : ""}${'version == () ? "" : "|" + version}`,
             r4:ERROR,
             r4:PROCESSING_NOT_FOUND,
             errorType = r4:PROCESSING_ERROR,
@@ -322,7 +322,7 @@ isolated class TestTerminology {
         }
         if result is () {
             return r4:createFHIRError(
-                string `Unknown ValueSet or CodeSystem : ${system}${version == () ? "" : "|" + version}`,
+                string `Unknown ValueSet or CodeSystem : ${system}${'version == () ? "" : "|" + version}`,
                 r4:ERROR,
                 r4:INVALID_REQUIRED,
                 errorType = r4:PROCESSING_ERROR,
@@ -348,11 +348,11 @@ isolated class TestTerminology {
         );
     }
 
-    public isolated function isCodeSystemExist(r4:uri system, string version) returns boolean {
+    public isolated function isCodeSystemExist(r4:uri system, string 'version) returns boolean {
         return false;
     }
 
-    public isolated function isValueSetExist(r4:uri system, string version) returns boolean {
+    public isolated function isValueSetExist(r4:uri system, string 'version) returns boolean {
         return false;
     }
 
@@ -513,7 +513,7 @@ isolated class TestTerminology {
         return conceptMapsArray;
     }
 
-    public isolated function isConceptMapExist(r4:uri system, string version) returns boolean {
+    public isolated function isConceptMapExist(r4:uri system, string 'version) returns boolean {
         return false;
     }
 

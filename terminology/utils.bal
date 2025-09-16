@@ -156,7 +156,7 @@ isolated function findConceptInValueSetOrReturnValueSetURIs(r4:ValueSet valueSet
                     }
                 } else {
                     // when the concepts are not defined inline, we have to find the codes from the system url
-                    codeSystemMetadata.push({url: systemValue, version: includeBBE.version}.clone());
+                    codeSystemMetadata.push({url: systemValue, 'version: includeBBE.version}.clone());
                 }
             } else {
                 // check the contents included in this valueset
@@ -424,7 +424,7 @@ public type Terminology isolated object {
     # + system - CodeSystem URL to be checked.
     # + version - Version of the CodeSystem to be checked.
     # + return - Return true if the CodeSystem exists, else false.
-    public isolated function isCodeSystemExist(r4:uri system, string version) returns boolean;
+    public isolated function isCodeSystemExist(r4:uri system, string 'version) returns boolean;
 
     # Add a new code system. Terminology API makes sure that the CodeSystem is valid. 
     #
@@ -460,7 +460,7 @@ public type Terminology isolated object {
     # + system - ValueSet URL to be checked.
     # + version - Version of the ValueSet to be checked.
     # + return - Return true if the ValueSet exists, else false.
-    public isolated function isValueSetExist(r4:uri system, string version) returns boolean;
+    public isolated function isValueSetExist(r4:uri system, string 'version) returns boolean;
 
     # Add a new value set. Terminology API makes sure that the ValueSet is valid.
     #
@@ -501,7 +501,7 @@ public type Terminology isolated object {
     # + system - ConceptMap URL to be checked.
     # + version - Version of the ConceptMap to be checked.
     # + return - Return true if the ConceptMap exists, else false.
-    public isolated function isConceptMapExist(r4:uri system, string version) returns boolean;
+    public isolated function isConceptMapExist(r4:uri system, string 'version) returns boolean;
 
     # Add a new concept map. Terminology API makes sure that the ConceptMap is valid. 
     #

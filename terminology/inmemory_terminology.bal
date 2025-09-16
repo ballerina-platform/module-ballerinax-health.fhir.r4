@@ -165,7 +165,7 @@ isolated class InMemoryTerminology {
         return ();
     }
 
-    public isolated function isConceptMapExist(r4:uri system, string version) returns boolean {
+    public isolated function isConceptMapExist(r4:uri system, string 'version) returns boolean {
 
         string key = getKey(system, version);
         lock {
@@ -188,9 +188,9 @@ isolated class InMemoryTerminology {
         }
         
         boolean isIdExistInRegistry = false;
-        if version is string && conceptMapUrl != "" {
+        if 'version is string && conceptMapUrl != "" {
             foreach var item in conceptMaps.keys() {
-                if regexp:isFullMatch(re `${conceptMapUrl}\|${version}$`, item) && conceptMaps[item] is i4:ConceptMap {
+                if regexp:isFullMatch(re `${conceptMapUrl}\|${'version}$`, item) && conceptMaps[item] is i4:ConceptMap {
                     return <i4:ConceptMap>conceptMaps[item].clone();
                 } else if regexp:isFullMatch(re `${conceptMapUrl}\|.*`, item) {
                     isIdExistInRegistry = true;
@@ -199,10 +199,10 @@ isolated class InMemoryTerminology {
 
             if isIdExistInRegistry {
                 return r4:createFHIRError(
-                            string `Unknown version: '${version}',`,
+                            string `Unknown version: '${'version}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a concept map in the registry with Url: '${conceptMapUrl.toString()}' but cannot find version: '${version}' of it.`,
+                            diagnostic = string `: there is a concept map in the registry with Url: '${conceptMapUrl.toString()}' but cannot find version: '${'version}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
             }
@@ -319,17 +319,17 @@ isolated class InMemoryTerminology {
                         httpStatusCode = http:STATUS_NOT_FOUND
                     );
             }
-            if version != () {
+            if 'version != () {
                 codeSystems = map from r4:CodeSystem entry in codeSystems
-                    where entry.version == version
+                    where entry.version == 'version
                     select [getKey(<string>entry.url, <string>entry.version), entry];
 
                 if codeSystems.length() < 1 {
                     return r4:createFHIRError(
-                            string `Unknown version: '${version.toString()}',`,
+                            string `Unknown version: '${'version.toString()}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a CodeSystem in the registry with Id: '${id.toString()}' but cannot find version: '${version.toString()}' of it.`,
+                            diagnostic = string `: there is a CodeSystem in the registry with Id: '${id.toString()}' but cannot find version: '${'version.toString()}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
                 }
@@ -344,9 +344,9 @@ isolated class InMemoryTerminology {
         }
 
         boolean isIdExistInRegistry = false;
-        if version is string && system != () {
+        if 'version is string && system != () {
             foreach var item in codeSystems.keys() {
-                if regexp:isFullMatch(re `${system}\|${version}$`, item) && codeSystems[item] is r4:CodeSystem {
+                if regexp:isFullMatch(re `${system}\|${'version}$`, item) && codeSystems[item] is r4:CodeSystem {
                     return <r4:CodeSystem>codeSystems[item].clone();
                 } else if regexp:isFullMatch(re `${system}\|.*`, item) {
                     isIdExistInRegistry = true;
@@ -355,10 +355,10 @@ isolated class InMemoryTerminology {
 
             if isIdExistInRegistry {
                 return r4:createFHIRError(
-                            string `Unknown version: '${version}',`,
+                            string `Unknown version: '${'version}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a CodeSystem in the registry with Id: '${system.toString()}' but cannot find version: '${version}' of it.`,
+                            diagnostic = string `: there is a CodeSystem in the registry with Id: '${system.toString()}' but cannot find version: '${'version}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
             }
@@ -394,7 +394,7 @@ isolated class InMemoryTerminology {
             );
     }
 
-    public isolated function findConcept(r4:uri system, r4:code code, string? version = ()) returns CodeConceptDetails|r4:FHIRError {
+    public isolated function findConcept(r4:uri system, r4:code code, string? 'version = ()) returns CodeConceptDetails|r4:FHIRError {
         CodeConceptDetails|r4:FHIRError? valuesetConceptDetails = self.findConceptInValueSet(system, code, version);
         if valuesetConceptDetails is CodeConceptDetails {
             return valuesetConceptDetails;
@@ -411,7 +411,7 @@ isolated class InMemoryTerminology {
 
         if conceptDetails is () && valuesetConceptDetails is () {
             return r4:createFHIRError(
-                string `Unknown ValueSet or CodeSystem : ${system}${version == () ? "" : "|" + version}`,
+                string `Unknown ValueSet or CodeSystem : ${system}${'version == () ? "" : "|" + version}`,
                 r4:ERROR,
                 r4:INVALID_REQUIRED,
                 errorType = r4:PROCESSING_ERROR,
@@ -449,16 +449,16 @@ isolated class InMemoryTerminology {
                         httpStatusCode = http:STATUS_NOT_FOUND
                     );
             }
-            if version != () {
+            if 'version != () {
                 valueSets = map from r4:ValueSet entry in valueSets
-                    where entry.version == version
+                    where entry.version == 'version
                     select [getKey(<string>entry.url, <string>entry.version), entry];
                 if valueSets.length() < 1 {
                     return r4:createFHIRError(
-                            string `Unknown version: '${version.toString()}',`,
+                            string `Unknown version: '${'version.toString()}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a ValueSet in the registry with Id: '${id.toString()}' but cannot find version: '${version.toString()}' of it.`,
+                            diagnostic = string `: there is a ValueSet in the registry with Id: '${id.toString()}' but cannot find version: '${'version.toString()}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
                 }
@@ -470,9 +470,9 @@ isolated class InMemoryTerminology {
             return valueSets.toArray()[0].clone();
         }
         boolean isIdExistInRegistry = false;
-        if version is string {
+        if 'version is string {
             foreach var item in valueSets.keys() {
-                if regexp:isFullMatch(re `${system}\|${version}$`, item) && valueSets[item] is r4:ValueSet {
+                if regexp:isFullMatch(re `${system}\|${'version}$`, item) && valueSets[item] is r4:ValueSet {
                     return <r4:ValueSet>valueSets[item].clone();
                 } else if regexp:isFullMatch(re `${system}\|.*`, item) {
                     isIdExistInRegistry = true;
@@ -480,10 +480,10 @@ isolated class InMemoryTerminology {
             }
             if isIdExistInRegistry {
                 return r4:createFHIRError(
-                            string `Unknown version: '${version}',`,
+                            string `Unknown version: '${'version}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a ValueSet in the registry with Id: '${system.toString()}' but cannot find version: '${version}' of it.`,
+                            diagnostic = string `: there is a ValueSet in the registry with Id: '${system.toString()}' but cannot find version: '${'version}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
             }
@@ -579,14 +579,14 @@ isolated class InMemoryTerminology {
         }
     }
 
-    public isolated function isCodeSystemExist(r4:uri system, string version) returns boolean {
+    public isolated function isCodeSystemExist(r4:uri system, string 'version) returns boolean {
         string key = getKey(system, version);
         lock {
             return self.codeSystemMap.hasKey(key);
         }
     }
 
-    public isolated function isValueSetExist(r4:uri system, string version) returns boolean {
+    public isolated function isValueSetExist(r4:uri system, string 'version) returns boolean {
         string key = getKey(system, version);
         lock {
             return self.valueSetMap.hasKey(key);
@@ -709,6 +709,6 @@ isolated class InMemoryTerminology {
     }
 }
 
-isolated function getKey(string url, string version) returns string {
-    return string `${url}|${version}`;
+isolated function getKey(string url, string 'version) returns string {
+    return string `${url}|${'version}`;
 }

@@ -568,7 +568,7 @@ r4:ValueSet vs5 = {
     status: "draft",
     id: "account-status",
     url: "http://hl7.org/fhir/ValueSet/account-status",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -581,7 +581,7 @@ r4:ValueSet vs6 = {
     status: "draft",
     id: "resource-status",
     url: "http://hl7.org/fhir/ValueSet/resource-status",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -594,7 +594,7 @@ r4:ValueSet vs7 = {
     status: "draft",
     id: "administrative-gender",
     url: "http://hl7.org/fhir/ValueSet/administrative-gender",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -607,7 +607,7 @@ r4:ValueSet vs8 = {
     status: "draft",
     id: "v2-0001",
     url: "http://terminology.hl7.org/ValueSet/v2-0001",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -620,7 +620,7 @@ r4:ValueSet vs9 = {
     status: "draft",
     id: "v2-0001",
     url: "http://hl7.org/fhir/ValueSet/fixed1",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -633,7 +633,7 @@ r4:ValueSet vs10 = {
     status: "draft",
     id: "v2-0001",
     url: "http://hl7.org/fhir/ValueSet/fixed2",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -646,7 +646,7 @@ r4:ValueSet vs11 = {
     status: "draft",
     id: "v2-0001",
     url: "http://hl7.org/fhir/ValueSet/provided12",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -659,7 +659,7 @@ r4:ValueSet vs12 = {
     status: "draft",
     id: "v2-0001",
     url: "http://hl7.org/fhir/ValueSet/provided2",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -672,7 +672,7 @@ r4:ValueSet vs13 = {
     status: "draft",
     id: "v2-0001",
     url: "http://example.org/fhir/example1",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -685,7 +685,7 @@ r4:ValueSet vs14 = {
     status: "draft",
     id: "v2-0001",
     url: "http://example.org/fhir/example2",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -697,7 +697,7 @@ r4:ValueSet vs14 = {
 r4:ValueSet vs15 = {
     status: "draft",
     url: "http://example.org/fhir/otherMapexample1",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
@@ -709,7 +709,7 @@ r4:ValueSet vs15 = {
 r4:ValueSet vs16 = {
     status: "draft",
     url: "http://example.org/fhir/otherMapexample2",
-    version: "4.0.1",
+    'version: "4.0.1",
     compose: {
         include: [
             {
