@@ -90,11 +90,27 @@ maps are used to translate the code/s provided inside the codeable concept. As t
 }
 ```
 
-#### Code to translate (sent as a codeable concept)
+#### Sample code to execute translate operation
 
 ```
-system: "http://hl7.org/fhir/account-status"
-code: "active"
+import ballerina/io;
+import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.terminology;
+
+public function main() returns r4:FHIRParseError? {
+    r4:uri valueSet1Url = "http://hl7.org/fhir/ValueSet/account-status";
+    r4:uri valueSet2Url = "http://hl7.org/fhir/ValueSet/resource-status";
+    r4:CodeableConcept codeableConcept = {
+        coding: [
+            {
+                system: "http://hl7.org/fhir/account-status",
+                code: "active"
+            }
+        ]
+    };
+    r4:Parameters|r4:OperationOutcome result = terminology:translate(valueSet1Url, valueSet2Url, codeableConcept);
+    io:println(result);
+}
 ```
 
 #### Response
