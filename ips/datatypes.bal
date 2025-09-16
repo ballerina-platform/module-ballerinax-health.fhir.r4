@@ -41,7 +41,9 @@ import ballerinax/health.fhir.r4;
             isArray: false,
             description: "A measured amount (or an amount that can potentially be measured). Note that measured amounts include amounts that are not precisely quantified, including amounts involving arbitrary units and floating currencies. This profile imposes that the code system for units be UCUM.",
             path: "Ratio.denominator"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -108,7 +110,9 @@ public type RatioUvIps record {|
             isArray: false,
             description: "The value of the measured amount. The value includes an implicit precision in the presentation of the value.",
             path: "Quantity.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -157,7 +161,9 @@ public enum SimpleQuantityUvIpsComparator {
             isArray: false,
             description: "A human language representation of the concept as seen/selected/uttered by the user who entered the data and/or which represents the intended meaning of the user.",
             path: "CodeableConcept.text"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -233,7 +239,9 @@ public type CodeableConceptUvIps record {|
             isArray: false,
             description: "The actual value",
             path: "Coding.display.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -277,7 +285,9 @@ public type CodingUvIps record {|
             isArray: false,
             description: "A measured amount (or an amount that can potentially be measured). Note that measured amounts include amounts that are not precisely quantified, including amounts involving arbitrary units and floating currencies. This profile imposes that the code system for units be UCUM.",
             path: "Range.low"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -344,7 +354,9 @@ public type RangeUvIps record {|
             isArray: false,
             description: "The value of the measured amount. The value includes an implicit precision in the presentation of the value.",
             path: "Quantity.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -357,7 +369,8 @@ public type QuantityUvIps record {|
     string id?;
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
-    r4:QuantityComparatorCode comparator?;
+
+    QuantityUvIpsComparator comparator?;
     string unit?;
     r4:uri system;
     r4:code code;
