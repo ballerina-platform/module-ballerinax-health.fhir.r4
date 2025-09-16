@@ -14,13 +14,14 @@ import ballerina/http;
 import ballerina/lang.regexp;
 import ballerina/log;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401 as i4;
 
 isolated class InMemoryTerminology {
     *Terminology;
     # Global records to store Terminologies across different profiles and packages.
     private map<r4:CodeSystem> codeSystemMap = {};
     private map<r4:ValueSet> valueSetMap = {};
-    private map<r4:ConceptMap> conceptMapsMap = {};
+    private map<i4:ConceptMap> conceptMapsMap = {};
 
     isolated function init() {
 
@@ -97,13 +98,13 @@ isolated class InMemoryTerminology {
         return resultedCodeSystemMap;
     }
 
-    isolated function populateConceptMapsMap(json internalFhirConceptMaps, map<r4:ConceptMap> conceptMapsMap) returns map<r4:ConceptMap> {
+    isolated function populateConceptMapsMap(json conceptMapsJson, map<i4:ConceptMap> conceptMapsMap) returns map<i4:ConceptMap> {
         // Implementation logic goes here
-        map<r4:ConceptMap> resultedConceptMapsMap = conceptMapsMap;
+        map<i4:ConceptMap> resultedConceptMapsMap = conceptMapsMap;
         // Populate the resultedConceptMapsMap with the concept maps from internalFhirConceptMaps
-        foreach json conceptMap in [internalFhirConceptMaps] {
+        foreach json conceptMap in [conceptMapsJson] {
             foreach json jConceptMap in <json[]>conceptMap {
-                r4:ConceptMap|error c = jConceptMap.cloneWithType();
+                i4:ConceptMap|error c = jConceptMap.cloneWithType();
                 if c is error {
                     r4:FHIRError fHIRError = r4:createFHIRError(
                                             "Error occurred while type casting json concept map to ConceptMap type", r4:ERROR,
@@ -172,16 +173,16 @@ isolated class InMemoryTerminology {
         }
     }
 
-    public isolated function addConceptMap(r4:ConceptMap conceptMap) returns r4:FHIRError? {
+    public isolated function addConceptMap(i4:ConceptMap conceptMap) returns r4:FHIRError? {
         lock {
             self.conceptMapsMap[getKey(<string>conceptMap.url, <string>conceptMap.version)] = conceptMap.clone();
         }
         return ();
     }
 
-    public isolated function getConceptMap(r4:uri? conceptMapUrl, string? version) returns r4:ConceptMap|r4:FHIRError {
+    public isolated function getConceptMap(r4:uri? conceptMapUrl, string? version) returns i4:ConceptMap|r4:FHIRError {
 
-        map<r4:ConceptMap> conceptMaps = {};
+        map<i4:ConceptMap> conceptMaps = {};
         lock {
             conceptMaps = self.conceptMapsMap.clone();
         }
@@ -189,8 +190,8 @@ isolated class InMemoryTerminology {
         boolean isIdExistInRegistry = false;
         if version is string && conceptMapUrl != "" {
             foreach var item in conceptMaps.keys() {
-                if regexp:isFullMatch(re `${conceptMapUrl}\|${version}$`, item) && conceptMaps[item] is r4:ConceptMap {
-                    return <r4:ConceptMap>conceptMaps[item].clone();
+                if regexp:isFullMatch(re `${conceptMapUrl}\|${version}$`, item) && conceptMaps[item] is i4:ConceptMap {
+                    return <i4:ConceptMap>conceptMaps[item].clone();
                 } else if regexp:isFullMatch(re `${conceptMapUrl}\|.*`, item) {
                     isIdExistInRegistry = true;
                 }
@@ -206,11 +207,11 @@ isolated class InMemoryTerminology {
                         );
             }
         } else if conceptMapUrl != "" {
-            r4:ConceptMap conceptMap = {status: "unknown"};
+            i4:ConceptMap conceptMap = {status: "unknown"};
             foreach var item in conceptMaps.keys() {
                 if conceptMapUrl == item
-                && conceptMaps[item] is r4:ConceptMap {
-                    conceptMap = <r4:ConceptMap>conceptMaps[item];
+                && conceptMaps[item] is i4:ConceptMap {
+                    conceptMap = <i4:ConceptMap>conceptMaps[item];
                     isIdExistInRegistry = true;
                 }
             }
@@ -234,10 +235,10 @@ isolated class InMemoryTerminology {
             );
     }
 
-    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri? targetValueSetUri) returns r4:ConceptMap[]|r4:FHIRError {
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri? targetValueSetUri) returns i4:ConceptMap[]|r4:FHIRError {
 
-        r4:ConceptMap[] conceptMapsArray = [];
-        r4:ConceptMap[] matchingConceptMaps = [];
+        i4:ConceptMap[] conceptMapsArray = [];
+        i4:ConceptMap[] matchingConceptMaps = [];
         lock {
             conceptMapsArray = self.conceptMapsMap.clone().toArray();
         }
@@ -269,18 +270,18 @@ isolated class InMemoryTerminology {
         return matchingConceptMaps;
     }
 
-    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset, int? count) returns r4:ConceptMap[]|r4:FHIRError {
+    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset, int? count) returns i4:ConceptMap[]|r4:FHIRError {
 
-        r4:ConceptMap[] conceptMapsArray = [];
+        i4:ConceptMap[] conceptMapsArray = [];
         lock {
             conceptMapsArray = self.conceptMapsMap.clone().toArray();
         }
         foreach var searchParam in params.cloneReadOnly().keys() {
             r4:RequestSearchParameter[] searchParamValues = params.cloneReadOnly()[searchParam] ?: [];
-            r4:ConceptMap[] filteredList = [];
+            i4:ConceptMap[] filteredList = [];
             if searchParamValues.length() != 0 {
                 foreach var queriedValue in searchParamValues {
-                    r4:ConceptMap[] result = from r4:ConceptMap entry in conceptMapsArray
+                    i4:ConceptMap[] result = from i4:ConceptMap entry in conceptMapsArray
                         where entry[CONCEPT_MAPS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
                         select entry;
                     filteredList.push(...result);
