@@ -542,7 +542,7 @@ public type Terminology isolated object {
 # When a particular group doesn't have any matches, the unmapped field of that group will be checked for the mode and
 # the matching will be done accordingly.
 # 
-# - When the unmapped mode is "fixed": the code provided insidte the unmapped field is used.
+# - When the unmapped mode is "fixed": the code provided inside the unmapped field is used.
 # - When the unmapped mode is "provided": the source code is used as the target code.
 # - When the unmapped mode is "other-map": the concept map provided inside the unmapped field is used for matching. The 
 # function would recursively match the codes when there are multiple nested "other-map" references.
