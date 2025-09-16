@@ -175,9 +175,20 @@ isolated class InMemoryTerminology {
 
     public isolated function addConceptMap(i4:ConceptMap conceptMap) returns r4:FHIRError? {
         lock {
-            self.conceptMapsMap[getKey(<string>conceptMap.url, <string>conceptMap.version)] = conceptMap.clone();
+            string key = getKey(<string>conceptMap.url, <string>conceptMap.version);
+            if !self.conceptMapsMap.hasKey(key) {
+                self.conceptMapsMap['key] = conceptMap.clone();
+            } else {
+                return r4:createFHIRError(
+                        "Duplicate entry",
+                        r4:ERROR,
+                        r4:PROCESSING_DUPLICATE,
+                        diagnostic = string `Already there is a ConceptMap exists in the registry with the URL: ${'key}`,
+                        errorType = r4:VALIDATION_ERROR,
+                        httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+
         }
-        return ();
     }
 
     public isolated function getConceptMap(r4:uri? conceptMapUrl, string? version) returns i4:ConceptMap|r4:FHIRError {
