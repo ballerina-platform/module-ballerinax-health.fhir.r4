@@ -817,7 +817,7 @@ public isolated function addConceptMap(i4:ConceptMap conceptMap, Terminology? te
     }
     string url = <string>conceptMap.url;
     string rVersion = <string>conceptMap.version;
-    r4:FHIRValidationError? validateResult = validator:validate(conceptMap.clone(), r4:ValueSet);
+    r4:FHIRValidationError? validateResult = validator:validate(conceptMap.clone(), i4:ConceptMap);
 
     if validateResult is r4:FHIRValidationError {
         return r4:createFHIRError(
