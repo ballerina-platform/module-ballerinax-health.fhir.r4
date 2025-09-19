@@ -14,12 +14,14 @@ import ballerina/http;
 import ballerina/lang.regexp;
 import ballerina/log;
 import ballerinax/health.fhir.r4;
+import ballerinax/health.fhir.r4.international401 as i4;
 
 isolated class InMemoryTerminology {
     *Terminology;
     # Global records to store Terminologies across different profiles and packages.
     private map<r4:CodeSystem> codeSystemMap = {};
     private map<r4:ValueSet> valueSetMap = {};
+    private map<i4:ConceptMap> conceptMapsMap = {};
 
     isolated function init() {
 
@@ -34,6 +36,10 @@ isolated class InMemoryTerminology {
 
         // https://terminology.hl7.org/5.4.0/valuesets-fhir.html
         json externalFhirValueSets = [];
+
+        // https://hl7.org/fhir/R4/terminologies-conceptmaps.html
+        json internalFhirConceptMaps = [];
+
         do {
             // We should create terminology as json string constants
             // We can't pack those static files with r4 modules to Ballerina central.
@@ -42,6 +48,7 @@ isolated class InMemoryTerminology {
             internalFhirValueSets = check DEFAULT_FHIR_VALUE_SETS.fromJsonString();
             externalFhirCodeSystems = check EXTERNAL_FHIR_CODE_SYSTEMS.fromJsonString();
             externalFhirValueSets = check EXTERNAL_FHIR_VALUE_SETS.fromJsonString();
+            internalFhirConceptMaps = check DEFAULT_FHIR_CONCEPT_MAPS.fromJsonString();
         } on fail var e {
             r4:FHIRError fhirError = r4:createFHIRError(
                                     "Error occurred while type casting json string Terminologies json objects",
@@ -57,6 +64,7 @@ isolated class InMemoryTerminology {
             // Call the populateCodeSystemMap function
             self.codeSystemMap = self.populateCodeSystemMap(internalFhirCodeSystems, externalFhirCodeSystems, self.codeSystemMap).clone();
             self.valueSetMap = self.populateValueSetMap(internalFhirValueSets, externalFhirValueSets, self.valueSetMap).clone();
+            self.conceptMapsMap = self.populateConceptMapsMap(internalFhirConceptMaps, self.conceptMapsMap).clone();
         }
 
         // Initialiase terminology processor
@@ -88,6 +96,32 @@ isolated class InMemoryTerminology {
 
         // Return the updated codeSystemMap
         return resultedCodeSystemMap;
+    }
+
+    isolated function populateConceptMapsMap(json conceptMapsJson, map<i4:ConceptMap> conceptMapsMap) returns map<i4:ConceptMap> {
+        // Implementation logic goes here
+        map<i4:ConceptMap> resultedConceptMapsMap = conceptMapsMap;
+        // Populate the resultedConceptMapsMap with the concept maps from internalFhirConceptMaps
+        foreach json conceptMap in [conceptMapsJson] {
+            foreach json jConceptMap in <json[]>conceptMap {
+                i4:ConceptMap|error c = jConceptMap.cloneWithType();
+                if c is error {
+                    r4:FHIRError fHIRError = r4:createFHIRError(
+                                            "Error occurred while type casting json concept map to ConceptMap type", r4:ERROR,
+                                            r4:PROCESSING,
+                                            diagnostic = c.message(),
+                                            cause = c
+                                        );
+                    log:printError(fHIRError.toBalString());
+                } else {
+                    string key = getKey(<string>c.url, <string?>c.version ?: "");
+                    resultedConceptMapsMap[key] = c;
+                }
+            }
+        }
+
+        // Return the updated conceptMapsMap
+        return resultedConceptMapsMap;
     }
 
     isolated function populateValueSetMap(json internalFhirValueSets, json externalFhirValueSets, map<r4:ValueSet> valueSetMap) returns map<r4:ValueSet> {
@@ -131,6 +165,154 @@ isolated class InMemoryTerminology {
         return ();
     }
 
+    public isolated function isConceptMapExist(r4:uri system, string 'version) returns boolean {
+
+        string key = getKey(system, version);
+        lock {
+            return self.conceptMapsMap.hasKey(key);
+        }
+    }
+
+    public isolated function addConceptMap(i4:ConceptMap conceptMap) returns r4:FHIRError? {
+        lock {
+            string key = getKey(<string>conceptMap.url, <string>conceptMap.version);
+            if !self.conceptMapsMap.hasKey(key) {
+                self.conceptMapsMap['key] = conceptMap.clone();
+            } else {
+                return r4:createFHIRError(
+                        "Duplicate entry",
+                        r4:ERROR,
+                        r4:PROCESSING_DUPLICATE,
+                        diagnostic = string `Already there is a ConceptMap exists in the registry with the URL: ${'key}`,
+                        errorType = r4:VALIDATION_ERROR,
+                        httpStatusCode = http:STATUS_BAD_REQUEST);
+            }
+
+        }
+    }
+
+    public isolated function getConceptMap(r4:uri? conceptMapUrl, string? version) returns i4:ConceptMap|r4:FHIRError {
+
+        map<i4:ConceptMap> conceptMaps = {};
+        lock {
+            conceptMaps = self.conceptMapsMap.clone();
+        }
+        
+        boolean isIdExistInRegistry = false;
+        if 'version is string && conceptMapUrl != "" {
+            foreach var item in conceptMaps.keys() {
+                if regexp:isFullMatch(re `${conceptMapUrl}\|${'version}$`, item) && conceptMaps[item] is i4:ConceptMap {
+                    return <i4:ConceptMap>conceptMaps[item].clone();
+                } else if regexp:isFullMatch(re `${conceptMapUrl}\|.*`, item) {
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return r4:createFHIRError(
+                            string `Unknown version: '${'version}',`,
+                            r4:ERROR,
+                            r4:PROCESSING_NOT_FOUND,
+                            diagnostic = string `: there is a concept map in the registry with Url: '${conceptMapUrl.toString()}' but cannot find version: '${'version}' of it.`,
+                            httpStatusCode = http:STATUS_NOT_FOUND
+                        );
+            }
+        } else if conceptMapUrl != "" {
+            i4:ConceptMap conceptMap = {status: "unknown"};
+            foreach var item in conceptMaps.keys() {
+                if conceptMapUrl == item
+                && conceptMaps[item] is i4:ConceptMap {
+                    conceptMap = <i4:ConceptMap>conceptMaps[item];
+                    isIdExistInRegistry = true;
+                }
+            }
+
+            if isIdExistInRegistry {
+                return conceptMap.clone();
+            } else {
+                return r4:createFHIRError(
+                            string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
+                        r4:ERROR,
+                        r4:PROCESSING_NOT_FOUND,
+                        httpStatusCode = http:STATUS_NOT_FOUND
+                        );
+            }
+        }
+        return r4:createFHIRError(
+                string `Unknown concept map: ${conceptMapUrl.toBalString()}`,
+                r4:ERROR,
+                r4:PROCESSING_NOT_FOUND,
+                httpStatusCode = http:STATUS_NOT_FOUND
+            );
+    }
+
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri? targetValueSetUri) returns i4:ConceptMap[]|r4:FHIRError {
+
+        i4:ConceptMap[] conceptMapsArray = [];
+        i4:ConceptMap[] matchingConceptMaps = [];
+        lock {
+            conceptMapsArray = self.conceptMapsMap.clone().toArray();
+        }
+
+        if targetValueSetUri == () {
+            foreach var conceptMap in conceptMapsArray {
+                if conceptMap.sourceCanonical == sourceValueSetUri || conceptMap.sourceUri == sourceValueSetUri {
+                    matchingConceptMaps.push(conceptMap.clone());
+                }
+            }
+        } else {
+            foreach var conceptMap in conceptMapsArray {
+                if (conceptMap.sourceCanonical == sourceValueSetUri && conceptMap.targetCanonical == targetValueSetUri)
+                        || (conceptMap.sourceUri == sourceValueSetUri && conceptMap.targetUri == targetValueSetUri) {
+                    matchingConceptMaps.push(conceptMap.clone());
+                }
+            }
+        }
+
+        if matchingConceptMaps.length() == 0 {
+            return r4:createFHIRError(
+                    "Concept map not found for provided source and target value sets",
+                    r4:ERROR,
+                    r4:PROCESSING_NOT_FOUND,
+                    errorType = r4:PROCESSING_ERROR,
+                    httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+        return matchingConceptMaps;
+    }
+
+    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset, int? count) returns i4:ConceptMap[]|r4:FHIRError {
+
+        i4:ConceptMap[] conceptMapsArray = [];
+        lock {
+            conceptMapsArray = self.conceptMapsMap.clone().toArray();
+        }
+        foreach var searchParam in params.cloneReadOnly().keys() {
+            r4:RequestSearchParameter[] searchParamValues = params.cloneReadOnly()[searchParam] ?: [];
+            i4:ConceptMap[] filteredList = [];
+            if searchParamValues.length() != 0 {
+                foreach var queriedValue in searchParamValues {
+                    i4:ConceptMap[] result = from i4:ConceptMap entry in conceptMapsArray
+                        where entry[CONCEPT_MAPS_SEARCH_PARAMS.get(searchParam)] == queriedValue.value
+                        select entry;
+                    filteredList.push(...result);
+                }
+                conceptMapsArray = filteredList.cloneReadOnly();
+            }
+        }
+
+        int total = conceptMapsArray.length();
+        int validatedCount = count ?: TERMINOLOGY_SEARCH_DEFAULT_COUNT;
+
+        if total >= offset + validatedCount {
+            return conceptMapsArray.slice(offset ?: 0, (offset ?: 0) + validatedCount).clone();
+        } else if total >= offset {
+            return conceptMapsArray.slice(offset ?: 0).clone();
+        } else {
+            return [];
+        }
+    }
+
     public isolated function findCodeSystem(r4:uri? system, string? id, string? version) returns r4:CodeSystem|r4:FHIRError {
         map<r4:CodeSystem> codeSystems = {};
         lock {
@@ -148,17 +330,17 @@ isolated class InMemoryTerminology {
                         httpStatusCode = http:STATUS_NOT_FOUND
                     );
             }
-            if version != () {
+            if 'version != () {
                 codeSystems = map from r4:CodeSystem entry in codeSystems
-                    where entry.version == version
+                    where entry.version == 'version
                     select [getKey(<string>entry.url, <string>entry.version), entry];
 
                 if codeSystems.length() < 1 {
                     return r4:createFHIRError(
-                            string `Unknown version: '${version.toString()}',`,
+                            string `Unknown version: '${'version.toString()}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a CodeSystem in the registry with Id: '${id.toString()}' but cannot find version: '${version.toString()}' of it.`,
+                            diagnostic = string `: there is a CodeSystem in the registry with Id: '${id.toString()}' but cannot find version: '${'version.toString()}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
                 }
@@ -173,9 +355,9 @@ isolated class InMemoryTerminology {
         }
 
         boolean isIdExistInRegistry = false;
-        if version is string && system != () {
+        if 'version is string && system != () {
             foreach var item in codeSystems.keys() {
-                if regexp:isFullMatch(re `${system}\|${version}$`, item) && codeSystems[item] is r4:CodeSystem {
+                if regexp:isFullMatch(re `${system}\|${'version}$`, item) && codeSystems[item] is r4:CodeSystem {
                     return <r4:CodeSystem>codeSystems[item].clone();
                 } else if regexp:isFullMatch(re `${system}\|.*`, item) {
                     isIdExistInRegistry = true;
@@ -184,10 +366,10 @@ isolated class InMemoryTerminology {
 
             if isIdExistInRegistry {
                 return r4:createFHIRError(
-                            string `Unknown version: '${version}',`,
+                            string `Unknown version: '${'version}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a CodeSystem in the registry with Id: '${system.toString()}' but cannot find version: '${version}' of it.`,
+                            diagnostic = string `: there is a CodeSystem in the registry with Id: '${system.toString()}' but cannot find version: '${'version}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
             }
@@ -223,7 +405,7 @@ isolated class InMemoryTerminology {
             );
     }
 
-    public isolated function findConcept(r4:uri system, r4:code code, string? version = ()) returns CodeConceptDetails|r4:FHIRError {
+    public isolated function findConcept(r4:uri system, r4:code code, string? 'version = ()) returns CodeConceptDetails|r4:FHIRError {
         CodeConceptDetails|r4:FHIRError? valuesetConceptDetails = self.findConceptInValueSet(system, code, version);
         if valuesetConceptDetails is CodeConceptDetails {
             return valuesetConceptDetails;
@@ -235,12 +417,12 @@ isolated class InMemoryTerminology {
             conceptDetails = findConceptInCodeSystem(findCodeSystemResult, code);
             if conceptDetails is CodeConceptDetails {
                 return conceptDetails;
-            } 
+            }
         }
 
         if conceptDetails is () && valuesetConceptDetails is () {
             return r4:createFHIRError(
-                string `Unknown ValueSet or CodeSystem : ${system}${version == () ? "" : "|" + version}`,
+                string `Unknown ValueSet or CodeSystem : ${system}${'version == () ? "" : "|" + version}`,
                 r4:ERROR,
                 r4:INVALID_REQUIRED,
                 errorType = r4:PROCESSING_ERROR,
@@ -278,16 +460,16 @@ isolated class InMemoryTerminology {
                         httpStatusCode = http:STATUS_NOT_FOUND
                     );
             }
-            if version != () {
+            if 'version != () {
                 valueSets = map from r4:ValueSet entry in valueSets
-                    where entry.version == version
+                    where entry.version == 'version
                     select [getKey(<string>entry.url, <string>entry.version), entry];
                 if valueSets.length() < 1 {
                     return r4:createFHIRError(
-                            string `Unknown version: '${version.toString()}',`,
+                            string `Unknown version: '${'version.toString()}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a ValueSet in the registry with Id: '${id.toString()}' but cannot find version: '${version.toString()}' of it.`,
+                            diagnostic = string `: there is a ValueSet in the registry with Id: '${id.toString()}' but cannot find version: '${'version.toString()}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
                 }
@@ -299,9 +481,9 @@ isolated class InMemoryTerminology {
             return valueSets.toArray()[0].clone();
         }
         boolean isIdExistInRegistry = false;
-        if version is string {
+        if 'version is string {
             foreach var item in valueSets.keys() {
-                if regexp:isFullMatch(re `${system}\|${version}$`, item) && valueSets[item] is r4:ValueSet {
+                if regexp:isFullMatch(re `${system}\|${'version}$`, item) && valueSets[item] is r4:ValueSet {
                     return <r4:ValueSet>valueSets[item].clone();
                 } else if regexp:isFullMatch(re `${system}\|.*`, item) {
                     isIdExistInRegistry = true;
@@ -309,10 +491,10 @@ isolated class InMemoryTerminology {
             }
             if isIdExistInRegistry {
                 return r4:createFHIRError(
-                            string `Unknown version: '${version}',`,
+                            string `Unknown version: '${'version}',`,
                             r4:ERROR,
                             r4:PROCESSING_NOT_FOUND,
-                            diagnostic = string `: there is a ValueSet in the registry with Id: '${system.toString()}' but cannot find version: '${version}' of it.`,
+                            diagnostic = string `: there is a ValueSet in the registry with Id: '${system.toString()}' but cannot find version: '${'version}' of it.`,
                             httpStatusCode = http:STATUS_NOT_FOUND
                         );
             }
@@ -408,14 +590,14 @@ isolated class InMemoryTerminology {
         }
     }
 
-    public isolated function isCodeSystemExist(r4:uri system, string version) returns boolean {
+    public isolated function isCodeSystemExist(r4:uri system, string 'version) returns boolean {
         string key = getKey(system, version);
         lock {
             return self.codeSystemMap.hasKey(key);
         }
     }
 
-    public isolated function isValueSetExist(r4:uri system, string version) returns boolean {
+    public isolated function isValueSetExist(r4:uri system, string 'version) returns boolean {
         string key = getKey(system, version);
         lock {
             return self.valueSetMap.hasKey(key);
@@ -538,6 +720,6 @@ isolated class InMemoryTerminology {
     }
 }
 
-isolated function getKey(string url, string version) returns string {
-    return string `${url}|${version}`;
+isolated function getKey(string url, string 'version) returns string {
+    return string `${url}|${'version}`;
 }
