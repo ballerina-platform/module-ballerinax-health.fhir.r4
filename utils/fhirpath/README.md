@@ -196,12 +196,12 @@ import ballerina/io;
 import ballerinax/health.fhir.r4utils.fhirpath;
 
 // Define a custom modification function for data masking
-isolated function maskOperation(json input) returns json|fhirpath:ModificationFunctionError {
+isolated function maskOperation(json input) returns json|fhirpath:error {
     return "***MASKED***";
 }
 
 // Define a function to hash sensitive data
-isolated function hashOperation(json input) returns json|fhirpath:ModificationFunctionError {
+isolated function hashOperation(json input) returns json|fhirpath:error {
     if input is string {
         return "HASH_" + input.length().toString(); // Simple hash for example
     }
