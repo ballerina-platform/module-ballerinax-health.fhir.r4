@@ -174,3 +174,7 @@ isolated function prepareAesKey(string keyString) returns byte[16] {
     }
     return aesKey;
 }
+
+# Function to modify the value at the path
+public type DeIdentificationFunction isolated function (json param) returns json|error;
+
