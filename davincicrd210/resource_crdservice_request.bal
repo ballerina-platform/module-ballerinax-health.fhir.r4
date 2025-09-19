@@ -23,6 +23,8 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_CRDSERVICEREQUEST = "http://hl7.org/fhir/us/davinci-crd/StructureDefinition/profile-servicerequest";
 public const RESOURCE_NAME_CRDSERVICEREQUEST = "ServiceRequest";
 
+public type CRDServiceRequestExtensions (ExtCoverageInformation|r4:Extension);
+
 # FHIR CRDServiceRequest resource record.
 #
 # + resourceType - The type of the resource describes
