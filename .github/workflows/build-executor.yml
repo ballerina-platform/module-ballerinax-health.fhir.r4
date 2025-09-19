@@ -12,7 +12,7 @@ on:
       ballerina_version:
         required: false
         type: string
-        default: '2201.12.2'
+        default: '2201.12.8'
 env:
    BALLERINA_VERSION: ${{ inputs.ballerina_version }}
 jobs:
