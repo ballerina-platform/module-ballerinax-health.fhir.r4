@@ -18,4 +18,3 @@ groupId = "io.ballerinax"
 artifactId = "fhirr4-native"
 version = "${project.version}"
 path = "./fhirr4-native-${project.version}.jar"
-

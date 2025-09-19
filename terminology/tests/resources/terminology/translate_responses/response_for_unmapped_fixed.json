@@ -1,0 +1,29 @@
+{
+    "resourceType": "Parameters",
+    "parameter": [
+        {
+            "name": "match",
+            "part": [
+                {
+                    "name": "equivalent"
+                },
+                {
+                    "name": "concept",
+                    "valueCoding": {
+                        "code": "temp",
+                        "display": "temp",
+                        "userSelected": false
+                    }
+                },
+                {
+                    "name": "source",
+                    "valueUri": "unmatched"
+                }
+            ]
+        },
+        {
+            "name": "result",
+            "valueBoolean": true
+        }
+    ]
+}
