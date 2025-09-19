@@ -767,7 +767,8 @@ isolated function fetchNestedResources(r4:Resource[] resourcesArr, IPSContext co
                 // Fetch Medication resource for MedicationStatement (medicationReference)
                 international401:MedicationStatement|error medicationStatement = resourceArrItem.cloneWithType();
                 if medicationStatement is international401:MedicationStatement {
-                    string? medicationResourceReference = medicationStatement.medicationReference.reference;
+                    r4:Reference medicationStatementRef = <r4:Reference> medicationStatement.medicationReference;
+                    string? medicationResourceReference = medicationStatementRef.reference;
                     if medicationResourceReference is string && nestedResourceReferences.indexOf(medicationResourceReference) is () {
                         nestedResourceReferences.push(medicationResourceReference);
                     }
@@ -777,7 +778,8 @@ isolated function fetchNestedResources(r4:Resource[] resourcesArr, IPSContext co
                 // Fetch Medication resource for MedicationAdministration (medicationReference)
                 international401:MedicationAdministration|error medicationAdmin = resourceArrItem.cloneWithType();
                 if medicationAdmin is international401:MedicationAdministration {
-                    string? medicationResourceReference = medicationAdmin.medicationReference.reference;
+                    r4:Reference medicationAdminRef = <r4:Reference> medicationAdmin.medicationReference;
+                    string? medicationResourceReference = medicationAdminRef.reference;
                     if medicationResourceReference is string && nestedResourceReferences.indexOf(medicationResourceReference) is () {
                         nestedResourceReferences.push(medicationResourceReference);
                     }
@@ -787,7 +789,8 @@ isolated function fetchNestedResources(r4:Resource[] resourcesArr, IPSContext co
                 // Fetch Medication resource for MedicationRequest (medicationReference)
                 international401:MedicationRequest|error medicationRequest = resourceArrItem.cloneWithType();
                 if medicationRequest is international401:MedicationRequest {
-                    string? medicationResourceReference = medicationRequest.medicationReference.reference;
+                    r4:Reference medicationRequestRef = <r4:Reference> medicationRequest.medicationReference;
+                    string? medicationResourceReference = medicationRequestRef.reference;
                     if medicationResourceReference is string && nestedResourceReferences.indexOf(medicationResourceReference) is () {
                         nestedResourceReferences.push(medicationResourceReference);
                     }
