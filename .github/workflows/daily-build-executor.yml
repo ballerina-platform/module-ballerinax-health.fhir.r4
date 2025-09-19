@@ -12,10 +12,11 @@ on:
         type: string
 
 env:
-  BALLERINA_VERSION: 2201.12.2
+  BALLERINA_VERSION: latest
 
 jobs:
   build:
+    if: github.repository == 'ballerina-platform/module-ballerinax-health.fhir.r4'
     runs-on: ubuntu-latest
     env:
       JAVA_OPTS: -Xmx4G
@@ -32,6 +33,7 @@ jobs:
       - name: Ballerina Build and Test
         run: |
           pushd "${{ inputs.working_dir }}"
+          rm -f Dependencies.toml
           bal build 
           bal test --test-report --code-coverage --coverage-format=xml
           popd

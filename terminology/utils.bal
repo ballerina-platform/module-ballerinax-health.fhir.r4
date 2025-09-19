@@ -10,6 +10,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 import ballerina/http;
 import ballerina/lang.'int as langint;
 import ballerina/log;
@@ -155,7 +156,7 @@ isolated function findConceptInValueSetOrReturnValueSetURIs(r4:ValueSet valueSet
                     }
                 } else {
                     // when the concepts are not defined inline, we have to find the codes from the system url
-                    codeSystemMetadata.push({url: systemValue, version: includeBBE.version}.clone());
+                    codeSystemMetadata.push({url: systemValue, 'version: includeBBE.version}.clone());
                 }
             } else {
                 // check the contents included in this valueset
@@ -423,7 +424,7 @@ public type Terminology isolated object {
     # + system - CodeSystem URL to be checked.
     # + version - Version of the CodeSystem to be checked.
     # + return - Return true if the CodeSystem exists, else false.
-    public isolated function isCodeSystemExist(r4:uri system, string version) returns boolean;
+    public isolated function isCodeSystemExist(r4:uri system, string 'version) returns boolean;
 
     # Add a new code system. Terminology API makes sure that the CodeSystem is valid. 
     #
@@ -459,7 +460,7 @@ public type Terminology isolated object {
     # + system - ValueSet URL to be checked.
     # + version - Version of the ValueSet to be checked.
     # + return - Return true if the ValueSet exists, else false.
-    public isolated function isValueSetExist(r4:uri system, string version) returns boolean;
+    public isolated function isValueSetExist(r4:uri system, string 'version) returns boolean;
 
     # Add a new value set. Terminology API makes sure that the ValueSet is valid.
     #
@@ -494,4 +495,463 @@ public type Terminology isolated object {
     # + count - The maximum number of concepts to return (optional).
     # + return - Returns a ValueSetExpansion if successful, or an FHIRError if the operation fails.
     public isolated function expandValueSet(map<r4:RequestSearchParameter[]> searchParams, r4:ValueSet valueSet, int offset, int count) returns r4:ValueSet|r4:FHIRError;
+
+    # To check whether the ConceptMap exists.
+    #
+    # + system - ConceptMap URL to be checked.
+    # + version - Version of the ConceptMap to be checked.
+    # + return - Return true if the ConceptMap exists, else false.
+    public isolated function isConceptMapExist(r4:uri system, string 'version) returns boolean;
+
+    # Add a new concept map. Terminology API makes sure that the ConceptMap is valid. 
+    #
+    # + conceptMap - ConceptMap to be added. 
+    # + return - FHIRError if any.
+    public isolated function addConceptMap(r4:ConceptMap conceptMap) returns r4:FHIRError?;
+
+    # Find a ConceptMap by its source and target ValueSets.
+    #
+    # + sourceValueSetUri - URI of the source ValueSet.
+    # + targetValueSetUri - URI of the target ValueSet.
+    # + return - ConceptMap if found or else FHIRError.
+    public isolated function findConceptMaps(r4:uri sourceValueSetUri, r4:uri? targetValueSetUri = ()) returns r4:ConceptMap[]|r4:FHIRError;
+
+    # The function definition for Concept Map finder implementations.
+    #
+    # + params - Search parameters.  
+    # + offset - Offset value for the search.  
+    # + count - Count value for the search.
+    # + return - Concept Map array if found or else FHIRError.
+    public isolated function searchConceptMap(map<r4:RequestSearchParameter[]> params, int? offset = (), int? count = ()) returns r4:ConceptMap[]|r4:FHIRError;
+
+    # The function definition for Concept Map finder implementations.
+    #
+    # + conceptMapUrl - URI of the ConceptMap to be found.
+    # + version - Version of the ConceptMap to be found (optional).
+    # + return - ConceptMap if found or else FHIRError.
+    public isolated function getConceptMap(r4:uri conceptMapUrl, string? version = ()) returns r4:ConceptMap|r4:FHIRError;
 };
+
+# Performs the translation of codes using the provided concept maps and codes to translate. Multiple concept maps can 
+# be provided for matching. The codesToTranslate codeable concept can contain an array of code/system pairs. All the codes
+# provided in the codeable concept will be matched with the provided concept map/s.
+# 
+# If the coding has a system, the concept map group that matches the source code system will be filetered and matched.
+# If the coding has no system, all the groups in the concept map will be matched.
+# 
+# When a particular group doesn't have any matches, the unmapped field of that group will be checked for the mode and
+# the matching will be done accordingly.
+# 
+# - When the unmapped mode is "fixed": the code provided inside the unmapped field is used.
+# - When the unmapped mode is "provided": the source code is used as the target code.
+# - When the unmapped mode is "other-map": the concept map provided inside the unmapped field is used for matching. The 
+# function would recursively match the codes when there are multiple nested "other-map" references.
+# 
+# + conceptMaps - The array of ConceptMap resources to use for translation.
+# + codesToTranslate - The CodeableConcept containing the codes to be translated.
+# + terminology - The Terminology service to use for code translation.
+# + return - A Parameters resource containing the translation results or an FHIRError if an error occurs.
+isolated function doTranslation(r4:ConceptMap[] conceptMaps, r4:CodeableConcept codesToTranslate, Terminology? terminology = inMemoryTerminology) returns r4:Parameters|r4:FHIRError {
+
+    r4:ParametersParameter[] parameters = [];
+    r4:Coding[]? codes = codesToTranslate.coding;
+    
+    if codes is () || codes.length() == 0 {
+        string msg = "No code found in the request. At least one code is required to perform the translation";
+        log:printError(msg);
+        return r4:createFHIRError(msg, r4:ERROR, r4:PROCESSING_NOT_FOUND, httpStatusCode = http:STATUS_BAD_REQUEST);
+    }
+
+    foreach var conceptMap in conceptMaps {
+        r4:uri? conceptMapUri = conceptMap.url;
+        r4:ConceptMapGroup[]? groups = conceptMap.group;
+        if (groups == () || groups.length() == 0) {
+            // If no groups are found in the current concept map, continue to the next concept map
+            log:printWarn(string`No groups found in concept map: ${conceptMap.id.toString()}. Proceeding to the next one`);
+            continue;
+        }
+
+        foreach var code in codes {
+            r4:code? sourceCode = code.code;
+            r4:uri? sourceCodeSystem = code.system;
+
+            if sourceCode is () {
+                log:printDebug("Current coding has no code present in it, proceeding to the next coding.");
+                continue;
+            }
+
+            if sourceCodeSystem is () || sourceCodeSystem.toString() == "" {
+                log:printDebug(string `Matching the code ${sourceCode} with all groups available in the concept map.`);
+                check matchWithAllGroups(groups, sourceCode, parameters, conceptMapUri, terminology);
+            } else {
+                int initialMatchCount = countMatchParameters(parameters);
+                foreach var group in groups {
+                    if doesGroupHasMatchingSystem(group, sourceCodeSystem) {
+                        r4:ConceptMapGroupElement[] groupElements = group.element;
+                        r4:uri? targetSystem = group.target;
+                        log:printDebug(string `Matching the code ${sourceCode} with the group having source system ${sourceCodeSystem}.`);
+                        matchWithGroupElement(groupElements, sourceCode, parameters, conceptMapUri, targetSystem);
+                    }
+
+                    int postMatchCount = countMatchParameters(parameters);
+
+                    if postMatchCount == initialMatchCount { // This means this group didn't have any matches for the code
+                        r4:ConceptMapGroupUnmapped? unmappedField = group.unmapped;
+                        if unmappedField is () {
+                            log:printDebug("No unmapped element found in the current group, proceeding to the next group.");
+                            continue;
+                        }
+                        matchWithUnmappedField(parameters, unmappedField, sourceCode, terminology, sourceCodeSystem);
+                    }
+                }
+            }
+        }
+    }
+
+    if !haveResultParameter(parameters) {
+        if !haveMatchParameters(parameters) {
+            parameters.push({name: "result", valueBoolean: false});
+            parameters.push({name: "message", valueString: "No translation found for in any concept map."});
+        } else {
+            parameters.push({name: "result", valueBoolean: true});
+        }
+    }
+    return {'parameter: parameters};
+}
+
+# Checks if the source code system matches with the provided concept map group
+#
+# + group - a group from the concept map
+# + sourceSystem - The source code system URI
+# + return - true is the group matches with the source system. False otherwise.
+isolated function doesGroupHasMatchingSystem(r4:ConceptMapGroup group, r4:uri sourceSystem) returns boolean {
+
+    r4:uri? sourceSystemInGroup = group.'source;
+    return sourceSystemInGroup == sourceSystem;
+}
+
+# Matches the provided code/s with all available groups in the concept map without the code system.
+#
+# + groups - the concept map groups to match against
+# + codeToTranslate - the code to translate
+# + parameters - the parameters to populate with the match results
+# + conceptMapUri - the URI of the concept map
+# + terminology - the terminology implementation
+# + sourceSystem - the URI of the source system
+# + return - an optional FHIRError if an error occurs during matching
+isolated function matchWithAllGroups(r4:ConceptMapGroup[] groups, r4:code codeToTranslate, r4:ParametersParameter[] parameters, r4:uri? conceptMapUri = (), Terminology? terminology = inMemoryTerminology, r4:uri? sourceSystem = ()) returns r4:FHIRError? {
+
+    foreach var group in groups {
+        int initialMatchCount = countMatchParameters(parameters);
+        r4:ConceptMapGroupElement[]? elements = group.element;
+        r4:uri? targetSystem = group.target;
+
+        if elements is () || elements.length() == 0 {
+            log:printDebug("No elements found in the current group, proceeding to the next group.");
+            continue;
+        }
+        matchWithGroupElement(elements, codeToTranslate, parameters, conceptMapUri, targetSystem);
+
+        int postMatchCount = countMatchParameters(parameters);
+
+        if postMatchCount == initialMatchCount {
+            log:printDebug(string `Checking the unmapped field for the code: ${codeToTranslate}`);
+            r4:ConceptMapGroupUnmapped? unmappedField = group.unmapped;
+            if unmappedField is () {
+                log:printDebug("No unmapped element found in the current group, proceeding to the next group.");
+                continue;
+            }
+            matchWithUnmappedField(parameters, unmappedField, codeToTranslate, terminology);
+        }
+    }
+}
+
+# Matches the 'unmapped' mode for unmapped fields.
+#
+# + parameters - the parameters to populate with the match results
+# + unmappedField - the unmapped field to process
+# + codeToTranslate - the code to translate
+# + terminology - the terminology service
+# + sourceSystem - the URI of the source system
+isolated function matchWithUnmappedField(r4:ParametersParameter[] parameters, r4:ConceptMapGroupUnmapped unmappedField, r4:code? codeToTranslate, Terminology? terminology = inMemoryTerminology, r4:uri? sourceSystem = ()) {
+
+    r4:ConceptMapGroupUnmappedMode mode = unmappedField.mode;
+
+    match mode {
+        r4:CODE_MODE_PROVIDED => {
+            handleProvidedMode(codeToTranslate, parameters);
+        }
+        r4:CODE_MODE_FIXED => {
+            handleFixedMode(unmappedField, parameters);
+        }
+        r4:CODE_MODE_OTHER_MAP => {
+            handleOtherMapMode(unmappedField, parameters, codeToTranslate, sourceSystem, terminology);
+        }
+    }
+}
+
+# Matches the 'provided' mode for unmapped fields.
+#
+# + codeToTranslate - the code to translate
+# + parameters - the parameters to populate with the match results
+isolated function handleProvidedMode(r4:code? codeToTranslate, r4:ParametersParameter[] parameters) {
+
+    r4:Coding conceptCoding = {
+        code: codeToTranslate
+    };
+    parameters.push(
+        {
+        name: r4:MATCH,
+        part: getPartParameter(conceptCoding, r4:CODE_EQUIVALENCE_UNMATCHED)
+    }
+    );
+}
+
+# Matches the 'fixed' mode for unmapped fields.
+#
+# + unmappedField - the unmapped field to process
+# + parameters - the parameters to populate with the match results
+isolated function handleFixedMode(r4:ConceptMapGroupUnmapped unmappedField, r4:ParametersParameter[] parameters) {
+    r4:Coding conceptCoding = {
+        code: unmappedField.code,
+        display: unmappedField.display
+    };
+    parameters.push(
+        {
+        name: r4:MATCH,
+        part: getPartParameter(conceptCoding, r4:CODE_EQUIVALENCE_UNMATCHED)
+    }
+    );
+}
+
+# Matches the 'other-map' mode for unmapped fields.
+#
+# + unmappedField - the unmapped field to process
+# + parameters - the parameters to populate with the match results
+# + codeToTranslate - the code to translate
+# + sourceSystem - the URI of the source system
+# + terminology - the terminology service to use for translation
+isolated function handleOtherMapMode(r4:ConceptMapGroupUnmapped unmappedField, r4:ParametersParameter[] parameters, r4:code? codeToTranslate = (), r4:uri? sourceSystem = (), Terminology? terminology = inMemoryTerminology) {
+
+    // Retrieve the fallback concept map from the URL
+    r4:uri? otherConceptMapUri = unmappedField.url;
+    if otherConceptMapUri is () {
+        log:printWarn("No other concept map URI provided for the 'other-map' mode, cannot proceed with the translation.");
+        return;
+    }
+    r4:ConceptMap|r4:FHIRError? fallbackConceptMap = (<Terminology>terminology).getConceptMap(otherConceptMapUri);
+    if fallbackConceptMap is r4:FHIRError || fallbackConceptMap is () {
+        log:printWarn("No fallback concept map found for the 'other-map' mode");
+        return;
+    }
+
+    r4:ConceptMap[] fallbackConceptMapArray = [fallbackConceptMap];
+    r4:Parameters|r4:FHIRError fallbackResponse = doTranslation(fallbackConceptMapArray, 
+                                                {coding: [{code: codeToTranslate, system: sourceSystem}]}, terminology);
+
+    if fallbackResponse is r4:FHIRError {
+        return;
+    }
+
+    r4:ParametersParameter[]? fallbackParameters = fallbackResponse.'parameter;
+    if fallbackParameters !is () && fallbackParameters.length() > 0 {
+        foreach r4:ParametersParameter item in fallbackParameters {
+            parameters.push(item);
+        }
+    }
+}
+
+# Matches the group elements within a concept map.
+#
+# + elements - the group elements to match
+# + codeToTranslate - the code to translate
+# + parameters - the parameters to populate with the match results
+# + conceptMapUri - the URI of the concept map
+# + targetSystem - the URI of the target system
+isolated function matchWithGroupElement(r4:ConceptMapGroupElement[] elements, r4:code codeToTranslate, r4:ParametersParameter[] parameters, r4:uri? conceptMapUri = (), r4:uri? targetSystem = ()) {
+
+    foreach var element in elements {
+        r4:code? code = element.code;
+        if code == codeToTranslate {
+            r4:ConceptMapGroupElementTarget[]? targets = element.target;
+            if targets is () {
+                log:printDebug("No targets found in the current element, proceeding to the next element.");
+                continue;
+            }
+            matchWithGroupElementTarget(targets, parameters, conceptMapUri, targetSystem);
+        }
+    }
+}
+
+# Matches the target elements within a group element and enriches the parameters array.
+#
+# + targets - the target elements to match
+# + parameters - the parameters to populate with the match results
+# + conceptMapUri - the URI of the concept map
+# + targetSystem - the URI of the target system
+isolated function matchWithGroupElementTarget(r4:ConceptMapGroupElementTarget[] targets, r4:ParametersParameter[] parameters, r4:uri? conceptMapUri = (), r4:uri? targetSystem = ()) {
+
+    foreach var target in targets {
+        r4:code? targetCode = target.code;
+        if targetCode is () {
+            log:printDebug("No code found in the current target, proceeding to the next target.");
+            continue;
+        }
+        r4:Coding conceptCoding = {
+            code: target.code,
+            display: target.display,
+            system: targetSystem
+        };
+        parameters.push(getMatchParameter(conceptCoding, conceptMapUri, target.equivalence.toString()));
+    }
+}
+
+# Returns a match parameter for the given concept coding and concept map URI.
+#
+# + conceptCoding - the coding information for the concept
+# + conceptMapUri - the URI of the concept map
+# + equivalenceCode - the equivalence code for the concept
+# + return - a match parameter for the given concept coding and concept map URI
+isolated function getMatchParameter(r4:Coding conceptCoding, r4:uri? conceptMapUri = (), string? equivalenceCode = ()) returns r4:ParametersParameter {
+
+    return {
+        name: r4:MATCH,
+        part: getPartParameter(conceptCoding, conceptMapUri, equivalenceCode)
+    };
+}
+
+# Returns a parameter indicating the equivalence of the concept.
+#
+# + equivalenceCode - the equivalence code for the concept
+# + return - a parameter indicating the equivalence of the concept
+isolated function getEquivalenceParameter(string? equivalenceCode = ()) returns r4:ParametersParameter {
+
+    return {
+        name: r4:CODE_EQUIVALENCE_EQUIVALENT,
+        valueCode: equivalenceCode
+    };
+}
+
+# Returns a parameter indicating the concept being mapped.
+#
+# + conceptCoding - the coding information for the concept
+# + return - a parameter indicating the concept being mapped
+isolated function getConceptParameter(r4:Coding conceptCoding) returns r4:ParametersParameter {
+
+    string? targetCode = conceptCoding.code;
+    string? display = conceptCoding.display;
+    string? targetSystem = conceptCoding.system;
+
+    if targetSystem is () {
+        return {
+            name: "concept",
+            valueCoding: {
+                code: targetCode,
+                display: display,
+                system: targetSystem,
+                userSelected: false // This must be false since there is no user intervention when deciding this matching
+            }
+        };
+    }
+
+    return {
+        name: "concept",
+        valueCoding: {
+            system: targetSystem,
+            code: targetCode,
+            display: display,
+            userSelected: false // This must be false since there is no user intervention when deciding this matching
+        }
+    };
+}
+
+# Returns a parameter indicating the source of the concept map.
+#
+# + conceptMapUri - the URI of the concept map
+# + return - a parameter indicating the source of the concept map
+isolated function getSourceParameter(string conceptMapUri) returns r4:ParametersParameter {
+
+    return {
+        name: "source",
+        valueUri: conceptMapUri
+    };
+}
+
+# Returns a parameter indicating the source of the concept map.
+#
+# + conceptCoding - the coding information for the concept
+# + conceptMapUri - the URI of the concept map
+# + equivalenceCode - the equivalence code for the concept
+# + return - an array of parameters indicating the parts of the concept mapping
+isolated function getPartParameter(r4:Coding conceptCoding, r4:uri? conceptMapUri = (), string? equivalenceCode = ()) returns r4:ParametersParameter[] {
+
+    if conceptMapUri is () {
+        return [
+            getEquivalenceParameter(equivalenceCode),
+            getConceptParameter(conceptCoding)
+        ];
+    } else {
+        return [
+            getEquivalenceParameter(equivalenceCode),
+            getConceptParameter(conceptCoding),
+            getSourceParameter(conceptMapUri)
+        ];
+    }
+}
+
+# Returns a parameter indicating that no translation was found for a specific code.
+#
+# + code - the code that was not found
+# + return - a parameter indicating that no translation was found for the specific code
+isolated function getUnmatchedCodeParameter(string code) returns r4:ParametersParameter {
+
+    return {
+        name: "message",
+        valueString: string `No translation found for the code '${code}' in the provided concept map/s`
+    };
+}
+
+# Counts the number of match parameters in the provided parameters array.
+#
+# + parameters - the parameters array
+# + return - the count of match parameters
+isolated function countMatchParameters(r4:ParametersParameter[] parameters) returns int {
+
+    int matchCount = 0;
+    foreach r4:ParametersParameter item in parameters {
+        if item.name == r4:MATCH {
+            matchCount += 1;
+        }
+    }
+    log:printDebug(string `Match parameter count is ${matchCount}`);
+    return matchCount;
+}
+
+# Checks if there are any match parameters present in the provided parameters array.
+#
+# + parameters - the parameters array
+# + return - true if at least one match parameter is found, false otherwise
+isolated function haveMatchParameters(r4:ParametersParameter[] parameters) returns boolean {
+
+    foreach r4:ParametersParameter item in parameters {
+        if item.name == r4:MATCH {
+            return true;
+        }
+    }
+    return false;
+}
+
+# Counts the number of parameters with the name "result" in it.
+#
+# + parameters - the parameters array
+# + return - true if at least one result parameter is found, false otherwise
+isolated function haveResultParameter(r4:ParametersParameter[] parameters) returns boolean {
+
+    foreach r4:ParametersParameter item in parameters {
+        if item.name == "result" {
+            return true;
+        }
+    }
+    return false;
+}
+

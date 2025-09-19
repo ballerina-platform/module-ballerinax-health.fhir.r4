@@ -1,0 +1,31 @@
+{
+    "resourceType": "Parameters",
+    "parameter": [
+        {
+            "name": "match",
+            "part": [
+                {
+                    "valueCode": "equivalent",
+                    "name": "equivalent"
+                },
+                {
+                    "name": "concept",
+                    "valueCoding": {
+                        "system": "http://example.org/fhir/example4",
+                        "code": "otherMapTargetCode",
+                        "display": "Other Map Example Code",
+                        "userSelected": false
+                    }
+                },
+                {
+                    "name": "source",
+                    "valueUri": "http://example.org/fhir/ConceptMap/map2"
+                }
+            ]
+        },
+        {
+            "name": "result",
+            "valueBoolean": true
+        }
+    ]
+}
