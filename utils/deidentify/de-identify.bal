@@ -40,10 +40,10 @@ public type DeIdentifyRule record {|
 |};
 
 # Initializing the default operations for FHIRPath modification functions.
-isolated map<fhirpath:ModificationFunction> initOperations = {
-    mask: <fhirpath:ModificationFunction>starMaskOperation,
-    encrypt: <fhirpath:ModificationFunction>encryptOperation,
-    hash: <fhirpath:ModificationFunction>hashOperation
+isolated map<DeIdentificationFunction> initOperations = {
+    mask: <DeIdentificationFunction>starMaskOperation,
+    encrypt: <DeIdentificationFunction>encryptOperation,
+    hash: <DeIdentificationFunction>hashOperation
 };
 
 # Rule with a single fhir path
@@ -81,7 +81,7 @@ isolated function simplifyRules(DeIdentifyRule[] rules) returns Rule[] {
 # + validateOutputFHIRResource - Flag indicating whether to validate the output FHIR resource. Defaults to false or the value in Config.toml if configured.
 # + skipError - Flag indicating whether to skip errors during de-identification. Defaults to false or the value in Config.toml if configured.
 # + return - The de-identified FHIR resource or an error.
-public isolated function deIdentify(json fhirResource, map<fhirpath:ModificationFunction> operations = {}, DeIdentifyRule[] deIdentifyRules = rules, boolean validateInputFHIRResource = inputFHIRResourceValidation, boolean validateOutputFHIRResource = outputFHIRResourceValidation,
+public isolated function deIdentify(json fhirResource, map<DeIdentificationFunction> operations = {}, DeIdentifyRule[] deIdentifyRules = rules, boolean validateInputFHIRResource = inputFHIRResourceValidation, boolean validateOutputFHIRResource = outputFHIRResourceValidation,
         boolean skipError = skipOnError) returns json|DeIdentificationError {
 
     // Register any custom functions provided. Provided map of functions will be appended to the existing operations.
@@ -202,7 +202,7 @@ isolated function deIdentifySingleResource(json fhirResource, Rule[] deIdentifyR
         return fhirResource;
     }
 
-    map<fhirpath:ModificationFunction> & readonly operations;
+    map<DeIdentificationFunction> & readonly operations;
     lock {
         operations = initOperations.cloneReadOnly();
     }

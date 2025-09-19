@@ -14,13 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/health.fhir.r4utils.fhirpath;
-
 # Star Mask Operation
 #
 # + value - The input value to be masked.
 # + return - The masked value.
-isolated function starMaskOperation(json value) returns json|fhirpath:ModificationFunctionError {
+isolated function starMaskOperation(json value) returns json|error {
     return "*****";
 }
 
@@ -28,7 +26,7 @@ isolated function starMaskOperation(json value) returns json|fhirpath:Modificati
 #
 # + value - The input value to be encrypted.
 # + return - The encrypted value.
-isolated function encryptOperation(json value) returns json|fhirpath:ModificationFunctionError {
+isolated function encryptOperation(json value) returns json|error {
     if value is string {
         string|DeIdentificationError encryptedValue = encryptWithKey(value);
         if encryptedValue is DeIdentificationError {
@@ -43,7 +41,7 @@ isolated function encryptOperation(json value) returns json|fhirpath:Modificatio
 #
 # + value - The input value to be hashed.
 # + return - The hashed value.
-isolated function hashOperation(json value) returns json|fhirpath:ModificationFunctionError {
+isolated function hashOperation(json value) returns json|error {
     if value is string {
         string|DeIdentificationError hashedValue = hashWithKey(value);
         if hashedValue is DeIdentificationError {

@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/test;
-import ballerinax/health.fhir.r4utils.fhirpath;
 
 // Test data setup
 json patientResource = {
@@ -141,11 +140,11 @@ function testDeIdentifyWithObservationResource() {
 @test:Config {}
 function testDeIdentifyWithCustomOperation() {
     // Register a custom operation
-    fhirpath:ModificationFunction customMaskFunction = isolated function(json value) returns json|fhirpath:ModificationFunctionError {
+    DeIdentificationFunction customMaskFunction = isolated function(json value) returns json|DeIdentificationError {
         return "CUSTOM_MASKED";
     };
 
-    map<fhirpath:ModificationFunction> customOperations = {
+    map<DeIdentificationFunction> customOperations = {
         "customMask": customMaskFunction
     };
 
