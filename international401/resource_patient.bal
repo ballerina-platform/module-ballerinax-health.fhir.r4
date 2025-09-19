@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_PATIENT = "http://hl7.org/fhir/StructureDefinition/Patient";
 public const RESOURCE_NAME_PATIENT = "Patient";
+
+public type PatientExtensions (r4:Extension|IndividualGenderIdentity|IndividualPronouns|IndividualRecordedSexOrGender|PatientAdoptionInfo|PatientAnimal|PatientBirthPlace|PatientBornStatus|PatientCadavericDonor|PatientCitizenship|PatientCongregation|PatientDisability|PatientFetalStatus|PatientGenderIdentity|PatientImportance|PatientInterpreterRequired|PatientKnownNonDuplicate|PatientMothersMaidenName|PatientNationality|PatientPreferredPharmacy|PatientReligion|PatientUnknownIdentity);
 
 # FHIR Patient resource record.
 #

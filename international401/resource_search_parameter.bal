@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_SEARCHPARAMETER = "http://hl7.org/fhir/StructureDefinition/SearchParameter";
 public const RESOURCE_NAME_SEARCHPARAMETER = "SearchParameter";
+
+public type SearchParameterExtensions (r4:Extension|Replaces|ResourceApprovalDate|ResourceEffectivePeriod|ResourceLastReviewDate);
 
 # FHIR SearchParameter resource record.
 #
@@ -390,7 +392,10 @@ public type SearchParameter record {|
     string publisher?;
     r4:UsageContext[] useContext?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.SearchParameter.base constraint. This field must be an array containing at least one item."
+        }
     }
     r4:code[] base;
     SearchParameterStatus status;

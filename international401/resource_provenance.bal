@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -218,7 +218,10 @@ public type Provenance record {|
 
     r4:CodeableConcept[] reason?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Provenance.agent constraint. This field must be an array containing at least one item."
+        }
     }
     ProvenanceAgent[] agent;
     r4:Extension[] extension?;
@@ -229,7 +232,10 @@ public type Provenance record {|
     r4:Period occurredPeriod?;
     r4:instant recorded;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Provenance.target constraint. This field must be an array containing at least one item."
+        }
     }
     r4:Reference[] target;
     r4:Resource[] contained?;
@@ -349,6 +355,7 @@ public enum ProvenanceEntityRole {
 
 # FHIR ProvenanceEntity datatype record.
 #
+# + agent - The entity is attributed to an agent to express the agent's responsibility for that entity, possibly along with other agents. This description can be understood as shorthand for saying that the agent was responsible for the activity which generated the entity.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + role - How the entity was used during the activity.
 # + what - Identity of the Entity used. May be a logical or physical uri and maybe absolute or relative.
@@ -358,6 +365,16 @@ public enum ProvenanceEntityRole {
     name: "ProvenanceEntity",
     baseType: (),
     elements: {
+        "agent": {
+            name: "agent",
+            dataType: ProvenanceAgent,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The entity is attributed to an agent to express the agent's responsibility for that entity, possibly along with other agents. This description can be understood as shorthand for saying that the agent was responsible for the activity which generated the entity.",
+            path: "Provenance.entity.agent"
+        },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -412,6 +429,7 @@ public enum ProvenanceEntityRole {
 public type ProvenanceEntity record {|
     *r4:BackboneElement;
 
+    ProvenanceAgent[] agent?;
     r4:Extension[] extension?;
     ProvenanceEntityRole role;
     r4:Reference what;

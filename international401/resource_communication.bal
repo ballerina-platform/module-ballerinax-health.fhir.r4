@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_COMMUNICATION = "http://hl7.org/fhir/StructureDefinition/Communication";
 public const RESOURCE_NAME_COMMUNICATION = "Communication";
+
+public type CommunicationExtensions (CommunicationMedia|EventRecorded|r4:Extension|WorkflowAdheresTo|WorkflowEpisodeOfCare|WorkflowGeneratedFrom|WorkflowReleaseDate|WorkflowTriggeredBy);
 
 # FHIR Communication resource record.
 #
@@ -450,10 +452,10 @@ public type CommunicationPayload record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
-    r4:Reference contentReference;
-    string contentString;
+    r4:Reference contentReference?;
+    string contentString?;
     r4:Extension[] modifierExtension?;
-    r4:Attachment contentAttachment;
+    r4:Attachment contentAttachment?;
     string id?;
 |};
 

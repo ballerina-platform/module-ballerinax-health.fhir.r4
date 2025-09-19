@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -19,10 +19,12 @@
 
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_ACTUAL_GROUP = "http://hl7.org/fhir/StructureDefinition/actualgroup";
-public const RESOURCE_NAME_ACTUAL_GROUP = "Group";
+public const string PROFILE_BASE_ACTUALGROUP = "http://hl7.org/fhir/StructureDefinition/actualgroup";
+public const RESOURCE_NAME_ACTUALGROUP = "Group";
 
-# FHIR Actual_Group resource record.
+public type ActualGroupExtensions (ArtifactEditor|ArtifactEndorser|ArtifactReviewer|CharacteristicExpression|CqfInputParameters|CqfTestArtifact|r4:Extension|ResourceApprovalDate|ResourceEffectivePeriod|ResourceLastReviewDate);
+
+# FHIR ActualGroup resource record.
 #
 # + resourceType - The type of the resource describes
 # + actual - If true, indicates that the resource refers to a specific group of real individuals. If false, the group defines a set of intended individuals.
@@ -115,7 +117,7 @@ public const RESOURCE_NAME_ACTUAL_GROUP = "Group";
         },
         "type" : {
             name: "type",
-            dataType: Actual_GroupType,
+            dataType: ActualGroupType,
             min: 1,
             max: 1,
             isArray: false,
@@ -124,10 +126,10 @@ public const RESOURCE_NAME_ACTUAL_GROUP = "Group";
         },
         "characteristic" : {
             name: "characteristic",
-            dataType: Actual_GroupCharacteristic,
+            dataType: ActualGroupCharacteristic,
             min: 0,
             max: 0,
-            isArray: false,
+            isArray: true,
             path: "Group.characteristic"
         },
         "managingEntity" : {
@@ -156,7 +158,7 @@ public const RESOURCE_NAME_ACTUAL_GROUP = "Group";
         },
         "member" : {
             name: "member",
-            dataType: Actual_GroupMember,
+            dataType: ActualGroupMember,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -200,10 +202,11 @@ public const RESOURCE_NAME_ACTUAL_GROUP = "Group";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type Actual_Group record {|
+
+public type ActualGroup record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_ACTUAL_GROUP resourceType = RESOURCE_NAME_ACTUAL_GROUP;
+    RESOURCE_NAME_ACTUALGROUP resourceType = RESOURCE_NAME_ACTUALGROUP;
 
     boolean actual;
     r4:Identifier[] identifier?;
@@ -213,12 +216,12 @@ public type Actual_Group record {|
     r4:Extension[] modifierExtension?;
     boolean active?;
     r4:code language?;
-    Actual_GroupType 'type;
-    Actual_GroupCharacteristic characteristic?;
+    ActualGroupType 'type;
+    ActualGroupCharacteristic[] characteristic?;
     r4:Reference managingEntity?;
     r4:Resource[] contained?;
     r4:Meta meta?;
-    Actual_GroupMember[] member?;
+    ActualGroupMember[] member?;
     string name?;
     r4:uri implicitRules?;
     string id?;
@@ -226,8 +229,8 @@ public type Actual_Group record {|
     r4:Element ...;
 |};
 
-# Actual_GroupType enum
-public enum Actual_GroupType {
+# ActualGroupType enum
+public enum ActualGroupType {
    CODE_TYPE_PRACTITIONER = "practitioner",
    CODE_TYPE_PERSON = "person",
    CODE_TYPE_SUBSTANCE = "substance",
@@ -236,7 +239,98 @@ public enum Actual_GroupType {
    CODE_TYPE_DEVICE = "device"
 }
 
-# FHIR Actual_GroupCharacteristic datatype record.
+# FHIR ActualGroupMember datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + period - The period that the member was in the group, if known.
+# + inactive - A flag to indicate that the member is no longer in the group, but previously may have been a member.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + entity - A reference to the entity that is a member of the group. Must be consistent with Group.type. If the entity is another group, then the type must be the same.
+
+@r4:DataTypeDefinition {
+    name: "ActualGroupMember",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Group.member.extension"
+        },
+
+        "period": {
+            name: "period",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The period that the member was in the group, if known.",
+            path: "Group.member.period"
+        },
+
+        "inactive": {
+            name: "inactive",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A flag to indicate that the member is no longer in the group, but previously may have been a member.",
+            path: "Group.member.inactive"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Group.member.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Group.member.id"
+        },
+
+        "entity": {
+            name: "entity",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A reference to the entity that is a member of the group. Must be consistent with Group.type. If the entity is another group, then the type must be the same.",
+            path: "Group.member.entity"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type ActualGroupMember record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Period period?;
+    boolean inactive?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:Reference entity;
+|};
+
+# FHIR ActualGroupCharacteristic datatype record.
 #
 # + valueCodeableConcept - The value of the trait that holds (or does not hold - see 'exclude') for members of the group.
 # + valueBoolean - The value of the trait that holds (or does not hold - see 'exclude') for members of the group.
@@ -250,7 +344,7 @@ public enum Actual_GroupType {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + valueQuantity - The value of the trait that holds (or does not hold - see 'exclude') for members of the group.
 @r4:DataTypeDefinition {
-    name: "Actual_GroupCharacteristic",
+    name: "ActualGroupCharacteristic",
     baseType: (),
     elements: {
         "valueCodeableConcept": {
@@ -358,102 +452,20 @@ public enum Actual_GroupType {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Actual_GroupCharacteristic record {|
+
+public type ActualGroupCharacteristic record {|
     *r4:BackboneElement;
 
-    r4:CodeableConcept valueCodeableConcept;
-    boolean valueBoolean;
+    r4:CodeableConcept valueCodeableConcept?;
+    boolean valueBoolean?;
     r4:Extension[] extension?;
     r4:Period period?;
     r4:CodeableConcept code;
-    r4:Reference valueReference;
-    r4:Range valueRange;
+    r4:Reference valueReference?;
+    r4:Range valueRange?;
     r4:Extension[] modifierExtension?;
     boolean exclude;
     string id?;
-    r4:Quantity valueQuantity;
-|};
-
-# FHIR Actual_GroupMember datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + period - The period that the member was in the group, if known.
-# + inactive - A flag to indicate that the member is no longer in the group, but previously may have been a member.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + entity - A reference to the entity that is a member of the group. Must be consistent with Group.type. If the entity is another group, then the type must be the same.
-@r4:DataTypeDefinition {
-    name: "Actual_GroupMember",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Group.member.extension"
-        },
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The period that the member was in the group, if known.",
-            path: "Group.member.period"
-        },
-        "inactive": {
-            name: "inactive",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A flag to indicate that the member is no longer in the group, but previously may have been a member.",
-            path: "Group.member.inactive"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Group.member.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Group.member.id"
-        },
-        "entity": {
-            name: "entity",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A reference to the entity that is a member of the group. Must be consistent with Group.type. If the entity is another group, then the type must be the same.",
-            path: "Group.member.entity"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Actual_GroupMember record {|
-    *r4:BackboneElement;
-
-    r4:Extension[] extension?;
-    r4:Period period?;
-    boolean inactive?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:Reference entity;
+    r4:Quantity valueQuantity?;
 |};
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -19,10 +19,12 @@
 
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_SHAREABLE_ACTIVITYDEFINITION = "http://hl7.org/fhir/StructureDefinition/shareableactivitydefinition";
-public const RESOURCE_NAME_SHAREABLE_ACTIVITYDEFINITION = "ActivityDefinition";
+public const string PROFILE_BASE_SHAREABLEACTIVITYDEFINITION = "http://hl7.org/fhir/StructureDefinition/shareableactivitydefinition";
+public const RESOURCE_NAME_SHAREABLEACTIVITYDEFINITION = "ActivityDefinition";
 
-# FHIR Shareable_ActivityDefinition resource record.
+public type ShareableActivityDefinitionExtensions (CqfTargetInvariant|r4:Extension|Replaces|TargetConstraint|Variable|WorkflowShallComplyWith);
+
+# FHIR ShareableActivityDefinition resource record.
 #
 # + resourceType - The type of the resource describes
 # + date - The date (and optionally time) when the activity definition was published. The date must change when the business version changes and it must change if the status code changes. In addition, it should change when the substantive content of the activity definition changes.
@@ -151,7 +153,7 @@ public const RESOURCE_NAME_SHAREABLE_ACTIVITYDEFINITION = "ActivityDefinition";
         },
         "participant" : {
             name: "participant",
-            dataType: Shareable_ActivityDefinitionParticipant,
+            dataType: ShareableActivityDefinitionParticipant,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -272,7 +274,7 @@ public const RESOURCE_NAME_SHAREABLE_ACTIVITYDEFINITION = "ActivityDefinition";
         },
         "priority" : {
             name: "priority",
-            dataType: Shareable_ActivityDefinitionPriority,
+            dataType: ShareableActivityDefinitionPriority,
             min: 0,
             max: 1,
             isArray: false,
@@ -371,7 +373,7 @@ public const RESOURCE_NAME_SHAREABLE_ACTIVITYDEFINITION = "ActivityDefinition";
         },
         "status" : {
             name: "status",
-            dataType: Shareable_ActivityDefinitionStatus,
+            dataType: ShareableActivityDefinitionStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -471,7 +473,7 @@ public const RESOURCE_NAME_SHAREABLE_ACTIVITYDEFINITION = "ActivityDefinition";
         },
         "dynamicValue" : {
             name: "dynamicValue",
-            dataType: Shareable_ActivityDefinitionDynamicValue,
+            dataType: ShareableActivityDefinitionDynamicValue,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -527,7 +529,7 @@ public const RESOURCE_NAME_SHAREABLE_ACTIVITYDEFINITION = "ActivityDefinition";
         },
         "intent" : {
             name: "intent",
-            dataType: Shareable_ActivityDefinitionIntent,
+            dataType: ShareableActivityDefinitionIntent,
             min: 0,
             max: 1,
             isArray: false,
@@ -598,10 +600,11 @@ public const RESOURCE_NAME_SHAREABLE_ACTIVITYDEFINITION = "ActivityDefinition";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type Shareable_ActivityDefinition record {|
+
+public type ShareableActivityDefinition record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_SHAREABLE_ACTIVITYDEFINITION resourceType = RESOURCE_NAME_SHAREABLE_ACTIVITYDEFINITION;
+    RESOURCE_NAME_SHAREABLEACTIVITYDEFINITION resourceType = RESOURCE_NAME_SHAREABLEACTIVITYDEFINITION;
 
     r4:dateTime date?;
     r4:markdown copyright?;
@@ -610,7 +613,7 @@ public type Shareable_ActivityDefinition record {|
     r4:Reference productReference?;
     boolean experimental;
     r4:code language?;
-    Shareable_ActivityDefinitionParticipant[] participant?;
+    ShareableActivityDefinitionParticipant[] participant?;
     r4:Reference[] observationResultRequirement?;
     r4:ContactDetail[] contact?;
     r4:ContactDetail[] endorser?;
@@ -625,7 +628,7 @@ public type Shareable_ActivityDefinition record {|
     r4:ContactDetail[] author?;
     r4:code kind?;
     r4:canonical profile?;
-    Shareable_ActivityDefinitionPriority priority?;
+    ShareableActivityDefinitionPriority priority?;
     string 'version;
     r4:Range timingRange?;
     r4:date lastReviewDate?;
@@ -637,7 +640,7 @@ public type Shareable_ActivityDefinition record {|
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
     r4:CodeableConcept productCodeableConcept?;
-    Shareable_ActivityDefinitionStatus status;
+    ShareableActivityDefinitionStatus status;
     r4:Dosage[] dosage?;
     r4:Extension[] extension?;
     r4:date approvalDate?;
@@ -649,14 +652,14 @@ public type Shareable_ActivityDefinition record {|
     r4:Reference[] specimenRequirement?;
     string title?;
     r4:canonical transform?;
-    Shareable_ActivityDefinitionDynamicValue[] dynamicValue?;
+    ShareableActivityDefinitionDynamicValue[] dynamicValue?;
     r4:canonical[] library?;
     r4:ContactDetail[] editor?;
     r4:SimpleQuantity quantity?;
     r4:Timing timingTiming?;
     r4:Period timingPeriod?;
     r4:ContactDetail[] reviewer?;
-    Shareable_ActivityDefinitionIntent intent?;
+    ShareableActivityDefinitionIntent intent?;
     r4:Reference subjectReference?;
     r4:Reference[] observationRequirement?;
     r4:uri url;
@@ -667,15 +670,23 @@ public type Shareable_ActivityDefinition record {|
     r4:Element ...;
 |};
 
-# Shareable_ActivityDefinitionStatus enum
-public enum Shareable_ActivityDefinitionStatus {
-   CODE_STATUS_DRAFT = "draft",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_RETIRED = "retired",
-   CODE_STATUS_UNKNOWN = "unknown"
+# ShareableActivityDefinitionParticipantType enum
+public enum ShareableActivityDefinitionParticipantType {
+    CODE_TYPE_RELATED_PERSON = "related-person",
+    CODE_TYPE_PRACTITIONER = "practitioner",
+    CODE_TYPE_PATIENT = "patient",
+    CODE_TYPE_DEVICE = "device"
 }
 
-# FHIR Shareable_ActivityDefinitionParticipant datatype record.
+# ShareableActivityDefinitionPriority enum
+public enum ShareableActivityDefinitionPriority {
+    CODE_PRIORITY_STAT = "stat",
+    CODE_PRIORITY_ROUTINE = "routine",
+    CODE_PRIORITY_URGENT = "urgent",
+    CODE_PRIORITY_ASAP = "asap"
+}
+
+# FHIR ShareableActivityDefinitionParticipant datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + role - The role the participant should play in performing the described action.
@@ -683,7 +694,7 @@ public enum Shareable_ActivityDefinitionStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'type - The type of participant in the action.
 @r4:DataTypeDefinition {
-    name: "Shareable_ActivityDefinitionParticipant",
+    name: "ShareableActivityDefinitionParticipant",
     baseType: (),
     elements: {
         "extension": {
@@ -724,7 +735,7 @@ public enum Shareable_ActivityDefinitionStatus {
         },
         "type": {
             name: "type",
-            dataType: Shareable_ActivityDefinitionParticipantType,
+            dataType: ShareableActivityDefinitionParticipantType,
             min: 1,
             max: 1,
             isArray: false,
@@ -737,46 +748,18 @@ public enum Shareable_ActivityDefinitionStatus {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Shareable_ActivityDefinitionParticipant record {|
+
+public type ShareableActivityDefinitionParticipant record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
     r4:CodeableConcept role?;
     r4:Extension[] modifierExtension?;
     string id?;
-    Shareable_ActivityDefinitionParticipantType 'type;
+    ShareableActivityDefinitionParticipantType 'type;
 |};
 
-# Shareable_ActivityDefinitionParticipantType enum
-public enum Shareable_ActivityDefinitionParticipantType {
-   CODE_TYPE_RELATED_PERSON = "related-person",
-   CODE_TYPE_PRACTITIONER = "practitioner",
-   CODE_TYPE_PATIENT = "patient",
-   CODE_TYPE_DEVICE = "device"
-}
-
-# Shareable_ActivityDefinitionIntent enum
-public enum Shareable_ActivityDefinitionIntent {
-   CODE_INTENT_PROPOSAL = "proposal",
-   CODE_INTENT_INSTANCE_ORDER = "instance-order",
-   CODE_INTENT_FILLER_ORDER = "filler-order",
-   CODE_INTENT_ORIGINAL_ORDER = "original-order",
-   CODE_INTENT_REFLEX_ORDER = "reflex-order",
-   CODE_INTENT_PLAN = "plan",
-   CODE_INTENT_DIRECTIVE = "directive",
-   CODE_INTENT_ORDER = "order",
-   CODE_INTENT_OPTION = "option"
-}
-
-# Shareable_ActivityDefinitionPriority enum
-public enum Shareable_ActivityDefinitionPriority {
-   CODE_PRIORITY_STAT = "stat",
-   CODE_PRIORITY_ROUTINE = "routine",
-   CODE_PRIORITY_URGENT = "urgent",
-   CODE_PRIORITY_ASAP = "asap"
-}
-
-# FHIR Shareable_ActivityDefinitionDynamicValue datatype record.
+# FHIR ShareableActivityDefinitionDynamicValue datatype record.
 #
 # + path - The path to the element to be customized. This is the path on the resource that will hold the result of the calculation defined by the expression. The specified path SHALL be a FHIRPath resolveable on the specified target type of the ActivityDefinition, and SHALL consist only of identifiers, constant indexers, and a restricted subset of functions. The path is allowed to contain qualifiers (.) to traverse sub-elements, as well as indexers ([x]) to traverse multiple-cardinality sub-elements (see the [Simple FHIRPath Profile](http://hl7.org/fhir/fhirpath.html#simple) for full details).
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -784,7 +767,7 @@ public enum Shareable_ActivityDefinitionPriority {
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "Shareable_ActivityDefinitionDynamicValue",
+    name: "ShareableActivityDefinitionDynamicValue",
     baseType: (),
     elements: {
         "path": {
@@ -838,7 +821,8 @@ public enum Shareable_ActivityDefinitionPriority {
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Shareable_ActivityDefinitionDynamicValue record {|
+
+public type ShareableActivityDefinitionDynamicValue record {|
     *r4:BackboneElement;
 
     string path;
@@ -847,4 +831,25 @@ public type Shareable_ActivityDefinitionDynamicValue record {|
     r4:Extension[] modifierExtension?;
     string id?;
 |};
+
+# ShareableActivityDefinitionStatus enum
+public enum ShareableActivityDefinitionStatus {
+    CODE_STATUS_DRAFT = "draft",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_RETIRED = "retired",
+    CODE_STATUS_UNKNOWN = "unknown"
+}
+
+# ShareableActivityDefinitionIntent enum
+public enum ShareableActivityDefinitionIntent {
+    CODE_INTENT_PROPOSAL = "proposal",
+    CODE_INTENT_INSTANCE_ORDER = "instance-order",
+    CODE_INTENT_FILLER_ORDER = "filler-order",
+    CODE_INTENT_ORIGINAL_ORDER = "original-order",
+    CODE_INTENT_REFLEX_ORDER = "reflex-order",
+    CODE_INTENT_PLAN = "plan",
+    CODE_INTENT_DIRECTIVE = "directive",
+    CODE_INTENT_ORDER = "order",
+    CODE_INTENT_OPTION = "option"
+}
 

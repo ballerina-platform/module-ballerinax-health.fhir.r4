@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_CONSENT = "http://hl7.org/fhir/StructureDefinition/Consent";
 public const RESOURCE_NAME_CONSENT = "Consent";
+
+public type ConsentExtensions (ConsentNotificationEndpoint|ConsentTranscriber|ConsentWitness|EventBasedOn|r4:Extension|WorkflowEpisodeOfCare|WorkflowResearchStudy);
 
 # FHIR Consent resource record.
 #
@@ -264,7 +266,10 @@ public type Consent record {|
     string id?;
     r4:Narrative text?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Consent.category constraint. This field must be an array containing at least one item."
+        }
     }
     r4:CodeableConcept[] category;
     ConsentVerification[] verification?;
@@ -525,6 +530,7 @@ public type ConsentProvisionData record {|
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + 'type - Action to take - permit or deny - when the rule conditions are met. Not permitted in root rule, required in all nested rules.
 # + actor - Who or what is controlled by this rule. Use group to identify a set of actors by some property they share (e.g. 'admitting officers').
+# + provision - Rules which provide exceptions to the base rule or subrules.
 # + action - Actions controlled by this Rule.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'class - The class of information covered by this rule. The type can be a FHIR resource type, a profile on a type, or a CDA document, or some other type that indicates what sort of information the consent relates to.
@@ -622,6 +628,17 @@ public type ConsentProvisionData record {|
             description: "Who or what is controlled by this rule. Use group to identify a set of actors by some property they share (e.g. 'admitting officers').",
             path: "Consent.provision.actor"
         },
+
+        "provision": {
+            name: "provision",
+            dataType: ConsentProvision,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Rules which provide exceptions to the base rule or subrules.",
+            path: "Consent.provision.provision"
+        },
+
         "action": {
             name: "action",
             dataType: r4:CodeableConcept,
@@ -668,6 +685,7 @@ public type ConsentProvision record {|
     r4:Extension[] modifierExtension?;
     ConsentProvisionType 'type?;
     ConsentProvisionActor[] actor?;
+    ConsentProvision[] provision?;
     r4:CodeableConcept[] action?;
     string id?;
     r4:Coding[] 'class?;

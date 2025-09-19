@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_QUESTIONNAIRERESPONSE = "http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse";
 public const RESOURCE_NAME_QUESTIONNAIRERESPONSE = "QuestionnaireResponse";
+
+public type QuestionnaireResponseExtensions (r4:Extension|QuestionnaireresponseAttester|QuestionnaireresponseCompletionMode|QuestionnaireresponseReason|QuestionnaireresponseReviewer|QuestionnaireresponseSignature|WorkflowAdheresTo|WorkflowEpisodeOfCare|WorkflowResearchStudy|WorkflowTriggeredBy);
 
 # FHIR QuestionnaireResponse resource record.
 #
@@ -247,28 +249,40 @@ public enum QuestionnaireResponseStatus {
 
 # FHIR QuestionnaireResponseItemAnswer datatype record.
 #
-# + valueQuestionnaireResponseReference - The answer (or one of the answers) provided by the respondent to the question.
+# + valueBoolean - The answer (or one of the answers) provided by the respondent to the question.
+# + valueCoding - The answer (or one of the answers) provided by the respondent to the question.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + valueQuestionnaireResponseAttachment - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseTime - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseQuantity - The answer (or one of the answers) provided by the respondent to the question.
+# + item - Nested groups and/or questions found within this particular answer.
+# + valueTime - The answer (or one of the answers) provided by the respondent to the question.
+# + valueReference - The answer (or one of the answers) provided by the respondent to the question.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + valueQuestionnaireResponseBoolean - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseString - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseUri - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseCoding - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseDecimal - The answer (or one of the answers) provided by the respondent to the question.
+# + valueDecimal - The answer (or one of the answers) provided by the respondent to the question.
+# + valueUri - The answer (or one of the answers) provided by the respondent to the question.
+# + valueDate - The answer (or one of the answers) provided by the respondent to the question.
+# + valueAttachment - The answer (or one of the answers) provided by the respondent to the question.
+# + valueString - The answer (or one of the answers) provided by the respondent to the question.
+# + valueDateTime - The answer (or one of the answers) provided by the respondent to the question.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + valueQuestionnaireResponseInteger - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseDate - The answer (or one of the answers) provided by the respondent to the question.
-# + valueQuestionnaireResponseDateTime - The answer (or one of the answers) provided by the respondent to the question.
+# + valueInteger - The answer (or one of the answers) provided by the respondent to the question.
+# + valueQuantity - The answer (or one of the answers) provided by the respondent to the question.
+
 @r4:DataTypeDefinition {
     name: "QuestionnaireResponseItemAnswer",
     baseType: (),
     elements: {
-        "valueQuestionnaireResponseReference": {
-            name: "valueQuestionnaireResponseReference",
-            dataType: r4:Reference,
+        "valueBoolean": {
+            name: "valueBoolean",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+
+        "valueCoding": {
+            name: "valueCoding",
+            dataType: r4:Coding,
             min: 0,
             max: 1,
             isArray: false,
@@ -284,17 +298,19 @@ public enum QuestionnaireResponseStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "QuestionnaireResponse.item.answer.extension"
         },
-        "valueQuestionnaireResponseAttachment": {
-            name: "valueQuestionnaireResponseAttachment",
-            dataType: r4:Attachment,
+
+        "item": {
+            name: "item",
+            dataType: QuestionnaireResponseItem,
             min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Nested groups and/or questions found within this particular answer.",
+            path: "QuestionnaireResponse.item.answer.item"
         },
-        "valueQuestionnaireResponseTime": {
-            name: "valueQuestionnaireResponseTime",
+
+        "valueTime": {
+            name: "valueTime",
             dataType: r4:time,
             min: 0,
             max: 1,
@@ -302,9 +318,10 @@ public enum QuestionnaireResponseStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseQuantity": {
-            name: "valueQuestionnaireResponseQuantity",
-            dataType: r4:Quantity,
+
+        "valueReference": {
+            name: "valueReference",
+            dataType: r4:Reference,
             min: 0,
             max: 1,
             isArray: false,
@@ -320,44 +337,9 @@ public enum QuestionnaireResponseStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "QuestionnaireResponse.item.answer.modifierExtension"
         },
-        "valueQuestionnaireResponseBoolean": {
-            name: "valueQuestionnaireResponseBoolean",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
-        },
-        "valueQuestionnaireResponseString": {
-            name: "valueQuestionnaireResponseString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
-        },
-        "valueQuestionnaireResponseUri": {
-            name: "valueQuestionnaireResponseUri",
-            dataType: r4:uri,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
-        },
-        "valueQuestionnaireResponseCoding": {
-            name: "valueQuestionnaireResponseCoding",
-            dataType: r4:Coding,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
-        },
-        "valueQuestionnaireResponseDecimal": {
-            name: "valueQuestionnaireResponseDecimal",
+
+        "valueDecimal": {
+            name: "valueDecimal",
             dataType: decimal,
             min: 0,
             max: 1,
@@ -365,6 +347,57 @@ public enum QuestionnaireResponseStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
+
+        "valueUri": {
+            name: "valueUri",
+            dataType: r4:uri,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+
+        "valueDate": {
+            name: "valueDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+
+        "valueAttachment": {
+            name: "valueAttachment",
+            dataType: r4:Attachment,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+
+        "valueString": {
+            name: "valueString",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+
+        "valueDateTime": {
+            name: "valueDateTime",
+            dataType: r4:dateTime,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The answer (or one of the answers) provided by the respondent to the question.",
+            path: "QuestionnaireResponse.item.answer.value[x]"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -374,8 +407,9 @@ public enum QuestionnaireResponseStatus {
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "QuestionnaireResponse.item.answer.id"
         },
-        "valueQuestionnaireResponseInteger": {
-            name: "valueQuestionnaireResponseInteger",
+
+        "valueInteger": {
+            name: "valueInteger",
             dataType: r4:integer,
             min: 0,
             max: 1,
@@ -383,18 +417,10 @@ public enum QuestionnaireResponseStatus {
             description: "The answer (or one of the answers) provided by the respondent to the question.",
             path: "QuestionnaireResponse.item.answer.value[x]"
         },
-        "valueQuestionnaireResponseDate": {
-            name: "valueQuestionnaireResponseDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The answer (or one of the answers) provided by the respondent to the question.",
-            path: "QuestionnaireResponse.item.answer.value[x]"
-        },
-        "valueQuestionnaireResponseDateTime": {
-            name: "valueQuestionnaireResponseDateTime",
-            dataType: r4:dateTime,
+
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: r4:Quantity,
             min: 0,
             max: 1,
             isArray: false,
@@ -410,26 +436,28 @@ public enum QuestionnaireResponseStatus {
 public type QuestionnaireResponseItemAnswer record {|
     *r4:BackboneElement;
 
-    r4:Reference valueQuestionnaireResponseReference?;
+    boolean valueBoolean?;
+    r4:Coding valueCoding?;
     r4:Extension[] extension?;
-    r4:Attachment valueQuestionnaireResponseAttachment?;
-    r4:time valueQuestionnaireResponseTime?;
-    r4:Quantity valueQuestionnaireResponseQuantity?;
+    QuestionnaireResponseItem[] item?;
+    r4:time valueTime?;
+    r4:Reference valueReference?;
     r4:Extension[] modifierExtension?;
-    boolean valueQuestionnaireResponseBoolean?;
-    string valueQuestionnaireResponseString?;
-    r4:uri valueQuestionnaireResponseUri?;
-    r4:Coding valueQuestionnaireResponseCoding?;
-    decimal valueQuestionnaireResponseDecimal?;
+    decimal valueDecimal?;
+    r4:uri valueUri?;
+    r4:date valueDate?;
+    r4:Attachment valueAttachment?;
+    string valueString?;
+    r4:dateTime valueDateTime?;
     string id?;
-    r4:integer valueQuestionnaireResponseInteger?;
-    r4:date valueQuestionnaireResponseDate?;
-    r4:dateTime valueQuestionnaireResponseDateTime?;
+    r4:integer valueInteger?;
+    r4:Quantity valueQuantity?;
 |};
 
 # FHIR QuestionnaireResponseItem datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + item - Questions or sub-groups nested beneath a question or group.
 # + linkId - The item from the Questionnaire that corresponds to this item in the QuestionnaireResponse resource.
 # + answer - The respondent's answer(s) to the question.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -449,6 +477,17 @@ public type QuestionnaireResponseItemAnswer record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "QuestionnaireResponse.item.extension"
         },
+
+        "item": {
+            name: "item",
+            dataType: QuestionnaireResponseItem,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Questions or sub-groups nested beneath a question or group.",
+            path: "QuestionnaireResponse.item.item"
+        },
+
         "linkId": {
             name: "linkId",
             dataType: string,
@@ -513,6 +552,7 @@ public type QuestionnaireResponseItem record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
+    QuestionnaireResponseItem[] item?;
     string linkId;
     QuestionnaireResponseItemAnswer[] answer?;
     r4:Extension[] modifierExtension?;

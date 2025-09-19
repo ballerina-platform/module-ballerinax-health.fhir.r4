@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -20,10 +20,12 @@
 import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_EXAMPLE_LIPID_PROFILE = "http://hl7.org/fhir/StructureDefinition/lipidprofile";
-public const RESOURCE_NAME_EXAMPLE_LIPID_PROFILE = "DiagnosticReport";
+public const string PROFILE_BASE_EXAMPLELIPIDPROFILE = "http://hl7.org/fhir/StructureDefinition/lipidprofile";
+public const RESOURCE_NAME_EXAMPLELIPIDPROFILE = "DiagnosticReport";
 
-# FHIR Example_Lipid_Profile resource record.
+public type ExampleLipidProfileExtensions (BusinessEvent|DiagnosticReportAddendumOf|DiagnosticReportExtends|DiagnosticReportFocus|DiagnosticReportGeneticsAnalysis|DiagnosticReportGeneticsAssessedCondition|DiagnosticReportGeneticsFamilyMemberHistory|DiagnosticReportGeneticsReferences|DiagnosticReportLocationPerformed|DiagnosticReportReplaces|DiagnosticReportRisk|DiagnosticReportSummaryOf|DiagnosticReportWorkflowStatus|EventEventHistory|EventLocation|EventPartOf|EventStatusReason|r4:Extension|HlaGenotypingResultsAlleleDatabase|HlaGenotypingResultsGlstring|HlaGenotypingResultsHaploid|HlaGenotypingResultsMethod|ServicerequestGeneticsItem|WorkflowAdheresTo|WorkflowEpisodeOfCare|WorkflowInstantiatesCanonical|WorkflowInstantiatesUri|WorkflowReason|WorkflowReasonCode|WorkflowReasonReference|WorkflowRelatedArtifact|WorkflowResearchStudy|WorkflowSupportingInfo|WorkflowTriggeredBy);
+
+# FHIR ExampleLipidProfile resource record.
 #
 # + resourceType - The type of the resource describes
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -36,19 +38,19 @@ public const RESOURCE_NAME_EXAMPLE_LIPID_PROFILE = "DiagnosticReport";
 # + conclusion - May include diagnosis or suggestions for follow up testing.
 # + result - [Observations](http://hl7.org/fhir/observation.html) that are part of this diagnostic report.
 # * result Slicings
-# 1) Example_Lipid_ProfileResultTriglyceride: Triglyceride Result
+# 1) ExampleLipidProfileResultTriglyceride: Triglyceride Result
 #       - min = 1
 #       - max = 1
 #
-# 2) Example_Lipid_ProfileResultCholesterol: Cholesterol Result
+# 2) ExampleLipidProfileResultCholesterol: Cholesterol Result
 #       - min = 1
 #       - max = 1
 #
-# 3) Example_Lipid_ProfileResultHDLCholesterol: HDL Cholesterol Result
+# 3) ExampleLipidProfileResultHDLCholesterol: HDL Cholesterol Result
 #       - min = 1
 #       - max = 1
 #
-# 4) Example_Lipid_ProfileResultLDLCholesterol: LDL Cholesterol result, if reported
+# 4) ExampleLipidProfileResultLDLCholesterol: LDL Cholesterol result, if reported
 #       - min = 0
 #       - max = 1
 #
@@ -127,7 +129,7 @@ public const RESOURCE_NAME_EXAMPLE_LIPID_PROFILE = "DiagnosticReport";
         },
         "media" : {
             name: "media",
-            dataType: Example_Lipid_ProfileMedia,
+            dataType: ExampleLipidProfileMedia,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -226,7 +228,7 @@ public const RESOURCE_NAME_EXAMPLE_LIPID_PROFILE = "DiagnosticReport";
             dataType: r4:CodeableConcept,
             min: 0,
             max: 0,
-            isArray: false,
+            isArray: true,
             path: "DiagnosticReport.conclusionCode",
             valueSet: "http://hl7.org/fhir/ValueSet/clinical-findings"
         },
@@ -289,7 +291,7 @@ public const RESOURCE_NAME_EXAMPLE_LIPID_PROFILE = "DiagnosticReport";
         },
         "status" : {
             name: "status",
-            dataType: Example_Lipid_ProfileStatusFour,
+            dataType: ExampleLipidProfileStatusFour,
             min: 1,
             max: 1,
             isArray: false,
@@ -302,10 +304,11 @@ public const RESOURCE_NAME_EXAMPLE_LIPID_PROFILE = "DiagnosticReport";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type Example_Lipid_Profile record {|
+
+public type ExampleLipidProfile record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_EXAMPLE_LIPID_PROFILE resourceType = RESOURCE_NAME_EXAMPLE_LIPID_PROFILE;
+    RESOURCE_NAME_EXAMPLELIPIDPROFILE resourceType = RESOURCE_NAME_EXAMPLELIPIDPROFILE;
 
     r4:Extension[] extension?;
     r4:CodeableConcept code;
@@ -313,11 +316,17 @@ public type Example_Lipid_Profile record {|
     r4:Extension[] modifierExtension?;
     r4:Attachment[] presentedForm?;
     r4:code language?;
-    Example_Lipid_ProfileMedia[] media?;
+    ExampleLipidProfileMedia[] media?;
     string conclusion?;
     @constraint:Array {
-       minLength: 3,
-       maxLength: 4
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.DiagnosticReport.result constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.DiagnosticReport.result constraint. This field must be an array containing at most one item."
+        }
     }
     r4:Reference[] result;
     r4:Reference[] specimen?;
@@ -329,7 +338,7 @@ public type Example_Lipid_Profile record {|
     r4:Reference[] performer?;
     r4:Period effectivePeriod?;
     r4:Reference[] resultsInterpreter?;
-    r4:CodeableConcept conclusionCode?;
+    r4:CodeableConcept[] conclusionCode?;
     r4:Reference encounter?;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime?;
@@ -337,11 +346,79 @@ public type Example_Lipid_Profile record {|
     r4:uri implicitRules?;
     r4:CodeableConcept[] category?;
     r4:Reference[] imagingStudy?;
-    Example_Lipid_ProfileStatusFour status;
+    ExampleLipidProfileStatusFour status;
     r4:Element ...;
 |};
 
-# FHIR Example_Lipid_ProfileMedia datatype record.
+# FHIR ExampleLipidProfileResultTriglyceride datatype record.
+#
+
+@r4:DataTypeDefinition {
+    name: "ExampleLipidProfileResultTriglyceride",
+    baseType: (),
+    elements: {
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type ExampleLipidProfileResultTriglyceride record {|
+    *r4:Reference;
+
+|};
+
+# FHIR ExampleLipidProfileResultCholesterol datatype record.
+#
+
+@r4:DataTypeDefinition {
+    name: "ExampleLipidProfileResultCholesterol",
+    baseType: (),
+    elements: {
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type ExampleLipidProfileResultCholesterol record {|
+    *r4:Reference;
+
+|};
+
+# ExampleLipidProfileStatusFour enum
+public enum ExampleLipidProfileStatusFour {
+    CODE_STATUS_FINAL = "final",
+    CODE_STATUS_REGISTERED = "registered",
+    CODE_STATUS_PRELIMINARY = "preliminary",
+    CODE_STATUS_PARTIAL = "partial"
+}
+
+# FHIR ExampleLipidProfileResultLDLCholesterol datatype record.
+#
+
+@r4:DataTypeDefinition {
+    name: "ExampleLipidProfileResultLDLCholesterol",
+    baseType: (),
+    elements: {
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type ExampleLipidProfileResultLDLCholesterol record {|
+    *r4:Reference;
+
+|};
+
+# FHIR ExampleLipidProfileMedia datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -349,7 +426,7 @@ public type Example_Lipid_Profile record {|
 # + comment - A comment about the image. Typically, this is used to provide an explanation for why the image is included, or to draw the viewer's attention to important features.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "Example_Lipid_ProfileMedia",
+    name: "ExampleLipidProfileMedia",
     baseType: (),
     elements: {
         "extension": {
@@ -403,7 +480,8 @@ public type Example_Lipid_Profile record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Example_Lipid_ProfileMedia record {|
+
+public type ExampleLipidProfileMedia record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
@@ -413,78 +491,22 @@ public type Example_Lipid_ProfileMedia record {|
     string id?;
 |};
 
-# FHIR Example_Lipid_ProfileResultHDLCholesterol datatype record.
+# FHIR ExampleLipidProfileResultHDLCholesterol datatype record.
 #
+
 @r4:DataTypeDefinition {
-    name: "Example_Lipid_ProfileResultHDLCholesterol",
+    name: "ExampleLipidProfileResultHDLCholesterol",
     baseType: (),
     elements: {
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Example_Lipid_ProfileResultHDLCholesterol record {|
-    *r4:Reference;
 
-|};
-
-# FHIR Example_Lipid_ProfileResultTriglyceride datatype record.
-#
-@r4:DataTypeDefinition {
-    name: "Example_Lipid_ProfileResultTriglyceride",
-    baseType: (),
-    elements: {
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Example_Lipid_ProfileResultTriglyceride record {|
-    *r4:Reference;
-
-|};
-
-# FHIR Example_Lipid_ProfileResultCholesterol datatype record.
-#
-@r4:DataTypeDefinition {
-    name: "Example_Lipid_ProfileResultCholesterol",
-    baseType: (),
-    elements: {
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Example_Lipid_ProfileResultCholesterol record {|
-    *r4:Reference;
-
-|};
-
-# Example_Lipid_ProfileStatusFour enum
-public enum Example_Lipid_ProfileStatusFour {
-   CODE_STATUS_FINAL = "final",
-   CODE_STATUS_REGISTERED = "registered",
-   CODE_STATUS_PRELIMINARY = "preliminary",
-   CODE_STATUS_PARTIAL = "partial"
-}
-
-# FHIR Example_Lipid_ProfileResultLDLCholesterol datatype record.
-#
-@r4:DataTypeDefinition {
-    name: "Example_Lipid_ProfileResultLDLCholesterol",
-    baseType: (),
-    elements: {
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Example_Lipid_ProfileResultLDLCholesterol record {|
+public type ExampleLipidProfileResultHDLCholesterol record {|
     *r4:Reference;
 
 |};
