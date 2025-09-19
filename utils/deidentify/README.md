@@ -1,14 +1,14 @@
 # FHIR R4 Utils - De-Identification Package
 
-A highly extensible Ballerina package for de-identifying FHIR resources using FHIRPath expressions. This utility provides built-in de-identification operations and allows developers to implement custom de-identification functions while maintaining FHIR compliance.
+A highly extensible Ballerina package for de-identifying FHIR resources using FHIRPath expressions. This utility provides built-in de-identification operations and also allows developers to implement custom de-identification functions while maintaining FHIR compliance.
 
 ## Features
 
 - **FHIRPath-based Rules**: Use FHIRPath expressions to target specific fields in FHIR resources to de-identify
 - **Built-in Operations**: Support for mask, encrypt, hash, and redact operations
-- **Custom Functions**: Provide your own de-identification functions and configure to use them
+- **Custom Deidentification Function support**: Provide your own de-identification functions and configure to use them
 - **Bundle Support**: Handles both single FHIR resources and FHIR Bundles
-- **Configuration**: Externally configurable rules and keys
+- **Highly Configurable**: Easily configure rules and settings via a configuration file or programmatically
 - **Input FHIR resource validation**: Optional FHIR input resource validation
 - **Output FHIR resource validation**: Optional FHIR output resource validation
 - **Error Handling**: Configurable error handling with skip-on-error capability
@@ -23,7 +23,7 @@ import ballerinax/health.fhir.r4utils.deidentify;
 ```
 
 ## Quick Start
-By default, the package is configured to mask the `Patient.name` field. 
+By default, the package is configured to mask the `Patient.name` field. In a new ballerina project, you can use the following code to see it in action. Use `bal run` to execute the code.
 
 ```ballerina
 import ballerinax/health.fhir.r4utils.deidentify;
@@ -83,7 +83,7 @@ deidentify:DeIdentifyRule[] rules = [
         }
     ];
 
-json|deidentify:DeIdentificationError result3 = deidentify:deIdentify(patientResource, deIdentifyRules =  rules);
+json|deidentify:DeIdentificationError result = deidentify:deIdentify(patientResource, deIdentifyRules =  rules);
 ```
 
 `fhirPaths`: Used to point to the specific elements in the FHIR resource you want to de-identify. Give a list of FHIR paths to apply the operation. Check out [FHIRPath documentation](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath/latest) for more details on how to use FHIRPath expressions.
@@ -159,24 +159,21 @@ Without limiting to the built-in operations, you can create custom de-identifica
 
 # Creating Custom De-identification Operations
 
-The package allows you to implement custom de-identification logic by writing functions that conform to the `fhirpath:ModificationFunction` type from the [FHIRPath utilities](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath/latest#ModificationFunction). Then you can provide these operations to the `deidentify:deIdentify` function to be used in your de-identification rules. You can configure these custom functions the same way mentioned above.
+The package allows you to implement custom de-identification logic by writing functions that conform to the `deidentify:DeIdentificationFunction`. Then you can provide these operations to the `deidentify:deIdentify` function to be used in your de-identification rules. You can configure these custom functions the same way mentioned above.
 
 ### Custom De-identification Operation Signature
 
 ```ballerina
-import ballerinax/health.fhir.r4utils.fhirpath;
-
-public type ModificationFunction = fhirpath:ModificationFunction;
+isolated function FunctionName(json value) returns json|error
 ```
 
 ### Example: Implementing Custom De-identification Operations
 
 ```ballerina
-import ballerinax/health.fhir.r4utils.fhirpath;
 import ballerina/crypto;
 
 // Custom pseudonymization function
-isolated function pseudonymizeFunction(json value) returns json|fhirpath:ModificationFunctionError {
+isolated function pseudonymizeFunction(json value) returns json|error {
     if value is string {
         // Generate a consistent pseudonym based on the original value
         byte[] hashedBytes = crypto:hashSha256(value.toBytes());
@@ -187,7 +184,7 @@ isolated function pseudonymizeFunction(json value) returns json|fhirpath:Modific
 }
 
 // Custom date shifting function
-isolated function shiftDateFunction(json value) returns json|fhirpath:ModificationFunctionError {
+isolated function shiftDateFunction(json value) returns json|error {
     if value is string {
         // Shift dates by a random number of days (simplified example)
         // In practice, you'd parse the date and shift consistently
@@ -197,7 +194,7 @@ isolated function shiftDateFunction(json value) returns json|fhirpath:Modificati
 }
 
 // Custom partial masking function
-isolated function partialMaskFunction(json value) returns json|fhirpath:ModificationFunctionError {
+isolated function partialMaskFunction(json value) returns json|error {
     if value is string && value.length() > 4 {
         // Keep first 2 and last 2 characters, mask the middle
         string masked = value.substring(0, 2) + "***" + value.substring(value.length() - 2);
@@ -244,10 +241,10 @@ operation = "redact"   # Built-in operation
 Note: You can also create an array of de-identify rules and provide rules programmatically as mentioned above.
 
 ### Using Custom De-identification Operations
-In order to use the custom de-identification operations, you need to create a map of type `map<fhirpath:ModificationFunction>` and pass it to the `deidentify:deIdentify` function under `operations` parameter. This map should be in the following format:
+In order to use the custom de-identification operations, you need to create a map of type `map<deidentify:DeIdentificationFunction>` and pass it to the `deidentify:deIdentify` function under `operations` parameter. This map should be in the following format:
 
 ```ballerina
-map<fhirpath:ModificationFunction> customOperations = {
+map<deidentify:DeIdentificationFunction> customOperations = {
     "pseudonymize": pseudonymizeFunction,
     "removeDay": removeDayFromDate,
     "mask": customMaskingFunction
@@ -260,11 +257,10 @@ Complete Example:
 import ballerina/crypto;
 import ballerina/io;
 import ballerinax/health.fhir.r4utils.deidentify;
-import ballerinax/health.fhir.r4utils.fhirpath;
 import ballerina/lang.regexp;
 
 // Custom pseudonymization function
-isolated function pseudonymizeFunction(json value) returns json|fhirpath:ModificationFunctionError {
+isolated function pseudonymizeFunction(json value) returns json|error {
     if value is string {
         // Generate a consistent pseudonym based on the original value
         byte[] hashedBytes = crypto:hashSha256(value.toBytes());
@@ -275,13 +271,13 @@ isolated function pseudonymizeFunction(json value) returns json|fhirpath:Modific
 }
 
 // Custom function to remove the day from a date
-isolated function removeDayFromDate(json value) returns json|fhirpath:ModificationFunctionError {
+isolated function removeDayFromDate(json value) returns json|error {
     if value is string {
         // Assuming the date is in the format "YYYY-MM-DD"
         // Split the string using "-" delimiter with regexp
         regexp:RegExp|error regexResult = regexp:fromString("-");
         if regexResult is error {
-            return fhirpath:createModificationFunctionError("Error creating regex pattern", (), value.toString());
+            return error("Error creating regex pattern", (), value.toString());
         }
         string[] parts = regexp:split(regexResult, value);
         if parts.length() == 3 {
@@ -290,19 +286,19 @@ isolated function removeDayFromDate(json value) returns json|fhirpath:Modificati
         }
         // If the date format is not as expected, return a shifted date or an error
         io:println("Invalid date format, returning a shifted date.");
-        return fhirpath:createModificationFunctionError("Invalid date format, returning a shifted date.", (), value.toString());
+        return error("Invalid date format, returning a shifted date.", (), value.toString());
     }
     return error("Value is not a string", value = value);
 }
 
 // Custom partial masking function
-isolated function customMaskingFunction(json value) returns json|fhirpath:ModificationFunctionError {
+isolated function customMaskingFunction(json value) returns json|error {
     return "** MASKED **";
 }
 
 public function main() {
     // Create a map of custom operations
-    map<fhirpath:ModificationFunction> customOperations = {
+    map<deidentify:DeIdentificationFunction> customOperations = {
         "pseudonymize": pseudonymizeFunction,
         "removeDay": removeDayFromDate,
         "mask": customMaskingFunction
