@@ -114,11 +114,8 @@ isolated function createFhirPathError(string errorMsg, string? fhirPath) returns
     return fhirPathError;
 }
 
-# Error thrown when a modification function fails
-public type ModificationFunctionError distinct error;
-
 # Function to modify the value at the path
-public type ModificationFunction isolated function (json param) returns json|ModificationFunctionError;
+public type ModificationFunction isolated function (json param) returns json|error;
 
 # Get the modified value by applying either a modification function or setting a new value.
 #
@@ -126,7 +123,7 @@ public type ModificationFunction isolated function (json param) returns json|Mod
 # + modificationFunction - Optional function to transform the current value
 # + newValue - Optional new value to set directly
 # + return - The modified value or an error if modification function fails
-isolated function getModifiedValue(json currentValue, ModificationFunction? modificationFunction,  json? newValue) returns json|ModificationFunctionError {
+isolated function getModifiedValue(json currentValue, ModificationFunction? modificationFunction,  json? newValue) returns json|error {
     if currentValue !is () && modificationFunction !is () {
         // Apply modification function if provided and return result
         return modificationFunction(currentValue);
