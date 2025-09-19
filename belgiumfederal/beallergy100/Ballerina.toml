@@ -1,0 +1,8 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.r4.be.allergy100"
+version = "1.0.1"
+distribution = "2201.12.3"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "health_fhir_r4_be_allergy100"]
+
