@@ -17,28 +17,28 @@
 import ballerina/test;
 
 // Helper modification functions for testing
-isolated function toUpperCaseFunction(json input) returns json|ModificationFunctionError {
+isolated function toUpperCaseFunction(json input) returns json|error {
     if input is string {
         return input.toUpperAscii();
     }
     return error("Non-string input provided for toUpperCaseFunction.", value = input.toString());
 }
 
-isolated function toLowerCaseFunction(json input) returns json|ModificationFunctionError {
+isolated function toLowerCaseFunction(json input) returns json|error {
     if input is string {
         return input.toLowerAscii();
     }
     return error("Non-string input provided for toLowerCaseFunction.", value = input.toString());
 }
 
-isolated function addPrefixFunction(json input) returns json|ModificationFunctionError {
+isolated function addPrefixFunction(json input) returns json|error {
     if input is string|int {
         return "PREFIX_" + input.toString();
     }
     return error("Non-string/int input provided for addPrefixFunction.", value = input.toString());
 }
 
-isolated function hashFunction(json input) returns json|ModificationFunctionError {
+isolated function hashFunction(json input) returns json|error {
     if input is string {
         // Simple hash simulation for testing
         return "HASH_" + input.length().toString();
@@ -46,15 +46,15 @@ isolated function hashFunction(json input) returns json|ModificationFunctionErro
     return error("Non-string input provided for hashFunction.", value = input.toString());
 }
 
-isolated function errorFunction(json input) returns json|ModificationFunctionError {
+isolated function errorFunction(json input) returns json|error {
     return error("Intentional error for testing", value = input.toString());
 }
 
-isolated function emptyStringFunction(json input) returns json|ModificationFunctionError {
+isolated function emptyStringFunction(json input) returns json|error {
     return "";
 }
 
-isolated function reverseStringFunction(json input) returns json|ModificationFunctionError {
+isolated function reverseStringFunction(json input) returns json|error {
     if input is string {
         string reversed = "";
         int length = input.length();
