@@ -23,6 +23,8 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_CRDVISIONPRESCRIPTION = "http://hl7.org/fhir/us/davinci-crd/StructureDefinition/profile-visionprescription";
 public const RESOURCE_NAME_CRDVISIONPRESCRIPTION = "VisionPrescription";
 
+public type CRDVisionPrescriptionExtensions (ExtCoverageInformation|r4:Extension);
+
 # FHIR CRDVisionPrescription resource record.
 #
 # + resourceType - The type of the resource describes
@@ -215,11 +217,6 @@ r4:Reference encounter?;
         minLength: {
             value: 1,
             message: "Validation failed for $.VisionPrescription.lensSpecification constraint. This field must be an array containing at least one item."
-        },
-
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.VisionPrescription.lensSpecification constraint. This field must be an array containing at most one item."
         }
     }
 CRDVisionPrescriptionLensSpecification   [] lensSpecification;

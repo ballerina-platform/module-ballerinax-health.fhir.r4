@@ -491,11 +491,6 @@ r4:CodeableConcept   [] performerType?;
         minLength: {
             value: 1,
             message: "Validation failed for $.Task.input constraint. This field must be an array containing at least one item."
-        },
-
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.Task.input constraint. This field must be an array containing at most one item."
         }
     }
 CRDTaskQuestionnaireInput   [] input;
@@ -534,7 +529,7 @@ CRDTaskQuestionnaireStatus status;
     "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -581,7 +576,7 @@ public type CRDTaskQuestionnaireOutputResponse record {|
     *CRDTaskQuestionnaireOutput;
 
 r4:Extension   [] extension?;
-r4:Reference valueReference;
+    r4:Reference valueReference?;
 r4:Extension   [] modifierExtension?;
 string id?;
 CRDTaskQuestionnaireOutputType 'type;
@@ -734,7 +729,7 @@ public enum CRDTaskQuestionnaireStatus {
     "valueUrl": {
             name: "valueUrl",
             dataType: r4:urlType,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -754,7 +749,7 @@ r4:Extension   [] extension?;
 r4:Extension   [] modifierExtension?;
 string id?;
 CRDTaskQuestionnaireInputTypeTwo 'type;
-r4:urlType valueUrl;
+    r4:urlType valueUrl?;
 |};
 
 # FHIR CRDTaskQuestionnaireOutputTypeCoding datatype record.
@@ -834,7 +829,7 @@ public enum CRDTaskQuestionnaireIntent {
     "valueCanonical": {
             name: "valueCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -890,7 +885,7 @@ public enum CRDTaskQuestionnaireIntent {
 public type CRDTaskQuestionnaireInputQuestionnaire record {|
     *CRDTaskQuestionnaireInput;
 
-r4:canonical valueCanonical;
+    r4:canonical valueCanonical?;
 r4:Extension   [] extension?;
 r4:Extension   [] modifierExtension?;
 string id?;
@@ -1012,7 +1007,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueTime": {
             name: "valueTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1022,7 +1017,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueTriggerDefinition": {
             name: "valueTriggerDefinition",
             dataType: r4:TriggerDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1032,7 +1027,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueMoney": {
             name: "valueMoney",
             dataType: r4:Money,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1042,7 +1037,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueSignature": {
             name: "valueSignature",
             dataType: r4:Signature,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1072,7 +1067,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueUuid": {
             name: "valueUuid",
             dataType: r4:uuid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1082,7 +1077,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueRatio": {
             name: "valueRatio",
             dataType: r4:Ratio,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1092,7 +1087,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueParameterDefinition": {
             name: "valueParameterDefinition",
             dataType: r4:ParameterDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1112,7 +1107,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueInteger": {
             name: "valueInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1122,7 +1117,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueUnsignedInt": {
             name: "valueUnsignedInt",
             dataType: r4:unsignedInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1132,7 +1127,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1142,7 +1137,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueCanonical": {
             name: "valueCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1152,7 +1147,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueCount": {
             name: "valueCount",
             dataType: r4:Count,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1162,7 +1157,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueId": {
             name: "valueId",
             dataType: r4:id,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1172,7 +1167,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueCode": {
             name: "valueCode",
             dataType: r4:code,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1182,7 +1177,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueAddress": {
             name: "valueAddress",
             dataType: r4:Address,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1192,7 +1187,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueContactPoint": {
             name: "valueContactPoint",
             dataType: r4:ContactPoint,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1202,7 +1197,7 @@ public enum CRDTaskQuestionnairePriority {
     "valuePeriod": {
             name: "valuePeriod",
             dataType: r4:Period,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1212,7 +1207,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueSampledData": {
             name: "valueSampledData",
             dataType: r4:SampledData,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1222,7 +1217,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueTiming": {
             name: "valueTiming",
             dataType: r4:Timing,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1232,7 +1227,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueInstant": {
             name: "valueInstant",
             dataType: r4:instant,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1242,7 +1237,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueAge": {
             name: "valueAge",
             dataType: r4:Age,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1252,7 +1247,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueDosage": {
             name: "valueDosage",
             dataType: r4:Dosage,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1262,7 +1257,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueBase64Binary": {
             name: "valueBase64Binary",
             dataType: r4:base64Binary,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1272,7 +1267,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueBoolean": {
             name: "valueBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1282,7 +1277,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueCoding": {
             name: "valueCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1302,7 +1297,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueIdentifier": {
             name: "valueIdentifier",
             dataType: r4:Identifier,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1312,7 +1307,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueExpression": {
             name: "valueExpression",
             dataType: r4:Expression,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1322,7 +1317,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1332,7 +1327,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueRange": {
             name: "valueRange",
             dataType: r4:Range,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1342,7 +1337,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueUri": {
             name: "valueUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1352,7 +1347,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueDistance": {
             name: "valueDistance",
             dataType: r4:Distance,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1362,7 +1357,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueUrl": {
             name: "valueUrl",
             dataType: r4:urlType,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1372,7 +1367,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueContactDetail": {
             name: "valueContactDetail",
             dataType: r4:ContactDetail,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1382,7 +1377,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueMeta": {
             name: "valueMeta",
             dataType: r4:Meta,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1392,7 +1387,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1402,7 +1397,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueMarkdown": {
             name: "valueMarkdown",
             dataType: r4:markdown,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1412,7 +1407,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1422,7 +1417,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueUsageContext": {
             name: "valueUsageContext",
             dataType: r4:UsageContext,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1432,7 +1427,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueDateTime": {
             name: "valueDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1442,7 +1437,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueHumanName": {
             name: "valueHumanName",
             dataType: r4:HumanName,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1452,7 +1447,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueRelatedArtifact": {
             name: "valueRelatedArtifact",
             dataType: r4:RelatedArtifact,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1462,7 +1457,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueDecimal": {
             name: "valueDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1472,7 +1467,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueDate": {
             name: "valueDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1482,7 +1477,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueOid": {
             name: "valueOid",
             dataType: r4:oid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1492,7 +1487,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueContributor": {
             name: "valueContributor",
             dataType: r4:Contributor,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1502,7 +1497,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueString": {
             name: "valueString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1512,7 +1507,7 @@ public enum CRDTaskQuestionnairePriority {
     "valuePositiveInt": {
             name: "valuePositiveInt",
             dataType: r4:positiveInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1522,7 +1517,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueDuration": {
             name: "valueDuration",
             dataType: r4:Duration,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1532,7 +1527,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueDataRequirement": {
             name: "valueDataRequirement",
             dataType: r4:DataRequirement,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1542,7 +1537,7 @@ public enum CRDTaskQuestionnairePriority {
     "valueAnnotation": {
             name: "valueAnnotation",
             dataType: r4:Annotation,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1558,60 +1553,60 @@ public enum CRDTaskQuestionnairePriority {
 public type CRDTaskQuestionnaireInput record {|
     *r4:BackboneElement;
 
-r4:time valueTime;
-r4:TriggerDefinition valueTriggerDefinition;
-r4:Money valueMoney;
-r4:Signature valueSignature;
+    r4:time valueTime?;
+    r4:TriggerDefinition valueTriggerDefinition?;
+    r4:Money valueMoney?;
+    r4:Signature valueSignature?;
 r4:Extension   [] modifierExtension?;
 r4:CodeableConcept 'type;
-r4:uuid valueUuid;
-r4:Ratio valueRatio;
-r4:ParameterDefinition valueParameterDefinition;
+    r4:uuid valueUuid?;
+    r4:Ratio valueRatio?;
+    r4:ParameterDefinition valueParameterDefinition?;
 string id?;
-r4:integer valueInteger;
-r4:unsignedInt valueUnsignedInt;
-r4:Quantity valueQuantity;
-r4:canonical valueCanonical;
-r4:Count valueCount;
-r4:id valueId;
-r4:code valueCode;
-r4:Address valueAddress;
-r4:ContactPoint valueContactPoint;
-r4:Period valuePeriod;
-r4:SampledData valueSampledData;
-r4:Timing valueTiming;
-r4:instant valueInstant;
-r4:Age valueAge;
-r4:Dosage valueDosage;
-r4:base64Binary valueBase64Binary;
-boolean valueBoolean;
-r4:Coding valueCoding;
+    r4:integer valueInteger?;
+    r4:unsignedInt valueUnsignedInt?;
+    r4:Quantity valueQuantity?;
+    r4:canonical valueCanonical?;
+    r4:Count valueCount?;
+    r4:id valueId?;
+    r4:code valueCode?;
+    r4:Address valueAddress?;
+    r4:ContactPoint valueContactPoint?;
+    r4:Period valuePeriod?;
+    r4:SampledData valueSampledData?;
+    r4:Timing valueTiming?;
+    r4:instant valueInstant?;
+    r4:Age valueAge?;
+    r4:Dosage valueDosage?;
+    r4:base64Binary valueBase64Binary?;
+    boolean valueBoolean?;
+    r4:Coding valueCoding?;
 r4:Extension   [] extension?;
-r4:Identifier valueIdentifier;
-r4:Expression valueExpression;
-r4:Reference valueReference;
-r4:Range valueRange;
-r4:uri valueUri;
-r4:Distance valueDistance;
-r4:urlType valueUrl;
-r4:ContactDetail valueContactDetail;
-r4:Meta valueMeta;
-r4:CodeableConcept valueCodeableConcept;
-r4:markdown valueMarkdown;
-r4:Attachment valueAttachment;
-r4:UsageContext valueUsageContext;
-r4:dateTime valueDateTime;
-r4:HumanName valueHumanName;
-r4:RelatedArtifact valueRelatedArtifact;
-decimal valueDecimal;
-r4:date valueDate;
-r4:oid valueOid;
-r4:Contributor valueContributor;
-string valueString;
-r4:positiveInt valuePositiveInt;
-r4:Duration valueDuration;
-r4:DataRequirement valueDataRequirement;
-r4:Annotation valueAnnotation;
+    r4:Identifier valueIdentifier?;
+    r4:Expression valueExpression?;
+    r4:Reference valueReference?;
+    r4:Range valueRange?;
+    r4:uri valueUri?;
+    r4:Distance valueDistance?;
+    r4:urlType valueUrl?;
+    r4:ContactDetail valueContactDetail?;
+    r4:Meta valueMeta?;
+    r4:CodeableConcept valueCodeableConcept?;
+    r4:markdown valueMarkdown?;
+    r4:Attachment valueAttachment?;
+    r4:UsageContext valueUsageContext?;
+    r4:dateTime valueDateTime?;
+    r4:HumanName valueHumanName?;
+    r4:RelatedArtifact valueRelatedArtifact?;
+    decimal valueDecimal?;
+    r4:date valueDate?;
+    r4:oid valueOid?;
+    r4:Contributor valueContributor?;
+    string valueString?;
+    r4:positiveInt valuePositiveInt?;
+    r4:Duration valueDuration?;
+    r4:DataRequirement valueDataRequirement?;
+    r4:Annotation valueAnnotation?;
 |};
 
 # FHIR CRDTaskQuestionnaireInputTypeCodingTwo datatype record.
@@ -1759,7 +1754,7 @@ r4:code code = "after-completion-action";
     "valueTime": {
             name: "valueTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1769,7 +1764,7 @@ r4:code code = "after-completion-action";
     "valueTriggerDefinition": {
             name: "valueTriggerDefinition",
             dataType: r4:TriggerDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1779,7 +1774,7 @@ r4:code code = "after-completion-action";
     "valueMoney": {
             name: "valueMoney",
             dataType: r4:Money,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1789,7 +1784,7 @@ r4:code code = "after-completion-action";
     "valueSignature": {
             name: "valueSignature",
             dataType: r4:Signature,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1819,7 +1814,7 @@ r4:code code = "after-completion-action";
     "valueUuid": {
             name: "valueUuid",
             dataType: r4:uuid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1829,7 +1824,7 @@ r4:code code = "after-completion-action";
     "valueRatio": {
             name: "valueRatio",
             dataType: r4:Ratio,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1839,7 +1834,7 @@ r4:code code = "after-completion-action";
     "valueParameterDefinition": {
             name: "valueParameterDefinition",
             dataType: r4:ParameterDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1859,7 +1854,7 @@ r4:code code = "after-completion-action";
     "valueInteger": {
             name: "valueInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1869,7 +1864,7 @@ r4:code code = "after-completion-action";
     "valueUnsignedInt": {
             name: "valueUnsignedInt",
             dataType: r4:unsignedInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1879,7 +1874,7 @@ r4:code code = "after-completion-action";
     "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1889,7 +1884,7 @@ r4:code code = "after-completion-action";
     "valueCanonical": {
             name: "valueCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1899,7 +1894,7 @@ r4:code code = "after-completion-action";
     "valueCount": {
             name: "valueCount",
             dataType: r4:Count,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1909,7 +1904,7 @@ r4:code code = "after-completion-action";
     "valueId": {
             name: "valueId",
             dataType: r4:id,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1919,7 +1914,7 @@ r4:code code = "after-completion-action";
     "valueCode": {
             name: "valueCode",
             dataType: r4:code,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1929,7 +1924,7 @@ r4:code code = "after-completion-action";
     "valueAddress": {
             name: "valueAddress",
             dataType: r4:Address,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1939,7 +1934,7 @@ r4:code code = "after-completion-action";
     "valueContactPoint": {
             name: "valueContactPoint",
             dataType: r4:ContactPoint,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1949,7 +1944,7 @@ r4:code code = "after-completion-action";
     "valuePeriod": {
             name: "valuePeriod",
             dataType: r4:Period,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1959,7 +1954,7 @@ r4:code code = "after-completion-action";
     "valueSampledData": {
             name: "valueSampledData",
             dataType: r4:SampledData,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1969,7 +1964,7 @@ r4:code code = "after-completion-action";
     "valueTiming": {
             name: "valueTiming",
             dataType: r4:Timing,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1979,7 +1974,7 @@ r4:code code = "after-completion-action";
     "valueInstant": {
             name: "valueInstant",
             dataType: r4:instant,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1989,7 +1984,7 @@ r4:code code = "after-completion-action";
     "valueAge": {
             name: "valueAge",
             dataType: r4:Age,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1999,7 +1994,7 @@ r4:code code = "after-completion-action";
     "valueDosage": {
             name: "valueDosage",
             dataType: r4:Dosage,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2009,7 +2004,7 @@ r4:code code = "after-completion-action";
     "valueBase64Binary": {
             name: "valueBase64Binary",
             dataType: r4:base64Binary,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2019,7 +2014,7 @@ r4:code code = "after-completion-action";
     "valueBoolean": {
             name: "valueBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2029,7 +2024,7 @@ r4:code code = "after-completion-action";
     "valueCoding": {
             name: "valueCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2049,7 +2044,7 @@ r4:code code = "after-completion-action";
     "valueIdentifier": {
             name: "valueIdentifier",
             dataType: r4:Identifier,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2059,7 +2054,7 @@ r4:code code = "after-completion-action";
     "valueExpression": {
             name: "valueExpression",
             dataType: r4:Expression,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2069,7 +2064,7 @@ r4:code code = "after-completion-action";
     "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2079,7 +2074,7 @@ r4:code code = "after-completion-action";
     "valueRange": {
             name: "valueRange",
             dataType: r4:Range,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2089,7 +2084,7 @@ r4:code code = "after-completion-action";
     "valueUri": {
             name: "valueUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2099,7 +2094,7 @@ r4:code code = "after-completion-action";
     "valueDistance": {
             name: "valueDistance",
             dataType: r4:Distance,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2109,7 +2104,7 @@ r4:code code = "after-completion-action";
     "valueUrl": {
             name: "valueUrl",
             dataType: r4:urlType,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2119,7 +2114,7 @@ r4:code code = "after-completion-action";
     "valueContactDetail": {
             name: "valueContactDetail",
             dataType: r4:ContactDetail,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2129,7 +2124,7 @@ r4:code code = "after-completion-action";
     "valueMeta": {
             name: "valueMeta",
             dataType: r4:Meta,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2139,7 +2134,7 @@ r4:code code = "after-completion-action";
     "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2149,7 +2144,7 @@ r4:code code = "after-completion-action";
     "valueMarkdown": {
             name: "valueMarkdown",
             dataType: r4:markdown,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2159,7 +2154,7 @@ r4:code code = "after-completion-action";
     "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2169,7 +2164,7 @@ r4:code code = "after-completion-action";
     "valueUsageContext": {
             name: "valueUsageContext",
             dataType: r4:UsageContext,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2179,7 +2174,7 @@ r4:code code = "after-completion-action";
     "valueDateTime": {
             name: "valueDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2189,7 +2184,7 @@ r4:code code = "after-completion-action";
     "valueHumanName": {
             name: "valueHumanName",
             dataType: r4:HumanName,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2199,7 +2194,7 @@ r4:code code = "after-completion-action";
     "valueRelatedArtifact": {
             name: "valueRelatedArtifact",
             dataType: r4:RelatedArtifact,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2209,7 +2204,7 @@ r4:code code = "after-completion-action";
     "valueDecimal": {
             name: "valueDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2219,7 +2214,7 @@ r4:code code = "after-completion-action";
     "valueDate": {
             name: "valueDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2229,7 +2224,7 @@ r4:code code = "after-completion-action";
     "valueOid": {
             name: "valueOid",
             dataType: r4:oid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2239,7 +2234,7 @@ r4:code code = "after-completion-action";
     "valueContributor": {
             name: "valueContributor",
             dataType: r4:Contributor,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2249,7 +2244,7 @@ r4:code code = "after-completion-action";
     "valueString": {
             name: "valueString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2259,7 +2254,7 @@ r4:code code = "after-completion-action";
     "valuePositiveInt": {
             name: "valuePositiveInt",
             dataType: r4:positiveInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2269,7 +2264,7 @@ r4:code code = "after-completion-action";
     "valueDuration": {
             name: "valueDuration",
             dataType: r4:Duration,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2279,7 +2274,7 @@ r4:code code = "after-completion-action";
     "valueDataRequirement": {
             name: "valueDataRequirement",
             dataType: r4:DataRequirement,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2289,7 +2284,7 @@ r4:code code = "after-completion-action";
     "valueAnnotation": {
             name: "valueAnnotation",
             dataType: r4:Annotation,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -2305,60 +2300,60 @@ r4:code code = "after-completion-action";
 public type CRDTaskQuestionnaireInputAfterCompletion record {|
     *CRDTaskQuestionnaireInput;
 
-r4:time valueTime;
-r4:TriggerDefinition valueTriggerDefinition;
-r4:Money valueMoney;
-r4:Signature valueSignature;
+    r4:time valueTime?;
+    r4:TriggerDefinition valueTriggerDefinition?;
+    r4:Money valueMoney?;
+    r4:Signature valueSignature?;
 r4:Extension   [] modifierExtension?;
 CRDTaskQuestionnaireInputTypeOne 'type;
-r4:uuid valueUuid;
-r4:Ratio valueRatio;
-r4:ParameterDefinition valueParameterDefinition;
+    r4:uuid valueUuid?;
+    r4:Ratio valueRatio?;
+    r4:ParameterDefinition valueParameterDefinition?;
 string id?;
-r4:integer valueInteger;
-r4:unsignedInt valueUnsignedInt;
-r4:Quantity valueQuantity;
-r4:canonical valueCanonical;
-r4:Count valueCount;
-r4:id valueId;
-r4:code valueCode;
-r4:Address valueAddress;
-r4:ContactPoint valueContactPoint;
-r4:Period valuePeriod;
-r4:SampledData valueSampledData;
-r4:Timing valueTiming;
-r4:instant valueInstant;
-r4:Age valueAge;
-r4:Dosage valueDosage;
-r4:base64Binary valueBase64Binary;
-boolean valueBoolean;
-r4:Coding valueCoding;
+    r4:integer valueInteger?;
+    r4:unsignedInt valueUnsignedInt?;
+    r4:Quantity valueQuantity?;
+    r4:canonical valueCanonical?;
+    r4:Count valueCount?;
+    r4:id valueId?;
+    r4:code valueCode?;
+    r4:Address valueAddress?;
+    r4:ContactPoint valueContactPoint?;
+    r4:Period valuePeriod?;
+    r4:SampledData valueSampledData?;
+    r4:Timing valueTiming?;
+    r4:instant valueInstant?;
+    r4:Age valueAge?;
+    r4:Dosage valueDosage?;
+    r4:base64Binary valueBase64Binary?;
+    boolean valueBoolean?;
+    r4:Coding valueCoding?;
 r4:Extension   [] extension?;
-r4:Identifier valueIdentifier;
-r4:Expression valueExpression;
-r4:Reference valueReference;
-r4:Range valueRange;
-r4:uri valueUri;
-r4:Distance valueDistance;
-r4:urlType valueUrl;
-r4:ContactDetail valueContactDetail;
-r4:Meta valueMeta;
-r4:CodeableConcept valueCodeableConcept;
-r4:markdown valueMarkdown;
-r4:Attachment valueAttachment;
-r4:UsageContext valueUsageContext;
-r4:dateTime valueDateTime;
-r4:HumanName valueHumanName;
-r4:RelatedArtifact valueRelatedArtifact;
-decimal valueDecimal;
-r4:date valueDate;
-r4:oid valueOid;
-r4:Contributor valueContributor;
-string valueString;
-r4:positiveInt valuePositiveInt;
-r4:Duration valueDuration;
-r4:DataRequirement valueDataRequirement;
-r4:Annotation valueAnnotation;
+    r4:Identifier valueIdentifier?;
+    r4:Expression valueExpression?;
+    r4:Reference valueReference?;
+    r4:Range valueRange?;
+    r4:uri valueUri?;
+    r4:Distance valueDistance?;
+    r4:urlType valueUrl?;
+    r4:ContactDetail valueContactDetail?;
+    r4:Meta valueMeta?;
+    r4:CodeableConcept valueCodeableConcept?;
+    r4:markdown valueMarkdown?;
+    r4:Attachment valueAttachment?;
+    r4:UsageContext valueUsageContext?;
+    r4:dateTime valueDateTime?;
+    r4:HumanName valueHumanName?;
+    r4:RelatedArtifact valueRelatedArtifact?;
+    decimal valueDecimal?;
+    r4:date valueDate?;
+    r4:oid valueOid?;
+    r4:Contributor valueContributor?;
+    string valueString?;
+    r4:positiveInt valuePositiveInt?;
+    r4:Duration valueDuration?;
+    r4:DataRequirement valueDataRequirement?;
+    r4:Annotation valueAnnotation?;
 |};
 
 # FHIR CRDTaskQuestionnaireOutputType datatype record.
@@ -2593,7 +2588,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueTime": {
             name: "valueTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2603,7 +2598,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueTriggerDefinition": {
             name: "valueTriggerDefinition",
             dataType: r4:TriggerDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2613,7 +2608,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueMoney": {
             name: "valueMoney",
             dataType: r4:Money,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2623,7 +2618,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueSignature": {
             name: "valueSignature",
             dataType: r4:Signature,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2653,7 +2648,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueUuid": {
             name: "valueUuid",
             dataType: r4:uuid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2663,7 +2658,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueRatio": {
             name: "valueRatio",
             dataType: r4:Ratio,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2673,7 +2668,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueParameterDefinition": {
             name: "valueParameterDefinition",
             dataType: r4:ParameterDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2693,7 +2688,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueInteger": {
             name: "valueInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2703,7 +2698,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueUnsignedInt": {
             name: "valueUnsignedInt",
             dataType: r4:unsignedInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2713,7 +2708,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2723,7 +2718,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueCanonical": {
             name: "valueCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2733,7 +2728,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueCount": {
             name: "valueCount",
             dataType: r4:Count,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2743,7 +2738,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueId": {
             name: "valueId",
             dataType: r4:id,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2753,7 +2748,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueCode": {
             name: "valueCode",
             dataType: r4:code,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2763,7 +2758,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueAddress": {
             name: "valueAddress",
             dataType: r4:Address,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2773,7 +2768,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueContactPoint": {
             name: "valueContactPoint",
             dataType: r4:ContactPoint,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2783,7 +2778,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valuePeriod": {
             name: "valuePeriod",
             dataType: r4:Period,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2793,7 +2788,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueSampledData": {
             name: "valueSampledData",
             dataType: r4:SampledData,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2803,7 +2798,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueTiming": {
             name: "valueTiming",
             dataType: r4:Timing,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2813,7 +2808,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueInstant": {
             name: "valueInstant",
             dataType: r4:instant,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2823,7 +2818,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueAge": {
             name: "valueAge",
             dataType: r4:Age,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2833,7 +2828,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueDosage": {
             name: "valueDosage",
             dataType: r4:Dosage,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2843,7 +2838,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueBase64Binary": {
             name: "valueBase64Binary",
             dataType: r4:base64Binary,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2853,7 +2848,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueBoolean": {
             name: "valueBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2863,7 +2858,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueCoding": {
             name: "valueCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2883,7 +2878,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueIdentifier": {
             name: "valueIdentifier",
             dataType: r4:Identifier,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2893,7 +2888,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueExpression": {
             name: "valueExpression",
             dataType: r4:Expression,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2903,7 +2898,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2913,7 +2908,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueRange": {
             name: "valueRange",
             dataType: r4:Range,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2923,7 +2918,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueUri": {
             name: "valueUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2933,7 +2928,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueDistance": {
             name: "valueDistance",
             dataType: r4:Distance,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2943,7 +2938,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueUrl": {
             name: "valueUrl",
             dataType: r4:urlType,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2953,7 +2948,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueContactDetail": {
             name: "valueContactDetail",
             dataType: r4:ContactDetail,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2963,7 +2958,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueMeta": {
             name: "valueMeta",
             dataType: r4:Meta,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2973,7 +2968,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2983,7 +2978,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueMarkdown": {
             name: "valueMarkdown",
             dataType: r4:markdown,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -2993,7 +2988,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3003,7 +2998,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueUsageContext": {
             name: "valueUsageContext",
             dataType: r4:UsageContext,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3013,7 +3008,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueDateTime": {
             name: "valueDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3023,7 +3018,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueHumanName": {
             name: "valueHumanName",
             dataType: r4:HumanName,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3033,7 +3028,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueRelatedArtifact": {
             name: "valueRelatedArtifact",
             dataType: r4:RelatedArtifact,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3043,7 +3038,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueDecimal": {
             name: "valueDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3053,7 +3048,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueDate": {
             name: "valueDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3063,7 +3058,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueOid": {
             name: "valueOid",
             dataType: r4:oid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3073,7 +3068,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueContributor": {
             name: "valueContributor",
             dataType: r4:Contributor,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3083,7 +3078,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueString": {
             name: "valueString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3093,7 +3088,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valuePositiveInt": {
             name: "valuePositiveInt",
             dataType: r4:positiveInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3103,7 +3098,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueDuration": {
             name: "valueDuration",
             dataType: r4:Duration,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3113,7 +3108,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueDataRequirement": {
             name: "valueDataRequirement",
             dataType: r4:DataRequirement,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3123,7 +3118,7 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
     "valueAnnotation": {
             name: "valueAnnotation",
             dataType: r4:Annotation,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -3139,59 +3134,59 @@ CRDTaskQuestionnaireInputTypeCodingTwo   [] coding;
 public type CRDTaskQuestionnaireOutput record {|
     *r4:BackboneElement;
 
-r4:time valueTime;
-r4:TriggerDefinition valueTriggerDefinition;
-r4:Money valueMoney;
-r4:Signature valueSignature;
+    r4:time valueTime?;
+    r4:TriggerDefinition valueTriggerDefinition?;
+    r4:Money valueMoney?;
+    r4:Signature valueSignature?;
 r4:Extension   [] modifierExtension?;
 r4:CodeableConcept 'type;
-r4:uuid valueUuid;
-r4:Ratio valueRatio;
-r4:ParameterDefinition valueParameterDefinition;
+    r4:uuid valueUuid?;
+    r4:Ratio valueRatio?;
+    r4:ParameterDefinition valueParameterDefinition?;
 string id?;
-r4:integer valueInteger;
-r4:unsignedInt valueUnsignedInt;
-r4:Quantity valueQuantity;
-r4:canonical valueCanonical;
-r4:Count valueCount;
-r4:id valueId;
-r4:code valueCode;
-r4:Address valueAddress;
-r4:ContactPoint valueContactPoint;
-r4:Period valuePeriod;
-r4:SampledData valueSampledData;
-r4:Timing valueTiming;
-r4:instant valueInstant;
-r4:Age valueAge;
-r4:Dosage valueDosage;
-r4:base64Binary valueBase64Binary;
-boolean valueBoolean;
-r4:Coding valueCoding;
+    r4:integer valueInteger?;
+    r4:unsignedInt valueUnsignedInt?;
+    r4:Quantity valueQuantity?;
+    r4:canonical valueCanonical?;
+    r4:Count valueCount?;
+    r4:id valueId?;
+    r4:code valueCode?;
+    r4:Address valueAddress?;
+    r4:ContactPoint valueContactPoint?;
+    r4:Period valuePeriod?;
+    r4:SampledData valueSampledData?;
+    r4:Timing valueTiming?;
+    r4:instant valueInstant?;
+    r4:Age valueAge?;
+    r4:Dosage valueDosage?;
+    r4:base64Binary valueBase64Binary?;
+    boolean valueBoolean?;
+    r4:Coding valueCoding?;
 r4:Extension   [] extension?;
-r4:Identifier valueIdentifier;
-r4:Expression valueExpression;
-r4:Reference valueReference;
-r4:Range valueRange;
-r4:uri valueUri;
-r4:Distance valueDistance;
-r4:urlType valueUrl;
-r4:ContactDetail valueContactDetail;
-r4:Meta valueMeta;
-r4:CodeableConcept valueCodeableConcept;
-r4:markdown valueMarkdown;
-r4:Attachment valueAttachment;
-r4:UsageContext valueUsageContext;
-r4:dateTime valueDateTime;
-r4:HumanName valueHumanName;
-r4:RelatedArtifact valueRelatedArtifact;
-decimal valueDecimal;
-r4:date valueDate;
-r4:oid valueOid;
-r4:Contributor valueContributor;
-string valueString;
-r4:positiveInt valuePositiveInt;
-r4:Duration valueDuration;
-r4:DataRequirement valueDataRequirement;
-r4:Annotation valueAnnotation;
+    r4:Identifier valueIdentifier?;
+    r4:Expression valueExpression?;
+    r4:Reference valueReference?;
+    r4:Range valueRange?;
+    r4:uri valueUri?;
+    r4:Distance valueDistance?;
+    r4:urlType valueUrl?;
+    r4:ContactDetail valueContactDetail?;
+    r4:Meta valueMeta?;
+    r4:CodeableConcept valueCodeableConcept?;
+    r4:markdown valueMarkdown?;
+    r4:Attachment valueAttachment?;
+    r4:UsageContext valueUsageContext?;
+    r4:dateTime valueDateTime?;
+    r4:HumanName valueHumanName?;
+    r4:RelatedArtifact valueRelatedArtifact?;
+    decimal valueDecimal?;
+    r4:date valueDate?;
+    r4:oid valueOid?;
+    r4:Contributor valueContributor?;
+    string valueString?;
+    r4:positiveInt valuePositiveInt?;
+    r4:Duration valueDuration?;
+    r4:DataRequirement valueDataRequirement?;
+    r4:Annotation valueAnnotation?;
 |};
 

@@ -617,7 +617,7 @@ public enum CRDTaskDispatchPriority {
     "valueTime": {
             name: "valueTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -627,7 +627,7 @@ public enum CRDTaskDispatchPriority {
     "valueTriggerDefinition": {
             name: "valueTriggerDefinition",
             dataType: r4:TriggerDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -637,7 +637,7 @@ public enum CRDTaskDispatchPriority {
     "valueMoney": {
             name: "valueMoney",
             dataType: r4:Money,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -647,7 +647,7 @@ public enum CRDTaskDispatchPriority {
     "valueSignature": {
             name: "valueSignature",
             dataType: r4:Signature,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -677,7 +677,7 @@ public enum CRDTaskDispatchPriority {
     "valueUuid": {
             name: "valueUuid",
             dataType: r4:uuid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -687,7 +687,7 @@ public enum CRDTaskDispatchPriority {
     "valueRatio": {
             name: "valueRatio",
             dataType: r4:Ratio,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -697,7 +697,7 @@ public enum CRDTaskDispatchPriority {
     "valueParameterDefinition": {
             name: "valueParameterDefinition",
             dataType: r4:ParameterDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -717,7 +717,7 @@ public enum CRDTaskDispatchPriority {
     "valueInteger": {
             name: "valueInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -727,7 +727,7 @@ public enum CRDTaskDispatchPriority {
     "valueUnsignedInt": {
             name: "valueUnsignedInt",
             dataType: r4:unsignedInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -737,7 +737,7 @@ public enum CRDTaskDispatchPriority {
     "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -747,7 +747,7 @@ public enum CRDTaskDispatchPriority {
     "valueCanonical": {
             name: "valueCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -757,7 +757,7 @@ public enum CRDTaskDispatchPriority {
     "valueCount": {
             name: "valueCount",
             dataType: r4:Count,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -767,7 +767,7 @@ public enum CRDTaskDispatchPriority {
     "valueId": {
             name: "valueId",
             dataType: r4:id,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -777,7 +777,7 @@ public enum CRDTaskDispatchPriority {
     "valueCode": {
             name: "valueCode",
             dataType: r4:code,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -787,7 +787,7 @@ public enum CRDTaskDispatchPriority {
     "valueAddress": {
             name: "valueAddress",
             dataType: r4:Address,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -797,7 +797,7 @@ public enum CRDTaskDispatchPriority {
     "valueContactPoint": {
             name: "valueContactPoint",
             dataType: r4:ContactPoint,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -807,7 +807,7 @@ public enum CRDTaskDispatchPriority {
     "valuePeriod": {
             name: "valuePeriod",
             dataType: r4:Period,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -817,7 +817,7 @@ public enum CRDTaskDispatchPriority {
     "valueSampledData": {
             name: "valueSampledData",
             dataType: r4:SampledData,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -827,7 +827,7 @@ public enum CRDTaskDispatchPriority {
     "valueTiming": {
             name: "valueTiming",
             dataType: r4:Timing,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -837,7 +837,7 @@ public enum CRDTaskDispatchPriority {
     "valueInstant": {
             name: "valueInstant",
             dataType: r4:instant,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -847,7 +847,7 @@ public enum CRDTaskDispatchPriority {
     "valueAge": {
             name: "valueAge",
             dataType: r4:Age,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -857,7 +857,7 @@ public enum CRDTaskDispatchPriority {
     "valueDosage": {
             name: "valueDosage",
             dataType: r4:Dosage,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -867,7 +867,7 @@ public enum CRDTaskDispatchPriority {
     "valueBase64Binary": {
             name: "valueBase64Binary",
             dataType: r4:base64Binary,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -877,7 +877,7 @@ public enum CRDTaskDispatchPriority {
     "valueBoolean": {
             name: "valueBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -887,7 +887,7 @@ public enum CRDTaskDispatchPriority {
     "valueCoding": {
             name: "valueCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -907,7 +907,7 @@ public enum CRDTaskDispatchPriority {
     "valueIdentifier": {
             name: "valueIdentifier",
             dataType: r4:Identifier,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -917,7 +917,7 @@ public enum CRDTaskDispatchPriority {
     "valueExpression": {
             name: "valueExpression",
             dataType: r4:Expression,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -927,7 +927,7 @@ public enum CRDTaskDispatchPriority {
     "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -937,7 +937,7 @@ public enum CRDTaskDispatchPriority {
     "valueRange": {
             name: "valueRange",
             dataType: r4:Range,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -947,7 +947,7 @@ public enum CRDTaskDispatchPriority {
     "valueUri": {
             name: "valueUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -957,7 +957,7 @@ public enum CRDTaskDispatchPriority {
     "valueDistance": {
             name: "valueDistance",
             dataType: r4:Distance,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -967,7 +967,7 @@ public enum CRDTaskDispatchPriority {
     "valueUrl": {
             name: "valueUrl",
             dataType: r4:urlType,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -977,7 +977,7 @@ public enum CRDTaskDispatchPriority {
     "valueContactDetail": {
             name: "valueContactDetail",
             dataType: r4:ContactDetail,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -987,7 +987,7 @@ public enum CRDTaskDispatchPriority {
     "valueMeta": {
             name: "valueMeta",
             dataType: r4:Meta,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -997,7 +997,7 @@ public enum CRDTaskDispatchPriority {
     "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1007,7 +1007,7 @@ public enum CRDTaskDispatchPriority {
     "valueMarkdown": {
             name: "valueMarkdown",
             dataType: r4:markdown,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1017,7 +1017,7 @@ public enum CRDTaskDispatchPriority {
     "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1027,7 +1027,7 @@ public enum CRDTaskDispatchPriority {
     "valueUsageContext": {
             name: "valueUsageContext",
             dataType: r4:UsageContext,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1037,7 +1037,7 @@ public enum CRDTaskDispatchPriority {
     "valueDateTime": {
             name: "valueDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1047,7 +1047,7 @@ public enum CRDTaskDispatchPriority {
     "valueHumanName": {
             name: "valueHumanName",
             dataType: r4:HumanName,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1057,7 +1057,7 @@ public enum CRDTaskDispatchPriority {
     "valueRelatedArtifact": {
             name: "valueRelatedArtifact",
             dataType: r4:RelatedArtifact,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1067,7 +1067,7 @@ public enum CRDTaskDispatchPriority {
     "valueDecimal": {
             name: "valueDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1077,7 +1077,7 @@ public enum CRDTaskDispatchPriority {
     "valueDate": {
             name: "valueDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1087,7 +1087,7 @@ public enum CRDTaskDispatchPriority {
     "valueOid": {
             name: "valueOid",
             dataType: r4:oid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1097,7 +1097,7 @@ public enum CRDTaskDispatchPriority {
     "valueContributor": {
             name: "valueContributor",
             dataType: r4:Contributor,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1107,7 +1107,7 @@ public enum CRDTaskDispatchPriority {
     "valueString": {
             name: "valueString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1117,7 +1117,7 @@ public enum CRDTaskDispatchPriority {
     "valuePositiveInt": {
             name: "valuePositiveInt",
             dataType: r4:positiveInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1127,7 +1127,7 @@ public enum CRDTaskDispatchPriority {
     "valueDuration": {
             name: "valueDuration",
             dataType: r4:Duration,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1137,7 +1137,7 @@ public enum CRDTaskDispatchPriority {
     "valueDataRequirement": {
             name: "valueDataRequirement",
             dataType: r4:DataRequirement,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1147,7 +1147,7 @@ public enum CRDTaskDispatchPriority {
     "valueAnnotation": {
             name: "valueAnnotation",
             dataType: r4:Annotation,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the Output parameter as a basic type.",
@@ -1163,60 +1163,60 @@ public enum CRDTaskDispatchPriority {
 public type CRDTaskDispatchOutput record {|
     *r4:BackboneElement;
 
-r4:time valueTime;
-r4:TriggerDefinition valueTriggerDefinition;
-r4:Money valueMoney;
-r4:Signature valueSignature;
+    r4:time valueTime?;
+    r4:TriggerDefinition valueTriggerDefinition?;
+    r4:Money valueMoney?;
+    r4:Signature valueSignature?;
 r4:Extension   [] modifierExtension?;
 r4:CodeableConcept 'type;
-r4:uuid valueUuid;
-r4:Ratio valueRatio;
-r4:ParameterDefinition valueParameterDefinition;
+    r4:uuid valueUuid?;
+    r4:Ratio valueRatio?;
+    r4:ParameterDefinition valueParameterDefinition?;
 string id?;
-r4:integer valueInteger;
-r4:unsignedInt valueUnsignedInt;
-r4:Quantity valueQuantity;
-r4:canonical valueCanonical;
-r4:Count valueCount;
-r4:id valueId;
-r4:code valueCode;
-r4:Address valueAddress;
-r4:ContactPoint valueContactPoint;
-r4:Period valuePeriod;
-r4:SampledData valueSampledData;
-r4:Timing valueTiming;
-r4:instant valueInstant;
-r4:Age valueAge;
-r4:Dosage valueDosage;
-r4:base64Binary valueBase64Binary;
-boolean valueBoolean;
-r4:Coding valueCoding;
+    r4:integer valueInteger?;
+    r4:unsignedInt valueUnsignedInt?;
+    r4:Quantity valueQuantity?;
+    r4:canonical valueCanonical?;
+    r4:Count valueCount?;
+    r4:id valueId?;
+    r4:code valueCode?;
+    r4:Address valueAddress?;
+    r4:ContactPoint valueContactPoint?;
+    r4:Period valuePeriod?;
+    r4:SampledData valueSampledData?;
+    r4:Timing valueTiming?;
+    r4:instant valueInstant?;
+    r4:Age valueAge?;
+    r4:Dosage valueDosage?;
+    r4:base64Binary valueBase64Binary?;
+    boolean valueBoolean?;
+    r4:Coding valueCoding?;
 r4:Extension   [] extension?;
-r4:Identifier valueIdentifier;
-r4:Expression valueExpression;
-r4:Reference valueReference;
-r4:Range valueRange;
-r4:uri valueUri;
-r4:Distance valueDistance;
-r4:urlType valueUrl;
-r4:ContactDetail valueContactDetail;
-r4:Meta valueMeta;
-r4:CodeableConcept valueCodeableConcept;
-r4:markdown valueMarkdown;
-r4:Attachment valueAttachment;
-r4:UsageContext valueUsageContext;
-r4:dateTime valueDateTime;
-r4:HumanName valueHumanName;
-r4:RelatedArtifact valueRelatedArtifact;
-decimal valueDecimal;
-r4:date valueDate;
-r4:oid valueOid;
-r4:Contributor valueContributor;
-string valueString;
-r4:positiveInt valuePositiveInt;
-r4:Duration valueDuration;
-r4:DataRequirement valueDataRequirement;
-r4:Annotation valueAnnotation;
+    r4:Identifier valueIdentifier?;
+    r4:Expression valueExpression?;
+    r4:Reference valueReference?;
+    r4:Range valueRange?;
+    r4:uri valueUri?;
+    r4:Distance valueDistance?;
+    r4:urlType valueUrl?;
+    r4:ContactDetail valueContactDetail?;
+    r4:Meta valueMeta?;
+    r4:CodeableConcept valueCodeableConcept?;
+    r4:markdown valueMarkdown?;
+    r4:Attachment valueAttachment?;
+    r4:UsageContext valueUsageContext?;
+    r4:dateTime valueDateTime?;
+    r4:HumanName valueHumanName?;
+    r4:RelatedArtifact valueRelatedArtifact?;
+    decimal valueDecimal?;
+    r4:date valueDate?;
+    r4:oid valueOid?;
+    r4:Contributor valueContributor?;
+    string valueString?;
+    r4:positiveInt valuePositiveInt?;
+    r4:Duration valueDuration?;
+    r4:DataRequirement valueDataRequirement?;
+    r4:Annotation valueAnnotation?;
 |};
 
 # FHIR CRDTaskDispatchRestriction datatype record.
@@ -1383,7 +1383,7 @@ public enum CRDTaskDispatchStatus {
     "valueTime": {
             name: "valueTime",
             dataType: r4:time,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1393,7 +1393,7 @@ public enum CRDTaskDispatchStatus {
     "valueTriggerDefinition": {
             name: "valueTriggerDefinition",
             dataType: r4:TriggerDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1403,7 +1403,7 @@ public enum CRDTaskDispatchStatus {
     "valueMoney": {
             name: "valueMoney",
             dataType: r4:Money,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1413,7 +1413,7 @@ public enum CRDTaskDispatchStatus {
     "valueSignature": {
             name: "valueSignature",
             dataType: r4:Signature,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1443,7 +1443,7 @@ public enum CRDTaskDispatchStatus {
     "valueUuid": {
             name: "valueUuid",
             dataType: r4:uuid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1453,7 +1453,7 @@ public enum CRDTaskDispatchStatus {
     "valueRatio": {
             name: "valueRatio",
             dataType: r4:Ratio,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1463,7 +1463,7 @@ public enum CRDTaskDispatchStatus {
     "valueParameterDefinition": {
             name: "valueParameterDefinition",
             dataType: r4:ParameterDefinition,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1483,7 +1483,7 @@ public enum CRDTaskDispatchStatus {
     "valueInteger": {
             name: "valueInteger",
             dataType: r4:integer,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1493,7 +1493,7 @@ public enum CRDTaskDispatchStatus {
     "valueUnsignedInt": {
             name: "valueUnsignedInt",
             dataType: r4:unsignedInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1503,7 +1503,7 @@ public enum CRDTaskDispatchStatus {
     "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1513,7 +1513,7 @@ public enum CRDTaskDispatchStatus {
     "valueCanonical": {
             name: "valueCanonical",
             dataType: r4:canonical,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1523,7 +1523,7 @@ public enum CRDTaskDispatchStatus {
     "valueCount": {
             name: "valueCount",
             dataType: r4:Count,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1533,7 +1533,7 @@ public enum CRDTaskDispatchStatus {
     "valueId": {
             name: "valueId",
             dataType: r4:id,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1543,7 +1543,7 @@ public enum CRDTaskDispatchStatus {
     "valueCode": {
             name: "valueCode",
             dataType: r4:code,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1553,7 +1553,7 @@ public enum CRDTaskDispatchStatus {
     "valueAddress": {
             name: "valueAddress",
             dataType: r4:Address,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1563,7 +1563,7 @@ public enum CRDTaskDispatchStatus {
     "valueContactPoint": {
             name: "valueContactPoint",
             dataType: r4:ContactPoint,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1573,7 +1573,7 @@ public enum CRDTaskDispatchStatus {
     "valuePeriod": {
             name: "valuePeriod",
             dataType: r4:Period,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1583,7 +1583,7 @@ public enum CRDTaskDispatchStatus {
     "valueSampledData": {
             name: "valueSampledData",
             dataType: r4:SampledData,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1593,7 +1593,7 @@ public enum CRDTaskDispatchStatus {
     "valueTiming": {
             name: "valueTiming",
             dataType: r4:Timing,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1603,7 +1603,7 @@ public enum CRDTaskDispatchStatus {
     "valueInstant": {
             name: "valueInstant",
             dataType: r4:instant,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1613,7 +1613,7 @@ public enum CRDTaskDispatchStatus {
     "valueAge": {
             name: "valueAge",
             dataType: r4:Age,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1623,7 +1623,7 @@ public enum CRDTaskDispatchStatus {
     "valueDosage": {
             name: "valueDosage",
             dataType: r4:Dosage,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1633,7 +1633,7 @@ public enum CRDTaskDispatchStatus {
     "valueBase64Binary": {
             name: "valueBase64Binary",
             dataType: r4:base64Binary,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1643,7 +1643,7 @@ public enum CRDTaskDispatchStatus {
     "valueBoolean": {
             name: "valueBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1653,7 +1653,7 @@ public enum CRDTaskDispatchStatus {
     "valueCoding": {
             name: "valueCoding",
             dataType: r4:Coding,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1673,7 +1673,7 @@ public enum CRDTaskDispatchStatus {
     "valueIdentifier": {
             name: "valueIdentifier",
             dataType: r4:Identifier,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1683,7 +1683,7 @@ public enum CRDTaskDispatchStatus {
     "valueExpression": {
             name: "valueExpression",
             dataType: r4:Expression,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1693,7 +1693,7 @@ public enum CRDTaskDispatchStatus {
     "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1703,7 +1703,7 @@ public enum CRDTaskDispatchStatus {
     "valueRange": {
             name: "valueRange",
             dataType: r4:Range,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1713,7 +1713,7 @@ public enum CRDTaskDispatchStatus {
     "valueUri": {
             name: "valueUri",
             dataType: r4:uri,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1723,7 +1723,7 @@ public enum CRDTaskDispatchStatus {
     "valueDistance": {
             name: "valueDistance",
             dataType: r4:Distance,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1733,7 +1733,7 @@ public enum CRDTaskDispatchStatus {
     "valueUrl": {
             name: "valueUrl",
             dataType: r4:urlType,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1743,7 +1743,7 @@ public enum CRDTaskDispatchStatus {
     "valueContactDetail": {
             name: "valueContactDetail",
             dataType: r4:ContactDetail,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1753,7 +1753,7 @@ public enum CRDTaskDispatchStatus {
     "valueMeta": {
             name: "valueMeta",
             dataType: r4:Meta,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1763,7 +1763,7 @@ public enum CRDTaskDispatchStatus {
     "valueCodeableConcept": {
             name: "valueCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1773,7 +1773,7 @@ public enum CRDTaskDispatchStatus {
     "valueMarkdown": {
             name: "valueMarkdown",
             dataType: r4:markdown,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1783,7 +1783,7 @@ public enum CRDTaskDispatchStatus {
     "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1793,7 +1793,7 @@ public enum CRDTaskDispatchStatus {
     "valueUsageContext": {
             name: "valueUsageContext",
             dataType: r4:UsageContext,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1803,7 +1803,7 @@ public enum CRDTaskDispatchStatus {
     "valueDateTime": {
             name: "valueDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1813,7 +1813,7 @@ public enum CRDTaskDispatchStatus {
     "valueHumanName": {
             name: "valueHumanName",
             dataType: r4:HumanName,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1823,7 +1823,7 @@ public enum CRDTaskDispatchStatus {
     "valueRelatedArtifact": {
             name: "valueRelatedArtifact",
             dataType: r4:RelatedArtifact,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1833,7 +1833,7 @@ public enum CRDTaskDispatchStatus {
     "valueDecimal": {
             name: "valueDecimal",
             dataType: decimal,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1843,7 +1843,7 @@ public enum CRDTaskDispatchStatus {
     "valueDate": {
             name: "valueDate",
             dataType: r4:date,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1853,7 +1853,7 @@ public enum CRDTaskDispatchStatus {
     "valueOid": {
             name: "valueOid",
             dataType: r4:oid,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1863,7 +1863,7 @@ public enum CRDTaskDispatchStatus {
     "valueContributor": {
             name: "valueContributor",
             dataType: r4:Contributor,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1873,7 +1873,7 @@ public enum CRDTaskDispatchStatus {
     "valueString": {
             name: "valueString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1883,7 +1883,7 @@ public enum CRDTaskDispatchStatus {
     "valuePositiveInt": {
             name: "valuePositiveInt",
             dataType: r4:positiveInt,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1893,7 +1893,7 @@ public enum CRDTaskDispatchStatus {
     "valueDuration": {
             name: "valueDuration",
             dataType: r4:Duration,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1903,7 +1903,7 @@ public enum CRDTaskDispatchStatus {
     "valueDataRequirement": {
             name: "valueDataRequirement",
             dataType: r4:DataRequirement,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1913,7 +1913,7 @@ public enum CRDTaskDispatchStatus {
     "valueAnnotation": {
             name: "valueAnnotation",
             dataType: r4:Annotation,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The value of the input parameter as a basic type.",
@@ -1929,60 +1929,60 @@ public enum CRDTaskDispatchStatus {
 public type CRDTaskDispatchInput record {|
     *r4:BackboneElement;
 
-r4:time valueTime;
-r4:TriggerDefinition valueTriggerDefinition;
-r4:Money valueMoney;
-r4:Signature valueSignature;
+    r4:time valueTime?;
+    r4:TriggerDefinition valueTriggerDefinition?;
+    r4:Money valueMoney?;
+    r4:Signature valueSignature?;
 r4:Extension   [] modifierExtension?;
 r4:CodeableConcept 'type;
-r4:uuid valueUuid;
-r4:Ratio valueRatio;
-r4:ParameterDefinition valueParameterDefinition;
+    r4:uuid valueUuid?;
+    r4:Ratio valueRatio?;
+    r4:ParameterDefinition valueParameterDefinition?;
 string id?;
-r4:integer valueInteger;
-r4:unsignedInt valueUnsignedInt;
-r4:Quantity valueQuantity;
-r4:canonical valueCanonical;
-r4:Count valueCount;
-r4:id valueId;
-r4:code valueCode;
-r4:Address valueAddress;
-r4:ContactPoint valueContactPoint;
-r4:Period valuePeriod;
-r4:SampledData valueSampledData;
-r4:Timing valueTiming;
-r4:instant valueInstant;
-r4:Age valueAge;
-r4:Dosage valueDosage;
-r4:base64Binary valueBase64Binary;
-boolean valueBoolean;
-r4:Coding valueCoding;
+    r4:integer valueInteger?;
+    r4:unsignedInt valueUnsignedInt?;
+    r4:Quantity valueQuantity?;
+    r4:canonical valueCanonical?;
+    r4:Count valueCount?;
+    r4:id valueId?;
+    r4:code valueCode?;
+    r4:Address valueAddress?;
+    r4:ContactPoint valueContactPoint?;
+    r4:Period valuePeriod?;
+    r4:SampledData valueSampledData?;
+    r4:Timing valueTiming?;
+    r4:instant valueInstant?;
+    r4:Age valueAge?;
+    r4:Dosage valueDosage?;
+    r4:base64Binary valueBase64Binary?;
+    boolean valueBoolean?;
+    r4:Coding valueCoding?;
 r4:Extension   [] extension?;
-r4:Identifier valueIdentifier;
-r4:Expression valueExpression;
-r4:Reference valueReference;
-r4:Range valueRange;
-r4:uri valueUri;
-r4:Distance valueDistance;
-r4:urlType valueUrl;
-r4:ContactDetail valueContactDetail;
-r4:Meta valueMeta;
-r4:CodeableConcept valueCodeableConcept;
-r4:markdown valueMarkdown;
-r4:Attachment valueAttachment;
-r4:UsageContext valueUsageContext;
-r4:dateTime valueDateTime;
-r4:HumanName valueHumanName;
-r4:RelatedArtifact valueRelatedArtifact;
-decimal valueDecimal;
-r4:date valueDate;
-r4:oid valueOid;
-r4:Contributor valueContributor;
-string valueString;
-r4:positiveInt valuePositiveInt;
-r4:Duration valueDuration;
-r4:DataRequirement valueDataRequirement;
-r4:Annotation valueAnnotation;
+    r4:Identifier valueIdentifier?;
+    r4:Expression valueExpression?;
+    r4:Reference valueReference?;
+    r4:Range valueRange?;
+    r4:uri valueUri?;
+    r4:Distance valueDistance?;
+    r4:urlType valueUrl?;
+    r4:ContactDetail valueContactDetail?;
+    r4:Meta valueMeta?;
+    r4:CodeableConcept valueCodeableConcept?;
+    r4:markdown valueMarkdown?;
+    r4:Attachment valueAttachment?;
+    r4:UsageContext valueUsageContext?;
+    r4:dateTime valueDateTime?;
+    r4:HumanName valueHumanName?;
+    r4:RelatedArtifact valueRelatedArtifact?;
+    decimal valueDecimal?;
+    r4:date valueDate?;
+    r4:oid valueOid?;
+    r4:Contributor valueContributor?;
+    string valueString?;
+    r4:positiveInt valuePositiveInt?;
+    r4:Duration valueDuration?;
+    r4:DataRequirement valueDataRequirement?;
+    r4:Annotation valueAnnotation?;
 |};
 
 # FHIR CRDTaskDispatchCodeCoding datatype record.

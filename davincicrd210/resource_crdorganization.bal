@@ -245,11 +245,6 @@ public type CRDOrganization record {|
         minLength: {
             value: 1,
             message: "Validation failed for $.Organization.identifier constraint. This field must be an array containing at least one item."
-        },
-
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.Organization.identifier constraint. This field must be an array containing at most one item."
         }
     }
 r4:Identifier   [] identifier;
