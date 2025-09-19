@@ -21,10 +21,10 @@ import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.international401;
 
-public const string PROFILE_BASE_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Outpatient-Institutional";
-public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "ExplanationOfBenefit";
+public const string PROFILE_BASE_C4BBEXPLANATIONOFBENEFITPHARMACYBASIS = "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Pharmacy-Basis";
+public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITPHARMACYBASIS = "ExplanationOfBenefit";
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutional resource record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasis resource record.
 #
 # + resourceType - The type of the resource describes
 # + benefitPeriod - The term of the benefits documented in this response.
@@ -40,33 +40,37 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
 # + payee - The party to be reimbursed for cost of the products and services according to the terms of the policy.
 # + supportingInfo - Additional information codes regarding exceptions, special considerations, the condition, situation, prior or concurrent issues.
 # * supportingInfo Slicings
-# 1) C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoMedicalrecordnumber: Medical record number
-#       - min = 0
-#       - max = 1
+# 1) C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRxoriginCode: Prescription origin code
+# - min = 0
+# - max = 1
 #
-# 2) C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoClmrecvddate: Claim received date
-#       - min = 0
-#       - max = 1
+# 2) C4BBExplanationOfBenefitPharmacyBasisSupportingInfoClmrecvddate: Claim received date
+# - min = 0
+# - max = 1
 #
-# 3) C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoPatientaccountnumber: Patient account number
-#       - min = 0
-#       - max = 1
+# 3) C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRefillsAuthorized: Number or refills authorized by prescriber
+# - min = 1
+# - max = 1
 #
-# 4) C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoDischarge_status: Discharge status
-#       - min = 0
-#       - max = 1
+# 4) C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRefillNum: The number fill of the claim dispensed supply
+# - min = 1
+# - max = 1
 #
-# 5) C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofbill: Type of bill
-#       - min = 0
-#       - max = 1
+# 5) C4BBExplanationOfBenefitPharmacyBasisSupportingInfoDawcode: Dispense and written product selection code
+# - min = 1
+# - max = 1
 #
-# 6) C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoPointoforigin: Point of origin for admission or visit
-#       - min = 0
-#       - max = 1
+# 6) C4BBExplanationOfBenefitPharmacyBasisSupportingInfoBrandgenericindicator: Plan reported brand or generic drug indicator
+# - min = 0
+# - max = 1
 #
-# 7) C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoAdmtype: Admission type
-#       - min = 0
-#       - max = 1
+# 7) C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCompoundcode: Code indicating whether or not the prescription is a compound
+# - min = 0
+# - max = 1
+#
+# 8) C4BBExplanationOfBenefitPharmacyBasisSupportingInfoDayssupply: Days supply
+# - min = 1
+# - max = 1
 #
 # + claim - The business identifier for the instance of the adjudication request: claim predetermination or preauthorization.
 # + enterer - Individual who created the claim, predetermination or preauthorization.
@@ -76,9 +80,9 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
 # + careTeam - The members of the team who provided the products and services.
 # + identifier - A unique identifier assigned to this explanation of benefit.
 # * identifier Slicings
-# 1) C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUniqueclaimid: Unique Claim Identifier
-#       - min = 1
-#       - max = 1
+# 1) C4BBExplanationOfBenefitPharmacyBasisIdentifierUniqueclaimid: Unique Claim Identifier
+# - min = 1
+# - max = 1
 #
 # + item - A claim line. Either a simple (a product or service) or a 'group' of details which can also be a simple items or groups of sub-details.
 # + created - The date this resource was created.
@@ -95,25 +99,16 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
 # + accident - Details of a accident which resulted in injuries which required the products and services listed in the claim.
 # + adjudication - The adjudication results which are presented at the header level rather than at the line-item or add-item levels.
 # * adjudication Slicings
-# 1) C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBillingnetworkstatus: Billing provider networking status
-#       - min = 0
-#       - max = 1
+# 1) C4BBExplanationOfBenefitPharmacyBasisAdjudicationBillingnetworkstatus: Billing provider networking status
+# - min = 0
+# - max = 1
 #
-# 2) C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpaymentstatus: Indicates the in network or out of network payment status of the claim. (142)
-#       - min = 1
-#       - max = 1
-#
-# 3) C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationAdjustmentreason: Reason codes used to interpret the Non-Covered Amount (92)
-#       - min = 0
-#       - max = *
+# 2) C4BBExplanationOfBenefitPharmacyBasisAdjudicationBenefitpaymentstatus: Indicates the in network or out of network payment status of the claim. (142)
+# - min = 1
+# - max = 1
 #
 # + addItem - The first-tier service adjudications for payor added product or service lines.
 # + total - Categorized monetary totals for the adjudication.
-# * total Slicings
-# 1) C4BBExplanationOfBenefitOutpatientInstitutionalTotalAdjudicationamounttype: Total adjudication type and amount
-#       - min = 1
-#       - max = *
-#
 # + related - Other claims which are related to this claim such as prior submissions or claims for related services or for the same event.
 # + fundsReserve - A code, used only on a response to a preauthorization, to indicate whether the benefits payable have been reserved and for whom.
 # + fundsReserveRequested - A code to indicate whether and for whom funds are to be reserved for future claims.
@@ -130,12 +125,13 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
 # + form - The actual form, by reference or inclusion, for printing the content or an EOB.
 # + prescription - Prescription to support the dispensing of pharmacy, device or vision products.
 # + facility - Facility where the services were provided.
+
 @r4:ResourceDefinition {
     resourceType: "ExplanationOfBenefit",
     baseType: r4:DomainResource,
-    profile: "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Outpatient-Institutional",
+    profile: "http://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Pharmacy-Basis",
     elements: {
-        "benefitPeriod" : {
+        "benefitPeriod": {
             name: "benefitPeriod",
             dataType: r4:Period,
             min: 0,
@@ -143,15 +139,17 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.benefitPeriod"
         },
-        "insurance" : {
+
+        "insurance": {
             name: "insurance",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalInsurance,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisInsurance,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.insurance"
         },
-        "claimResponse" : {
+
+        "claimResponse": {
             name: "claimResponse",
             dataType: r4:Reference,
             min: 0,
@@ -159,16 +157,18 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.claimResponse"
         },
-        "use" : {
+
+        "use": {
             name: "use",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalUse,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisUse,
             min: 1,
             max: 1,
             isArray: false,
             path: "ExplanationOfBenefit.use",
             valueSet: "http://hl7.org/fhir/ValueSet/claim-use|4.0.1"
         },
-        "modifierExtension" : {
+
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -176,7 +176,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: true,
             path: "ExplanationOfBenefit.modifierExtension"
         },
-        "preAuthRef" : {
+
+        "preAuthRef": {
             name: "preAuthRef",
             dataType: string,
             min: 0,
@@ -184,7 +185,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: true,
             path: "ExplanationOfBenefit.preAuthRef"
         },
-        "language" : {
+
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -193,16 +195,18 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             path: "ExplanationOfBenefit.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "type" : {
+
+        "type": {
             name: "type",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalType,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisType,
             min: 1,
             max: 1,
             isArray: false,
             path: "ExplanationOfBenefit.type",
             valueSet: "http://hl7.org/fhir/ValueSet/claim-type"
         },
-        "precedence" : {
+
+        "precedence": {
             name: "precedence",
             dataType: r4:positiveInt,
             min: 0,
@@ -210,31 +214,35 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.precedence"
         },
-        "processNote" : {
+
+        "processNote": {
             name: "processNote",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalProcessNote,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisProcessNote,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.processNote"
         },
-        "payee" : {
+
+        "payee": {
             name: "payee",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalPayee,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisPayee,
             min: 0,
             max: 1,
             isArray: false,
             path: "ExplanationOfBenefit.payee"
         },
-        "supportingInfo" : {
+
+        "supportingInfo": {
             name: "supportingInfo",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo,
-            min: 0,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfo,
+            min: 4,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.supportingInfo"
         },
-        "claim" : {
+
+        "claim": {
             name: "claim",
             dataType: r4:Reference,
             min: 0,
@@ -242,7 +250,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.claim"
         },
-        "enterer" : {
+
+        "enterer": {
             name: "enterer",
             dataType: r4:Reference,
             min: 0,
@@ -250,15 +259,17 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.enterer"
         },
-        "payment" : {
+
+        "payment": {
             name: "payment",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalPayment,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisPayment,
             min: 0,
             max: 1,
             isArray: false,
             path: "ExplanationOfBenefit.payment"
         },
-        "id" : {
+
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -266,7 +277,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.id"
         },
-        "text" : {
+
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -274,15 +286,17 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.text"
         },
-        "careTeam" : {
+
+        "careTeam": {
             name: "careTeam",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalCareTeam,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisCareTeam,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.careTeam"
         },
-        "identifier" : {
+
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 1,
@@ -290,15 +304,17 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: true,
             path: "ExplanationOfBenefit.identifier"
         },
-        "item" : {
+
+        "item": {
             name: "item",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalItem,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisItem,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.item"
         },
-        "created" : {
+
+        "created": {
             name: "created",
             dataType: r4:dateTime,
             min: 1,
@@ -306,15 +322,17 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.created"
         },
-        "diagnosis" : {
+
+        "diagnosis": {
             name: "diagnosis",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalDiagnosis,
-            min: 1,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisDiagnosis,
+            min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.diagnosis"
         },
-        "priority" : {
+
+        "priority": {
             name: "priority",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -323,7 +341,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             path: "ExplanationOfBenefit.priority",
             valueSet: "http://hl7.org/fhir/ValueSet/process-priority"
         },
-        "preAuthRefPeriod" : {
+
+        "preAuthRefPeriod": {
             name: "preAuthRefPeriod",
             dataType: r4:Period,
             min: 0,
@@ -331,7 +350,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: true,
             path: "ExplanationOfBenefit.preAuthRefPeriod"
         },
-        "meta" : {
+
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 1,
@@ -339,7 +359,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.meta"
         },
-        "billablePeriod" : {
+
+        "billablePeriod": {
             name: "billablePeriod",
             dataType: r4:Period,
             min: 1,
@@ -347,7 +368,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.billablePeriod"
         },
-        "implicitRules" : {
+
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -355,25 +377,28 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.implicitRules"
         },
-        "subType" : {
+
+        "subType": {
             name: "subType",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSubType,
-            min: 1,
+            dataType: r4:CodeableConcept,
+            min: 0,
             max: 1,
             isArray: false,
             path: "ExplanationOfBenefit.subType",
-            valueSet: "http://hl7.org/fhir/us/carin-bb/ValueSet/C4BBInstitutionalClaimSubType"
+            valueSet: "http://hl7.org/fhir/ValueSet/claim-subtype"
         },
-        "status" : {
+
+        "status": {
             name: "status",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalStatus,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisStatus,
             min: 1,
             max: 1,
             isArray: false,
             path: "ExplanationOfBenefit.status",
             valueSet: "http://hl7.org/fhir/ValueSet/explanationofbenefit-status|4.0.1"
         },
-        "extension" : {
+
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -381,55 +406,62 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: true,
             path: "ExplanationOfBenefit.extension"
         },
-        "benefitBalance" : {
+
+        "benefitBalance": {
             name: "benefitBalance",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisBenefitBalance,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.benefitBalance"
         },
-        "accident" : {
+
+        "accident": {
             name: "accident",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAccident,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisAccident,
             min: 0,
             max: 1,
             isArray: false,
             path: "ExplanationOfBenefit.accident"
         },
-        "adjudication" : {
+
+        "adjudication": {
             name: "adjudication",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAdjudication,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisAdjudication,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.adjudication"
         },
-        "addItem" : {
+
+        "addItem": {
             name: "addItem",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAddItem,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisAddItem,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.addItem"
         },
-        "total" : {
+
+        "total": {
             name: "total",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalTotal,
-            min: 1,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisTotal,
+            min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.total"
         },
-        "related" : {
+
+        "related": {
             name: "related",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalRelated,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisRelated,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.related"
         },
-        "fundsReserve" : {
+
+        "fundsReserve": {
             name: "fundsReserve",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -438,7 +470,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             path: "ExplanationOfBenefit.fundsReserve",
             valueSet: "http://hl7.org/fhir/ValueSet/fundsreserve"
         },
-        "fundsReserveRequested" : {
+
+        "fundsReserveRequested": {
             name: "fundsReserveRequested",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -447,7 +480,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             path: "ExplanationOfBenefit.fundsReserveRequested",
             valueSet: "http://hl7.org/fhir/ValueSet/fundsreserve"
         },
-        "provider" : {
+
+        "provider": {
             name: "provider",
             dataType: r4:Reference,
             min: 1,
@@ -455,7 +489,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.provider"
         },
-        "insurer" : {
+
+        "insurer": {
             name: "insurer",
             dataType: r4:Reference,
             min: 1,
@@ -463,7 +498,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.insurer"
         },
-        "patient" : {
+
+        "patient": {
             name: "patient",
             dataType: r4:Reference,
             min: 1,
@@ -471,16 +507,18 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.patient"
         },
-        "outcome" : {
+
+        "outcome": {
             name: "outcome",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalOutcome,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisOutcome,
             min: 1,
             max: 1,
             isArray: false,
             path: "ExplanationOfBenefit.outcome",
             valueSet: "http://hl7.org/fhir/ValueSet/remittance-outcome|4.0.1"
         },
-        "formCode" : {
+
+        "formCode": {
             name: "formCode",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -489,7 +527,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             path: "ExplanationOfBenefit.formCode",
             valueSet: "http://hl7.org/fhir/ValueSet/forms"
         },
-        "originalPrescription" : {
+
+        "originalPrescription": {
             name: "originalPrescription",
             dataType: r4:Reference,
             min: 0,
@@ -497,15 +536,17 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.originalPrescription"
         },
-        "procedure" : {
+
+        "procedure": {
             name: "procedure",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalProcedure,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisProcedure,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             path: "ExplanationOfBenefit.procedure"
         },
-        "contained" : {
+
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -513,7 +554,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: true,
             path: "ExplanationOfBenefit.contained"
         },
-        "disposition" : {
+
+        "disposition": {
             name: "disposition",
             dataType: string,
             min: 0,
@@ -521,7 +563,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.disposition"
         },
-        "referral" : {
+
+        "referral": {
             name: "referral",
             dataType: r4:Reference,
             min: 0,
@@ -529,7 +572,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.referral"
         },
-        "form" : {
+
+        "form": {
             name: "form",
             dataType: r4:Attachment,
             min: 0,
@@ -537,7 +581,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.form"
         },
-        "prescription" : {
+
+        "prescription": {
             name: "prescription",
             dataType: r4:Reference,
             min: 0,
@@ -545,7 +590,8 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.prescription"
         },
-        "facility" : {
+
+        "facility": {
             name: "facility",
             dataType: r4:Reference,
             min: 0,
@@ -553,16 +599,19 @@ public const RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL = "Ex
             isArray: false,
             path: "ExplanationOfBenefit.facility"
         }
+
     },
+
     serializers: {
         'xml: r4:fhirResourceXMLSerializer,
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutional record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasis record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL resourceType = RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITOUTPATIENTINSTITUTIONAL;
+    RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITPHARMACYBASIS resourceType = RESOURCE_NAME_C4BBEXPLANATIONOFBENEFITPHARMACYBASIS;
 
     r4:Period benefitPeriod?;
     @constraint:Array {
@@ -571,23 +620,29 @@ public type C4BBExplanationOfBenefitOutpatientInstitutional record {|
             message: "Validation failed for $.ExplanationOfBenefit.insurance constraint. This field must be an array containing at least one item."
         }
     }
-    C4BBExplanationOfBenefitOutpatientInstitutionalInsurance[] insurance;
+    C4BBExplanationOfBenefitPharmacyBasisInsurance[] insurance;
     r4:Reference claimResponse?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalUse use;
+    C4BBExplanationOfBenefitPharmacyBasisUse use;
     r4:Extension[] modifierExtension?;
     string[] preAuthRef?;
     r4:code language?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalType 'type;
+    C4BBExplanationOfBenefitPharmacyBasisType 'type;
     r4:positiveInt precedence?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalProcessNote[] processNote?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalPayee payee?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo[] supportingInfo?;
+    C4BBExplanationOfBenefitPharmacyBasisProcessNote[] processNote?;
+    C4BBExplanationOfBenefitPharmacyBasisPayee payee?;
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo constraint. This field must be an array containing at least one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfo[] supportingInfo;
     r4:Reference claim?;
     r4:Reference enterer?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalPayment payment?;
+    C4BBExplanationOfBenefitPharmacyBasisPayment payment?;
     string id?;
     r4:Narrative text?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalCareTeam[] careTeam?;
+    C4BBExplanationOfBenefitPharmacyBasisCareTeam[] careTeam?;
     @constraint:Array {
         minLength: {
             value: 1,
@@ -601,170 +656,95 @@ public type C4BBExplanationOfBenefitOutpatientInstitutional record {|
             message: "Validation failed for $.ExplanationOfBenefit.item constraint. This field must be an array containing at least one item."
         }
     }
-    C4BBExplanationOfBenefitOutpatientInstitutionalItem[] item;
+    C4BBExplanationOfBenefitPharmacyBasisItem[] item;
     r4:dateTime created;
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.diagnosis constraint. This field must be an array containing at least one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalDiagnosis[] diagnosis;
+    C4BBExplanationOfBenefitPharmacyBasisDiagnosis[] diagnosis?;
     r4:CodeableConcept priority?;
     r4:Period[] preAuthRefPeriod?;
     r4:Meta meta;
     r4:Period billablePeriod;
     r4:uri implicitRules?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalSubType subType;
-    C4BBExplanationOfBenefitOutpatientInstitutionalStatus status;
+    r4:CodeableConcept subType?;
+    C4BBExplanationOfBenefitPharmacyBasisStatus status;
     r4:Extension[] extension?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance[] benefitBalance?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalAccident accident?;
+    C4BBExplanationOfBenefitPharmacyBasisBenefitBalance[] benefitBalance?;
+    C4BBExplanationOfBenefitPharmacyBasisAccident accident?;
     @constraint:Array {
         minLength: {
             value: 1,
             message: "Validation failed for $.ExplanationOfBenefit.adjudication constraint. This field must be an array containing at least one item."
         }
     }
-    C4BBExplanationOfBenefitOutpatientInstitutionalAdjudication[] adjudication;
-    C4BBExplanationOfBenefitOutpatientInstitutionalAddItem[] addItem?;
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.total constraint. This field must be an array containing at least one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalTotal[] total;
-    C4BBExplanationOfBenefitOutpatientInstitutionalRelated[] related?;
+    C4BBExplanationOfBenefitPharmacyBasisAdjudication[] adjudication;
+    C4BBExplanationOfBenefitPharmacyBasisAddItem[] addItem?;
+    C4BBExplanationOfBenefitPharmacyBasisTotal[] total?;
+    C4BBExplanationOfBenefitPharmacyBasisRelated[] related?;
     r4:CodeableConcept fundsReserve?;
     r4:CodeableConcept fundsReserveRequested?;
     r4:Reference provider;
     r4:Reference insurer;
     r4:Reference patient;
-    C4BBExplanationOfBenefitOutpatientInstitutionalOutcome outcome;
+    C4BBExplanationOfBenefitPharmacyBasisOutcome outcome;
     r4:CodeableConcept formCode?;
     r4:Reference originalPrescription?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalProcedure[] procedure?;
+    C4BBExplanationOfBenefitPharmacyBasisProcedure[] procedure?;
     r4:Resource[] contained?;
     string disposition?;
     r4:Reference referral?;
     r4:Attachment form?;
     r4:Reference prescription?;
     r4:Reference facility?;
-    r4:Element ...;
+    r4:Element...;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUniqueclaimid datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisType datatype record.
 #
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + period - Time period during which identifier is/was valid for use.
-# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
-# + use - The purpose of this identifier.
-# + assigner - Organization that issued/manages the identifier.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'type - A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.
-# + value - The portion of the identifier typically relevant to the user and which is unique within the context of the system.
+# + coding - A reference to a code defined by a terminology system.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUniqueclaimid",
+    name: "C4BBExplanationOfBenefitPharmacyBasisType",
     baseType: (),
     elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisTypeCoding,
+            min: 1,
             max: int:MAX_VALUE,
             isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.identifier.extension"
-        },
-        "period": {
-            name: "period",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Time period during which identifier is/was valid for use.",
-            path: "ExplanationOfBenefit.identifier.period"
-        },
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
-            path: "ExplanationOfBenefit.identifier.system"
-        },
-        "use": {
-            name: "use",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "ExplanationOfBenefit.identifier.use"
-        },
-        "assigner": {
-            name: "assigner",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Organization that issued/manages the identifier.",
-            path: "ExplanationOfBenefit.identifier.assigner"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.identifier.id"
-        },
-        "type": {
-            name: "type",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierType,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-            path: "ExplanationOfBenefit.identifier.type"
-        },
-        "value": {
-            name: "value",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
-            path: "ExplanationOfBenefit.identifier.value"
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.type.coding"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUniqueclaimid record {|
-    *r4:Identifier;
 
-    r4:Extension[] extension?;
-    r4:Period period?;
-    r4:uri system?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUse use?;
-    r4:Reference assigner?;
-    string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierType 'type;
-    string value;
+public type C4BBExplanationOfBenefitPharmacyBasisType record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.type.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisTypeCoding[] coding;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCoding datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisIdentifierTypeCoding datatype record.
 #
 # + system - The identification of the code system that defines the meaning of the symbol in the code.
 # + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCoding",
+    name: "C4BBExplanationOfBenefitPharmacyBasisIdentifierTypeCoding",
     baseType: (),
     elements: {
         "system": {
@@ -774,8 +754,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUniqueclaim
             max: 1,
             isArray: false,
             description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.adjudication.category.coding.system"
+            path: "ExplanationOfBenefit.identifier.type.coding.system"
         },
+
         "code": {
             name: "code",
             dataType: r4:code,
@@ -783,348 +764,30 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUniqueclaim
             max: 1,
             isArray: false,
             description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.adjudication.category.coding.code"
+            path: "ExplanationOfBenefit.identifier.type.coding.code"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCoding record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisIdentifierTypeCoding record {|
     *r4:Coding;
 
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBAdjudicationDiscriminator";
-    r4:code code = "billingnetworkstatus";
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBIdentifierType";
+    r4:code code = "uc";
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAddItem datatype record.
-#
-# + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + quantity - The number of repetitions of a service or product.
-# + programCode - Identifies the program under which this may be recovered.
-# + modifier - Item typification or modifiers codes to convey additional context for the product or service.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + locationAddress - Where the product or service was provided.
-# + productOrService - When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.
-# + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
-# + servicedPeriod - The date or dates when the service or product was supplied, performed or completed.
-# + adjudication - The adjudication results.
-# + subDetailSequence - The sequence number of the sub-details woithin the details within the claim item which this line is intended to replace.
-# + itemSequence - Claim items which this service line is intended to replace.
-# + bodySite - Physical service site on the patient (limb, tooth, etc.).
-# + locationCodeableConcept - Where the product or service was provided.
-# + provider - The providers who are authorized for the services rendered to the patient.
-# + detailSequence - The sequence number of the details within the claim item which this line is intended to replace.
-# + subSite - A region or surface of the bodySite, e.g. limb region or tooth surface(s).
-# + detail - The second-tier service adjudications for payor added services.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + locationReference - Where the product or service was provided.
-# + servicedDate - The date or dates when the service or product was supplied, performed or completed.
-# + factor - A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.
-# + net - The quantity times the unit price for an additional service or product or charge.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAddItem",
-    baseType: (),
-    elements: {
-        "unitPrice": {
-            name: "unitPrice",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.",
-            path: "ExplanationOfBenefit.addItem.unitPrice"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.addItem.extension"
-        },
-        "quantity": {
-            name: "quantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The number of repetitions of a service or product.",
-            path: "ExplanationOfBenefit.addItem.quantity"
-        },
-        "programCode": {
-            name: "programCode",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Identifies the program under which this may be recovered.",
-            path: "ExplanationOfBenefit.addItem.programCode"
-        },
-        "modifier": {
-            name: "modifier",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Item typification or modifiers codes to convey additional context for the product or service.",
-            path: "ExplanationOfBenefit.addItem.modifier"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.addItem.modifierExtension"
-        },
-        "locationAddress": {
-            name: "locationAddress",
-            dataType: r4:Address,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Where the product or service was provided.",
-            path: "ExplanationOfBenefit.addItem.location[x]"
-        },
-        "productOrService": {
-            name: "productOrService",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.",
-            path: "ExplanationOfBenefit.addItem.productOrService"
-        },
-        "noteNumber": {
-            name: "noteNumber",
-            dataType: r4:positiveInt,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The numbers associated with notes below which apply to the adjudication of this item.",
-            path: "ExplanationOfBenefit.addItem.noteNumber"
-        },
-        "servicedPeriod": {
-            name: "servicedPeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date or dates when the service or product was supplied, performed or completed.",
-            path: "ExplanationOfBenefit.addItem.serviced[x]"
-        },
-
-        "adjudication": {
-            name: "adjudication",
-            dataType: international401:ExplanationOfBenefitItemAdjudication,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The adjudication results.",
-            path: "ExplanationOfBenefit.addItem.adjudication"
-        },
-
-        "subDetailSequence": {
-            name: "subDetailSequence",
-            dataType: r4:positiveInt,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The sequence number of the sub-details woithin the details within the claim item which this line is intended to replace.",
-            path: "ExplanationOfBenefit.addItem.subDetailSequence"
-        },
-        "itemSequence": {
-            name: "itemSequence",
-            dataType: r4:positiveInt,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Claim items which this service line is intended to replace.",
-            path: "ExplanationOfBenefit.addItem.itemSequence"
-        },
-        "bodySite": {
-            name: "bodySite",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Physical service site on the patient (limb, tooth, etc.).",
-            path: "ExplanationOfBenefit.addItem.bodySite"
-        },
-        "locationCodeableConcept": {
-            name: "locationCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Where the product or service was provided.",
-            path: "ExplanationOfBenefit.addItem.location[x]"
-        },
-        "provider": {
-            name: "provider",
-            dataType: r4:Reference,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The providers who are authorized for the services rendered to the patient.",
-            path: "ExplanationOfBenefit.addItem.provider"
-        },
-        "detailSequence": {
-            name: "detailSequence",
-            dataType: r4:positiveInt,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The sequence number of the details within the claim item which this line is intended to replace.",
-            path: "ExplanationOfBenefit.addItem.detailSequence"
-        },
-        "subSite": {
-            name: "subSite",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A region or surface of the bodySite, e.g. limb region or tooth surface(s).",
-            path: "ExplanationOfBenefit.addItem.subSite"
-        },
-        "detail": {
-            name: "detail",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetail,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The second-tier service adjudications for payor added services.",
-            path: "ExplanationOfBenefit.addItem.detail"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.addItem.id"
-        },
-        "locationReference": {
-            name: "locationReference",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Where the product or service was provided.",
-            path: "ExplanationOfBenefit.addItem.location[x]"
-        },
-        "servicedDate": {
-            name: "servicedDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date or dates when the service or product was supplied, performed or completed.",
-            path: "ExplanationOfBenefit.addItem.serviced[x]"
-        },
-        "factor": {
-            name: "factor",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.",
-            path: "ExplanationOfBenefit.addItem.factor"
-        },
-        "net": {
-            name: "net",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The quantity times the unit price for an additional service or product or charge.",
-            path: "ExplanationOfBenefit.addItem.net"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAddItem record {|
-    *r4:BackboneElement;
-
-    r4:Money unitPrice?;
-    r4:Extension[] extension?;
-    r4:Quantity quantity?;
-    r4:CodeableConcept[] programCode?;
-    r4:CodeableConcept[] modifier?;
-    r4:Extension[] modifierExtension?;
-    r4:Address locationAddress?;
-    r4:CodeableConcept productOrService;
-    r4:positiveInt[] noteNumber?;
-    r4:Period servicedPeriod?;
-    international401:ExplanationOfBenefitItemAdjudication[] adjudication?;
-    r4:positiveInt[] subDetailSequence?;
-    r4:positiveInt[] itemSequence?;
-    r4:CodeableConcept bodySite?;
-    r4:CodeableConcept locationCodeableConcept?;
-    r4:Reference[] provider?;
-    r4:positiveInt[] detailSequence?;
-    r4:CodeableConcept[] subSite?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetail[] detail?;
-    string id?;
-    r4:Reference locationReference?;
-    r4:date servicedDate?;
-    decimal factor?;
-    r4:Money net?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategory datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategory",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCoding,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategory record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCoding[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCoding datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCoding datatype record.
 #
 # + system - The identification of the code system that defines the meaning of the symbol in the code.
 # + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCoding",
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCoding",
     baseType: (),
     elements: {
         "system": {
@@ -1136,6 +799,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The identification of the code system that defines the meaning of the symbol in the code.",
             path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
         },
+
         "code": {
             name: "code",
             dataType: r4:code,
@@ -1146,28 +810,302 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCoding record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCoding record {|
     *r4:Coding;
 
     r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
-    r4:code code = "medicalrecordnumber";
+    r4:code code = "rxorigincode";
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryThree datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisDiagnosis datatype record.
+#
+# + sequence - A number to uniquely identify diagnosis entries.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + onAdmission - Indication of whether the diagnosis was present on admission to a facility.
+# + packageCode - A package billing code or bundle code used to group products and services to a particular health condition (such as heart attack) which is based on a predetermined grouping code system.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - When the condition was observed or the relative ranking.
+# + diagnosisReference - The nature of illness or problem in a coded form or as a reference to an external defined Condition.
+# + diagnosisCodeableConcept - The nature of illness or problem in a coded form or as a reference to an external defined Condition.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisDiagnosis",
+    baseType: (),
+    elements: {
+        "sequence": {
+            name: "sequence",
+            dataType: r4:positiveInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A number to uniquely identify diagnosis entries.",
+            path: "ExplanationOfBenefit.diagnosis.sequence"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.diagnosis.extension"
+        },
+
+        "onAdmission": {
+            name: "onAdmission",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indication of whether the diagnosis was present on admission to a facility.",
+            path: "ExplanationOfBenefit.diagnosis.onAdmission"
+        },
+
+        "packageCode": {
+            name: "packageCode",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A package billing code or bundle code used to group products and services to a particular health condition (such as heart attack) which is based on a predetermined grouping code system.",
+            path: "ExplanationOfBenefit.diagnosis.packageCode"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.diagnosis.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.diagnosis.id"
+        },
+
+        "type": {
+            name: "type",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "When the condition was observed or the relative ranking.",
+            path: "ExplanationOfBenefit.diagnosis.type"
+        },
+
+        "diagnosisReference": {
+            name: "diagnosisReference",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The nature of illness or problem in a coded form or as a reference to an external defined Condition.",
+            path: "ExplanationOfBenefit.diagnosis.diagnosis[x]"
+        },
+
+        "diagnosisCodeableConcept": {
+            name: "diagnosisCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The nature of illness or problem in a coded form or as a reference to an external defined Condition.",
+            path: "ExplanationOfBenefit.diagnosis.diagnosis[x]"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisDiagnosis record {|
+    *r4:BackboneElement;
+
+    r4:positiveInt sequence;
+    r4:Extension[] extension?;
+    r4:CodeableConcept onAdmission?;
+    r4:CodeableConcept packageCode?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:CodeableConcept[] 'type?;
+    r4:Reference diagnosisReference?;
+    r4:CodeableConcept diagnosisCodeableConcept?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationRejectreason datatype record.
+#
+# + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
+# + amount - Monetary amount associated with the category.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
+# + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationRejectreason",
+    baseType: (),
+    elements: {
+        "reason": {
+            name: "reason",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
+            path: "ExplanationOfBenefit.item.adjudication.reason"
+        },
+
+        "amount": {
+            name: "amount",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Monetary amount associated with the category.",
+            path: "ExplanationOfBenefit.item.adjudication.amount"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.item.adjudication.extension"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.item.adjudication.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.item.adjudication.id"
+        },
+
+        "category": {
+            name: "category",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategory,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
+            path: "ExplanationOfBenefit.item.adjudication.category"
+        },
+
+        "value": {
+            name: "value",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
+            path: "ExplanationOfBenefit.item.adjudication.value"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationRejectreason record {|
+    *C4BBExplanationOfBenefitPharmacyBasisItemAdjudication;
+
+    r4:CodeableConcept reason;
+    r4:Money amount?;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategory category;
+    decimal value?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategory datatype record.
 #
 # + coding - A reference to a code defined by a terminology system.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryThree",
+    name: "C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategory",
     baseType: (),
     elements: {
         "coding": {
             name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingThree,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.adjudication.category.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategory record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCoding[] coding;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFour datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFour",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFour,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -1175,12 +1113,14 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             path: "ExplanationOfBenefit.supportingInfo.category.coding"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryThree record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFour record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
@@ -1193,10 +1133,1326 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
         }
     }
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingThree[] coding;
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFour[] coding;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItem datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCodingOne datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCodingOne",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.adjudication.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.adjudication.category.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCodingOne record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBAdjudicationDiscriminator";
+    r4:code code = "benefitpaymentstatus";
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoClmrecvddate datatype record.
+#
+# + valueBoolean - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
+# + valueReference - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + timingDate - The date when or period to which this information refers.
+# + sequence - A number to uniquely identify supporting information entries.
+# + valueAttachment - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + valueString - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
+# + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoClmrecvddate",
+    baseType: (),
+    elements: {
+        "valueBoolean": {
+            name: "valueBoolean",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "reason": {
+            name: "reason",
+            dataType: r4:Coding,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
+            path: "ExplanationOfBenefit.supportingInfo.reason"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.supportingInfo.extension"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
+            path: "ExplanationOfBenefit.supportingInfo.code"
+        },
+
+        "valueReference": {
+            name: "valueReference",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
+        },
+
+        "timingDate": {
+            name: "timingDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "sequence": {
+            name: "sequence",
+            dataType: r4:positiveInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A number to uniquely identify supporting information entries.",
+            path: "ExplanationOfBenefit.supportingInfo.sequence"
+        },
+
+        "valueAttachment": {
+            name: "valueAttachment",
+            dataType: r4:Attachment,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "valueString": {
+            name: "valueString",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.supportingInfo.id"
+        },
+
+        "category": {
+            name: "category",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryOne,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
+            path: "ExplanationOfBenefit.supportingInfo.category"
+        },
+
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoClmrecvddate record {|
+    *C4BBExplanationOfBenefitPharmacyBasisSupportingInfo;
+
+    boolean valueBoolean?;
+    r4:Coding reason?;
+    r4:Extension[] extension?;
+    r4:CodeableConcept code?;
+    r4:Reference valueReference?;
+    r4:Extension[] modifierExtension?;
+    r4:date timingDate?;
+    r4:positiveInt sequence;
+    r4:Attachment valueAttachment?;
+    string valueString?;
+    string id?;
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryOne category;
+    r4:Quantity valueQuantity?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisInsurance datatype record.
+#
+# + coverage - Reference to the insurance card level information contained in the Coverage resource. The coverage issuing insurer will use these details to locate the patient's actual coverage within the insurer's information system.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + focal - A flag to indicate that this Coverage is to be used for adjudication of this claim when set to true.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + preAuthRef - Reference numbers previously provided by the insurer to the provider to be quoted on subsequent claims containing services or products related to the prior authorization.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisInsurance",
+    baseType: (),
+    elements: {
+        "coverage": {
+            name: "coverage",
+            dataType: r4:Reference,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Reference to the insurance card level information contained in the Coverage resource. The coverage issuing insurer will use these details to locate the patient's actual coverage within the insurer's information system.",
+            path: "ExplanationOfBenefit.insurance.coverage"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.insurance.extension"
+        },
+
+        "focal": {
+            name: "focal",
+            dataType: boolean,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A flag to indicate that this Coverage is to be used for adjudication of this claim when set to true.",
+            path: "ExplanationOfBenefit.insurance.focal"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.insurance.modifierExtension"
+        },
+
+        "preAuthRef": {
+            name: "preAuthRef",
+            dataType: string,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Reference numbers previously provided by the insurer to the provider to be quoted on subsequent claims containing services or products related to the prior authorization.",
+            path: "ExplanationOfBenefit.insurance.preAuthRef"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.insurance.id"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisInsurance record {|
+    *r4:BackboneElement;
+
+    r4:Reference coverage;
+    r4:Extension[] extension?;
+    boolean focal;
+    r4:Extension[] modifierExtension?;
+    string[] preAuthRef?;
+    string id?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoBrandgenericindicator datatype record.
+#
+# + valueBoolean - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
+# + valueReference - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + timingPeriod - The date when or period to which this information refers.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + timingDate - The date when or period to which this information refers.
+# + sequence - A number to uniquely identify supporting information entries.
+# + valueAttachment - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + valueString - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
+# + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoBrandgenericindicator",
+    baseType: (),
+    elements: {
+        "valueBoolean": {
+            name: "valueBoolean",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "reason": {
+            name: "reason",
+            dataType: r4:Coding,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
+            path: "ExplanationOfBenefit.supportingInfo.reason"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.supportingInfo.extension"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
+            path: "ExplanationOfBenefit.supportingInfo.code"
+        },
+
+        "valueReference": {
+            name: "valueReference",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "timingPeriod": {
+            name: "timingPeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
+        },
+
+        "timingDate": {
+            name: "timingDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "sequence": {
+            name: "sequence",
+            dataType: r4:positiveInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A number to uniquely identify supporting information entries.",
+            path: "ExplanationOfBenefit.supportingInfo.sequence"
+        },
+
+        "valueAttachment": {
+            name: "valueAttachment",
+            dataType: r4:Attachment,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "valueString": {
+            name: "valueString",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.supportingInfo.id"
+        },
+
+        "category": {
+            name: "category",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFive,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
+            path: "ExplanationOfBenefit.supportingInfo.category"
+        },
+
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoBrandgenericindicator record {|
+    *C4BBExplanationOfBenefitPharmacyBasisSupportingInfo;
+
+    boolean valueBoolean?;
+    r4:Coding reason?;
+    r4:Extension[] extension?;
+    r4:CodeableConcept code;
+    r4:Reference valueReference?;
+    r4:Period timingPeriod?;
+    r4:Extension[] modifierExtension?;
+    r4:date timingDate?;
+    r4:positiveInt sequence;
+    r4:Attachment valueAttachment?;
+    string valueString?;
+    string id?;
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFive category;
+    r4:Quantity valueQuantity?;
+|};
+
+# C4BBExplanationOfBenefitPharmacyBasisProcessNoteType enum
+public enum C4BBExplanationOfBenefitPharmacyBasisProcessNoteType {
+    CODE_TYPE_PRINT = "print",
+    CODE_TYPE_DISPLAY = "display",
+    CODE_TYPE_PRINTOPER = "printoper"
+}
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySeven datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySeven",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSeven,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySeven record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSeven[] coding;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryTwo datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryTwo",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingTwo,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryTwo record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingTwo[] coding;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoDayssupply datatype record.
+#
+# + timingDate - The date when or period to which this information refers.
+# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
+# + sequence - A number to uniquely identify supporting information entries.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
+# + timingPeriod - The date when or period to which this information refers.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
+# + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoDayssupply",
+    baseType: (),
+    elements: {
+        "timingDate": {
+            name: "timingDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "reason": {
+            name: "reason",
+            dataType: r4:Coding,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
+            path: "ExplanationOfBenefit.supportingInfo.reason"
+        },
+
+        "sequence": {
+            name: "sequence",
+            dataType: r4:positiveInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A number to uniquely identify supporting information entries.",
+            path: "ExplanationOfBenefit.supportingInfo.sequence"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.supportingInfo.extension"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
+            path: "ExplanationOfBenefit.supportingInfo.code"
+        },
+
+        "timingPeriod": {
+            name: "timingPeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.supportingInfo.id"
+        },
+
+        "category": {
+            name: "category",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySeven,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
+            path: "ExplanationOfBenefit.supportingInfo.category"
+        },
+
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoDayssupply record {|
+    *C4BBExplanationOfBenefitPharmacyBasisSupportingInfo;
+
+    r4:date timingDate?;
+    r4:Coding reason?;
+    r4:positiveInt sequence;
+    r4:Extension[] extension?;
+    r4:CodeableConcept code?;
+    r4:Period timingPeriod?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySeven category;
+    r4:Quantity valueQuantity?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoDawcode datatype record.
+#
+# + valueBoolean - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
+# + valueReference - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + timingPeriod - The date when or period to which this information refers.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + timingDate - The date when or period to which this information refers.
+# + sequence - A number to uniquely identify supporting information entries.
+# + valueAttachment - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + valueString - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
+# + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoDawcode",
+    baseType: (),
+    elements: {
+        "valueBoolean": {
+            name: "valueBoolean",
+            dataType: boolean,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "reason": {
+            name: "reason",
+            dataType: r4:Coding,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
+            path: "ExplanationOfBenefit.supportingInfo.reason"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.supportingInfo.extension"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
+            path: "ExplanationOfBenefit.supportingInfo.code"
+        },
+
+        "valueReference": {
+            name: "valueReference",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "timingPeriod": {
+            name: "timingPeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
+        },
+
+        "timingDate": {
+            name: "timingDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "sequence": {
+            name: "sequence",
+            dataType: r4:positiveInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A number to uniquely identify supporting information entries.",
+            path: "ExplanationOfBenefit.supportingInfo.sequence"
+        },
+
+        "valueAttachment": {
+            name: "valueAttachment",
+            dataType: r4:Attachment,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "valueString": {
+            name: "valueString",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.supportingInfo.id"
+        },
+
+        "category": {
+            name: "category",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFour,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
+            path: "ExplanationOfBenefit.supportingInfo.category"
+        },
+
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoDawcode record {|
+    *C4BBExplanationOfBenefitPharmacyBasisSupportingInfo;
+
+    boolean valueBoolean?;
+    r4:Coding reason?;
+    r4:Extension[] extension?;
+    r4:CodeableConcept code;
+    r4:Reference valueReference?;
+    r4:Period timingPeriod?;
+    r4:Extension[] modifierExtension?;
+    r4:date timingDate?;
+    r4:positiveInt sequence;
+    r4:Attachment valueAttachment?;
+    string valueString?;
+    string id?;
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFour category;
+    r4:Quantity valueQuantity?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAccident datatype record.
+#
+# + date - Date of an accident event related to the products and services contained in the claim.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + locationAddress - The physical location of the accident event.
+# + locationReference - The physical location of the accident event.
+# + 'type - The type or context of the accident event for the purposes of selection of potential insurance coverages and determination of coordination between insurers.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisAccident",
+    baseType: (),
+    elements: {
+        "date": {
+            name: "date",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Date of an accident event related to the products and services contained in the claim.",
+            path: "ExplanationOfBenefit.accident.date"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.accident.extension"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.accident.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.accident.id"
+        },
+
+        "locationAddress": {
+            name: "locationAddress",
+            dataType: r4:Address,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The physical location of the accident event.",
+            path: "ExplanationOfBenefit.accident.location[x]"
+        },
+
+        "locationReference": {
+            name: "locationReference",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The physical location of the accident event.",
+            path: "ExplanationOfBenefit.accident.location[x]"
+        },
+
+        "type": {
+            name: "type",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The type or context of the accident event for the purposes of selection of potential insurance coverages and determination of coordination between insurers.",
+            path: "ExplanationOfBenefit.accident.type"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisAccident record {|
+    *r4:BackboneElement;
+
+    r4:date date?;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:Address locationAddress?;
+    r4:Reference locationReference?;
+    r4:CodeableConcept 'type?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisRelated datatype record.
+#
+# + reference - An alternate organizational reference to the case or file to which this particular claim pertains.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + claim - Reference to a related claim.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + relationship - A code to convey how the claims are related.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisRelated",
+    baseType: (),
+    elements: {
+        "reference": {
+            name: "reference",
+            dataType: r4:Identifier,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "An alternate organizational reference to the case or file to which this particular claim pertains.",
+            path: "ExplanationOfBenefit.related.reference"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.related.extension"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.related.modifierExtension"
+        },
+
+        "claim": {
+            name: "claim",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Reference to a related claim.",
+            path: "ExplanationOfBenefit.related.claim"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.related.id"
+        },
+
+        "relationship": {
+            name: "relationship",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A code to convey how the claims are related.",
+            path: "ExplanationOfBenefit.related.relationship"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisRelated record {|
+    *r4:BackboneElement;
+
+    r4:Identifier reference;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:Reference claim?;
+    string id?;
+    r4:CodeableConcept relationship;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisItemDetailSubDetail datatype record.
+#
+# + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + quantity - The number of repetitions of a service or product.
+# + programCode - Identifies the program under which this may be recovered.
+# + modifier - Item typification or modifiers codes to convey additional context for the product or service.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + productOrService - When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.
+# + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
+# + adjudication - The adjudication results.
+# + sequence - A claim detail line. Either a simple (a product or service) or a 'group' of sub-details which are simple items.
+# + revenue - The type of revenue or cost center providing the product and/or service.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + udi - Unique Device Identifiers associated with this line item.
+# + category - Code to identify the general type of benefits under which products and services are provided.
+# + factor - A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.
+# + net - The quantity times the unit price for an additional service or product or charge.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisItemDetailSubDetail",
+    baseType: (),
+    elements: {
+        "unitPrice": {
+            name: "unitPrice",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.unitPrice"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.extension"
+        },
+
+        "quantity": {
+            name: "quantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The number of repetitions of a service or product.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.quantity"
+        },
+
+        "programCode": {
+            name: "programCode",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Identifies the program under which this may be recovered.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.programCode"
+        },
+
+        "modifier": {
+            name: "modifier",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Item typification or modifiers codes to convey additional context for the product or service.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.modifier"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.item.detail.subDetail.modifierExtension"
+        },
+
+        "productOrService": {
+            name: "productOrService",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.productOrService"
+        },
+
+        "noteNumber": {
+            name: "noteNumber",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The numbers associated with notes below which apply to the adjudication of this item.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.noteNumber"
+        },
+
+        "adjudication": {
+            name: "adjudication",
+            dataType: international401:ExplanationOfBenefitItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.adjudication"
+        },
+
+        "sequence": {
+            name: "sequence",
+            dataType: r4:positiveInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A claim detail line. Either a simple (a product or service) or a 'group' of sub-details which are simple items.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.sequence"
+        },
+
+        "revenue": {
+            name: "revenue",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The type of revenue or cost center providing the product and/or service.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.revenue"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.id"
+        },
+
+        "udi": {
+            name: "udi",
+            dataType: r4:Reference,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Unique Device Identifiers associated with this line item.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.udi"
+        },
+
+        "category": {
+            name: "category",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Code to identify the general type of benefits under which products and services are provided.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.category"
+        },
+
+        "factor": {
+            name: "factor",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.factor"
+        },
+
+        "net": {
+            name: "net",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The quantity times the unit price for an additional service or product or charge.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.net"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisItemDetailSubDetail record {|
+    *r4:BackboneElement;
+
+    r4:Money unitPrice?;
+    r4:Extension[] extension?;
+    r4:Quantity quantity?;
+    r4:CodeableConcept[] programCode?;
+    r4:CodeableConcept[] modifier?;
+    r4:Extension[] modifierExtension?;
+    r4:CodeableConcept productOrService;
+    r4:positiveInt[] noteNumber?;
+    international401:ExplanationOfBenefitItemAdjudication[] adjudication?;
+    r4:positiveInt sequence;
+    r4:CodeableConcept revenue?;
+    string id?;
+    r4:Reference[] udi?;
+    r4:CodeableConcept category?;
+    decimal factor?;
+    r4:Money net?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisItem datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifier - Item typification or modifiers codes to convey additional context for the product or service.
@@ -1226,8 +2482,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
 # + udi - Unique Device Identifiers associated with this line item.
 # + category - Code to identify the general type of benefits under which products and services are provided.
 # + procedureSequence - Procedures applicable for this service or product.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItem",
+    name: "C4BBExplanationOfBenefitPharmacyBasisItem",
     baseType: (),
     elements: {
         "extension": {
@@ -1239,6 +2496,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.item.extension"
         },
+
         "modifier": {
             name: "modifier",
             dataType: r4:CodeableConcept,
@@ -1248,6 +2506,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Item typification or modifiers codes to convey additional context for the product or service.",
             path: "ExplanationOfBenefit.item.modifier"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -1257,6 +2516,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.item.modifierExtension"
         },
+
         "locationAddress": {
             name: "locationAddress",
             dataType: r4:Address,
@@ -1266,6 +2526,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Where the product or service was provided.",
             path: "ExplanationOfBenefit.item.location[x]"
         },
+
         "productOrService": {
             name: "productOrService",
             dataType: r4:CodeableConcept,
@@ -1275,6 +2536,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.",
             path: "ExplanationOfBenefit.item.productOrService"
         },
+
         "noteNumber": {
             name: "noteNumber",
             dataType: r4:positiveInt,
@@ -1284,15 +2546,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The numbers associated with notes below which apply to the adjudication of this item.",
             path: "ExplanationOfBenefit.item.noteNumber"
         },
+
         "adjudication": {
             name: "adjudication",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudication,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisItemAdjudication,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             description: "If this item is a group then the values here are a summary of the adjudication of the detail items. If this item is a simple product or service then this is the result of the adjudication of this item.",
             path: "ExplanationOfBenefit.item.adjudication"
         },
+
         "informationSequence": {
             name: "informationSequence",
             dataType: r4:positiveInt,
@@ -1302,6 +2566,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Exceptions, special conditions and supporting information applicable for this service or product.",
             path: "ExplanationOfBenefit.item.informationSequence"
         },
+
         "revenue": {
             name: "revenue",
             dataType: r4:CodeableConcept,
@@ -1311,6 +2576,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The type of revenue or cost center providing the product and/or service.",
             path: "ExplanationOfBenefit.item.revenue"
         },
+
         "locationCodeableConcept": {
             name: "locationCodeableConcept",
             dataType: r4:CodeableConcept,
@@ -1320,6 +2586,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Where the product or service was provided.",
             path: "ExplanationOfBenefit.item.location[x]"
         },
+
         "diagnosisSequence": {
             name: "diagnosisSequence",
             dataType: r4:positiveInt,
@@ -1329,6 +2596,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Diagnoses applicable for this service or product.",
             path: "ExplanationOfBenefit.item.diagnosisSequence"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -1338,6 +2606,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ExplanationOfBenefit.item.id"
         },
+
         "locationReference": {
             name: "locationReference",
             dataType: r4:Reference,
@@ -1347,6 +2616,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Where the product or service was provided.",
             path: "ExplanationOfBenefit.item.location[x]"
         },
+
         "factor": {
             name: "factor",
             dataType: decimal,
@@ -1356,6 +2626,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.",
             path: "ExplanationOfBenefit.item.factor"
         },
+
         "net": {
             name: "net",
             dataType: r4:Money,
@@ -1365,6 +2636,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The quantity times the unit price for an additional service or product or charge.",
             path: "ExplanationOfBenefit.item.net"
         },
+
         "unitPrice": {
             name: "unitPrice",
             dataType: r4:Money,
@@ -1374,6 +2646,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.",
             path: "ExplanationOfBenefit.item.unitPrice"
         },
+
         "quantity": {
             name: "quantity",
             dataType: r4:Quantity,
@@ -1383,6 +2656,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The number of repetitions of a service or product.",
             path: "ExplanationOfBenefit.item.quantity"
         },
+
         "programCode": {
             name: "programCode",
             dataType: r4:CodeableConcept,
@@ -1392,6 +2666,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Identifies the program under which this may be recovered.",
             path: "ExplanationOfBenefit.item.programCode"
         },
+
         "careTeamSequence": {
             name: "careTeamSequence",
             dataType: r4:positiveInt,
@@ -1401,6 +2676,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Care team members related to this service or product.",
             path: "ExplanationOfBenefit.item.careTeamSequence"
         },
+
         "encounter": {
             name: "encounter",
             dataType: r4:Reference,
@@ -1410,6 +2686,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "A billed item may include goods or services provided in multiple encounters.",
             path: "ExplanationOfBenefit.item.encounter"
         },
+
         "sequence": {
             name: "sequence",
             dataType: r4:positiveInt,
@@ -1419,6 +2696,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "A number to uniquely identify item entries.",
             path: "ExplanationOfBenefit.item.sequence"
         },
+
         "bodySite": {
             name: "bodySite",
             dataType: r4:CodeableConcept,
@@ -1428,6 +2706,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Physical service site on the patient (limb, tooth, etc.).",
             path: "ExplanationOfBenefit.item.bodySite"
         },
+
         "subSite": {
             name: "subSite",
             dataType: r4:CodeableConcept,
@@ -1437,15 +2716,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "A region or surface of the bodySite, e.g. limb region or tooth surface(s).",
             path: "ExplanationOfBenefit.item.subSite"
         },
+
         "detail": {
             name: "detail",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalItemDetail,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisItemDetail,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             description: "Second-tier of goods and services.",
             path: "ExplanationOfBenefit.item.detail"
         },
+
         "servicedDate": {
             name: "servicedDate",
             dataType: r4:date,
@@ -1455,6 +2736,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The date or dates when the service or product was supplied, performed or completed.",
             path: "ExplanationOfBenefit.item.serviced[x]"
         },
+
         "udi": {
             name: "udi",
             dataType: r4:Reference,
@@ -1464,6 +2746,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Unique Device Identifiers associated with this line item.",
             path: "ExplanationOfBenefit.item.udi"
         },
+
         "category": {
             name: "category",
             dataType: r4:CodeableConcept,
@@ -1473,6 +2756,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Code to identify the general type of benefits under which products and services are provided.",
             path: "ExplanationOfBenefit.item.category"
         },
+
         "procedureSequence": {
             name: "procedureSequence",
             dataType: r4:positiveInt,
@@ -1483,12 +2767,14 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             path: "ExplanationOfBenefit.item.procedureSequence"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisItem record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
@@ -1497,7 +2783,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
     r4:Address locationAddress?;
     r4:CodeableConcept productOrService;
     r4:positiveInt[] noteNumber?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudication[] adjudication?;
+    C4BBExplanationOfBenefitPharmacyBasisItemAdjudication[] adjudication?;
     r4:positiveInt[] informationSequence?;
     r4:CodeableConcept revenue?;
     r4:CodeableConcept locationCodeableConcept?;
@@ -1514,14 +2800,141 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
     r4:positiveInt sequence;
     r4:CodeableConcept bodySite?;
     r4:CodeableConcept[] subSite?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalItemDetail[] detail?;
+    C4BBExplanationOfBenefitPharmacyBasisItemDetail[] detail?;
     r4:date servicedDate?;
     r4:Reference[] udi?;
     r4:CodeableConcept category?;
     r4:positiveInt[] procedureSequence?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofbill datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisPayment datatype record.
+#
+# + date - Estimated date the payment will be issued or the actual issue date of payment.
+# + identifier - Issuer's unique identifier for the payment instrument.
+# + adjustmentReason - Reason for the payment adjustment.
+# + amount - Benefits payable less any payment adjustment.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + adjustment - Total amount of all adjustments to this payment included in this transaction which are not related to this claim's adjudication.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - Whether this represents partial or complete payment of the benefits payable.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisPayment",
+    baseType: (),
+    elements: {
+        "date": {
+            name: "date",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Estimated date the payment will be issued or the actual issue date of payment.",
+            path: "ExplanationOfBenefit.payment.date"
+        },
+
+        "identifier": {
+            name: "identifier",
+            dataType: r4:Identifier,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Issuer's unique identifier for the payment instrument.",
+            path: "ExplanationOfBenefit.payment.identifier"
+        },
+
+        "adjustmentReason": {
+            name: "adjustmentReason",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Reason for the payment adjustment.",
+            path: "ExplanationOfBenefit.payment.adjustmentReason"
+        },
+
+        "amount": {
+            name: "amount",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Benefits payable less any payment adjustment.",
+            path: "ExplanationOfBenefit.payment.amount"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.payment.extension"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.payment.modifierExtension"
+        },
+
+        "adjustment": {
+            name: "adjustment",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Total amount of all adjustments to this payment included in this transaction which are not related to this claim's adjudication.",
+            path: "ExplanationOfBenefit.payment.adjustment"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.payment.id"
+        },
+
+        "type": {
+            name: "type",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Whether this represents partial or complete payment of the benefits payable.",
+            path: "ExplanationOfBenefit.payment.type"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisPayment record {|
+    *r4:BackboneElement;
+
+    r4:date date?;
+    r4:Identifier identifier?;
+    r4:CodeableConcept adjustmentReason?;
+    r4:Money amount?;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:Money adjustment?;
+    string id?;
+    r4:CodeableConcept 'type?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfo datatype record.
 #
 # + valueBoolean - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
 # + reason - Provides the reason in the situation where a reason code is required in addition to the content.
@@ -1537,8 +2950,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
 # + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofbill",
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfo",
     baseType: (),
     elements: {
         "valueBoolean": {
@@ -1550,6 +2964,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "reason": {
             name: "reason",
             dataType: r4:Coding,
@@ -1559,6 +2974,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "Provides the reason in the situation where a reason code is required in addition to the content.",
             path: "ExplanationOfBenefit.supportingInfo.reason"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -1568,15 +2984,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.supportingInfo.extension"
         },
+
         "code": {
             name: "code",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
             path: "ExplanationOfBenefit.supportingInfo.code"
         },
+
         "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
@@ -1586,6 +3004,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "timingPeriod": {
             name: "timingPeriod",
             dataType: r4:Period,
@@ -1595,6 +3014,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "The date when or period to which this information refers.",
             path: "ExplanationOfBenefit.supportingInfo.timing[x]"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -1604,6 +3024,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
         },
+
         "timingDate": {
             name: "timingDate",
             dataType: r4:date,
@@ -1613,6 +3034,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "The date when or period to which this information refers.",
             path: "ExplanationOfBenefit.supportingInfo.timing[x]"
         },
+
         "sequence": {
             name: "sequence",
             dataType: r4:positiveInt,
@@ -1622,6 +3044,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "A number to uniquely identify supporting information entries.",
             path: "ExplanationOfBenefit.supportingInfo.sequence"
         },
+
         "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
@@ -1631,6 +3054,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "valueString": {
             name: "valueString",
             dataType: string,
@@ -1640,6 +3064,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -1649,15 +3074,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ExplanationOfBenefit.supportingInfo.id"
         },
+
         "category": {
             name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFour,
+            dataType: r4:CodeableConcept,
             min: 1,
             max: 1,
             isArray: false,
             description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
             path: "ExplanationOfBenefit.supportingInfo.category"
         },
+
         "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
@@ -1668,18 +3095,20 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItem record {|
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofbill record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo;
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfo record {|
+    *r4:BackboneElement;
 
     boolean valueBoolean?;
     r4:Coding reason?;
     r4:Extension[] extension?;
-    r4:CodeableConcept code;
+    r4:CodeableConcept code?;
     r4:Reference valueReference?;
     r4:Period timingPeriod?;
     r4:Extension[] modifierExtension?;
@@ -1688,11 +3117,797 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
     r4:Attachment valueAttachment?;
     string valueString?;
     string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFour category;
+    r4:CodeableConcept category;
     r4:Quantity valueQuantity?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemDetail datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategory datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategory",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategoryCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.item.adjudication.category.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategory record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategoryCoding[] coding;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAdjudicationBenefitpaymentstatus datatype record.
+#
+# + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
+# + amount - Monetary amount associated with the category.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
+# + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisAdjudicationBenefitpaymentstatus",
+    baseType: (),
+    elements: {
+        "reason": {
+            name: "reason",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
+            path: "ExplanationOfBenefit.adjudication.reason"
+        },
+
+        "amount": {
+            name: "amount",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Monetary amount associated with the category.",
+            path: "ExplanationOfBenefit.adjudication.amount"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.adjudication.extension"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.adjudication.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.adjudication.id"
+        },
+
+        "category": {
+            name: "category",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryOne,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
+            path: "ExplanationOfBenefit.adjudication.category"
+        },
+
+        "value": {
+            name: "value",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
+            path: "ExplanationOfBenefit.adjudication.value"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisAdjudicationBenefitpaymentstatus record {|
+    *C4BBExplanationOfBenefitPharmacyBasisAdjudication;
+
+    r4:CodeableConcept reason;
+    r4:Money amount?;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryOne category;
+    decimal value?;
+|};
+
+# C4BBExplanationOfBenefitPharmacyBasisUse enum
+public enum C4BBExplanationOfBenefitPharmacyBasisUse {
+    CODE_USE_PREDETERMINATION = "predetermination",
+    CODE_USE_PREAUTHORIZATION = "preauthorization",
+    CODE_USE_CLAIM = "claim"
+}
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySix datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySix",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSix,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySix record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSix[] coding;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFive datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFive",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFive,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryFive record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFive[] coding;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryOne datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryOne",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingOne,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryOne record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingOne[] coding;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCoding datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCoding",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.adjudication.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.adjudication.category.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCoding record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBAdjudicationDiscriminator";
+    r4:code code = "billingnetworkstatus";
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisPayee datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + 'type - Type of Party to be reimbursed: Subscriber, provider, other.
+# + party - Reference to the individual or organization to whom any payment will be made.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisPayee",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.payee.extension"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.payee.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.payee.id"
+        },
+
+        "type": {
+            name: "type",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Type of Party to be reimbursed: Subscriber, provider, other.",
+            path: "ExplanationOfBenefit.payee.type"
+        },
+
+        "party": {
+            name: "party",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Reference to the individual or organization to whom any payment will be made.",
+            path: "ExplanationOfBenefit.payee.party"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisPayee record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:CodeableConcept 'type;
+    r4:Reference party?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryThree datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryThree",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingThree,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryThree record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingThree[] coding;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAddItemDetailSubDetail datatype record.
+#
+# + adjudication - The adjudication results.
+# + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + quantity - The number of repetitions of a service or product.
+# + modifier - Item typification or modifiers codes to convey additional context for the product or service.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + productOrService - When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.
+# + factor - A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.
+# + net - The quantity times the unit price for an additional service or product or charge.
+# + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisAddItemDetailSubDetail",
+    baseType: (),
+    elements: {
+        "adjudication": {
+            name: "adjudication",
+            dataType: international401:ExplanationOfBenefitItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.adjudication"
+        },
+
+        "unitPrice": {
+            name: "unitPrice",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.unitPrice"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.extension"
+        },
+
+        "quantity": {
+            name: "quantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The number of repetitions of a service or product.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.quantity"
+        },
+
+        "modifier": {
+            name: "modifier",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Item typification or modifiers codes to convey additional context for the product or service.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.modifier"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.id"
+        },
+
+        "productOrService": {
+            name: "productOrService",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.productOrService"
+        },
+
+        "factor": {
+            name: "factor",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.factor"
+        },
+
+        "net": {
+            name: "net",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The quantity times the unit price for an additional service or product or charge.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.net"
+        },
+
+        "noteNumber": {
+            name: "noteNumber",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The numbers associated with notes below which apply to the adjudication of this item.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.noteNumber"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisAddItemDetailSubDetail record {|
+    *r4:BackboneElement;
+
+    international401:ExplanationOfBenefitItemAdjudication[] adjudication?;
+    r4:Money unitPrice?;
+    r4:Extension[] extension?;
+    r4:Quantity quantity?;
+    r4:CodeableConcept[] modifier?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:CodeableConcept productOrService;
+    decimal factor?;
+    r4:Money net?;
+    r4:positiveInt[] noteNumber?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingOne datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingOne",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingOne record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
+    r4:code code = "clmrecvddate";
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAdjudicationBillingnetworkstatus datatype record.
+#
+# + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
+# + amount - Monetary amount associated with the category.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
+# + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisAdjudicationBillingnetworkstatus",
+    baseType: (),
+    elements: {
+        "reason": {
+            name: "reason",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
+            path: "ExplanationOfBenefit.adjudication.reason"
+        },
+
+        "amount": {
+            name: "amount",
+            dataType: r4:Money,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Monetary amount associated with the category.",
+            path: "ExplanationOfBenefit.adjudication.amount"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.adjudication.extension"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.adjudication.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.adjudication.id"
+        },
+
+        "category": {
+            name: "category",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategory,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
+            path: "ExplanationOfBenefit.adjudication.category"
+        },
+
+        "value": {
+            name: "value",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
+            path: "ExplanationOfBenefit.adjudication.value"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisAdjudicationBillingnetworkstatus record {|
+    *C4BBExplanationOfBenefitPharmacyBasisAdjudication;
+
+    r4:CodeableConcept reason;
+    r4:Money amount?;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategory category;
+    decimal value?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategoryCoding datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategoryCoding",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.item.adjudication.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.item.adjudication.category.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisItemAdjudicationCategoryCoding record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBAdjudicationDiscriminator";
+    r4:code code = "rejectreason";
+|};
+
+# C4BBExplanationOfBenefitPharmacyBasisIdentifierUse enum
+public enum C4BBExplanationOfBenefitPharmacyBasisIdentifierUse {
+    CODE_USE_SECONDARY = "secondary",
+    CODE_USE_TEMP = "temp",
+    CODE_USE_USUAL = "usual",
+    CODE_USE_OLD = "old",
+    CODE_USE_OFFICIAL = "official"
+}
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisItemDetail datatype record.
 #
 # + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -1711,8 +3926,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
 # + category - Code to identify the general type of benefits under which products and services are provided.
 # + factor - A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.
 # + net - The quantity times the unit price for an additional service or product or charge.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemDetail",
+    name: "C4BBExplanationOfBenefitPharmacyBasisItemDetail",
     baseType: (),
     elements: {
         "unitPrice": {
@@ -1724,6 +3940,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.",
             path: "ExplanationOfBenefit.item.detail.unitPrice"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -1733,6 +3950,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.item.detail.extension"
         },
+
         "quantity": {
             name: "quantity",
             dataType: r4:Quantity,
@@ -1742,6 +3960,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "The number of repetitions of a service or product.",
             path: "ExplanationOfBenefit.item.detail.quantity"
         },
+
         "programCode": {
             name: "programCode",
             dataType: r4:CodeableConcept,
@@ -1751,6 +3970,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "Identifies the program under which this may be recovered.",
             path: "ExplanationOfBenefit.item.detail.programCode"
         },
+
         "modifier": {
             name: "modifier",
             dataType: r4:CodeableConcept,
@@ -1760,6 +3980,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "Item typification or modifiers codes to convey additional context for the product or service.",
             path: "ExplanationOfBenefit.item.detail.modifier"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -1769,15 +3990,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.item.detail.modifierExtension"
         },
+
         "subDetail": {
             name: "subDetail",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalItemDetailSubDetail,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisItemDetailSubDetail,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             description: "Third-tier of goods and services.",
             path: "ExplanationOfBenefit.item.detail.subDetail"
         },
+
         "productOrService": {
             name: "productOrService",
             dataType: r4:CodeableConcept,
@@ -1787,6 +4010,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.",
             path: "ExplanationOfBenefit.item.detail.productOrService"
         },
+
         "noteNumber": {
             name: "noteNumber",
             dataType: r4:positiveInt,
@@ -1816,6 +4040,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "A claim detail line. Either a simple (a product or service) or a 'group' of sub-details which are simple items.",
             path: "ExplanationOfBenefit.item.detail.sequence"
         },
+
         "revenue": {
             name: "revenue",
             dataType: r4:CodeableConcept,
@@ -1825,6 +4050,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "The type of revenue or cost center providing the product and/or service.",
             path: "ExplanationOfBenefit.item.detail.revenue"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -1834,6 +4060,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ExplanationOfBenefit.item.detail.id"
         },
+
         "udi": {
             name: "udi",
             dataType: r4:Reference,
@@ -1843,6 +4070,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "Unique Device Identifiers associated with this line item.",
             path: "ExplanationOfBenefit.item.detail.udi"
         },
+
         "category": {
             name: "category",
             dataType: r4:CodeableConcept,
@@ -1852,6 +4080,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "Code to identify the general type of benefits under which products and services are provided.",
             path: "ExplanationOfBenefit.item.detail.category"
         },
+
         "factor": {
             name: "factor",
             dataType: decimal,
@@ -1861,6 +4090,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             description: "A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.",
             path: "ExplanationOfBenefit.item.detail.factor"
         },
+
         "net": {
             name: "net",
             dataType: r4:Money,
@@ -1871,12 +4101,14 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoTypeofb
             path: "ExplanationOfBenefit.item.detail.net"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemDetail record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisItemDetail record {|
     *r4:BackboneElement;
 
     r4:Money unitPrice?;
@@ -1885,7 +4117,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemDetail record {|
     r4:CodeableConcept[] programCode?;
     r4:CodeableConcept[] modifier?;
     r4:Extension[] modifierExtension?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalItemDetailSubDetail[] subDetail?;
+    C4BBExplanationOfBenefitPharmacyBasisItemDetailSubDetail[] subDetail?;
     r4:CodeableConcept productOrService;
     r4:positiveInt[] noteNumber?;
     international401:ExplanationOfBenefitItemAdjudication[] adjudication?;
@@ -1898,64 +4130,96 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemDetail record {|
     r4:Money net?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryTwo datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSix datatype record.
 #
-# + coding - A reference to a code defined by a terminology system.
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryTwo",
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSix",
     baseType: (),
     elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingTwo,
+        "system": {
+            name: "system",
+            dataType: r4:uri,
             min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding"
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryTwo record {|
-    *r4:CodeableConcept;
 
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingTwo[] coding;
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSix record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
+    r4:code code = "compoundcode";
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalTotal datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRefillsAuthorized datatype record.
 #
-# + amount - Monetary total amount associated with the category.
+# + timingDate - The date when or period to which this information refers.
+# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
+# + sequence - A number to uniquely identify supporting information entries.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
+# + timingPeriod - The date when or period to which this information refers.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
+# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
+# + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalTotal",
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRefillsAuthorized",
     baseType: (),
     elements: {
-        "amount": {
-            name: "amount",
-            dataType: r4:Money,
+        "timingDate": {
+            name: "timingDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "reason": {
+            name: "reason",
+            dataType: r4:Coding,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
+            path: "ExplanationOfBenefit.supportingInfo.reason"
+        },
+
+        "sequence": {
+            name: "sequence",
+            dataType: r4:positiveInt,
             min: 1,
             max: 1,
             isArray: false,
-            description: "Monetary total amount associated with the category.",
-            path: "ExplanationOfBenefit.total.amount"
+            description: "A number to uniquely identify supporting information entries.",
+            path: "ExplanationOfBenefit.supportingInfo.sequence"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -1963,8 +4227,29 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.total.extension"
+            path: "ExplanationOfBenefit.supportingInfo.extension"
         },
+
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
+            path: "ExplanationOfBenefit.supportingInfo.code"
+        },
+
+        "timingPeriod": {
+            name: "timingPeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -1972,8 +4257,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.total.modifierExtension"
+            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -1981,34 +4267,103 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             max: 1,
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.total.id"
+            path: "ExplanationOfBenefit.supportingInfo.id"
         },
+
         "category": {
             name: "category",
-            dataType: r4:CodeableConcept,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryTwo,
             min: 1,
             max: 1,
             isArray: false,
-            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.total.category"
+            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
+            path: "ExplanationOfBenefit.supportingInfo.category"
+        },
+
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalTotal record {|
-    *r4:BackboneElement;
 
-    r4:Money amount;
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRefillsAuthorized record {|
+    *C4BBExplanationOfBenefitPharmacyBasisSupportingInfo;
+
+    r4:date timingDate?;
+    r4:Coding reason?;
+    r4:positiveInt sequence;
     r4:Extension[] extension?;
+    r4:CodeableConcept code?;
+    r4:Period timingPeriod?;
     r4:Extension[] modifierExtension?;
     string id?;
-    r4:CodeableConcept category;
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryTwo category;
+    r4:Quantity valueQuantity?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjustmentreason datatype record.
+# C4BBExplanationOfBenefitPharmacyBasisStatus enum
+public enum C4BBExplanationOfBenefitPharmacyBasisStatus {
+    CODE_STATUS_DRAFT = "draft",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_CANCELLED = "cancelled",
+    CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
+}
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSeven datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSeven",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingSeven record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
+    r4:code code = "dayssupply";
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAdjudication datatype record.
 #
 # + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
 # + amount - Monetary amount associated with the category.
@@ -2017,19 +4372,21 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalTotal record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
 # + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjustmentreason",
+    name: "C4BBExplanationOfBenefitPharmacyBasisAdjudication",
     baseType: (),
     elements: {
         "reason": {
             name: "reason",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
-            path: "ExplanationOfBenefit.item.adjudication.reason"
+            path: "ExplanationOfBenefit.adjudication.reason"
         },
+
         "amount": {
             name: "amount",
             dataType: r4:Money,
@@ -2037,8 +4394,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalTotal record {|
             max: 1,
             isArray: false,
             description: "Monetary amount associated with the category.",
-            path: "ExplanationOfBenefit.item.adjudication.amount"
+            path: "ExplanationOfBenefit.adjudication.amount"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -2046,8 +4404,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalTotal record {|
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.item.adjudication.extension"
+            path: "ExplanationOfBenefit.adjudication.extension"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -2055,8 +4414,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalTotal record {|
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.item.adjudication.modifierExtension"
+            path: "ExplanationOfBenefit.adjudication.modifierExtension"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -2064,17 +4424,19 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalTotal record {|
             max: 1,
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.item.adjudication.id"
+            path: "ExplanationOfBenefit.adjudication.id"
         },
+
         "category": {
             name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategory,
+            dataType: r4:CodeableConcept,
             min: 1,
             max: 1,
             isArray: false,
             description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.item.adjudication.category"
+            path: "ExplanationOfBenefit.adjudication.category"
         },
+
         "value": {
             name: "value",
             dataType: decimal,
@@ -2082,27 +4444,29 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalTotal record {|
             max: 1,
             isArray: false,
             description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
-            path: "ExplanationOfBenefit.item.adjudication.value"
+            path: "ExplanationOfBenefit.adjudication.value"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjustmentreason record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudication;
 
-    r4:CodeableConcept reason;
+public type C4BBExplanationOfBenefitPharmacyBasisAdjudication record {|
+    *r4:BackboneElement;
+
+    r4:CodeableConcept reason?;
     r4:Money amount?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategory category;
+    r4:CodeableConcept category;
     decimal value?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoDischarge_status datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRxoriginCode datatype record.
 #
 # + valueBoolean - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
 # + reason - Provides the reason in the situation where a reason code is required in addition to the content.
@@ -2118,8 +4482,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
 # + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoDischarge_status",
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRxoriginCode",
     baseType: (),
     elements: {
         "valueBoolean": {
@@ -2131,6 +4496,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "reason": {
             name: "reason",
             dataType: r4:Coding,
@@ -2140,6 +4506,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "Provides the reason in the situation where a reason code is required in addition to the content.",
             path: "ExplanationOfBenefit.supportingInfo.reason"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -2149,6 +4516,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.supportingInfo.extension"
         },
+
         "code": {
             name: "code",
             dataType: r4:CodeableConcept,
@@ -2158,6 +4526,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
             path: "ExplanationOfBenefit.supportingInfo.code"
         },
+
         "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
@@ -2167,6 +4536,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "timingPeriod": {
             name: "timingPeriod",
             dataType: r4:Period,
@@ -2176,6 +4546,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "The date when or period to which this information refers.",
             path: "ExplanationOfBenefit.supportingInfo.timing[x]"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -2185,6 +4556,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
         },
+
         "timingDate": {
             name: "timingDate",
             dataType: r4:date,
@@ -2194,6 +4566,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "The date when or period to which this information refers.",
             path: "ExplanationOfBenefit.supportingInfo.timing[x]"
         },
+
         "sequence": {
             name: "sequence",
             dataType: r4:positiveInt,
@@ -2203,6 +4576,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "A number to uniquely identify supporting information entries.",
             path: "ExplanationOfBenefit.supportingInfo.sequence"
         },
+
         "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
@@ -2212,6 +4586,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "valueString": {
             name: "valueString",
             dataType: string,
@@ -2221,6 +4596,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -2230,15 +4606,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ExplanationOfBenefit.supportingInfo.id"
         },
+
         "category": {
             name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryThree,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategory,
             min: 1,
             max: 1,
             isArray: false,
             description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
             path: "ExplanationOfBenefit.supportingInfo.category"
         },
+
         "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
@@ -2249,13 +4627,15 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjus
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoDischarge_status record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo;
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRxoriginCode record {|
+    *C4BBExplanationOfBenefitPharmacyBasisSupportingInfo;
 
     boolean valueBoolean?;
     r4:Coding reason?;
@@ -2269,2308 +4649,11 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoDischar
     r4:Attachment valueAttachment?;
     string valueString?;
     string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryThree category;
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategory category;
     r4:Quantity valueQuantity?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAccident datatype record.
-#
-# + date - Date of an accident event related to the products and services contained in the claim.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + locationAddress - The physical location of the accident event.
-# + locationReference - The physical location of the accident event.
-# + 'type - The type or context of the accident event for the purposes of selection of potential insurance coverages and determination of coordination between insurers.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAccident",
-    baseType: (),
-    elements: {
-        "date": {
-            name: "date",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Date of an accident event related to the products and services contained in the claim.",
-            path: "ExplanationOfBenefit.accident.date"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.accident.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.accident.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.accident.id"
-        },
-        "locationAddress": {
-            name: "locationAddress",
-            dataType: r4:Address,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The physical location of the accident event.",
-            path: "ExplanationOfBenefit.accident.location[x]"
-        },
-        "locationReference": {
-            name: "locationReference",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The physical location of the accident event.",
-            path: "ExplanationOfBenefit.accident.location[x]"
-        },
-        "type": {
-            name: "type",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The type or context of the accident event for the purposes of selection of potential insurance coverages and determination of coordination between insurers.",
-            path: "ExplanationOfBenefit.accident.type"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAccident record {|
-    *r4:BackboneElement;
-
-    r4:date date?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:Address locationAddress?;
-    r4:Reference locationReference?;
-    r4:CodeableConcept 'type?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingThree datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingThree",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingThree record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
-    r4:code code = "discharge-status";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo datatype record.
-#
-# + valueBoolean - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
-# + valueReference - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + timingPeriod - The date when or period to which this information refers.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + timingDate - The date when or period to which this information refers.
-# + sequence - A number to uniquely identify supporting information entries.
-# + valueAttachment - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + valueString - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
-# + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo",
-    baseType: (),
-    elements: {
-        "valueBoolean": {
-            name: "valueBoolean",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "reason": {
-            name: "reason",
-            dataType: r4:Coding,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
-            path: "ExplanationOfBenefit.supportingInfo.reason"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.supportingInfo.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
-            path: "ExplanationOfBenefit.supportingInfo.code"
-        },
-        "valueReference": {
-            name: "valueReference",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "timingPeriod": {
-            name: "timingPeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date when or period to which this information refers.",
-            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
-        },
-        "timingDate": {
-            name: "timingDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date when or period to which this information refers.",
-            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
-        },
-        "sequence": {
-            name: "sequence",
-            dataType: r4:positiveInt,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A number to uniquely identify supporting information entries.",
-            path: "ExplanationOfBenefit.supportingInfo.sequence"
-        },
-        "valueAttachment": {
-            name: "valueAttachment",
-            dataType: r4:Attachment,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.supportingInfo.id"
-        },
-        "category": {
-            name: "category",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
-            path: "ExplanationOfBenefit.supportingInfo.category"
-        },
-        "valueQuantity": {
-            name: "valueQuantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo record {|
-    *r4:BackboneElement;
-
-    boolean valueBoolean?;
-    r4:Coding reason?;
-    r4:Extension[] extension?;
-    r4:CodeableConcept code?;
-    r4:Reference valueReference?;
-    r4:Period timingPeriod?;
-    r4:Extension[] modifierExtension?;
-    r4:date timingDate?;
-    r4:positiveInt sequence;
-    r4:Attachment valueAttachment?;
-    string valueString?;
-    string id?;
-    r4:CodeableConcept category;
-    r4:Quantity valueQuantity?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategorySix datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategorySix",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingSix,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategorySix record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingSix[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingTwo datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingTwo",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.adjudication.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.adjudication.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingTwo record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBAdjudicationDiscriminator";
-    r4:code code = "adjustmentreason";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalRelated datatype record.
-#
-# + reference - An alternate organizational reference to the case or file to which this particular claim pertains.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + claim - Reference to a related claim.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + relationship - A code to convey how the claims are related.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalRelated",
-    baseType: (),
-    elements: {
-        "reference": {
-            name: "reference",
-            dataType: r4:Identifier,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "An alternate organizational reference to the case or file to which this particular claim pertains.",
-            path: "ExplanationOfBenefit.related.reference"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.related.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.related.modifierExtension"
-        },
-        "claim": {
-            name: "claim",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Reference to a related claim.",
-            path: "ExplanationOfBenefit.related.claim"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.related.id"
-        },
-        "relationship": {
-            name: "relationship",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code to convey how the claims are related.",
-            path: "ExplanationOfBenefit.related.relationship"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalRelated record {|
-    *r4:BackboneElement;
-
-    r4:Identifier reference;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:Reference claim?;
-    string id?;
-    r4:CodeableConcept relationship;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAllowedunits datatype record.
-#
-# + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
-# + amount - Monetary amount associated with the category.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
-# + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAllowedunits",
-    baseType: (),
-    elements: {
-        "reason": {
-            name: "reason",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
-            path: "ExplanationOfBenefit.item.adjudication.reason"
-        },
-        "amount": {
-            name: "amount",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Monetary amount associated with the category.",
-            path: "ExplanationOfBenefit.item.adjudication.amount"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.item.adjudication.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.item.adjudication.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.item.adjudication.id"
-        },
-        "category": {
-            name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryOne,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.item.adjudication.category"
-        },
-        "value": {
-            name: "value",
-            dataType: decimal,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
-            path: "ExplanationOfBenefit.item.adjudication.value"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAllowedunits record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudication;
-
-    r4:CodeableConcept reason?;
-    r4:Money amount?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryOne category;
-    decimal value;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalPayment datatype record.
-#
-# + date - Estimated date the payment will be issued or the actual issue date of payment.
-# + identifier - Issuer's unique identifier for the payment instrument.
-# + adjustmentReason - Reason for the payment adjustment.
-# + amount - Benefits payable less any payment adjustment.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + adjustment - Total amount of all adjustments to this payment included in this transaction which are not related to this claim's adjudication.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'type - Whether this represents partial or complete payment of the benefits payable.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalPayment",
-    baseType: (),
-    elements: {
-        "date": {
-            name: "date",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Estimated date the payment will be issued or the actual issue date of payment.",
-            path: "ExplanationOfBenefit.payment.date"
-        },
-        "identifier": {
-            name: "identifier",
-            dataType: r4:Identifier,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Issuer's unique identifier for the payment instrument.",
-            path: "ExplanationOfBenefit.payment.identifier"
-        },
-        "adjustmentReason": {
-            name: "adjustmentReason",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Reason for the payment adjustment.",
-            path: "ExplanationOfBenefit.payment.adjustmentReason"
-        },
-        "amount": {
-            name: "amount",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Benefits payable less any payment adjustment.",
-            path: "ExplanationOfBenefit.payment.amount"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.payment.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.payment.modifierExtension"
-        },
-        "adjustment": {
-            name: "adjustment",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Total amount of all adjustments to this payment included in this transaction which are not related to this claim's adjudication.",
-            path: "ExplanationOfBenefit.payment.adjustment"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.payment.id"
-        },
-        "type": {
-            name: "type",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Whether this represents partial or complete payment of the benefits payable.",
-            path: "ExplanationOfBenefit.payment.type"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalPayment record {|
-    *r4:BackboneElement;
-
-    r4:date date?;
-    r4:Identifier identifier?;
-    r4:CodeableConcept adjustmentReason?;
-    r4:Money amount?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:Money adjustment?;
-    string id?;
-    r4:CodeableConcept 'type?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryOne datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryOne",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCodingOne,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.item.adjudication.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryOne record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCodingOne[] coding;
-|};
-
-# C4BBExplanationOfBenefitOutpatientInstitutionalUse enum
-public enum C4BBExplanationOfBenefitOutpatientInstitutionalUse {
-   CODE_USE_PREDETERMINATION = "predetermination",
-   CODE_USE_PREAUTHORIZATION = "preauthorization",
-   CODE_USE_CLAIM = "claim"
-}
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFive datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFive",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFive record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
-    r4:code code = "pointoforigin";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoPointoforigin datatype record.
-#
-# + valueBoolean - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
-# + valueReference - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + timingPeriod - The date when or period to which this information refers.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + timingDate - The date when or period to which this information refers.
-# + sequence - A number to uniquely identify supporting information entries.
-# + valueAttachment - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + valueString - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
-# + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoPointoforigin",
-    baseType: (),
-    elements: {
-        "valueBoolean": {
-            name: "valueBoolean",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "reason": {
-            name: "reason",
-            dataType: r4:Coding,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
-            path: "ExplanationOfBenefit.supportingInfo.reason"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.supportingInfo.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
-            path: "ExplanationOfBenefit.supportingInfo.code"
-        },
-        "valueReference": {
-            name: "valueReference",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "timingPeriod": {
-            name: "timingPeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date when or period to which this information refers.",
-            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
-        },
-        "timingDate": {
-            name: "timingDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date when or period to which this information refers.",
-            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
-        },
-        "sequence": {
-            name: "sequence",
-            dataType: r4:positiveInt,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A number to uniquely identify supporting information entries.",
-            path: "ExplanationOfBenefit.supportingInfo.sequence"
-        },
-        "valueAttachment": {
-            name: "valueAttachment",
-            dataType: r4:Attachment,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.supportingInfo.id"
-        },
-        "category": {
-            name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFive,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
-            path: "ExplanationOfBenefit.supportingInfo.category"
-        },
-        "valueQuantity": {
-            name: "valueQuantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoPointoforigin record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo;
-
-    boolean valueBoolean?;
-    r4:Coding reason?;
-    r4:Extension[] extension?;
-    r4:CodeableConcept code;
-    r4:Reference valueReference?;
-    r4:Period timingPeriod?;
-    r4:Extension[] modifierExtension?;
-    r4:date timingDate?;
-    r4:positiveInt sequence;
-    r4:Attachment valueAttachment?;
-    string valueString?;
-    string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFive category;
-    r4:Quantity valueQuantity?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudication datatype record.
-#
-# + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
-# + amount - Monetary amount associated with the category.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
-# + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudication",
-    baseType: (),
-    elements: {
-        "reason": {
-            name: "reason",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
-            path: "ExplanationOfBenefit.adjudication.reason"
-        },
-        "amount": {
-            name: "amount",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Monetary amount associated with the category.",
-            path: "ExplanationOfBenefit.adjudication.amount"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.adjudication.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.adjudication.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.adjudication.id"
-        },
-        "category": {
-            name: "category",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.adjudication.category"
-        },
-        "value": {
-            name: "value",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
-            path: "ExplanationOfBenefit.adjudication.value"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudication record {|
-    *r4:BackboneElement;
-
-    r4:CodeableConcept reason?;
-    r4:Money amount?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:CodeableConcept category;
-    decimal value?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCoding datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCoding",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.item.adjudication.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.item.adjudication.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCoding record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBAdjudicationDiscriminator";
-    r4:code code = "adjustmentreason";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoMedicalrecordnumber datatype record.
-#
-# + timingDate - The date when or period to which this information refers.
-# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
-# + sequence - A number to uniquely identify supporting information entries.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
-# + valueString - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + timingPeriod - The date when or period to which this information refers.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoMedicalrecordnumber",
-    baseType: (),
-    elements: {
-        "timingDate": {
-            name: "timingDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date when or period to which this information refers.",
-            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
-        },
-        "reason": {
-            name: "reason",
-            dataType: r4:Coding,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
-            path: "ExplanationOfBenefit.supportingInfo.reason"
-        },
-        "sequence": {
-            name: "sequence",
-            dataType: r4:positiveInt,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A number to uniquely identify supporting information entries.",
-            path: "ExplanationOfBenefit.supportingInfo.sequence"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.supportingInfo.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
-            path: "ExplanationOfBenefit.supportingInfo.code"
-        },
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "timingPeriod": {
-            name: "timingPeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date when or period to which this information refers.",
-            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.supportingInfo.id"
-        },
-        "category": {
-            name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategory,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
-            path: "ExplanationOfBenefit.supportingInfo.category"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoMedicalrecordnumber record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo;
-
-    r4:date timingDate?;
-    r4:Coding reason?;
-    r4:positiveInt sequence;
-    r4:Extension[] extension?;
-    r4:CodeableConcept code?;
-    string valueString?;
-    r4:Period timingPeriod?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategory category;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryOne datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryOne",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingOne,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryOne record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingOne[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFive datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFive",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFive,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFive record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFive[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryTwo datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryTwo",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingTwo,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.adjudication.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryTwo record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingTwo[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoPatientaccountnumber datatype record.
-#
-# + timingDate - The date when or period to which this information refers.
-# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
-# + sequence - A number to uniquely identify supporting information entries.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
-# + valueString - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + timingPeriod - The date when or period to which this information refers.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoPatientaccountnumber",
-    baseType: (),
-    elements: {
-        "timingDate": {
-            name: "timingDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date when or period to which this information refers.",
-            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
-        },
-        "reason": {
-            name: "reason",
-            dataType: r4:Coding,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
-            path: "ExplanationOfBenefit.supportingInfo.reason"
-        },
-        "sequence": {
-            name: "sequence",
-            dataType: r4:positiveInt,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A number to uniquely identify supporting information entries.",
-            path: "ExplanationOfBenefit.supportingInfo.sequence"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.supportingInfo.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
-            path: "ExplanationOfBenefit.supportingInfo.code"
-        },
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "timingPeriod": {
-            name: "timingPeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date when or period to which this information refers.",
-            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.supportingInfo.id"
-        },
-        "category": {
-            name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryTwo,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
-            path: "ExplanationOfBenefit.supportingInfo.category"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoPatientaccountnumber record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo;
-
-    r4:date timingDate?;
-    r4:Coding reason?;
-    r4:positiveInt sequence;
-    r4:Extension[] extension?;
-    r4:CodeableConcept code?;
-    string valueString?;
-    r4:Period timingPeriod?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryTwo category;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFour datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFour",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFour record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
-    r4:code code = "typeofbill";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategory datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategory",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCoding,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.item.adjudication.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategory record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.item.adjudication.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCoding[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryOne datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryOne",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingOne,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.adjudication.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryOne record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingOne[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudication datatype record.
-#
-# + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
-# + amount - Monetary amount associated with the category.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
-# + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudication",
-    baseType: (),
-    elements: {
-        "reason": {
-            name: "reason",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
-            path: "ExplanationOfBenefit.item.adjudication.reason"
-        },
-        "amount": {
-            name: "amount",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Monetary amount associated with the category.",
-            path: "ExplanationOfBenefit.item.adjudication.amount"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.item.adjudication.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.item.adjudication.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.item.adjudication.id"
-        },
-        "category": {
-            name: "category",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.item.adjudication.category"
-        },
-        "value": {
-            name: "value",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
-            path: "ExplanationOfBenefit.item.adjudication.value"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudication record {|
-    *r4:BackboneElement;
-
-    r4:CodeableConcept reason?;
-    r4:Money amount?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:CodeableConcept category;
-    decimal value?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFour datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFour",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFour,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryFour record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingFour[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalInsurance datatype record.
-#
-# + coverage - Reference to the insurance card level information contained in the Coverage resource. The coverage issuing insurer will use these details to locate the patient's actual coverage within the insurer's information system.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + focal - A flag to indicate that this Coverage is to be used for adjudication of this claim when set to true.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + preAuthRef - Reference numbers previously provided by the insurer to the provider to be quoted on subsequent claims containing services or products related to the prior authorization.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalInsurance",
-    baseType: (),
-    elements: {
-        "coverage": {
-            name: "coverage",
-            dataType: r4:Reference,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Reference to the insurance card level information contained in the Coverage resource. The coverage issuing insurer will use these details to locate the patient's actual coverage within the insurer's information system.",
-            path: "ExplanationOfBenefit.insurance.coverage"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.insurance.extension"
-        },
-        "focal": {
-            name: "focal",
-            dataType: boolean,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A flag to indicate that this Coverage is to be used for adjudication of this claim when set to true.",
-            path: "ExplanationOfBenefit.insurance.focal"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.insurance.modifierExtension"
-        },
-        "preAuthRef": {
-            name: "preAuthRef",
-            dataType: string,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Reference numbers previously provided by the insurer to the provider to be quoted on subsequent claims containing services or products related to the prior authorization.",
-            path: "ExplanationOfBenefit.insurance.preAuthRef"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.insurance.id"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalInsurance record {|
-    *r4:BackboneElement;
-
-    r4:Reference coverage;
-    r4:Extension[] extension?;
-    boolean focal;
-    r4:Extension[] modifierExtension?;
-    string[] preAuthRef?;
-    string id?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalProcessNote datatype record.
-#
-# + number - A number to uniquely identify a note entry.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + language - A code to define the language used in the text of the note.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + text - The explanation or description associated with the processing.
-# + 'type - The business purpose of the note text.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalProcessNote",
-    baseType: (),
-    elements: {
-        "number": {
-            name: "number",
-            dataType: r4:positiveInt,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A number to uniquely identify a note entry.",
-            path: "ExplanationOfBenefit.processNote.number"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.processNote.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.processNote.modifierExtension"
-        },
-        "language": {
-            name: "language",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A code to define the language used in the text of the note.",
-            path: "ExplanationOfBenefit.processNote.language"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.processNote.id"
-        },
-        "text": {
-            name: "text",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The explanation or description associated with the processing.",
-            path: "ExplanationOfBenefit.processNote.text"
-        },
-        "type": {
-            name: "type",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalProcessNoteType,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The business purpose of the note text.",
-            path: "ExplanationOfBenefit.processNote.type"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalProcessNote record {|
-    *r4:BackboneElement;
-
-    r4:positiveInt number?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    r4:CodeableConcept language?;
-    string id?;
-    string text?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalProcessNoteType 'type?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingOne datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingOne",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.adjudication.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.adjudication.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCodingOne record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBAdjudicationDiscriminator";
-    r4:code code = "benefitpaymentstatus";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBillingnetworkstatus datatype record.
-#
-# + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
-# + amount - Monetary amount associated with the category.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
-# + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBillingnetworkstatus",
-    baseType: (),
-    elements: {
-        "reason": {
-            name: "reason",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
-            path: "ExplanationOfBenefit.adjudication.reason"
-        },
-        "amount": {
-            name: "amount",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Monetary amount associated with the category.",
-            path: "ExplanationOfBenefit.adjudication.amount"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.adjudication.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.adjudication.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.adjudication.id"
-        },
-        "category": {
-            name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.adjudication.category"
-        },
-        "value": {
-            name: "value",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
-            path: "ExplanationOfBenefit.adjudication.value"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBillingnetworkstatus record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalAdjudication;
-
-    r4:CodeableConcept reason;
-    r4:Money amount?;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory category;
-    decimal value?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoClmrecvddate datatype record.
-#
-# + valueBoolean - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
-# + valueReference - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + timingDate - The date when or period to which this information refers.
-# + sequence - A number to uniquely identify supporting information entries.
-# + valueAttachment - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + valueString - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
-# + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoClmrecvddate",
-    baseType: (),
-    elements: {
-        "valueBoolean": {
-            name: "valueBoolean",
-            dataType: boolean,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "reason": {
-            name: "reason",
-            dataType: r4:Coding,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
-            path: "ExplanationOfBenefit.supportingInfo.reason"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.supportingInfo.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
-            path: "ExplanationOfBenefit.supportingInfo.code"
-        },
-        "valueReference": {
-            name: "valueReference",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
-        },
-        "timingDate": {
-            name: "timingDate",
-            dataType: r4:date,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The date when or period to which this information refers.",
-            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
-        },
-        "sequence": {
-            name: "sequence",
-            dataType: r4:positiveInt,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A number to uniquely identify supporting information entries.",
-            path: "ExplanationOfBenefit.supportingInfo.sequence"
-        },
-        "valueAttachment": {
-            name: "valueAttachment",
-            dataType: r4:Attachment,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "valueString": {
-            name: "valueString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.supportingInfo.id"
-        },
-        "category": {
-            name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryOne,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
-            path: "ExplanationOfBenefit.supportingInfo.category"
-        },
-        "valueQuantity": {
-            name: "valueQuantity",
-            dataType: r4:Quantity,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
-            path: "ExplanationOfBenefit.supportingInfo.value[x]"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoClmrecvddate record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo;
-
-    boolean valueBoolean?;
-    r4:Coding reason?;
-    r4:Extension[] extension?;
-    r4:CodeableConcept code?;
-    r4:Reference valueReference?;
-    r4:Extension[] modifierExtension?;
-    r4:date timingDate?;
-    r4:positiveInt sequence;
-    r4:Attachment valueAttachment?;
-    string valueString?;
-    string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryOne category;
-    r4:Quantity valueQuantity?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingTwo datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingTwo",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingTwo record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
-    r4:code code = "patientaccountnumber";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalTypeCoding datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalTypeCoding",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.type.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.type.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalTypeCoding record {|
-    *r4:Coding;
-
-    r4:uri system = "http://terminology.hl7.org/CodeSystem/claim-type";
-    r4:code code = "institutional";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalPayee datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'type - Type of Party to be reimbursed: Subscriber, provider, other.
-# + party - Reference to the individual or organization to whom any payment will be made.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalPayee",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.payee.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.payee.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.payee.id"
-        },
-        "type": {
-            name: "type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Type of Party to be reimbursed: Subscriber, provider, other.",
-            path: "ExplanationOfBenefit.payee.type"
-        },
-        "party": {
-            name: "party",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Reference to the individual or organization to whom any payment will be made.",
-            path: "ExplanationOfBenefit.payee.party"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
-    *r4:BackboneElement;
-
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:CodeableConcept 'type;
-    r4:Reference party?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetail datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAddItemDetail datatype record.
 #
 # + adjudication - The adjudication results.
 # + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
@@ -4584,8 +4667,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
 # + factor - A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.
 # + net - The quantity times the unit price for an additional service or product or charge.
 # + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetail",
+    name: "C4BBExplanationOfBenefitPharmacyBasisAddItemDetail",
     baseType: (),
     elements: {
         "adjudication": {
@@ -4607,6 +4691,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             description: "If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.",
             path: "ExplanationOfBenefit.addItem.detail.unitPrice"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -4616,6 +4701,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.addItem.detail.extension"
         },
+
         "quantity": {
             name: "quantity",
             dataType: r4:Quantity,
@@ -4625,6 +4711,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             description: "The number of repetitions of a service or product.",
             path: "ExplanationOfBenefit.addItem.detail.quantity"
         },
+
         "modifier": {
             name: "modifier",
             dataType: r4:CodeableConcept,
@@ -4634,6 +4721,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             description: "Item typification or modifiers codes to convey additional context for the product or service.",
             path: "ExplanationOfBenefit.addItem.detail.modifier"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -4643,15 +4731,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.addItem.detail.modifierExtension"
         },
+
         "subDetail": {
             name: "subDetail",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetailSubDetail,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisAddItemDetailSubDetail,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             description: "The third-tier service adjudications for payor added services.",
             path: "ExplanationOfBenefit.addItem.detail.subDetail"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -4661,6 +4751,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ExplanationOfBenefit.addItem.detail.id"
         },
+
         "productOrService": {
             name: "productOrService",
             dataType: r4:CodeableConcept,
@@ -4670,6 +4761,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             description: "When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.",
             path: "ExplanationOfBenefit.addItem.detail.productOrService"
         },
+
         "factor": {
             name: "factor",
             dataType: decimal,
@@ -4679,6 +4771,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             description: "A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.",
             path: "ExplanationOfBenefit.addItem.detail.factor"
         },
+
         "net": {
             name: "net",
             dataType: r4:Money,
@@ -4688,6 +4781,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             description: "The quantity times the unit price for an additional service or product or charge.",
             path: "ExplanationOfBenefit.addItem.detail.net"
         },
+
         "noteNumber": {
             name: "noteNumber",
             dataType: r4:positiveInt,
@@ -4698,12 +4792,14 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalPayee record {|
             path: "ExplanationOfBenefit.addItem.detail.noteNumber"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetail record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisAddItemDetail record {|
     *r4:BackboneElement;
 
     international401:ExplanationOfBenefitItemAdjudication[] adjudication?;
@@ -4712,7 +4808,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetail record 
     r4:Quantity quantity?;
     r4:CodeableConcept[] modifier?;
     r4:Extension[] modifierExtension?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetailSubDetail[] subDetail?;
+    C4BBExplanationOfBenefitPharmacyBasisAddItemDetailSubDetail[] subDetail?;
     string id?;
     r4:CodeableConcept productOrService;
     decimal factor?;
@@ -4720,529 +4816,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetail record 
     r4:positiveInt[] noteNumber?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjudicationamounttype datatype record.
-#
-# + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
-# + amount - Monetary amount associated with the category.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
-# + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjudicationamounttype",
-    baseType: (),
-    elements: {
-        "reason": {
-            name: "reason",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
-            path: "ExplanationOfBenefit.item.adjudication.reason"
-        },
-        "amount": {
-            name: "amount",
-            dataType: r4:Money,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Monetary amount associated with the category.",
-            path: "ExplanationOfBenefit.item.adjudication.amount"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.item.adjudication.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.item.adjudication.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.item.adjudication.id"
-        },
-        "category": {
-            name: "category",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.item.adjudication.category"
-        },
-        "value": {
-            name: "value",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
-            path: "ExplanationOfBenefit.item.adjudication.value"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationAdjudicationamounttype record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudication;
-
-    r4:CodeableConcept reason?;
-    r4:Money amount;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:CodeableConcept category;
-    decimal value?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierTypeCoding datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierTypeCoding",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.identifier.type.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.identifier.type.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierTypeCoding record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBIdentifierType";
-    r4:code code = "uc";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalTotalAdjudicationamounttype datatype record.
-#
-# + amount - Monetary total amount associated with the category.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalTotalAdjudicationamounttype",
-    baseType: (),
-    elements: {
-        "amount": {
-            name: "amount",
-            dataType: r4:Money,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "Monetary total amount associated with the category.",
-            path: "ExplanationOfBenefit.total.amount"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.total.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.total.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.total.id"
-        },
-        "category": {
-            name: "category",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.total.category"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalTotalAdjudicationamounttype record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalTotal;
-
-    r4:Money amount;
-    r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:CodeableConcept category;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalDiagnosis datatype record.
-#
-# + sequence - A number to uniquely identify diagnosis entries.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + onAdmission - Indication of whether the diagnosis was present on admission to a facility.
-# + packageCode - A package billing code or bundle code used to group products and services to a particular health condition (such as heart attack) which is based on a predetermined grouping code system.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + 'type - When the condition was observed or the relative ranking.
-# + diagnosisCodeableConcept - The nature of illness or problem in a coded form or as a reference to an external defined Condition.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalDiagnosis",
-    baseType: (),
-    elements: {
-        "sequence": {
-            name: "sequence",
-            dataType: r4:positiveInt,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A number to uniquely identify diagnosis entries.",
-            path: "ExplanationOfBenefit.diagnosis.sequence"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.diagnosis.extension"
-        },
-        "onAdmission": {
-            name: "onAdmission",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Indication of whether the diagnosis was present on admission to a facility.",
-            path: "ExplanationOfBenefit.diagnosis.onAdmission"
-        },
-        "packageCode": {
-            name: "packageCode",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A package billing code or bundle code used to group products and services to a particular health condition (such as heart attack) which is based on a predetermined grouping code system.",
-            path: "ExplanationOfBenefit.diagnosis.packageCode"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.diagnosis.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.diagnosis.id"
-        },
-        "type": {
-            name: "type",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: true,
-            description: "When the condition was observed or the relative ranking.",
-            path: "ExplanationOfBenefit.diagnosis.type"
-        },
-        "diagnosisCodeableConcept": {
-            name: "diagnosisCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The nature of illness or problem in a coded form or as a reference to an external defined Condition.",
-            path: "ExplanationOfBenefit.diagnosis.diagnosis[x]"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalDiagnosis record {|
-    *r4:BackboneElement;
-
-    r4:positiveInt sequence;
-    r4:Extension[] extension?;
-    r4:CodeableConcept onAdmission?;
-    r4:CodeableConcept packageCode?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.diagnosis.type constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.diagnosis.type constraint. This field must be an array containing at most one item."
-        }
-    }
-    r4:CodeableConcept[] 'type;
-    r4:CodeableConcept diagnosisCodeableConcept?;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalProcedure datatype record.
-#
-# + date - Date and optionally time the procedure was performed.
-# + sequence - A number to uniquely identify procedure entries.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + procedureCodeableConcept - The code or reference to a Procedure resource which identifies the clinical intervention performed.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + procedureReference - The code or reference to a Procedure resource which identifies the clinical intervention performed.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + udi - Unique Device Identifiers associated with this line item.
-# + 'type - When the condition was observed or the relative ranking.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalProcedure",
-    baseType: (),
-    elements: {
-        "date": {
-            name: "date",
-            dataType: r4:dateTime,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Date and optionally time the procedure was performed.",
-            path: "ExplanationOfBenefit.procedure.date"
-        },
-        "sequence": {
-            name: "sequence",
-            dataType: r4:positiveInt,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A number to uniquely identify procedure entries.",
-            path: "ExplanationOfBenefit.procedure.sequence"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.procedure.extension"
-        },
-        "procedureCodeableConcept": {
-            name: "procedureCodeableConcept",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The code or reference to a Procedure resource which identifies the clinical intervention performed.",
-            path: "ExplanationOfBenefit.procedure.procedure[x]"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.procedure.modifierExtension"
-        },
-        "procedureReference": {
-            name: "procedureReference",
-            dataType: r4:Reference,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The code or reference to a Procedure resource which identifies the clinical intervention performed.",
-            path: "ExplanationOfBenefit.procedure.procedure[x]"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.procedure.id"
-        },
-        "udi": {
-            name: "udi",
-            dataType: r4:Reference,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Unique Device Identifiers associated with this line item.",
-            path: "ExplanationOfBenefit.procedure.udi"
-        },
-        "type": {
-            name: "type",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "When the condition was observed or the relative ranking.",
-            path: "ExplanationOfBenefit.procedure.type"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalProcedure record {|
-    *r4:BackboneElement;
-
-    r4:dateTime date?;
-    r4:positiveInt sequence;
-    r4:Extension[] extension?;
-    r4:CodeableConcept procedureCodeableConcept?;
-    r4:Extension[] modifierExtension?;
-    r4:Reference procedureReference?;
-    string id?;
-    r4:Reference[] udi?;
-    r4:CodeableConcept[] 'type?;
-|};
-
-# C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUse enum
-public enum C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierUse {
-   CODE_USE_SECONDARY = "secondary",
-   CODE_USE_TEMP = "temp",
-   CODE_USE_USUAL = "usual",
-   CODE_USE_OLD = "old",
-   CODE_USE_OFFICIAL = "official"
-}
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalType datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalType",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalTypeCoding,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.type.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalType record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.type.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.type.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalTypeCoding[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingSix datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingSix",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingSix record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
-    r4:code code = "admtype";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoAdmtype datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCompoundcode datatype record.
 #
 # + valueBoolean - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
 # + reason - Provides the reason in the situation where a reason code is required in addition to the content.
@@ -5258,8 +4832,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
 # + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoAdmtype",
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCompoundcode",
     baseType: (),
     elements: {
         "valueBoolean": {
@@ -5271,6 +4846,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "reason": {
             name: "reason",
             dataType: r4:Coding,
@@ -5280,6 +4856,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Provides the reason in the situation where a reason code is required in addition to the content.",
             path: "ExplanationOfBenefit.supportingInfo.reason"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -5289,6 +4866,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.supportingInfo.extension"
         },
+
         "code": {
             name: "code",
             dataType: r4:CodeableConcept,
@@ -5298,6 +4876,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
             path: "ExplanationOfBenefit.supportingInfo.code"
         },
+
         "valueReference": {
             name: "valueReference",
             dataType: r4:Reference,
@@ -5307,6 +4886,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "timingPeriod": {
             name: "timingPeriod",
             dataType: r4:Period,
@@ -5316,6 +4896,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The date when or period to which this information refers.",
             path: "ExplanationOfBenefit.supportingInfo.timing[x]"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -5325,6 +4906,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
         },
+
         "timingDate": {
             name: "timingDate",
             dataType: r4:date,
@@ -5334,6 +4916,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The date when or period to which this information refers.",
             path: "ExplanationOfBenefit.supportingInfo.timing[x]"
         },
+
         "sequence": {
             name: "sequence",
             dataType: r4:positiveInt,
@@ -5343,6 +4926,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "A number to uniquely identify supporting information entries.",
             path: "ExplanationOfBenefit.supportingInfo.sequence"
         },
+
         "valueAttachment": {
             name: "valueAttachment",
             dataType: r4:Attachment,
@@ -5352,6 +4936,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "valueString": {
             name: "valueString",
             dataType: string,
@@ -5361,6 +4946,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -5370,15 +4956,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ExplanationOfBenefit.supportingInfo.id"
         },
+
         "category": {
             name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategorySix,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySix,
             min: 1,
             max: 1,
             isArray: false,
             description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
             path: "ExplanationOfBenefit.supportingInfo.category"
         },
+
         "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
@@ -5389,13 +4977,15 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             path: "ExplanationOfBenefit.supportingInfo.value[x]"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoAdmtype record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfo;
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCompoundcode record {|
+    *C4BBExplanationOfBenefitPharmacyBasisSupportingInfo;
 
     boolean valueBoolean?;
     r4:Coding reason?;
@@ -5409,91 +4999,25 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoAdmtype
     r4:Attachment valueAttachment?;
     string valueString?;
     string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategorySix category;
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategorySix category;
     r4:Quantity valueQuantity?;
 |};
 
-# C4BBExplanationOfBenefitOutpatientInstitutionalProcessNoteType enum
-public enum C4BBExplanationOfBenefitOutpatientInstitutionalProcessNoteType {
-   CODE_TYPE_PRINT = "print",
-   CODE_TYPE_DISPLAY = "display",
-   CODE_TYPE_PRINTOPER = "printoper"
-}
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSubType datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisIdentifierUniqueclaimid datatype record.
 #
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSubType",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalSubTypeCoding,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "ExplanationOfBenefit.subType.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSubType record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-        minLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.subType.coding constraint. This field must be an array containing at least one item."
-        },
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.ExplanationOfBenefit.subType.coding constraint. This field must be an array containing at most one item."
-        }
-    }
-    C4BBExplanationOfBenefitOutpatientInstitutionalSubTypeCoding[] coding;
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetailSubDetail datatype record.
-#
-# + adjudication - The adjudication results.
-# + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + quantity - The number of repetitions of a service or product.
-# + modifier - Item typification or modifiers codes to convey additional context for the product or service.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + period - Time period during which identifier is/was valid for use.
+# + system - Establishes the namespace for the value - that is, a URL that describes a set values that are unique.
+# + use - The purpose of this identifier.
+# + assigner - Organization that issued/manages the identifier.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + productOrService - When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.
-# + factor - A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.
-# + net - The quantity times the unit price for an additional service or product or charge.
-# + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
+# + 'type - A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.
+# + value - The portion of the identifier typically relevant to the user and which is unique within the context of the system.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetailSubDetail",
+    name: "C4BBExplanationOfBenefitPharmacyBasisIdentifierUniqueclaimid",
     baseType: (),
     elements: {
-        "adjudication": {
-            name: "adjudication",
-            dataType: international401:ExplanationOfBenefitItemAdjudication,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The adjudication results.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.adjudication"
-        },
-
-        "unitPrice": {
-            name: "unitPrice",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.unitPrice"
-        },
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -5501,35 +5025,49 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSubType record {|
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.extension"
+            path: "ExplanationOfBenefit.identifier.extension"
         },
-        "quantity": {
-            name: "quantity",
-            dataType: r4:Quantity,
+
+        "period": {
+            name: "period",
+            dataType: r4:Period,
             min: 0,
             max: 1,
             isArray: false,
-            description: "The number of repetitions of a service or product.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.quantity"
+            description: "Time period during which identifier is/was valid for use.",
+            path: "ExplanationOfBenefit.identifier.period"
         },
-        "modifier": {
-            name: "modifier",
-            dataType: r4:CodeableConcept,
+
+        "system": {
+            name: "system",
+            dataType: r4:uri,
             min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Item typification or modifiers codes to convey additional context for the product or service.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.modifier"
+            max: 1,
+            isArray: false,
+            description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
+            path: "ExplanationOfBenefit.identifier.system"
         },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
+
+        "use": {
+            name: "use",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisIdentifierUse,
             min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.modifierExtension"
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "ExplanationOfBenefit.identifier.use"
         },
+
+        "assigner": {
+            name: "assigner",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Organization that issued/manages the identifier.",
+            path: "ExplanationOfBenefit.identifier.assigner"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -5537,161 +5075,50 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSubType record {|
             max: 1,
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.id"
+            path: "ExplanationOfBenefit.identifier.id"
         },
-        "productOrService": {
-            name: "productOrService",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.productOrService"
-        },
-        "factor": {
-            name: "factor",
-            dataType: decimal,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.factor"
-        },
-        "net": {
-            name: "net",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The quantity times the unit price for an additional service or product or charge.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.net"
-        },
-        "noteNumber": {
-            name: "noteNumber",
-            dataType: r4:positiveInt,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The numbers associated with notes below which apply to the adjudication of this item.",
-            path: "ExplanationOfBenefit.addItem.detail.subDetail.noteNumber"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAddItemDetailSubDetail record {|
-    *r4:BackboneElement;
 
-    international401:ExplanationOfBenefitItemAdjudication[] adjudication?;
-    r4:Money unitPrice?;
-    r4:Extension[] extension?;
-    r4:Quantity quantity?;
-    r4:CodeableConcept[] modifier?;
-    r4:Extension[] modifierExtension?;
-    string id?;
-    r4:CodeableConcept productOrService;
-    decimal factor?;
-    r4:Money net?;
-    r4:positiveInt[] noteNumber?;
-|};
+        "type": {
+            name: "type",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisIdentifierType,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
+            path: "ExplanationOfBenefit.identifier.type"
+        },
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpaymentstatus datatype record.
-#
-# + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
-# + amount - Monetary amount associated with the category.
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
-# + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpaymentstatus",
-    baseType: (),
-    elements: {
-        "reason": {
-            name: "reason",
-            dataType: r4:CodeableConcept,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
-            path: "ExplanationOfBenefit.adjudication.reason"
-        },
-        "amount": {
-            name: "amount",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Monetary amount associated with the category.",
-            path: "ExplanationOfBenefit.adjudication.amount"
-        },
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.adjudication.extension"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.adjudication.modifierExtension"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.adjudication.id"
-        },
-        "category": {
-            name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryOne,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.adjudication.category"
-        },
         "value": {
             name: "value",
-            dataType: decimal,
-            min: 0,
+            dataType: string,
+            min: 1,
             max: 1,
             isArray: false,
-            description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
-            path: "ExplanationOfBenefit.adjudication.value"
+            description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
+            path: "ExplanationOfBenefit.identifier.value"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpaymentstatus record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalAdjudication;
 
-    r4:CodeableConcept reason;
-    r4:Money amount?;
+public type C4BBExplanationOfBenefitPharmacyBasisIdentifierUniqueclaimid record {|
+    *r4:Identifier;
+
     r4:Extension[] extension?;
-    r4:Extension[] modifierExtension?;
+    r4:Period period?;
+    r4:uri system?;
+    C4BBExplanationOfBenefitPharmacyBasisIdentifierUse use?;
+    r4:Reference assigner?;
     string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryOne category;
-    decimal value?;
+    C4BBExplanationOfBenefitPharmacyBasisIdentifierType 'type;
+    string value;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalCareTeam datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisCareTeam datatype record.
 #
 # + qualification - The qualification of the practitioner which is applicable for this service.
 # + sequence - A number to uniquely identify care team entries.
@@ -5701,8 +5128,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpa
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + responsible - The party who is billing and/or responsible for the claimed products or services.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalCareTeam",
+    name: "C4BBExplanationOfBenefitPharmacyBasisCareTeam",
     baseType: (),
     elements: {
         "qualification": {
@@ -5714,6 +5142,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpa
             description: "The qualification of the practitioner which is applicable for this service.",
             path: "ExplanationOfBenefit.careTeam.qualification"
         },
+
         "sequence": {
             name: "sequence",
             dataType: r4:positiveInt,
@@ -5723,6 +5152,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpa
             description: "A number to uniquely identify care team entries.",
             path: "ExplanationOfBenefit.careTeam.sequence"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -5732,6 +5162,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpa
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.careTeam.extension"
         },
+
         "role": {
             name: "role",
             dataType: r4:CodeableConcept,
@@ -5741,6 +5172,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpa
             description: "The lead, assisting or supervising practitioner and their discipline if a multidisciplinary team.",
             path: "ExplanationOfBenefit.careTeam.role"
         },
+
         "provider": {
             name: "provider",
             dataType: r4:Reference,
@@ -5750,6 +5182,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpa
             description: "Member of the team who provided the product or service.",
             path: "ExplanationOfBenefit.careTeam.provider"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -5759,6 +5192,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpa
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.careTeam.modifierExtension"
         },
+
         "responsible": {
             name: "responsible",
             dataType: boolean,
@@ -5768,6 +5202,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpa
             description: "The party who is billing and/or responsible for the claimed products or services.",
             path: "ExplanationOfBenefit.careTeam.responsible"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -5778,12 +5213,14 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationBenefitpa
             path: "ExplanationOfBenefit.careTeam.id"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalCareTeam record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisCareTeam record {|
     *r4:BackboneElement;
 
     r4:CodeableConcept qualification?;
@@ -5796,46 +5233,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalCareTeam record {|
     string id?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingOne datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingOne",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategoryCodingOne record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
-    r4:code code = "clmrecvddate";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalanceFinancial datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisBenefitBalanceFinancial datatype record.
 #
 # + allowedMoney - The quantity of the benefit which is permitted under the coverage.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -5846,8 +5244,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
 # + usedMoney - The quantity of the benefit which have been consumed to date.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'type - Classification of benefit being provided.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalanceFinancial",
+    name: "C4BBExplanationOfBenefitPharmacyBasisBenefitBalanceFinancial",
     baseType: (),
     elements: {
         "allowedMoney": {
@@ -5859,6 +5258,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The quantity of the benefit which is permitted under the coverage.",
             path: "ExplanationOfBenefit.benefitBalance.financial.allowed[x]"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -5918,6 +5318,7 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             description: "The quantity of the benefit which have been consumed to date.",
             path: "ExplanationOfBenefit.benefitBalance.financial.used[x]"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -5938,12 +5339,14 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSupportingInfoCategor
             path: "ExplanationOfBenefit.benefitBalance.financial.type"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalanceFinancial record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisBenefitBalanceFinancial record {|
     *r4:BackboneElement;
 
     r4:Money allowedMoney?;
@@ -5957,102 +5360,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalanceFinanci
     r4:CodeableConcept 'type;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCodingOne datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCodingOne",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.item.adjudication.category.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.item.adjudication.category.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemAdjudicationCategoryCodingOne record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBAdjudicationDiscriminator";
-    r4:code code = "allowedunits";
-|};
-
-# C4BBExplanationOfBenefitOutpatientInstitutionalOutcome enum
-public enum C4BBExplanationOfBenefitOutpatientInstitutionalOutcome {
-   CODE_OUTCOME_QUEUED = "queued",
-   CODE_OUTCOME_COMPLETE = "complete",
-   CODE_OUTCOME_ERROR = "error",
-   CODE_OUTCOME_PARTIAL = "partial"
-}
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalSubTypeCoding datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalSubTypeCoding",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "ExplanationOfBenefit.subType.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "ExplanationOfBenefit.subType.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type C4BBExplanationOfBenefitOutpatientInstitutionalSubTypeCoding record {|
-    *r4:Coding;
-
-    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBInstitutionalClaimSubType";
-    r4:code code = "outpatient";
-|};
-
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierType datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisIdentifierType datatype record.
 #
 # + coding - A reference to a code defined by a terminology system.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierType",
+    name: "C4BBExplanationOfBenefitPharmacyBasisIdentifierType",
     baseType: (),
     elements: {
         "coding": {
             name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierTypeCoding,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisIdentifierTypeCoding,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -6060,12 +5378,14 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalSubTypeCoding record 
             path: "ExplanationOfBenefit.identifier.type.coding"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierType record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisIdentifierType record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
@@ -6078,18 +5398,492 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierType record
             message: "Validation failed for $.ExplanationOfBenefit.identifier.type.coding constraint. This field must be an array containing at most one item."
         }
     }
-    C4BBExplanationOfBenefitOutpatientInstitutionalIdentifierTypeCoding[] coding;
+    C4BBExplanationOfBenefitPharmacyBasisIdentifierTypeCoding[] coding;
 |};
 
-# C4BBExplanationOfBenefitOutpatientInstitutionalStatus enum
-public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
-   CODE_STATUS_DRAFT = "draft",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_CANCELLED = "cancelled",
-   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
+# FHIR C4BBExplanationOfBenefitPharmacyBasisTypeCoding datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisTypeCoding",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.type.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.type.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
 }
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance datatype record.
+public type C4BBExplanationOfBenefitPharmacyBasisTypeCoding record {|
+    *r4:Coding;
+
+    r4:uri system = "http://terminology.hl7.org/CodeSystem/claim-type";
+    r4:code code = "pharmacy";
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFive datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFive",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFive record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
+    r4:code code = "brandgenericindicator";
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisProcedure datatype record.
+#
+# + date - Date and optionally time the procedure was performed.
+# + sequence - A number to uniquely identify procedure entries.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + procedureCodeableConcept - The code or reference to a Procedure resource which identifies the clinical intervention performed.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + procedureReference - The code or reference to a Procedure resource which identifies the clinical intervention performed.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + udi - Unique Device Identifiers associated with this line item.
+# + 'type - When the condition was observed or the relative ranking.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisProcedure",
+    baseType: (),
+    elements: {
+        "date": {
+            name: "date",
+            dataType: r4:dateTime,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Date and optionally time the procedure was performed.",
+            path: "ExplanationOfBenefit.procedure.date"
+        },
+
+        "sequence": {
+            name: "sequence",
+            dataType: r4:positiveInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A number to uniquely identify procedure entries.",
+            path: "ExplanationOfBenefit.procedure.sequence"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.procedure.extension"
+        },
+
+        "procedureCodeableConcept": {
+            name: "procedureCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The code or reference to a Procedure resource which identifies the clinical intervention performed.",
+            path: "ExplanationOfBenefit.procedure.procedure[x]"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.procedure.modifierExtension"
+        },
+
+        "procedureReference": {
+            name: "procedureReference",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The code or reference to a Procedure resource which identifies the clinical intervention performed.",
+            path: "ExplanationOfBenefit.procedure.procedure[x]"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.procedure.id"
+        },
+
+        "udi": {
+            name: "udi",
+            dataType: r4:Reference,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Unique Device Identifiers associated with this line item.",
+            path: "ExplanationOfBenefit.procedure.udi"
+        },
+
+        "type": {
+            name: "type",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "When the condition was observed or the relative ranking.",
+            path: "ExplanationOfBenefit.procedure.type"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisProcedure record {|
+    *r4:BackboneElement;
+
+    r4:dateTime date?;
+    r4:positiveInt sequence;
+    r4:Extension[] extension?;
+    r4:CodeableConcept procedureCodeableConcept?;
+    r4:Extension[] modifierExtension?;
+    r4:Reference procedureReference?;
+    string id?;
+    r4:Reference[] udi?;
+    r4:CodeableConcept[] 'type?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisTotal datatype record.
+#
+# + amount - Monetary total amount associated with the category.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisTotal",
+    baseType: (),
+    elements: {
+        "amount": {
+            name: "amount",
+            dataType: r4:Money,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "Monetary total amount associated with the category.",
+            path: "ExplanationOfBenefit.total.amount"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.total.extension"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.total.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.total.id"
+        },
+
+        "category": {
+            name: "category",
+            dataType: r4:CodeableConcept,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
+            path: "ExplanationOfBenefit.total.category"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisTotal record {|
+    *r4:BackboneElement;
+
+    r4:Money amount;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    r4:CodeableConcept category;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingTwo datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingTwo",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingTwo record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
+    r4:code code = "refillsauthorized";
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRefillNum datatype record.
+#
+# + timingDate - The date when or period to which this information refers.
+# + reason - Provides the reason in the situation where a reason code is required in addition to the content.
+# + sequence - A number to uniquely identify supporting information entries.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.
+# + timingPeriod - The date when or period to which this information refers.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + category - The general class of the information supplied: information; exception; accident, employment; onset, etc.
+# + valueQuantity - Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRefillNum",
+    baseType: (),
+    elements: {
+        "timingDate": {
+            name: "timingDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "reason": {
+            name: "reason",
+            dataType: r4:Coding,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Provides the reason in the situation where a reason code is required in addition to the content.",
+            path: "ExplanationOfBenefit.supportingInfo.reason"
+        },
+
+        "sequence": {
+            name: "sequence",
+            dataType: r4:positiveInt,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A number to uniquely identify supporting information entries.",
+            path: "ExplanationOfBenefit.supportingInfo.sequence"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.supportingInfo.extension"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "System and code pertaining to the specific information regarding special conditions relating to the setting, treatment or patient for which care is sought.",
+            path: "ExplanationOfBenefit.supportingInfo.code"
+        },
+
+        "timingPeriod": {
+            name: "timingPeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date when or period to which this information refers.",
+            path: "ExplanationOfBenefit.supportingInfo.timing[x]"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.supportingInfo.modifierExtension"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.supportingInfo.id"
+        },
+
+        "category": {
+            name: "category",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryThree,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The general class of the information supplied: information; exception; accident, employment; onset, etc.",
+            path: "ExplanationOfBenefit.supportingInfo.category"
+        },
+
+        "valueQuantity": {
+            name: "valueQuantity",
+            dataType: r4:Quantity,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Additional data or information such as resources, documents, images etc. including references to the data or the actual inclusion of the data.",
+            path: "ExplanationOfBenefit.supportingInfo.value[x]"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoRefillNum record {|
+    *C4BBExplanationOfBenefitPharmacyBasisSupportingInfo;
+
+    r4:date timingDate?;
+    r4:Coding reason?;
+    r4:positiveInt sequence;
+    r4:Extension[] extension?;
+    r4:CodeableConcept code?;
+    r4:Period timingPeriod?;
+    r4:Extension[] modifierExtension?;
+    string id?;
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryThree category;
+    r4:Quantity valueQuantity?;
+|};
+
+# C4BBExplanationOfBenefitPharmacyBasisOutcome enum
+public enum C4BBExplanationOfBenefitPharmacyBasisOutcome {
+    CODE_OUTCOME_QUEUED = "queued",
+    CODE_OUTCOME_COMPLETE = "complete",
+    CODE_OUTCOME_ERROR = "error",
+    CODE_OUTCOME_PARTIAL = "partial"
+}
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisBenefitBalance datatype record.
 #
 # + excluded - True if the indicated class of service is excluded from the plan, missing or False indicates the product or service is included in the coverage.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -6102,8 +5896,9 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + category - Code to identify the general type of benefits under which products and services are provided.
 # + network - Is a flag to indicate whether the benefits refer to in-network providers or out-of-network providers.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance",
+    name: "C4BBExplanationOfBenefitPharmacyBasisBenefitBalance",
     baseType: (),
     elements: {
         "excluded": {
@@ -6115,6 +5910,7 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             description: "True if the indicated class of service is excluded from the plan, missing or False indicates the product or service is included in the coverage.",
             path: "ExplanationOfBenefit.benefitBalance.excluded"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -6124,6 +5920,7 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.benefitBalance.extension"
         },
+
         "unit": {
             name: "unit",
             dataType: r4:CodeableConcept,
@@ -6133,15 +5930,17 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             description: "Indicates if the benefits apply to an individual or to the family.",
             path: "ExplanationOfBenefit.benefitBalance.unit"
         },
+
         "financial": {
             name: "financial",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalanceFinancial,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisBenefitBalanceFinancial,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
             description: "Benefits Used to date.",
             path: "ExplanationOfBenefit.benefitBalance.financial"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -6151,6 +5950,7 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.benefitBalance.modifierExtension"
         },
+
         "name": {
             name: "name",
             dataType: string,
@@ -6160,6 +5960,7 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             description: "A short name or tag for the benefit.",
             path: "ExplanationOfBenefit.benefitBalance.name"
         },
+
         "description": {
             name: "description",
             dataType: string,
@@ -6169,6 +5970,7 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             description: "A richer description of the benefit or services covered.",
             path: "ExplanationOfBenefit.benefitBalance.description"
         },
+
         "term": {
             name: "term",
             dataType: r4:CodeableConcept,
@@ -6178,6 +5980,7 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             description: "The term or period of the values such as 'maximum lifetime benefit' or 'maximum annual visits'.",
             path: "ExplanationOfBenefit.benefitBalance.term"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -6187,6 +5990,7 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ExplanationOfBenefit.benefitBalance.id"
         },
+
         "category": {
             name: "category",
             dataType: r4:CodeableConcept,
@@ -6196,6 +6000,7 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             description: "Code to identify the general type of benefits under which products and services are provided.",
             path: "ExplanationOfBenefit.benefitBalance.category"
         },
+
         "network": {
             name: "network",
             dataType: r4:CodeableConcept,
@@ -6206,18 +6011,20 @@ public enum C4BBExplanationOfBenefitOutpatientInstitutionalStatus {
             path: "ExplanationOfBenefit.benefitBalance.network"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisBenefitBalance record {|
     *r4:BackboneElement;
 
     boolean excluded?;
     r4:Extension[] extension?;
     r4:CodeableConcept unit?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalanceFinancial[] financial?;
+    C4BBExplanationOfBenefitPharmacyBasisBenefitBalanceFinancial[] financial?;
     r4:Extension[] modifierExtension?;
     string name?;
     string description?;
@@ -6227,7 +6034,153 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
     r4:CodeableConcept network?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalItemDetailSubDetail datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFour datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFour",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingFour record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
+    r4:code code = "dawcode";
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisProcessNote datatype record.
+#
+# + number - A number to uniquely identify a note entry.
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + language - A code to define the language used in the text of the note.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + text - The explanation or description associated with the processing.
+# + 'type - The business purpose of the note text.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisProcessNote",
+    baseType: (),
+    elements: {
+        "number": {
+            name: "number",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A number to uniquely identify a note entry.",
+            path: "ExplanationOfBenefit.processNote.number"
+        },
+
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "ExplanationOfBenefit.processNote.extension"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "ExplanationOfBenefit.processNote.modifierExtension"
+        },
+
+        "language": {
+            name: "language",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A code to define the language used in the text of the note.",
+            path: "ExplanationOfBenefit.processNote.language"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExplanationOfBenefit.processNote.id"
+        },
+
+        "text": {
+            name: "text",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The explanation or description associated with the processing.",
+            path: "ExplanationOfBenefit.processNote.text"
+        },
+
+        "type": {
+            name: "type",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisProcessNoteType,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The business purpose of the note text.",
+            path: "ExplanationOfBenefit.processNote.type"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisProcessNote record {|
+    *r4:BackboneElement;
+
+    r4:positiveInt number?;
+    r4:Extension[] extension?;
+    r4:Extension[] modifierExtension?;
+    r4:CodeableConcept language?;
+    string id?;
+    string text?;
+    C4BBExplanationOfBenefitPharmacyBasisProcessNoteType 'type?;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAddItem datatype record.
 #
 # + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -6235,18 +6188,27 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
 # + programCode - Identifies the program under which this may be recovered.
 # + modifier - Item typification or modifiers codes to convey additional context for the product or service.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + locationAddress - Where the product or service was provided.
 # + productOrService - When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.
 # + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
+# + servicedPeriod - The date or dates when the service or product was supplied, performed or completed.
 # + adjudication - The adjudication results.
-# + sequence - A claim detail line. Either a simple (a product or service) or a 'group' of sub-details which are simple items.
-# + revenue - The type of revenue or cost center providing the product and/or service.
+# + subDetailSequence - The sequence number of the sub-details woithin the details within the claim item which this line is intended to replace.
+# + itemSequence - Claim items which this service line is intended to replace.
+# + bodySite - Physical service site on the patient (limb, tooth, etc.).
+# + locationCodeableConcept - Where the product or service was provided.
+# + provider - The providers who are authorized for the services rendered to the patient.
+# + detailSequence - The sequence number of the details within the claim item which this line is intended to replace.
+# + subSite - A region or surface of the bodySite, e.g. limb region or tooth surface(s).
+# + detail - The second-tier service adjudications for payor added services.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + udi - Unique Device Identifiers associated with this line item.
-# + category - Code to identify the general type of benefits under which products and services are provided.
+# + locationReference - Where the product or service was provided.
+# + servicedDate - The date or dates when the service or product was supplied, performed or completed.
 # + factor - A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.
 # + net - The quantity times the unit price for an additional service or product or charge.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalItemDetailSubDetail",
+    name: "C4BBExplanationOfBenefitPharmacyBasisAddItem",
     baseType: (),
     elements: {
         "unitPrice": {
@@ -6256,8 +6218,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: 1,
             isArray: false,
             description: "If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.unitPrice"
+            path: "ExplanationOfBenefit.addItem.unitPrice"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -6265,8 +6228,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.extension"
+            path: "ExplanationOfBenefit.addItem.extension"
         },
+
         "quantity": {
             name: "quantity",
             dataType: r4:Quantity,
@@ -6274,8 +6238,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: 1,
             isArray: false,
             description: "The number of repetitions of a service or product.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.quantity"
+            path: "ExplanationOfBenefit.addItem.quantity"
         },
+
         "programCode": {
             name: "programCode",
             dataType: r4:CodeableConcept,
@@ -6283,8 +6248,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: int:MAX_VALUE,
             isArray: true,
             description: "Identifies the program under which this may be recovered.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.programCode"
+            path: "ExplanationOfBenefit.addItem.programCode"
         },
+
         "modifier": {
             name: "modifier",
             dataType: r4:CodeableConcept,
@@ -6292,8 +6258,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: int:MAX_VALUE,
             isArray: true,
             description: "Item typification or modifiers codes to convey additional context for the product or service.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.modifier"
+            path: "ExplanationOfBenefit.addItem.modifier"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -6301,8 +6268,19 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.item.detail.subDetail.modifierExtension"
+            path: "ExplanationOfBenefit.addItem.modifierExtension"
         },
+
+        "locationAddress": {
+            name: "locationAddress",
+            dataType: r4:Address,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Where the product or service was provided.",
+            path: "ExplanationOfBenefit.addItem.location[x]"
+        },
+
         "productOrService": {
             name: "productOrService",
             dataType: r4:CodeableConcept,
@@ -6310,8 +6288,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: 1,
             isArray: false,
             description: "When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.productOrService"
+            path: "ExplanationOfBenefit.addItem.productOrService"
         },
+
         "noteNumber": {
             name: "noteNumber",
             dataType: r4:positiveInt,
@@ -6319,7 +6298,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: int:MAX_VALUE,
             isArray: true,
             description: "The numbers associated with notes below which apply to the adjudication of this item.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.noteNumber"
+            path: "ExplanationOfBenefit.addItem.noteNumber"
+        },
+
+        "servicedPeriod": {
+            name: "servicedPeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date or dates when the service or product was supplied, performed or completed.",
+            path: "ExplanationOfBenefit.addItem.serviced[x]"
         },
 
         "adjudication": {
@@ -6329,27 +6318,89 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: int:MAX_VALUE,
             isArray: true,
             description: "The adjudication results.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.adjudication"
+            path: "ExplanationOfBenefit.addItem.adjudication"
         },
 
-        "sequence": {
-            name: "sequence",
+        "subDetailSequence": {
+            name: "subDetailSequence",
             dataType: r4:positiveInt,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A claim detail line. Either a simple (a product or service) or a 'group' of sub-details which are simple items.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.sequence"
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The sequence number of the sub-details woithin the details within the claim item which this line is intended to replace.",
+            path: "ExplanationOfBenefit.addItem.subDetailSequence"
         },
-        "revenue": {
-            name: "revenue",
+
+        "itemSequence": {
+            name: "itemSequence",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Claim items which this service line is intended to replace.",
+            path: "ExplanationOfBenefit.addItem.itemSequence"
+        },
+
+        "bodySite": {
+            name: "bodySite",
             dataType: r4:CodeableConcept,
             min: 0,
             max: 1,
             isArray: false,
-            description: "The type of revenue or cost center providing the product and/or service.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.revenue"
+            description: "Physical service site on the patient (limb, tooth, etc.).",
+            path: "ExplanationOfBenefit.addItem.bodySite"
         },
+
+        "locationCodeableConcept": {
+            name: "locationCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Where the product or service was provided.",
+            path: "ExplanationOfBenefit.addItem.location[x]"
+        },
+
+        "provider": {
+            name: "provider",
+            dataType: r4:Reference,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The providers who are authorized for the services rendered to the patient.",
+            path: "ExplanationOfBenefit.addItem.provider"
+        },
+
+        "detailSequence": {
+            name: "detailSequence",
+            dataType: r4:positiveInt,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The sequence number of the details within the claim item which this line is intended to replace.",
+            path: "ExplanationOfBenefit.addItem.detailSequence"
+        },
+
+        "subSite": {
+            name: "subSite",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A region or surface of the bodySite, e.g. limb region or tooth surface(s).",
+            path: "ExplanationOfBenefit.addItem.subSite"
+        },
+
+        "detail": {
+            name: "detail",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisAddItemDetail,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The second-tier service adjudications for payor added services.",
+            path: "ExplanationOfBenefit.addItem.detail"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -6357,26 +6408,29 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: 1,
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.id"
+            path: "ExplanationOfBenefit.addItem.id"
         },
-        "udi": {
-            name: "udi",
+
+        "locationReference": {
+            name: "locationReference",
             dataType: r4:Reference,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "Unique Device Identifiers associated with this line item.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.udi"
-        },
-        "category": {
-            name: "category",
-            dataType: r4:CodeableConcept,
             min: 0,
             max: 1,
             isArray: false,
-            description: "Code to identify the general type of benefits under which products and services are provided.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.category"
+            description: "Where the product or service was provided.",
+            path: "ExplanationOfBenefit.addItem.location[x]"
         },
+
+        "servicedDate": {
+            name: "servicedDate",
+            dataType: r4:date,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The date or dates when the service or product was supplied, performed or completed.",
+            path: "ExplanationOfBenefit.addItem.serviced[x]"
+        },
+
         "factor": {
             name: "factor",
             dataType: decimal,
@@ -6384,8 +6438,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: 1,
             isArray: false,
             description: "A real number that represents a multiplier used in determining the overall value of services delivered and/or goods received. The concept of a Factor allows for a discount or surcharge multiplier to be applied to a monetary amount.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.factor"
+            path: "ExplanationOfBenefit.addItem.factor"
         },
+
         "net": {
             name: "net",
             dataType: r4:Money,
@@ -6393,15 +6448,17 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalBenefitBalance record
             max: 1,
             isArray: false,
             description: "The quantity times the unit price for an additional service or product or charge.",
-            path: "ExplanationOfBenefit.item.detail.subDetail.net"
+            path: "ExplanationOfBenefit.addItem.net"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalItemDetailSubDetail record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisAddItem record {|
     *r4:BackboneElement;
 
     r4:Money unitPrice?;
@@ -6410,28 +6467,37 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemDetailSubDetail r
     r4:CodeableConcept[] programCode?;
     r4:CodeableConcept[] modifier?;
     r4:Extension[] modifierExtension?;
+    r4:Address locationAddress?;
     r4:CodeableConcept productOrService;
     r4:positiveInt[] noteNumber?;
+    r4:Period servicedPeriod?;
     international401:ExplanationOfBenefitItemAdjudication[] adjudication?;
-    r4:positiveInt sequence;
-    r4:CodeableConcept revenue?;
+    r4:positiveInt[] subDetailSequence?;
+    r4:positiveInt[] itemSequence?;
+    r4:CodeableConcept bodySite?;
+    r4:CodeableConcept locationCodeableConcept?;
+    r4:Reference[] provider?;
+    r4:positiveInt[] detailSequence?;
+    r4:CodeableConcept[] subSite?;
+    C4BBExplanationOfBenefitPharmacyBasisAddItemDetail[] detail?;
     string id?;
-    r4:Reference[] udi?;
-    r4:CodeableConcept category?;
+    r4:Reference locationReference?;
+    r4:date servicedDate?;
     decimal factor?;
     r4:Money net?;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryOne datatype record.
 #
 # + coding - A reference to a code defined by a terminology system.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory",
+    name: "C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryOne",
     baseType: (),
     elements: {
         "coding": {
             name: "coding",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCoding,
+            dataType: C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCodingOne,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -6439,12 +6505,14 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalItemDetailSubDetail r
             path: "ExplanationOfBenefit.adjudication.category.coding"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory record {|
+
+public type C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryOne record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
@@ -6457,10 +6525,94 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory 
             message: "Validation failed for $.ExplanationOfBenefit.adjudication.category.coding constraint. This field must be an array containing at most one item."
         }
     }
-    C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryCoding[] coding;
+    C4BBExplanationOfBenefitPharmacyBasisAdjudicationCategoryCodingOne[] coding;
 |};
 
-# FHIR C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationAdjustmentreason datatype record.
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategory datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategory",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategory record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.supportingInfo.category.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCoding[] coding;
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingThree datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingThree",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "ExplanationOfBenefit.supportingInfo.category.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type C4BBExplanationOfBenefitPharmacyBasisSupportingInfoCategoryCodingThree record {|
+    *r4:Coding;
+
+    r4:uri system = "http://hl7.org/fhir/us/carin-bb/CodeSystem/C4BBSupportingInfoType";
+    r4:code code = "refillnum";
+|};
+
+# FHIR C4BBExplanationOfBenefitPharmacyBasisItemAdjudication datatype record.
 #
 # + reason - A code supporting the understanding of the adjudication result and explaining variance from expected amount.
 # + amount - Monetary amount associated with the category.
@@ -6469,19 +6621,21 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory 
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + category - A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.
 # + value - A non-monetary value associated with the category. Mutually exclusive to the amount element above.
+
 @r4:DataTypeDefinition {
-    name: "C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationAdjustmentreason",
+    name: "C4BBExplanationOfBenefitPharmacyBasisItemAdjudication",
     baseType: (),
     elements: {
         "reason": {
             name: "reason",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "A code supporting the understanding of the adjudication result and explaining variance from expected amount.",
-            path: "ExplanationOfBenefit.adjudication.reason"
+            path: "ExplanationOfBenefit.item.adjudication.reason"
         },
+
         "amount": {
             name: "amount",
             dataType: r4:Money,
@@ -6489,8 +6643,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory 
             max: 1,
             isArray: false,
             description: "Monetary amount associated with the category.",
-            path: "ExplanationOfBenefit.adjudication.amount"
+            path: "ExplanationOfBenefit.item.adjudication.amount"
         },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -6498,8 +6653,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory 
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "ExplanationOfBenefit.adjudication.extension"
+            path: "ExplanationOfBenefit.item.adjudication.extension"
         },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -6507,8 +6663,9 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory 
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "ExplanationOfBenefit.adjudication.modifierExtension"
+            path: "ExplanationOfBenefit.item.adjudication.modifierExtension"
         },
+
         "id": {
             name: "id",
             dataType: string,
@@ -6516,17 +6673,19 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory 
             max: 1,
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExplanationOfBenefit.adjudication.id"
+            path: "ExplanationOfBenefit.item.adjudication.id"
         },
+
         "category": {
             name: "category",
-            dataType: C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryTwo,
+            dataType: r4:CodeableConcept,
             min: 1,
             max: 1,
             isArray: false,
             description: "A code to indicate the information type of this adjudication record. Information types may include: the value submitted, maximum values or percentages allowed or payable under the plan, amounts that the patient is responsible for in-aggregate or pertaining to this item, amounts paid by other coverages, and the benefit payable for this item.",
-            path: "ExplanationOfBenefit.adjudication.category"
+            path: "ExplanationOfBenefit.item.adjudication.category"
         },
+
         "value": {
             name: "value",
             dataType: decimal,
@@ -6534,23 +6693,25 @@ public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategory 
             max: 1,
             isArray: false,
             description: "A non-monetary value associated with the category. Mutually exclusive to the amount element above.",
-            path: "ExplanationOfBenefit.adjudication.value"
+            path: "ExplanationOfBenefit.item.adjudication.value"
         }
     },
+
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationAdjustmentreason record {|
-    *C4BBExplanationOfBenefitOutpatientInstitutionalAdjudication;
 
-    r4:CodeableConcept reason;
+public type C4BBExplanationOfBenefitPharmacyBasisItemAdjudication record {|
+    *r4:BackboneElement;
+
+    r4:CodeableConcept reason?;
     r4:Money amount?;
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
-    C4BBExplanationOfBenefitOutpatientInstitutionalAdjudicationCategoryTwo category;
+    r4:CodeableConcept category;
     decimal value?;
 |};
 

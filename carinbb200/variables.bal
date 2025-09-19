@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -48,7 +48,7 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> CARINCONSUMERDIRECTEDPA
             name: "ExplanationOfBenefit_ServiceStartDate",
             'type: r4:DATE,
             base: ["ExplanationOfBenefit"],
-            expression: "ExplanationOfBenefit.billablePeriod.start | ExplanationOfBenefit.item.servicedDate | ExplanationOfBenefit.item.servicedPeriod.start"
+            expression: "ExplanationOfBenefit.billablePeriod.start | ExplanationOfBenefit.item.serviced.ofType(date) | ExplanationOfBenefit.item.serviced.ofType(Period).start"
         }
     ],
     "ExplanationOfBenefit_Patient": [
