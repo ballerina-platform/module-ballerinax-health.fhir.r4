@@ -399,7 +399,7 @@ public enum CRDCoverageIdentifierUse {
     "valueMoney": {
             name: "valueMoney",
             dataType: r4:Money,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The amount due from the patient for the cost category.",
@@ -439,7 +439,7 @@ public enum CRDCoverageIdentifierUse {
     "valueQuantity": {
             name: "valueQuantity",
             dataType: r4:Quantity,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The amount due from the patient for the cost category.",
@@ -457,11 +457,11 @@ public type CRDCoverageCostToBeneficiary record {|
 
 CRDCoverageCostToBeneficiaryException   [] exception?;
 r4:Extension   [] extension?;
-r4:Money valueMoney;
+    r4:Money valueMoney?;
 r4:Extension   [] modifierExtension?;
 string id?;
 r4:CodeableConcept 'type?;
-r4:Quantity valueQuantity;
+    r4:Quantity valueQuantity?;
 |};
 
 # FHIR CRDCoverageClass datatype record.

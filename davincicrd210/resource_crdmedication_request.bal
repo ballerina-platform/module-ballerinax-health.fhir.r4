@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_CRDMEDICATIONREQUEST = "http://hl7.org/fhir/us/davinci-crd/StructureDefinition/profile-medicationrequest";
 public const RESOURCE_NAME_CRDMEDICATIONREQUEST = "MedicationRequest";
 
+public type CRDMedicationRequestExtensions (ExtCoverageInformation|r4:Extension);
+
 # FHIR CRDMedicationRequest resource record.
 #
 # + resourceType - The type of the resource describes
@@ -181,7 +183,7 @@ public const RESOURCE_NAME_CRDMEDICATIONREQUEST = "MedicationRequest";
     "medicationReference" : {
             name: "medicationReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
         path: "MedicationRequest.medication[x]",
@@ -355,7 +357,7 @@ public const RESOURCE_NAME_CRDMEDICATIONREQUEST = "MedicationRequest";
     "medicationCodeableConcept" : {
             name: "medicationCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
         path: "MedicationRequest.medication[x]",
@@ -488,7 +490,7 @@ r4:Extension   [] modifierExtension?;
 r4:Reference   [] reasonReference?;
 r4:code language?;
 r4:uri   [] instantiatesUri?;
-r4:Reference medicationReference;
+    r4:Reference medicationReference?;
 r4:Reference reportedReference?;
 r4:CodeableConcept statusReason?;
 CRDMedicationRequestDispenseRequest dispenseRequest?;
@@ -507,7 +509,7 @@ r4:Reference   [] detectedIssue?;
 r4:Reference   [] supportingInformation?;
 r4:Reference encounter?;
 r4:canonical   [] instantiatesCanonical?;
-r4:CodeableConcept medicationCodeableConcept;
+    r4:CodeableConcept medicationCodeableConcept?;
 CRDMedicationRequestPriority priority?;
 CRDMedicationRequestIntent intent;
 r4:CodeableConcept performerType?;
@@ -703,7 +705,7 @@ public enum CRDMedicationRequestPriority {
     "allowedCodeableConcept": {
             name: "allowedCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "True if the prescriber allows a different drug to be dispensed from what was prescribed.",
@@ -743,7 +745,7 @@ public enum CRDMedicationRequestPriority {
     "allowedBoolean": {
             name: "allowedBoolean",
             dataType: boolean,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "True if the prescriber allows a different drug to be dispensed from what was prescribed.",
@@ -769,11 +771,11 @@ public enum CRDMedicationRequestPriority {
 public type CRDMedicationRequestSubstitution record {|
     *r4:BackboneElement;
 
-r4:CodeableConcept allowedCodeableConcept;
+    r4:CodeableConcept allowedCodeableConcept?;
 r4:CodeableConcept reason?;
 r4:Extension   [] extension?;
 r4:Extension   [] modifierExtension?;
-boolean allowedBoolean;
+    boolean allowedBoolean?;
 string id?;
 |};
 
