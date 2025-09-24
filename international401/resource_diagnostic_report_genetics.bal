@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,27 +22,12 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_DIAGNOSTICREPORT_GENETICS = "http://hl7.org/fhir/StructureDefinition/diagnosticreport-genetics";
 public const RESOURCE_NAME_DIAGNOSTICREPORT_GENETICS = "DiagnosticReport";
 
+public type DiagnosticReport_GeneticsExtensions (BusinessEvent|DiagnosticReportAddendumOf|DiagnosticReportExtends|DiagnosticReportFocus|DiagnosticReportGeneticsAnalysis|DiagnosticReportGeneticsAssessedCondition|DiagnosticReportGeneticsFamilyMemberHistory|DiagnosticReportGeneticsReferences|DiagnosticReportLocationPerformed|DiagnosticReportReplaces|DiagnosticReportRisk|DiagnosticReportSummaryOf|DiagnosticReportWorkflowStatus|EventEventHistory|EventLocation|EventPartOf|EventStatusReason|r4:Extension|HlaGenotypingResultsAlleleDatabase|HlaGenotypingResultsGlstring|HlaGenotypingResultsHaploid|HlaGenotypingResultsMethod|ServicerequestGeneticsItem|WorkflowAdheresTo|WorkflowEpisodeOfCare|WorkflowInstantiatesCanonical|WorkflowInstantiatesUri|WorkflowReason|WorkflowReasonCode|WorkflowReasonReference|WorkflowRelatedArtifact|WorkflowResearchStudy|WorkflowSupportingInfo|WorkflowTriggeredBy);
+
 # FHIR DiagnosticReport_Genetics resource record.
 #
 # + resourceType - The type of the resource describes
 # + extension - An Extension
-# * extension Slicings
-# 1) Extension: AssessedCondition
-#       - min = 0
-#       - max = *
-#
-# 2) Extension: FamilyHistory
-#       - min = 0
-#       - max = *
-#
-# 3) Extension: Analysis
-#       - min = 0
-#       - max = *
-#
-# 4) Extension: References
-#       - min = 0
-#       - max = *
-#
 # + code - A code or name that describes this diagnostic report.
 # + subject - The subject of the report. Usually, but not always, this is a patient. However, diagnostic services also perform analyses on specimens collected from a variety of other sources.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the resource and that modifies the understanding of the element that contains it and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer is allowed to define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
@@ -225,7 +210,7 @@ public const RESOURCE_NAME_DIAGNOSTICREPORT_GENETICS = "DiagnosticReport";
             dataType: r4:CodeableConcept,
             min: 0,
             max: 0,
-            isArray: false,
+            isArray: true,
             path: "DiagnosticReport.conclusionCode",
             valueSet: "http://hl7.org/fhir/ValueSet/clinical-findings"
         },
@@ -324,7 +309,7 @@ public type DiagnosticReport_Genetics record {|
     r4:Reference[] performer?;
     r4:Period effectivePeriod?;
     r4:Reference[] resultsInterpreter?;
-    r4:CodeableConcept conclusionCode?;
+    r4:CodeableConcept[] conclusionCode?;
     r4:Reference encounter?;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime?;

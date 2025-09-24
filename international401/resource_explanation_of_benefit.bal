@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_EXPLANATIONOFBENEFIT = "http://hl7.org/fhir/StructureDefinition/ExplanationOfBenefit";
 public const RESOURCE_NAME_EXPLANATIONOFBENEFIT = "ExplanationOfBenefit";
+
+public type ExplanationOfBenefitExtensions (EventBasedOn|r4:Extension);
 
 # FHIR ExplanationOfBenefit resource record.
 #
@@ -58,6 +60,7 @@ public const RESOURCE_NAME_EXPLANATIONOFBENEFIT = "ExplanationOfBenefit";
 # + extension - May be used to represent additional information that is not part of the basic definition of the resource. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + benefitBalance - Balance by Benefit Category.
 # + accident - Details of a accident which resulted in injuries which required the products and services listed in the claim.
+# + adjudication - The adjudication results which are presented at the header level rather than at the line-item or add-item levels.
 # + addItem - The first-tier service adjudications for payor added product or service lines.
 # + total - Categorized monetary totals for the adjudication.
 # + related - Other claims which are related to this claim such as prior submissions or claims for related services or for the same event.
@@ -343,6 +346,16 @@ public const RESOURCE_NAME_EXPLANATIONOFBENEFIT = "ExplanationOfBenefit";
             isArray: false,
             path: "ExplanationOfBenefit.accident"
         },
+
+        "adjudication": {
+            name: "adjudication",
+            dataType: ExplanationOfBenefitItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            path: "ExplanationOfBenefit.adjudication"
+        },
+
         "addItem" : {
             name: "addItem",
             dataType: ExplanationOfBenefitAddItem,
@@ -504,7 +517,10 @@ public type ExplanationOfBenefit record {|
 
     r4:Period benefitPeriod?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ExplanationOfBenefit.insurance constraint. This field must be an array containing at least one item."
+        }
     }
     ExplanationOfBenefitInsurance[] insurance;
     r4:Reference claimResponse?;
@@ -537,6 +553,7 @@ public type ExplanationOfBenefit record {|
     r4:Extension[] extension?;
     ExplanationOfBenefitBenefitBalance[] benefitBalance?;
     ExplanationOfBenefitAccident accident?;
+    ExplanationOfBenefitItemAdjudication[] adjudication?;
     ExplanationOfBenefitAddItem[] addItem?;
     ExplanationOfBenefitTotal[] total?;
     ExplanationOfBenefitRelated[] related?;
@@ -685,6 +702,7 @@ public type ExplanationOfBenefitPayment record {|
 # + subDetail - Third-tier of goods and services.
 # + productOrService - When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.
 # + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
+# + adjudication - The adjudication results.
 # + sequence - A claim detail line. Either a simple (a product or service) or a 'group' of sub-details which are simple items.
 # + revenue - The type of revenue or cost center providing the product and/or service.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
@@ -777,6 +795,17 @@ public type ExplanationOfBenefitPayment record {|
             description: "The numbers associated with notes below which apply to the adjudication of this item.",
             path: "ExplanationOfBenefit.item.detail.noteNumber"
         },
+
+        "adjudication": {
+            name: "adjudication",
+            dataType: ExplanationOfBenefitItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ExplanationOfBenefit.item.detail.adjudication"
+        },
+
         "sequence": {
             name: "sequence",
             dataType: r4:positiveInt,
@@ -858,6 +887,7 @@ public type ExplanationOfBenefitItemDetail record {|
     ExplanationOfBenefitItemDetailSubDetail[] subDetail?;
     r4:CodeableConcept productOrService;
     r4:positiveInt[] noteNumber?;
+    ExplanationOfBenefitItemAdjudication[] adjudication?;
     r4:positiveInt sequence;
     r4:CodeableConcept revenue?;
     string id?;
@@ -979,27 +1009,27 @@ public type ExplanationOfBenefitDiagnosis record {|
     r4:Extension[] modifierExtension?;
     string id?;
     r4:CodeableConcept[] 'type?;
-    r4:Reference diagnosisReference;
-    r4:CodeableConcept diagnosisCodeableConcept;
+    r4:Reference diagnosisReference?;
+    r4:CodeableConcept diagnosisCodeableConcept?;
 |};
 
 # FHIR ExplanationOfBenefitBenefitBalanceFinancial datatype record.
 #
-# + allowedExplanationOfBenefitMoney - The quantity of the benefit which is permitted under the coverage.
+# + allowedMoney - The quantity of the benefit which is permitted under the coverage.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + allowedExplanationOfBenefitUnsignedInt - The quantity of the benefit which is permitted under the coverage.
-# + allowedExplanationOfBenefitString - The quantity of the benefit which is permitted under the coverage.
+# + allowedString - The quantity of the benefit which is permitted under the coverage.
+# + allowedUnsignedInt - The quantity of the benefit which is permitted under the coverage.
+# + usedUnsignedInt - The quantity of the benefit which have been consumed to date.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + usedExplanationOfBenefitUnsignedInt - The quantity of the benefit which have been consumed to date.
+# + usedMoney - The quantity of the benefit which have been consumed to date.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-# + usedExplanationOfBenefitMoney - The quantity of the benefit which have been consumed to date.
 # + 'type - Classification of benefit being provided.
 @r4:DataTypeDefinition {
     name: "ExplanationOfBenefitBenefitBalanceFinancial",
     baseType: (),
     elements: {
-        "allowedExplanationOfBenefitMoney": {
-            name: "allowedExplanationOfBenefitMoney",
+        "allowedMoney": {
+            name: "allowedMoney",
             dataType: r4:Money,
             min: 0,
             max: 1,
@@ -1016,17 +1046,9 @@ public type ExplanationOfBenefitDiagnosis record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExplanationOfBenefit.benefitBalance.financial.extension"
         },
-        "allowedExplanationOfBenefitUnsignedInt": {
-            name: "allowedExplanationOfBenefitUnsignedInt",
-            dataType: r4:unsignedInt,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The quantity of the benefit which is permitted under the coverage.",
-            path: "ExplanationOfBenefit.benefitBalance.financial.allowed[x]"
-        },
-        "allowedExplanationOfBenefitString": {
-            name: "allowedExplanationOfBenefitString",
+
+        "allowedString": {
+            name: "allowedString",
             dataType: string,
             min: 0,
             max: 1,
@@ -1034,6 +1056,27 @@ public type ExplanationOfBenefitDiagnosis record {|
             description: "The quantity of the benefit which is permitted under the coverage.",
             path: "ExplanationOfBenefit.benefitBalance.financial.allowed[x]"
         },
+
+        "allowedUnsignedInt": {
+            name: "allowedUnsignedInt",
+            dataType: r4:unsignedInt,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The quantity of the benefit which is permitted under the coverage.",
+            path: "ExplanationOfBenefit.benefitBalance.financial.allowed[x]"
+        },
+
+        "usedUnsignedInt": {
+            name: "usedUnsignedInt",
+            dataType: r4:unsignedInt,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The quantity of the benefit which have been consumed to date.",
+            path: "ExplanationOfBenefit.benefitBalance.financial.used[x]"
+        },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -1043,9 +1086,10 @@ public type ExplanationOfBenefitDiagnosis record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExplanationOfBenefit.benefitBalance.financial.modifierExtension"
         },
-        "usedExplanationOfBenefitUnsignedInt": {
-            name: "usedExplanationOfBenefitUnsignedInt",
-            dataType: r4:unsignedInt,
+
+        "usedMoney": {
+            name: "usedMoney",
+            dataType: r4:Money,
             min: 0,
             max: 1,
             isArray: false,
@@ -1061,15 +1105,7 @@ public type ExplanationOfBenefitDiagnosis record {|
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "ExplanationOfBenefit.benefitBalance.financial.id"
         },
-        "usedExplanationOfBenefitMoney": {
-            name: "usedExplanationOfBenefitMoney",
-            dataType: r4:Money,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The quantity of the benefit which have been consumed to date.",
-            path: "ExplanationOfBenefit.benefitBalance.financial.used[x]"
-        },
+
         "type": {
             name: "type",
             dataType: r4:CodeableConcept,
@@ -1088,19 +1124,20 @@ public type ExplanationOfBenefitDiagnosis record {|
 public type ExplanationOfBenefitBenefitBalanceFinancial record {|
     *r4:BackboneElement;
 
-    r4:Money allowedExplanationOfBenefitMoney?;
+    r4:Money allowedMoney?;
     r4:Extension[] extension?;
-    r4:unsignedInt allowedExplanationOfBenefitUnsignedInt?;
-    string allowedExplanationOfBenefitString?;
+    string allowedString?;
+    r4:unsignedInt allowedUnsignedInt?;
+    r4:unsignedInt usedUnsignedInt?;
     r4:Extension[] modifierExtension?;
-    r4:unsignedInt usedExplanationOfBenefitUnsignedInt?;
+    r4:Money usedMoney?;
     string id?;
-    r4:Money usedExplanationOfBenefitMoney?;
     r4:CodeableConcept 'type;
 |};
 
 # FHIR ExplanationOfBenefitAddItemDetail datatype record.
 #
+# + adjudication - The adjudication results.
 # + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + quantity - The number of repetitions of a service or product.
@@ -1116,6 +1153,16 @@ public type ExplanationOfBenefitBenefitBalanceFinancial record {|
     name: "ExplanationOfBenefitAddItemDetail",
     baseType: (),
     elements: {
+        "adjudication": {
+            name: "adjudication",
+            dataType: ExplanationOfBenefitItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ExplanationOfBenefit.addItem.detail.adjudication"
+        },
+
         "unitPrice": {
             name: "unitPrice",
             dataType: r4:Money,
@@ -1224,6 +1271,7 @@ public type ExplanationOfBenefitBenefitBalanceFinancial record {|
 public type ExplanationOfBenefitAddItemDetail record {|
     *r4:BackboneElement;
 
+    ExplanationOfBenefitItemAdjudication[] adjudication?;
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -1321,6 +1369,7 @@ public type ExplanationOfBenefitPayee record {|
 # + productOrService - When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.
 # + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
 # + servicedPeriod - The date or dates when the service or product was supplied, performed or completed.
+# + adjudication - The adjudication results.
 # + subDetailSequence - The sequence number of the sub-details woithin the details within the claim item which this line is intended to replace.
 # + itemSequence - Claim items which this service line is intended to replace.
 # + bodySite - Physical service site on the patient (limb, tooth, etc.).
@@ -1428,6 +1477,17 @@ public type ExplanationOfBenefitPayee record {|
             description: "The date or dates when the service or product was supplied, performed or completed.",
             path: "ExplanationOfBenefit.addItem.serviced[x]"
         },
+
+        "adjudication": {
+            name: "adjudication",
+            dataType: ExplanationOfBenefitItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ExplanationOfBenefit.addItem.adjudication"
+        },
+
         "subDetailSequence": {
             name: "subDetailSequence",
             dataType: r4:positiveInt,
@@ -1564,6 +1624,7 @@ public type ExplanationOfBenefitAddItem record {|
     r4:CodeableConcept productOrService;
     r4:positiveInt[] noteNumber?;
     r4:Period servicedPeriod?;
+    ExplanationOfBenefitItemAdjudication[] adjudication?;
     r4:positiveInt[] subDetailSequence?;
     r4:positiveInt[] itemSequence?;
     r4:CodeableConcept bodySite?;
@@ -1695,9 +1756,9 @@ public type ExplanationOfBenefitProcedure record {|
     r4:dateTime date?;
     r4:positiveInt sequence;
     r4:Extension[] extension?;
-    r4:CodeableConcept procedureCodeableConcept;
+    r4:CodeableConcept procedureCodeableConcept?;
     r4:Extension[] modifierExtension?;
-    r4:Reference procedureReference;
+    r4:Reference procedureReference?;
     string id?;
     r4:Reference[] udi?;
     r4:CodeableConcept[] 'type?;
@@ -2498,6 +2559,7 @@ public type ExplanationOfBenefitItemAdjudication record {|
 
 # FHIR ExplanationOfBenefitAddItemDetailSubDetail datatype record.
 #
+# + adjudication - The adjudication results.
 # + unitPrice - If the item is not a group then this is the fee for the product or service, otherwise this is the total of the fees for the details of the group.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + quantity - The number of repetitions of a service or product.
@@ -2512,6 +2574,16 @@ public type ExplanationOfBenefitItemAdjudication record {|
     name: "ExplanationOfBenefitAddItemDetailSubDetail",
     baseType: (),
     elements: {
+        "adjudication": {
+            name: "adjudication",
+            dataType: ExplanationOfBenefitItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ExplanationOfBenefit.addItem.detail.subDetail.adjudication"
+        },
+
         "unitPrice": {
             name: "unitPrice",
             dataType: r4:Money,
@@ -2611,6 +2683,7 @@ public type ExplanationOfBenefitItemAdjudication record {|
 public type ExplanationOfBenefitAddItemDetailSubDetail record {|
     *r4:BackboneElement;
 
+    ExplanationOfBenefitItemAdjudication[] adjudication?;
     r4:Money unitPrice?;
     r4:Extension[] extension?;
     r4:Quantity quantity?;
@@ -2727,6 +2800,7 @@ public type ExplanationOfBenefitProcessNote record {|
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + productOrService - When the value is a group code then this item collects a set of related claim details, otherwise this contains the product, service, drug or other billing code for the item.
 # + noteNumber - The numbers associated with notes below which apply to the adjudication of this item.
+# + adjudication - The adjudication results.
 # + sequence - A claim detail line. Either a simple (a product or service) or a 'group' of sub-details which are simple items.
 # + revenue - The type of revenue or cost center providing the product and/or service.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
@@ -2810,6 +2884,17 @@ public type ExplanationOfBenefitProcessNote record {|
             description: "The numbers associated with notes below which apply to the adjudication of this item.",
             path: "ExplanationOfBenefit.item.detail.subDetail.noteNumber"
         },
+
+        "adjudication": {
+            name: "adjudication",
+            dataType: ExplanationOfBenefitItemAdjudication,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The adjudication results.",
+            path: "ExplanationOfBenefit.item.detail.subDetail.adjudication"
+        },
+
         "sequence": {
             name: "sequence",
             dataType: r4:positiveInt,
@@ -2890,6 +2975,7 @@ public type ExplanationOfBenefitItemDetailSubDetail record {|
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept productOrService;
     r4:positiveInt[] noteNumber?;
+    ExplanationOfBenefitItemAdjudication[] adjudication?;
     r4:positiveInt sequence;
     r4:CodeableConcept revenue?;
     string id?;

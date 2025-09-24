@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_EVENTDEFINITION = "http://hl7.org/fhir/StructureDefinition/EventDefinition";
 public const RESOURCE_NAME_EVENTDEFINITION = "EventDefinition";
+
+public type EventDefinitionExtensions (r4:Extension|Replaces);
 
 # FHIR EventDefinition resource record.
 #
@@ -405,7 +407,10 @@ public type EventDefinition record {|
     r4:ContactDetail[] author?;
     r4:ContactDetail[] reviewer?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.EventDefinition.trigger constraint. This field must be an array containing at least one item."
+        }
     }
     r4:TriggerDefinition[] trigger;
     r4:Reference subjectReference?;

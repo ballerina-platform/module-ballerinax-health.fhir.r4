@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -19,10 +19,12 @@
 
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_SHAREABLE_MEASURE = "http://hl7.org/fhir/StructureDefinition/shareablemeasure";
-public const RESOURCE_NAME_SHAREABLE_MEASURE = "Measure";
+public const string PROFILE_BASE_SHAREABLEMEASURE = "http://hl7.org/fhir/StructureDefinition/shareablemeasure";
+public const RESOURCE_NAME_SHAREABLEMEASURE = "Measure";
 
-# FHIR Shareable_Measure resource record.
+public type ShareableMeasureExtensions (CqfImprovementNotationGuidance|CqfTargetInvariant|r4:Extension|Replaces|TargetConstraint|Variable|WorkflowShallComplyWith);
+
+# FHIR ShareableMeasure resource record.
 #
 # + resourceType - The type of the resource describes
 # + date - The date (and optionally time) when the measure was published. The date must change when the business version changes and it must change if the status code changes. In addition, it should change when the substantive content of the measure changes.
@@ -180,7 +182,7 @@ public const RESOURCE_NAME_SHAREABLE_MEASURE = "Measure";
         },
         "group" : {
             name: "group",
-            dataType: Shareable_MeasureGroup,
+            dataType: ShareableMeasureGroup,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -237,7 +239,7 @@ public const RESOURCE_NAME_SHAREABLE_MEASURE = "Measure";
         },
         "supplementalData" : {
             name: "supplementalData",
-            dataType: Shareable_MeasureSupplementalData,
+            dataType: ShareableMeasureSupplementalData,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -318,7 +320,7 @@ public const RESOURCE_NAME_SHAREABLE_MEASURE = "Measure";
         },
         "status" : {
             name: "status",
-            dataType: Shareable_MeasureStatus,
+            dataType: ShareableMeasureStatus,
             min: 1,
             max: 1,
             isArray: false,
@@ -496,10 +498,11 @@ public const RESOURCE_NAME_SHAREABLE_MEASURE = "Measure";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type Shareable_Measure record {|
+
+public type ShareableMeasure record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_SHAREABLE_MEASURE resourceType = RESOURCE_NAME_SHAREABLE_MEASURE;
+    RESOURCE_NAME_SHAREABLEMEASURE resourceType = RESOURCE_NAME_SHAREABLEMEASURE;
 
     r4:dateTime date?;
     r4:markdown copyright?;
@@ -513,14 +516,14 @@ public type Shareable_Measure record {|
     r4:ContactDetail[] endorser?;
     string id?;
     r4:Narrative text?;
-    Shareable_MeasureGroup[] group?;
+    ShareableMeasureGroup[] group?;
     r4:Identifier[] identifier?;
     r4:RelatedArtifact[] relatedArtifact?;
     r4:Period effectivePeriod?;
     string rateAggregation?;
     r4:ContactDetail[] author?;
     r4:CodeableConcept compositeScoring?;
-    Shareable_MeasureSupplementalData[] supplementalData?;
+    ShareableMeasureSupplementalData[] supplementalData?;
     string 'version;
     r4:date lastReviewDate?;
     r4:Meta meta?;
@@ -530,7 +533,7 @@ public type Shareable_Measure record {|
     string publisher;
     r4:CodeableConcept[] topic?;
     r4:UsageContext[] useContext?;
-    Shareable_MeasureStatus status;
+    ShareableMeasureStatus status;
     r4:markdown clinicalRecommendationStatement?;
     r4:Extension[] extension?;
     r4:date approvalDate?;
@@ -554,7 +557,110 @@ public type Shareable_Measure record {|
     r4:Element ...;
 |};
 
-# FHIR Shareable_MeasureGroup datatype record.
+# FHIR ShareableMeasureSupplementalData datatype record.
+#
+# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + code - Indicates a meaning for the supplemental data. This can be as simple as a unique identifier, or it can establish meaning in a broader context by drawing from a terminology, allowing supplemental data to be correlated across measures.
+# + criteria - The criteria for the supplemental data. This is typically the name of a valid expression defined within a referenced library, but it may also be a path to a specific data element. The criteria defines the data to be returned for this element.
+# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + usage - An indicator of the intended usage for the supplemental data element. Supplemental data indicates the data is additional information requested to augment the measure information. Risk adjustment factor indicates the data is additional information used to calculate risk adjustment factors when applying a risk model to the measure calculation.
+# + description - The human readable description of this supplemental data.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+
+@r4:DataTypeDefinition {
+    name: "ShareableMeasureSupplementalData",
+    baseType: (),
+    elements: {
+        "extension": {
+            name: "extension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
+            path: "Measure.supplementalData.extension"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Indicates a meaning for the supplemental data. This can be as simple as a unique identifier, or it can establish meaning in a broader context by drawing from a terminology, allowing supplemental data to be correlated across measures.",
+            path: "Measure.supplementalData.code"
+        },
+
+        "criteria": {
+            name: "criteria",
+            dataType: r4:Expression,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The criteria for the supplemental data. This is typically the name of a valid expression defined within a referenced library, but it may also be a path to a specific data element. The criteria defines the data to be returned for this element.",
+            path: "Measure.supplementalData.criteria"
+        },
+
+        "modifierExtension": {
+            name: "modifierExtension",
+            dataType: r4:Extension,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
+            path: "Measure.supplementalData.modifierExtension"
+        },
+
+        "usage": {
+            name: "usage",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "An indicator of the intended usage for the supplemental data element. Supplemental data indicates the data is additional information requested to augment the measure information. Risk adjustment factor indicates the data is additional information used to calculate risk adjustment factors when applying a risk model to the measure calculation.",
+            path: "Measure.supplementalData.usage"
+        },
+
+        "description": {
+            name: "description",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The human readable description of this supplemental data.",
+            path: "Measure.supplementalData.description"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "Measure.supplementalData.id"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type ShareableMeasureSupplementalData record {|
+    *r4:BackboneElement;
+
+    r4:Extension[] extension?;
+    r4:CodeableConcept code?;
+    r4:Expression criteria;
+    r4:Extension[] modifierExtension?;
+    r4:CodeableConcept[] usage?;
+    string description?;
+    string id?;
+|};
+
+# FHIR ShareableMeasureGroup datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - Indicates a meaning for the group. This can be as simple as a unique identifier, or it can establish meaning in a broader context by drawing from a terminology, allowing groups to be correlated across measures.
@@ -564,7 +670,7 @@ public type Shareable_Measure record {|
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + population - A population criteria for the measure.
 @r4:DataTypeDefinition {
-    name: "Shareable_MeasureGroup",
+    name: "ShareableMeasureGroup",
     baseType: (),
     elements: {
         "extension": {
@@ -605,7 +711,7 @@ public type Shareable_Measure record {|
         },
         "stratifier": {
             name: "stratifier",
-            dataType: Shareable_MeasureGroupStratifier,
+            dataType: ShareableMeasureGroupStratifier,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -623,7 +729,7 @@ public type Shareable_Measure record {|
         },
         "population": {
             name: "population",
-            dataType: Shareable_MeasureGroupPopulation,
+            dataType: ShareableMeasureGroupPopulation,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -636,29 +742,29 @@ public type Shareable_Measure record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Shareable_MeasureGroup record {|
+
+public type ShareableMeasureGroup record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Extension[] modifierExtension?;
     string description?;
-    Shareable_MeasureGroupStratifier[] stratifier?;
+    ShareableMeasureGroupStratifier[] stratifier?;
     string id?;
-    Shareable_MeasureGroupPopulation[] population?;
+    ShareableMeasureGroupPopulation[] population?;
 |};
 
-# FHIR Shareable_MeasureSupplementalData datatype record.
+# FHIR ShareableMeasureGroupStratifierComponent datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - Indicates a meaning for the supplemental data. This can be as simple as a unique identifier, or it can establish meaning in a broader context by drawing from a terminology, allowing supplemental data to be correlated across measures.
-# + criteria - The criteria for the supplemental data. This is typically the name of a valid expression defined within a referenced library, but it may also be a path to a specific data element. The criteria defines the data to be returned for this element.
+# + code - Indicates a meaning for the stratifier component. This can be as simple as a unique identifier, or it can establish meaning in a broader context by drawing from a terminology, allowing stratifiers to be correlated across measures.
+# + criteria - An expression that specifies the criteria for this component of the stratifier. This is typically the name of an expression defined within a referenced library, but it may also be a path to a stratifier element.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + usage - An indicator of the intended usage for the supplemental data element. Supplemental data indicates the data is additional information requested to augment the measure information. Risk adjustment factor indicates the data is additional information used to calculate risk adjustment factors when applying a risk model to the measure calculation.
-# + description - The human readable description of this supplemental data.
+# + description - The human readable description of this stratifier criteria component.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "Shareable_MeasureSupplementalData",
+    name: "ShareableMeasureGroupStratifierComponent",
     baseType: (),
     elements: {
         "extension": {
@@ -668,7 +774,7 @@ public type Shareable_MeasureGroup record {|
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Measure.supplementalData.extension"
+            path: "Measure.group.stratifier.component.extension"
         },
         "code": {
             name: "code",
@@ -676,8 +782,8 @@ public type Shareable_MeasureGroup record {|
             min: 0,
             max: 1,
             isArray: false,
-            description: "Indicates a meaning for the supplemental data. This can be as simple as a unique identifier, or it can establish meaning in a broader context by drawing from a terminology, allowing supplemental data to be correlated across measures.",
-            path: "Measure.supplementalData.code"
+            description: "Indicates a meaning for the stratifier component. This can be as simple as a unique identifier, or it can establish meaning in a broader context by drawing from a terminology, allowing stratifiers to be correlated across measures.",
+            path: "Measure.group.stratifier.component.code"
         },
         "criteria": {
             name: "criteria",
@@ -685,8 +791,8 @@ public type Shareable_MeasureGroup record {|
             min: 1,
             max: 1,
             isArray: false,
-            description: "The criteria for the supplemental data. This is typically the name of a valid expression defined within a referenced library, but it may also be a path to a specific data element. The criteria defines the data to be returned for this element.",
-            path: "Measure.supplementalData.criteria"
+            description: "An expression that specifies the criteria for this component of the stratifier. This is typically the name of an expression defined within a referenced library, but it may also be a path to a stratifier element.",
+            path: "Measure.group.stratifier.component.criteria"
         },
         "modifierExtension": {
             name: "modifierExtension",
@@ -695,16 +801,7 @@ public type Shareable_MeasureGroup record {|
             max: int:MAX_VALUE,
             isArray: true,
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Measure.supplementalData.modifierExtension"
-        },
-        "usage": {
-            name: "usage",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "An indicator of the intended usage for the supplemental data element. Supplemental data indicates the data is additional information requested to augment the measure information. Risk adjustment factor indicates the data is additional information used to calculate risk adjustment factors when applying a risk model to the measure calculation.",
-            path: "Measure.supplementalData.usage"
+            path: "Measure.group.stratifier.component.modifierExtension"
         },
         "description": {
             name: "description",
@@ -712,8 +809,8 @@ public type Shareable_MeasureGroup record {|
             min: 0,
             max: 1,
             isArray: false,
-            description: "The human readable description of this supplemental data.",
-            path: "Measure.supplementalData.description"
+            description: "The human readable description of this stratifier criteria component.",
+            path: "Measure.group.stratifier.component.description"
         },
         "id": {
             name: "id",
@@ -722,7 +819,7 @@ public type Shareable_MeasureGroup record {|
             max: 1,
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Measure.supplementalData.id"
+            path: "Measure.group.stratifier.component.id"
         }
     },
     serializers: {
@@ -730,19 +827,19 @@ public type Shareable_MeasureGroup record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Shareable_MeasureSupplementalData record {|
+
+public type ShareableMeasureGroupStratifierComponent record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Expression criteria;
     r4:Extension[] modifierExtension?;
-    r4:CodeableConcept[] usage?;
     string description?;
     string id?;
 |};
 
-# FHIR Shareable_MeasureGroupStratifier datatype record.
+# FHIR ShareableMeasureGroupStratifier datatype record.
 #
 # + component - A component of the stratifier criteria for the measure report, specified as either the name of a valid CQL expression defined within a referenced library or a valid FHIR Resource Path.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
@@ -752,12 +849,12 @@ public type Shareable_MeasureSupplementalData record {|
 # + description - The human readable description of this stratifier criteria.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "Shareable_MeasureGroupStratifier",
+    name: "ShareableMeasureGroupStratifier",
     baseType: (),
     elements: {
         "component": {
             name: "component",
-            dataType: Shareable_MeasureGroupStratifierComponent,
+            dataType: ShareableMeasureGroupStratifierComponent,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -824,10 +921,11 @@ public type Shareable_MeasureSupplementalData record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Shareable_MeasureGroupStratifier record {|
+
+public type ShareableMeasureGroupStratifier record {|
     *r4:BackboneElement;
 
-    Shareable_MeasureGroupStratifierComponent[] component?;
+    ShareableMeasureGroupStratifierComponent[] component?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:Expression criteria?;
@@ -836,98 +934,7 @@ public type Shareable_MeasureGroupStratifier record {|
     string id?;
 |};
 
-# Shareable_MeasureStatus enum
-public enum Shareable_MeasureStatus {
-   CODE_STATUS_DRAFT = "draft",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_RETIRED = "retired",
-   CODE_STATUS_UNKNOWN = "unknown"
-}
-
-# FHIR Shareable_MeasureGroupStratifierComponent datatype record.
-#
-# + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + code - Indicates a meaning for the stratifier component. This can be as simple as a unique identifier, or it can establish meaning in a broader context by drawing from a terminology, allowing stratifiers to be correlated across measures.
-# + criteria - An expression that specifies the criteria for this component of the stratifier. This is typically the name of an expression defined within a referenced library, but it may also be a path to a stratifier element.
-# + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + description - The human readable description of this stratifier criteria component.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
-@r4:DataTypeDefinition {
-    name: "Shareable_MeasureGroupStratifierComponent",
-    baseType: (),
-    elements: {
-        "extension": {
-            name: "extension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
-            path: "Measure.group.stratifier.component.extension"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Indicates a meaning for the stratifier component. This can be as simple as a unique identifier, or it can establish meaning in a broader context by drawing from a terminology, allowing stratifiers to be correlated across measures.",
-            path: "Measure.group.stratifier.component.code"
-        },
-        "criteria": {
-            name: "criteria",
-            dataType: r4:Expression,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "An expression that specifies the criteria for this component of the stratifier. This is typically the name of an expression defined within a referenced library, but it may also be a path to a stratifier element.",
-            path: "Measure.group.stratifier.component.criteria"
-        },
-        "modifierExtension": {
-            name: "modifierExtension",
-            dataType: r4:Extension,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
-            path: "Measure.group.stratifier.component.modifierExtension"
-        },
-        "description": {
-            name: "description",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The human readable description of this stratifier criteria component.",
-            path: "Measure.group.stratifier.component.description"
-        },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "Measure.group.stratifier.component.id"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Shareable_MeasureGroupStratifierComponent record {|
-    *r4:BackboneElement;
-
-    r4:Extension[] extension?;
-    r4:CodeableConcept code?;
-    r4:Expression criteria;
-    r4:Extension[] modifierExtension?;
-    string description?;
-    string id?;
-|};
-
-# FHIR Shareable_MeasureGroupPopulation datatype record.
+# FHIR ShareableMeasureGroupPopulation datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - The type of population criteria.
@@ -936,7 +943,7 @@ public type Shareable_MeasureGroupStratifierComponent record {|
 # + description - The human readable description of this population criteria.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "Shareable_MeasureGroupPopulation",
+    name: "ShareableMeasureGroupPopulation",
     baseType: (),
     elements: {
         "extension": {
@@ -999,7 +1006,8 @@ public type Shareable_MeasureGroupStratifierComponent record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Shareable_MeasureGroupPopulation record {|
+
+public type ShareableMeasureGroupPopulation record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
@@ -1009,4 +1017,12 @@ public type Shareable_MeasureGroupPopulation record {|
     string description?;
     string id?;
 |};
+
+# ShareableMeasureStatus enum
+public enum ShareableMeasureStatus {
+    CODE_STATUS_DRAFT = "draft",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_RETIRED = "retired",
+    CODE_STATUS_UNKNOWN = "unknown"
+}
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_MEDICATIONSTATEMENT = "http://hl7.org/fhir/StructureDefinition/MedicationStatement";
 public const RESOURCE_NAME_MEDICATIONSTATEMENT = "MedicationStatement";
+
+public type MedicationStatementExtensions (EventBasedOn|r4:Extension|WorkflowEpisodeOfCare|WorkflowResearchStudy);
 
 # FHIR MedicationStatement resource record.
 #
@@ -299,7 +301,7 @@ public type MedicationStatement record {|
     r4:Extension[] modifierExtension?;
     r4:Reference[] reasonReference?;
     r4:code language?;
-    r4:Reference medicationReference;
+    r4:Reference medicationReference?;
     r4:CodeableConcept[] statusReason?;
     r4:Reference informationSource?;
     r4:Reference context?;
@@ -311,7 +313,7 @@ public type MedicationStatement record {|
     r4:Reference[] basedOn?;
     r4:Identifier[] identifier?;
     r4:Period effectivePeriod?;
-    r4:CodeableConcept medicationCodeableConcept;
+    r4:CodeableConcept medicationCodeableConcept?;
     r4:Resource[] contained?;
     r4:dateTime effectiveDateTime?;
     r4:Meta meta?;

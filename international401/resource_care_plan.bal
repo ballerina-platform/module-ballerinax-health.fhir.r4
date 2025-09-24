@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_CAREPLAN = "http://hl7.org/fhir/StructureDefinition/CarePlan";
 public const RESOURCE_NAME_CAREPLAN = "CarePlan";
+
+public type CarePlanExtensions (r4:Extension|RequestRelevantHistory|WorkflowAdheresTo|WorkflowCompliesWith|WorkflowEpisodeOfCare|WorkflowGeneratedFrom|WorkflowReleaseDate|WorkflowShallComplyWith|WorkflowTriggeredBy);
 
 # FHIR CarePlan resource record.
 #
@@ -368,20 +370,20 @@ public type CarePlan record {|
 # + kind - A description of the kind of resource the in-line definition of a care plan activity is representing. The CarePlan.activity.detail is an in-line definition when a resource is not referenced using CarePlan.activity.reference. For example, a MedicationRequest, a ServiceRequest, or a CommunicationRequest.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + description - This provides a textual description of constraints on the intended activity occurrence, including relation to other activities. It may also include objectives, pre-conditions and end-conditions. Finally, it may convey specifics about the activity such as body site, method, route, etc.
-# + productCarePlanCodeableConcept - Identifies the food, drug or other product to be consumed or supplied in the activity.
+# + productReference - Identifies the food, drug or other product to be consumed or supplied in the activity.
 # + reasonReference - Indicates another resource, such as the health condition(s), whose existence justifies this request and drove the inclusion of this particular activity as part of the plan.
-# + scheduledCarePlanPeriod - The period, timing or frequency upon which the described activity is to occur.
 # + instantiatesCanonical - The URL pointing to a FHIR-defined protocol, guideline, questionnaire or other definition that is adhered to in whole or in part by this CarePlan activity.
-# + scheduledCarePlanString - The period, timing or frequency upon which the described activity is to occur.
 # + instantiatesUri - The URL pointing to an externally maintained protocol, guideline, questionnaire or other definition that is adhered to in whole or in part by this CarePlan activity.
-# + productCarePlanReference - Identifies the food, drug or other product to be consumed or supplied in the activity.
+# + scheduledString - The period, timing or frequency upon which the described activity is to occur.
 # + statusReason - Provides reason why the activity isn't yet started, is on hold, was cancelled, etc.
+# + scheduledTiming - The period, timing or frequency upon which the described activity is to occur.
+# + scheduledPeriod - The period, timing or frequency upon which the described activity is to occur.
 # + dailyAmount - Identifies the quantity expected to be consumed in a given day.
 # + location - Identifies the facility where the activity will occur; e.g. home, hospital, specific clinic, etc.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + reasonCode - Provides the rationale that drove the inclusion of this particular activity as part of the plan or the reason why the activity was prohibited.
 # + doNotPerform - If true, indicates that the described activity is one that must NOT be engaged in when following the plan. If false, or missing, indicates that the described activity is one that should be engaged in when following the plan.
-# + scheduledCarePlanTiming - The period, timing or frequency upon which the described activity is to occur.
+# + productCodeableConcept - Identifies the food, drug or other product to be consumed or supplied in the activity.
 # + status - Identifies what progress is being made for the specific activity.
 @r4:DataTypeDefinition {
     name: "CarePlanActivityDetail",
@@ -459,9 +461,10 @@ public type CarePlan record {|
             description: "This provides a textual description of constraints on the intended activity occurrence, including relation to other activities. It may also include objectives, pre-conditions and end-conditions. Finally, it may convey specifics about the activity such as body site, method, route, etc.",
             path: "CarePlan.activity.detail.description"
         },
-        "productCarePlanCodeableConcept": {
-            name: "productCarePlanCodeableConcept",
-            dataType: r4:CodeableConcept,
+
+        "productReference": {
+            name: "productReference",
+            dataType: r4:Reference,
             min: 0,
             max: 1,
             isArray: false,
@@ -477,15 +480,7 @@ public type CarePlan record {|
             description: "Indicates another resource, such as the health condition(s), whose existence justifies this request and drove the inclusion of this particular activity as part of the plan.",
             path: "CarePlan.activity.detail.reasonReference"
         },
-        "scheduledCarePlanPeriod": {
-            name: "scheduledCarePlanPeriod",
-            dataType: r4:Period,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The period, timing or frequency upon which the described activity is to occur.",
-            path: "CarePlan.activity.detail.scheduled[x]"
-        },
+
         "instantiatesCanonical": {
             name: "instantiatesCanonical",
             dataType: r4:canonical,
@@ -495,15 +490,7 @@ public type CarePlan record {|
             description: "The URL pointing to a FHIR-defined protocol, guideline, questionnaire or other definition that is adhered to in whole or in part by this CarePlan activity.",
             path: "CarePlan.activity.detail.instantiatesCanonical"
         },
-        "scheduledCarePlanString": {
-            name: "scheduledCarePlanString",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The period, timing or frequency upon which the described activity is to occur.",
-            path: "CarePlan.activity.detail.scheduled[x]"
-        },
+
         "instantiatesUri": {
             name: "instantiatesUri",
             dataType: r4:uri,
@@ -513,14 +500,15 @@ public type CarePlan record {|
             description: "The URL pointing to an externally maintained protocol, guideline, questionnaire or other definition that is adhered to in whole or in part by this CarePlan activity.",
             path: "CarePlan.activity.detail.instantiatesUri"
         },
-        "productCarePlanReference": {
-            name: "productCarePlanReference",
-            dataType: r4:Reference,
+
+        "scheduledString": {
+            name: "scheduledString",
+            dataType: string,
             min: 0,
             max: 1,
             isArray: false,
-            description: "Identifies the food, drug or other product to be consumed or supplied in the activity.",
-            path: "CarePlan.activity.detail.product[x]"
+            description: "The period, timing or frequency upon which the described activity is to occur.",
+            path: "CarePlan.activity.detail.scheduled[x]"
         },
         "statusReason": {
             name: "statusReason",
@@ -531,6 +519,27 @@ public type CarePlan record {|
             description: "Provides reason why the activity isn't yet started, is on hold, was cancelled, etc.",
             path: "CarePlan.activity.detail.statusReason"
         },
+
+        "scheduledTiming": {
+            name: "scheduledTiming",
+            dataType: r4:Timing,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The period, timing or frequency upon which the described activity is to occur.",
+            path: "CarePlan.activity.detail.scheduled[x]"
+        },
+
+        "scheduledPeriod": {
+            name: "scheduledPeriod",
+            dataType: r4:Period,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The period, timing or frequency upon which the described activity is to occur.",
+            path: "CarePlan.activity.detail.scheduled[x]"
+        },
+
         "dailyAmount": {
             name: "dailyAmount",
             dataType: r4:Quantity,
@@ -576,14 +585,15 @@ public type CarePlan record {|
             description: "If true, indicates that the described activity is one that must NOT be engaged in when following the plan. If false, or missing, indicates that the described activity is one that should be engaged in when following the plan.",
             path: "CarePlan.activity.detail.doNotPerform"
         },
-        "scheduledCarePlanTiming": {
-            name: "scheduledCarePlanTiming",
-            dataType: r4:Timing,
+
+        "productCodeableConcept": {
+            name: "productCodeableConcept",
+            dataType: r4:CodeableConcept,
             min: 0,
             max: 1,
             isArray: false,
-            description: "The period, timing or frequency upon which the described activity is to occur.",
-            path: "CarePlan.activity.detail.scheduled[x]"
+            description: "Identifies the food, drug or other product to be consumed or supplied in the activity.",
+            path: "CarePlan.activity.detail.product[x]"
         },
         "status": {
             name: "status",
@@ -611,20 +621,20 @@ public type CarePlanActivityDetail record {|
     CarePlanActivityDetailKind kind?;
     r4:Extension[] modifierExtension?;
     string description?;
-    r4:CodeableConcept productCarePlanCodeableConcept?;
+    r4:Reference productReference?;
     r4:Reference[] reasonReference?;
-    r4:Period scheduledCarePlanPeriod?;
     r4:canonical[] instantiatesCanonical?;
-    string scheduledCarePlanString?;
     r4:uri[] instantiatesUri?;
-    r4:Reference productCarePlanReference?;
+    string scheduledString?;
     r4:CodeableConcept statusReason?;
+    r4:Timing scheduledTiming?;
+    r4:Period scheduledPeriod?;
     r4:Quantity dailyAmount?;
     r4:Reference location?;
     string id?;
     r4:CodeableConcept[] reasonCode?;
     boolean doNotPerform?;
-    r4:Timing scheduledCarePlanTiming?;
+    r4:CodeableConcept productCodeableConcept?;
     CarePlanActivityDetailStatus status;
 |};
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_COMPOSITION = "http://hl7.org/fhir/StructureDefinition/Composition";
 public const RESOURCE_NAME_COMPOSITION = "Composition";
+
+public type CompositionExtensions (CompositionClinicaldocumentOtherConfidentiality|CompositionClinicaldocumentVersionNumber|CqmValidityPeriod|EventBasedOn|r4:Extension|WorkflowEpisodeOfCare|WorkflowResearchStudy);
 
 # FHIR Composition resource record.
 #
@@ -259,7 +261,10 @@ public type Composition record {|
     r4:Extension[] extension?;
     r4:Reference custodian?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Composition.author constraint. This field must be an array containing at least one item."
+        }
     }
     r4:Reference[] author;
     r4:Reference subject?;
@@ -293,40 +298,24 @@ public enum CompositionStatus {
 
 # FHIR CompositionSection datatype record.
 #
-# + mode - How the entry list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.
-# + entry - A reference to the actual resource from which the narrative in the section is derived.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - A code identifying the kind of content contained within the section. This must be consistent with the section title.
 # + emptyReason - If the section is empty, why the list is empty. An empty section typically has some text explaining the empty reason.
-# + orderedBy - Specifies the order applied to the items in the section entries.
 # + author - Identifies who is responsible for the information in this section, not necessarily who typed it in.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + focus - The actual focus of the section when it is not the subject of the composition, but instead represents something or someone associated with the subject such as (for a patient subject) a spouse, parent, fetus, or donor. If not focus is specified, the focus is assumed to be focus of the parent section, or, for a section in the Composition itself, the subject of the composition. Sections with a focus SHALL only include resources where the logical subject (patient, subject, focus, etc.) matches the section focus, or the resources have no logical subject (few resources).
+# + section - A nested sub-section within this section.
+# + title - The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.
+# + mode - How the entry list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.
+# + entry - A reference to the actual resource from which the narrative in the section is derived.
+# + orderedBy - Specifies the order applied to the items in the section entries.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + text - A human-readable narrative that contains the attested content of the section, used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative.
-# + title - The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.
+
 @r4:DataTypeDefinition {
     name: "CompositionSection",
     baseType: (),
     elements: {
-        "mode": {
-            name: "mode",
-            dataType: CompositionSectionMode,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "How the entry list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.",
-            path: "Composition.section.mode"
-        },
-        "entry": {
-            name: "entry",
-            dataType: r4:Reference,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to the actual resource from which the narrative in the section is derived.",
-            path: "Composition.section.entry"
-        },
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -354,15 +343,7 @@ public enum CompositionStatus {
             description: "If the section is empty, why the list is empty. An empty section typically has some text explaining the empty reason.",
             path: "Composition.section.emptyReason"
         },
-        "orderedBy": {
-            name: "orderedBy",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Specifies the order applied to the items in the section entries.",
-            path: "Composition.section.orderedBy"
-        },
+
         "author": {
             name: "author",
             dataType: r4:Reference,
@@ -390,6 +371,57 @@ public enum CompositionStatus {
             description: "The actual focus of the section when it is not the subject of the composition, but instead represents something or someone associated with the subject such as (for a patient subject) a spouse, parent, fetus, or donor. If not focus is specified, the focus is assumed to be focus of the parent section, or, for a section in the Composition itself, the subject of the composition. Sections with a focus SHALL only include resources where the logical subject (patient, subject, focus, etc.) matches the section focus, or the resources have no logical subject (few resources).",
             path: "Composition.section.focus"
         },
+
+        "section": {
+            name: "section",
+            dataType: CompositionSection,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A nested sub-section within this section.",
+            path: "Composition.section.section"
+        },
+
+        "title": {
+            name: "title",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.",
+            path: "Composition.section.title"
+        },
+
+        "mode": {
+            name: "mode",
+            dataType: CompositionSectionMode,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "How the entry list was prepared - whether it is a working list that is suitable for being maintained on an ongoing basis, or if it represents a snapshot of a list of items from another source, or whether it is a prepared list where items may be marked as added, modified or deleted.",
+            path: "Composition.section.mode"
+        },
+
+        "entry": {
+            name: "entry",
+            dataType: r4:Reference,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to the actual resource from which the narrative in the section is derived.",
+            path: "Composition.section.entry"
+        },
+
+        "orderedBy": {
+            name: "orderedBy",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Specifies the order applied to the items in the section entries.",
+            path: "Composition.section.orderedBy"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -407,15 +439,6 @@ public enum CompositionStatus {
             isArray: false,
             description: "A human-readable narrative that contains the attested content of the section, used to represent the content of the resource to a human. The narrative need not encode all the structured data, but is required to contain sufficient detail to make it 'clinically safe' for a human to just read the narrative.",
             path: "Composition.section.text"
-        },
-        "title": {
-            name: "title",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The label for this particular section. This will be part of the rendered content for the document, and is often used to build a table of contents.",
-            path: "Composition.section.title"
         }
     },
     serializers: {
@@ -426,18 +449,19 @@ public enum CompositionStatus {
 public type CompositionSection record {|
     *r4:BackboneElement;
 
-    CompositionSectionMode mode?;
-    r4:Reference[] entry?;
     r4:Extension[] extension?;
     r4:CodeableConcept code?;
     r4:CodeableConcept emptyReason?;
-    r4:CodeableConcept orderedBy?;
     r4:Reference[] author?;
     r4:Extension[] modifierExtension?;
     r4:Reference focus?;
+    CompositionSection[] section?;
+    string title?;
+    CompositionSectionMode mode?;
+    r4:Reference[] entry?;
+    r4:CodeableConcept orderedBy?;
     string id?;
     r4:Narrative text?;
-    string title?;
 |};
 
 # CompositionSectionMode enum
@@ -531,11 +555,11 @@ public type CompositionRelatesTo record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
-    r4:Identifier targetIdentifier;
+    r4:Identifier targetIdentifier?;
     CompositionRelatesToCode code;
     r4:Extension[] modifierExtension?;
     string id?;
-    r4:Reference targetReference;
+    r4:Reference targetReference?;
 |};
 
 # CompositionRelatesToCode enum

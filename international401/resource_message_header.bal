@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_MESSAGEHEADER = "http://hl7.org/fhir/StructureDefinition/MessageHeader";
 public const RESOURCE_NAME_MESSAGEHEADER = "MessageHeader";
+
+public type MessageHeaderExtensions (r4:Extension|MessageheaderResponseRequest);
 
 # FHIR MessageHeader resource record.
 #
@@ -225,7 +227,7 @@ public type MessageHeader record {|
 
     RESOURCE_NAME_MESSAGEHEADER resourceType = RESOURCE_NAME_MESSAGEHEADER;
 
-    r4:uri eventUri;
+    r4:uri eventUri?;
     r4:CodeableConcept reason?;
     r4:Extension[] extension?;
     r4:Reference author?;
@@ -234,7 +236,7 @@ public type MessageHeader record {|
     r4:Reference[] focus?;
     r4:code language?;
     MessageHeaderSource 'source;
-    r4:Coding eventCoding;
+    r4:Coding eventCoding?;
     r4:Resource[] contained?;
     r4:Reference sender?;
     r4:Meta meta?;

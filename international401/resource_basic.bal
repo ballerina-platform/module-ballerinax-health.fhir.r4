@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_BASIC = "http://hl7.org/fhir/StructureDefinition/Basic";
 public const RESOURCE_NAME_BASIC = "Basic";
+
+public type BasicExtensions (ArtifactassessmentContent|CqfEncounterClass|CqfEncounterType|CqfInitiatingOrganization|CqfInitiatingPerson|CqfReceivingOrganization|CqfReceivingPerson|CqfRecipientLanguage|CqfRecipientType|CqfSystemUserLanguage|CqfSystemUserTaskContext|CqfSystemUserType|r4:Extension|WorkflowEpisodeOfCare);
 
 # FHIR Basic resource record.
 #

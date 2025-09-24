@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -395,6 +395,7 @@ public type MedicinalProductAuthorizationJurisdictionalAuthorization record {|
 # + dateDateTime - Date of procedure.
 # + identifier - Identifier for this procedure.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + application - Applcations submitted to obtain a marketing authorization.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + datePeriod - Date of procedure.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
@@ -430,6 +431,17 @@ public type MedicinalProductAuthorizationJurisdictionalAuthorization record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "MedicinalProductAuthorization.procedure.extension"
         },
+
+        "application": {
+            name: "application",
+            dataType: MedicinalProductAuthorizationProcedure,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Applcations submitted to obtain a marketing authorization.",
+            path: "MedicinalProductAuthorization.procedure.application"
+        },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -478,6 +490,7 @@ public type MedicinalProductAuthorizationProcedure record {|
     r4:dateTime dateDateTime?;
     r4:Identifier identifier?;
     r4:Extension[] extension?;
+    MedicinalProductAuthorizationProcedure[] application?;
     r4:Extension[] modifierExtension?;
     r4:Period datePeriod?;
     string id?;
