@@ -1,7 +1,7 @@
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/core/ implementation guide.
 
-# FHIR R4 uscore700 package
+# FHIR R4 health_fhir_r4_uscore700 package
 
 ## Package Overview
 
@@ -73,58 +73,58 @@ compliant with http://hl7.org/fhir/us/core/ implementation guide.
 | 51). USCoreLaboratoryResultObservationProfile | [[Definition]][s51] [[Ballerina Record]][m51] |
 | 52). USCorePulseOximetryProfile | [[Definition]][s52] [[Ballerina Record]][m52] |
 
-[m1]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreConditionProblemsHealthConcernsProfile
-[m2]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreDocumentReferenceProfile
-[m3]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreDiagnosticReportProfileNoteExchange
-[m4]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreCareExperiencePreferenceProfile
-[m5]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreBloodPressureProfile
-[m6]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreSpecimenProfile
-[m7]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreSmokingStatusProfile
-[m8]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreObservationClinicalResultProfile
-[m9]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreVitalSignsProfile
-[m10]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreLocationProfile
-[m11]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreDiagnosticReportProfileLaboratoryReporting
-[m12]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreSimpleObservationProfile
-[m13]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCorePractitionerRoleProfile
-[m14]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreServiceRequestProfile
-[m15]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreBodyWeightProfile
-[m16]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreAverageBloodPressureProfile
-[m17]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreCoverageProfile
-[m18]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreImmunizationProfile
-[m19]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreMedicationDispenseProfile
-[m20]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreProcedureProfile
-[m21]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreObservationSexualOrientationProfile
-[m22]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreImplantableDeviceProfile
-[m23]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreObservationOccupationProfile
-[m24]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCorePediatricBMIforAgeObservationProfile
-[m25]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreGoalProfile
-[m26]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreHeadCircumferenceProfile
-[m27]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreCarePlanProfile
-[m28]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCorePractitionerProfile
-[m29]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreMedicationProfile
-[m30]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreBMIProfile
-[m31]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreOrganizationProfile
-[m32]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCorePediatricHeadOccipitalFrontalCircumferencePercentileProfile
-[m33]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreObservationPregnancyIntentProfile
-[m34]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreRelatedPersonProfile
-[m35]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreMedicationRequestProfile
-[m36]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreBodyHeightProfile
-[m37]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreBodyTemperatureProfile
-[m38]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreTreatmentInterventionPreferenceProfile
-[m39]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreObservationScreeningAssessmentProfile
-[m40]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreProvenance
-[m41]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreEncounterProfile
-[m42]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreConditionEncounterDiagnosisProfile
-[m43]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreObservationPregnancyStatusProfile
-[m44]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreHeartRateProfile
-[m45]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCorePatientProfile
-[m46]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreQuestionnaireResponseProfile
-[m47]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreAllergyIntolerance
-[m48]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreCareTeam
-[m49]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCorePediatricWeightForHeightObservationProfile
-[m50]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreRespiratoryRateProfile
-[m51]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCoreLaboratoryResultObservationProfile
-[m52]: https://lib.ballerina.io/ballerinax/uscore700/1.0.0#USCorePulseOximetryProfile
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreConditionProblemsHealthConcernsProfile
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreDocumentReferenceProfile
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreDiagnosticReportProfileNoteExchange
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreCareExperiencePreferenceProfile
+[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreBloodPressureProfile
+[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreSpecimenProfile
+[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreSmokingStatusProfile
+[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreObservationClinicalResultProfile
+[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreVitalSignsProfile
+[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreLocationProfile
+[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreDiagnosticReportProfileLaboratoryReporting
+[m12]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreSimpleObservationProfile
+[m13]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCorePractitionerRoleProfile
+[m14]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreServiceRequestProfile
+[m15]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreBodyWeightProfile
+[m16]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreAverageBloodPressureProfile
+[m17]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreCoverageProfile
+[m18]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreImmunizationProfile
+[m19]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreMedicationDispenseProfile
+[m20]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreProcedureProfile
+[m21]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreObservationSexualOrientationProfile
+[m22]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreImplantableDeviceProfile
+[m23]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreObservationOccupationProfile
+[m24]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCorePediatricBMIforAgeObservationProfile
+[m25]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreGoalProfile
+[m26]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreHeadCircumferenceProfile
+[m27]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreCarePlanProfile
+[m28]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCorePractitionerProfile
+[m29]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreMedicationProfile
+[m30]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreBMIProfile
+[m31]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreOrganizationProfile
+[m32]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCorePediatricHeadOccipitalFrontalCircumferencePercentileProfile
+[m33]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreObservationPregnancyIntentProfile
+[m34]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreRelatedPersonProfile
+[m35]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreMedicationRequestProfile
+[m36]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreBodyHeightProfile
+[m37]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreBodyTemperatureProfile
+[m38]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreTreatmentInterventionPreferenceProfile
+[m39]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreObservationScreeningAssessmentProfile
+[m40]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreProvenance
+[m41]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreEncounterProfile
+[m42]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreConditionEncounterDiagnosisProfile
+[m43]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreObservationPregnancyStatusProfile
+[m44]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreHeartRateProfile
+[m45]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCorePatientProfile
+[m46]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreQuestionnaireResponseProfile
+[m47]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreAllergyIntolerance
+[m48]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreCareTeam
+[m49]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCorePediatricWeightForHeightObservationProfile
+[m50]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreRespiratoryRateProfile
+[m51]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCoreLaboratoryResultObservationProfile
+[m52]: https://lib.ballerina.io/ballerinax/health.fhir.r4.uscore700/1.0.0#USCorePulseOximetryProfile
 
 [s1]: http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns
 [s2]: http://hl7.org/fhir/us/core/StructureDefinition/us-core-documentreference
