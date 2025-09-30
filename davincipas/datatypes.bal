@@ -1,4 +1,4 @@
-// Copyright (c) 2024, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -36,12 +36,23 @@ import ballerinax/health.fhir.r4;
         "system": {
             name: "system",
             dataType: r4:uri,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
             description: "Establishes the namespace for the value - that is, a URL that describes a set values that are unique.",
             path: "Identifier.system"
         },    
+
+        "use": {
+            name: "use",
+            dataType: ProfileIdentifierUse,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The purpose of this identifier.",
+            path: "Identifier.use"
+        },
+
         "assigner": {
             name: "assigner",
             dataType: r4:Reference,
@@ -51,15 +62,7 @@ import ballerinax/health.fhir.r4;
             description: "Organization that issued/manages the identifier.",
             path: "Identifier.assigner"
         },    
-        "ProfileIdentifierUse": {
-            name: "ProfileIdentifierUse",
-            dataType: ProfileIdentifierUse,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The purpose of this identifier.",
-            path: "Identifier.use"
-        },    
+
         "'type": {
             name: "'type",
             dataType: r4:CodeableConcept,
@@ -72,12 +75,14 @@ import ballerinax/health.fhir.r4;
         "value": {
             name: "value",
             dataType: string,
-            min: 0,
+            min: 1,
             max: 1,
             isArray: false,
             description: "The portion of the identifier typically relevant to the user and which is unique within the context of the system.",
             path: "Identifier.value"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -91,11 +96,11 @@ public type ProfileIdentifier record {|
     r4:Extension[] extension?;
     //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
     r4:Period period?;
-    r4:uri system?;
+    r4:uri system;
+    ProfileIdentifierUse use?;
     r4:Reference assigner?;
-    ProfileIdentifierUse ProfileIdentifierUse?;
     r4:CodeableConcept 'type?;
-    string value?;
+    string value;
 |};
 
 public enum ProfileIdentifierUse {
@@ -106,6 +111,86 @@ public enum ProfileIdentifierUse {
     CODE_PROFILEIDENTIFIERUSE_OFFICIAL = "official"
 };
 
+@r4:DataTypeDefinition {
+    name: "PASQuantity",
+    baseType: (),
+    elements: {
+        "comparator": {
+            name: "comparator",
+            dataType: ProfileQuantityComparator,
+            min: 0,
+            max: 0,
+            isArray: false,
+            description: "Not allowed to be used in this context",
+            path: "Quantity.comparator"
+        },
+
+        "unit": {
+            name: "unit",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A human-readable form of the unit.",
+            path: "Quantity.unit"
+        },
+
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The identification of the system that provides the coded form of the unit.",
+            path: "Quantity.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A computer processable form of the unit in some unit representation system.",
+            path: "Quantity.code"
+        },
+
+        "value": {
+            name: "value",
+            dataType: decimal,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The value of the measured amount. The value includes an implicit precision in the presentation of the value.",
+            path: "Quantity.value"
+        }
+
+    },
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+public type ProfileQuantity record {|
+    *r4:Quantity;
+
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (START)
+    string id?;
+    r4:Extension[] extension?;
+    //Inherited child element from "Element" (Redefining to maintain order when serialize) (END)
+
+    string unit?;
+    r4:uri system?;
+    r4:code code?;
+    decimal value?;
+|};
+
+public enum ProfileQuantityComparator {
+    CODE_PROFILEQUANTITYCOMPARATOR_LESS_THAN_OR_EQUAL = "<=",
+    CODE_PROFILEQUANTITYCOMPARATOR_LESS_THAN = "<",
+    CODE_PROFILEQUANTITYCOMPARATOR_GREATER_THAN = ">",
+    CODE_PROFILEQUANTITYCOMPARATOR_GREATER_THAN_OR_EQUAL = ">="
+};
 
 @r4:DataTypeDefinition {
     name: "PASTiming",
@@ -184,23 +269,15 @@ public enum ProfileIdentifierUse {
             description: "A total count of the desired number of repetitions across the duration of the entire timing specification. If countMax is present, this element indicates the lower bound of the allowed range of count values.",
             path: "Timing.repeat.count"
         },    
-        "ProfileDatatypeTimingRepeatDayOfWeek": {
-            name: "ProfileDatatypeTimingRepeatDayOfWeek",
-            dataType: ProfileDatatypeTimingRepeatDayOfWeek,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "If one or more days of week is provided, then the action happens only on the specified day(s).",
-            path: "Timing.repeat.dayOfWeek"
-        },    
-        "ProfileDatatypeTimingRepeatDurationUnit": {
-            name: "ProfileDatatypeTimingRepeatDurationUnit",
-            dataType: ProfileDatatypeTimingRepeatDurationUnit,
+
+        "periodUnit": {
+            name: "periodUnit",
+            dataType: ProfileDatatypeTimingRepeatPeriodUnit,
             min: 0,
             max: 1,
             isArray: false,
-            description: "The units of time for the duration, in UCUM units.",
-            path: "Timing.repeat.durationUnit"
+            description: "The units of time for the period in UCUM units.",
+            path: "Timing.repeat.periodUnit"
         },    
         "when": {
             name: "when",
@@ -247,6 +324,17 @@ public enum ProfileIdentifierUse {
             description: "If present, indicates that the duration is a range - so to perform the action between [duration] and [durationMax] time length.",
             path: "Timing.repeat.durationMax"
         },    
+
+        "dayOfWeek": {
+            name: "dayOfWeek",
+            dataType: ProfileDatatypeTimingRepeatDayOfWeek,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "If one or more days of week is provided, then the action happens only on the specified day(s).",
+            path: "Timing.repeat.dayOfWeek"
+        },
+
         "repeat": {
             name: "repeat",
             dataType: r4:ElementRepeat,
@@ -256,6 +344,17 @@ public enum ProfileIdentifierUse {
             description: "A set of rules that describe when the event is scheduled.",
             path: "Timing.repeat"
         },    
+
+        "durationUnit": {
+            name: "durationUnit",
+            dataType: ProfileDatatypeTimingRepeatDurationUnit,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The units of time for the duration, in UCUM units.",
+            path: "Timing.repeat.durationUnit"
+        },
+
         "event": {
             name: "event",
             dataType: r4:dateTime,
@@ -265,15 +364,7 @@ public enum ProfileIdentifierUse {
             description: "Identifies specific times when the event occurs.",
             path: "Timing.event"
         },    
-        "ProfileDatatypeTimingRepeatPeriodUnit": {
-            name: "ProfileDatatypeTimingRepeatPeriodUnit",
-            dataType: ProfileDatatypeTimingRepeatPeriodUnit,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The units of time for the period in UCUM units.",
-            path: "Timing.repeat.periodUnit"
-        },    
+
         "timeOfDay": {
             name: "timeOfDay",
             dataType: r4:time,
@@ -282,7 +373,9 @@ public enum ProfileIdentifierUse {
             isArray: true,
             description: "Specified time of day for action to take place.",
             path: "Timing.repeat.timeOfDay"
-        }        },
+        }
+
+    },
     serializers: {
         'xml: r4:complexDataTypeXMLSerializer,
         'json: r4:complexDataTypeJsonSerializer
@@ -303,16 +396,16 @@ public type ProfileDatatypeTiming record {|
     decimal periodMax?;
     r4:Extension[] modifierExtension?;
     r4:positiveInt count?;
-    ProfileDatatypeTimingRepeatDayOfWeek[] ProfileDatatypeTimingRepeatDayOfWeek?;
-    ProfileDatatypeTimingRepeatDurationUnit ProfileDatatypeTimingRepeatDurationUnit?;
+    ProfileDatatypeTimingRepeatPeriodUnit periodUnit?;
     r4:code[] when?;
     r4:positiveInt frequency?;
     r4:Duration boundsDuration?;
     decimal duration?;
     decimal durationMax?;
+    ProfileDatatypeTimingRepeatDayOfWeek[] dayOfWeek?;
     r4:ElementRepeat repeat?;
+    ProfileDatatypeTimingRepeatDurationUnit durationUnit?;
     r4:dateTime[] event?;
-    ProfileDatatypeTimingRepeatPeriodUnit ProfileDatatypeTimingRepeatPeriodUnit?;
     r4:time[] timeOfDay?;
 |};
 
