@@ -1,7 +1,7 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4.davincipas"
-version = "3.0.0"
+version = "3.0.1"
 distribution = "2201.12.8"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "davincipas"]
