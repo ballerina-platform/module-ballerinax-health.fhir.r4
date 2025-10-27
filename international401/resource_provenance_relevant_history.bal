@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -20,16 +20,16 @@
 import ballerina/constraint;
 import ballerinax/health.fhir.r4;
 
-public const string PROFILE_BASE_PROVENANCE_RELEVANT_HISTORY = "http://hl7.org/fhir/StructureDefinition/provenance-relevant-history";
-public const RESOURCE_NAME_PROVENANCE_RELEVANT_HISTORY = "Provenance";
+public const string PROFILE_BASE_PROVENANCERELEVANTHISTORY = "http://hl7.org/fhir/StructureDefinition/provenance-relevant-history";
+public const RESOURCE_NAME_PROVENANCERELEVANTHISTORY = "Provenance";
 
-# FHIR Provenance_Relevant_History resource record.
+# FHIR ProvenanceRelevantHistory resource record.
 #
 # + resourceType - The type of the resource describes
 # + reason - The reason that the activity was taking place.
 # + agent - Who was involved with change.
 # * agent Slicings
-# 1) Provenance_Relevant_HistoryAgentAuthor: Author
+# 1) ProvenanceRelevantHistoryAgentAuthor: Author
 #       - min = 0
 #       - max = 1
 #
@@ -65,7 +65,7 @@ public const RESOURCE_NAME_PROVENANCE_RELEVANT_HISTORY = "Provenance";
         },
         "agent" : {
             name: "agent",
-            dataType: Provenance_Relevant_HistoryAgent,
+            dataType: ProvenanceRelevantHistoryAgent,
             min: 1,
             max: int:MAX_VALUE,
             isArray: true,
@@ -179,7 +179,7 @@ public const RESOURCE_NAME_PROVENANCE_RELEVANT_HISTORY = "Provenance";
         },
         "entity" : {
             name: "entity",
-            dataType: Provenance_Relevant_HistoryEntity,
+            dataType: ProvenanceRelevantHistoryEntity,
             min: 0,
             max: int:MAX_VALUE,
             isArray: true,
@@ -188,7 +188,7 @@ public const RESOURCE_NAME_PROVENANCE_RELEVANT_HISTORY = "Provenance";
         "occurredDateTime" : {
             name: "occurredDateTime",
             dataType: r4:dateTime,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             path: "Provenance.occurred[x]"
@@ -207,16 +207,20 @@ public const RESOURCE_NAME_PROVENANCE_RELEVANT_HISTORY = "Provenance";
         'json: r4:fhirResourceJsonSerializer
     }
 }
-public type Provenance_Relevant_History record {|
+
+public type ProvenanceRelevantHistory record {|
     *r4:DomainResource;
 
-    RESOURCE_NAME_PROVENANCE_RELEVANT_HISTORY resourceType = RESOURCE_NAME_PROVENANCE_RELEVANT_HISTORY;
+    RESOURCE_NAME_PROVENANCERELEVANTHISTORY resourceType = RESOURCE_NAME_PROVENANCERELEVANTHISTORY;
 
     r4:CodeableConcept[] reason?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Provenance.agent constraint. This field must be an array containing at least one item."
+        }
     }
-    Provenance_Relevant_HistoryAgent[] agent;
+    ProvenanceRelevantHistoryAgent[] agent;
     r4:Extension[] extension?;
     r4:CodeableConcept activity;
     r4:Signature[] signature?;
@@ -224,7 +228,10 @@ public type Provenance_Relevant_History record {|
     r4:code language?;
     r4:instant recorded;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Provenance.target constraint. This field must be an array containing at least one item."
+        }
     }
     r4:Reference[] target;
     r4:Resource[] contained?;
@@ -233,23 +240,34 @@ public type Provenance_Relevant_History record {|
     r4:Reference location?;
     string id?;
     r4:Narrative text?;
-    Provenance_Relevant_HistoryEntity[] entity?;
-    r4:dateTime occurredDateTime;
+    ProvenanceRelevantHistoryEntity[] entity?;
+    r4:dateTime occurredDateTime?;
     r4:uri[] policy?;
     r4:Element ...;
 |};
 
-# FHIR Provenance_Relevant_HistoryEntity datatype record.
+# FHIR ProvenanceRelevantHistoryEntity datatype record.
 #
+# + agent - The entity is attributed to an agent to express the agent's responsibility for that entity, possibly along with other agents. This description can be understood as shorthand for saying that the agent was responsible for the activity which generated the entity.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + role - How the entity was used during the activity.
 # + what - Identity of the Entity used. May be a logical or physical uri and maybe absolute or relative.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
-    name: "Provenance_Relevant_HistoryEntity",
+    name: "ProvenanceRelevantHistoryEntity",
     baseType: (),
     elements: {
+        "agent": {
+            name: "agent",
+            dataType: ProvenanceRelevantHistoryAgentAuthor,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The entity is attributed to an agent to express the agent's responsibility for that entity, possibly along with other agents. This description can be understood as shorthand for saying that the agent was responsible for the activity which generated the entity.",
+            path: "Provenance.entity.agent"
+        },
+
         "extension": {
             name: "extension",
             dataType: r4:Extension,
@@ -261,7 +279,7 @@ public type Provenance_Relevant_History record {|
         },
         "role": {
             name: "role",
-            dataType: Provenance_Relevant_HistoryEntityRole,
+            dataType: ProvenanceRelevantHistoryEntityRole,
             min: 1,
             max: 1,
             isArray: false,
@@ -301,17 +319,103 @@ public type Provenance_Relevant_History record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Provenance_Relevant_HistoryEntity record {|
+
+public type ProvenanceRelevantHistoryEntity record {|
     *r4:BackboneElement;
 
+    ProvenanceRelevantHistoryAgentAuthor[] agent?;
     r4:Extension[] extension?;
-    Provenance_Relevant_HistoryEntityRole role;
+    ProvenanceRelevantHistoryEntityRole role;
     r4:Reference what;
     r4:Extension[] modifierExtension?;
     string id?;
 |};
 
-# FHIR Provenance_Relevant_HistoryAgent datatype record.
+# FHIR ProvenanceRelevantHistoryAgentTypeCoding datatype record.
+#
+# + system - The identification of the code system that defines the meaning of the symbol in the code.
+# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
+
+@r4:DataTypeDefinition {
+    name: "ProvenanceRelevantHistoryAgentTypeCoding",
+    baseType: (),
+    elements: {
+        "system": {
+            name: "system",
+            dataType: r4:uri,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The identification of the code system that defines the meaning of the symbol in the code.",
+            path: "Provenance.agent.type.coding.system"
+        },
+
+        "code": {
+            name: "code",
+            dataType: r4:code,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
+            path: "Provenance.agent.type.coding.code"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type ProvenanceRelevantHistoryAgentTypeCoding record {|
+    *r4:Coding;
+
+    r4:uri system = "http://terminology.hl7.org/CodeSystem/v3-ParticipationType";
+    r4:code code = "AUT";
+|};
+
+# FHIR ProvenanceRelevantHistoryAgentType datatype record.
+#
+# + coding - A reference to a code defined by a terminology system.
+
+@r4:DataTypeDefinition {
+    name: "ProvenanceRelevantHistoryAgentType",
+    baseType: (),
+    elements: {
+        "coding": {
+            name: "coding",
+            dataType: ProvenanceRelevantHistoryAgentTypeCoding,
+            min: 1,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A reference to a code defined by a terminology system.",
+            path: "Provenance.agent.type.coding"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type ProvenanceRelevantHistoryAgentType record {|
+    *r4:CodeableConcept;
+
+    @constraint:Array {
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Provenance.agent.type.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Provenance.agent.type.coding constraint. This field must be an array containing at most one item."
+        }
+    }
+    ProvenanceRelevantHistoryAgentTypeCoding[] coding;
+|};
+
+# FHIR ProvenanceRelevantHistoryAgent datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + role - The function of the agent with respect to the activity. The security role enabling the agent with respect to the activity.
@@ -321,7 +425,7 @@ public type Provenance_Relevant_HistoryEntity record {|
 # + 'type - The participation the agent had with respect to the activity.
 # + who - The individual, device or organization that participated in the event.
 @r4:DataTypeDefinition {
-    name: "Provenance_Relevant_HistoryAgent",
+    name: "ProvenanceRelevantHistoryAgent",
     baseType: (),
     elements: {
         "extension": {
@@ -393,7 +497,8 @@ public type Provenance_Relevant_HistoryEntity record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Provenance_Relevant_HistoryAgent record {|
+
+public type ProvenanceRelevantHistoryAgent record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
@@ -405,55 +510,7 @@ public type Provenance_Relevant_HistoryAgent record {|
     r4:Reference who;
 |};
 
-# Provenance_Relevant_HistoryEntityRole enum
-public enum Provenance_Relevant_HistoryEntityRole {
-   CODE_ROLE_REMOVAL = "removal",
-   CODE_ROLE_DERIVATION = "derivation",
-   CODE_ROLE_SOURCE = "source",
-   CODE_ROLE_QUOTATION = "quotation",
-   CODE_ROLE_REVISION = "revision"
-}
-
-# FHIR Provenance_Relevant_HistoryAgentTypeCoding datatype record.
-#
-# + system - The identification of the code system that defines the meaning of the symbol in the code.
-# + code - A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).
-@r4:DataTypeDefinition {
-    name: "Provenance_Relevant_HistoryAgentTypeCoding",
-    baseType: (),
-    elements: {
-        "system": {
-            name: "system",
-            dataType: r4:uri,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The identification of the code system that defines the meaning of the symbol in the code.",
-            path: "Provenance.agent.type.coding.system"
-        },
-        "code": {
-            name: "code",
-            dataType: r4:code,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "A symbol in syntax defined by the system. The symbol may be a predefined code or an expression in a syntax defined by the coding system (e.g. post-coordination).",
-            path: "Provenance.agent.type.coding.code"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
-    }
-}
-public type Provenance_Relevant_HistoryAgentTypeCoding record {|
-    *r4:Coding;
-
-    r4:uri system = "http://terminology.hl7.org/CodeSystem/v3-ParticipationType";
-    r4:code code = "AUT";
-|};
-
-# FHIR Provenance_Relevant_HistoryAgentAuthor datatype record.
+# FHIR ProvenanceRelevantHistoryAgentAuthor datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + role - The function of the agent with respect to the activity. The security role enabling the agent with respect to the activity.
@@ -463,7 +520,7 @@ public type Provenance_Relevant_HistoryAgentTypeCoding record {|
 # + 'type - The participation the agent had with respect to the activity.
 # + who - Author Reference.
 @r4:DataTypeDefinition {
-    name: "Provenance_Relevant_HistoryAgentAuthor",
+    name: "ProvenanceRelevantHistoryAgentAuthor",
     baseType: (),
     elements: {
         "extension": {
@@ -513,7 +570,7 @@ public type Provenance_Relevant_HistoryAgentTypeCoding record {|
         },
         "type": {
             name: "type",
-            dataType: Provenance_Relevant_HistoryAgentType,
+            dataType: ProvenanceRelevantHistoryAgentType,
             min: 1,
             max: 1,
             isArray: false,
@@ -535,46 +592,25 @@ public type Provenance_Relevant_HistoryAgentTypeCoding record {|
         'json: r4:complexDataTypeJsonSerializer
     }
 }
-public type Provenance_Relevant_HistoryAgentAuthor record {|
-    *r4:BackboneElement;
+
+public type ProvenanceRelevantHistoryAgentAuthor record {|
+    *ProvenanceRelevantHistoryAgent;
 
     r4:Extension[] extension?;
     r4:CodeableConcept[] role?;
     r4:Extension[] modifierExtension?;
     r4:Reference onBehalfOf?;
     string id?;
-    Provenance_Relevant_HistoryAgentType 'type;
+    ProvenanceRelevantHistoryAgentType 'type;
     r4:Reference who;
 |};
 
-# FHIR Provenance_Relevant_HistoryAgentType datatype record.
-#
-# + coding - A reference to a code defined by a terminology system.
-@r4:DataTypeDefinition {
-    name: "Provenance_Relevant_HistoryAgentType",
-    baseType: (),
-    elements: {
-        "coding": {
-            name: "coding",
-            dataType: Provenance_Relevant_HistoryAgentTypeCoding,
-            min: 1,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "A reference to a code defined by a terminology system.",
-            path: "Provenance.agent.type.coding"
-        }
-    },
-    serializers: {
-        'xml: r4:complexDataTypeXMLSerializer,
-        'json: r4:complexDataTypeJsonSerializer
+# ProvenanceRelevantHistoryEntityRole enum
+public enum ProvenanceRelevantHistoryEntityRole {
+    CODE_ROLE_REMOVAL = "removal",
+    CODE_ROLE_DERIVATION = "derivation",
+    CODE_ROLE_SOURCE = "source",
+    CODE_ROLE_QUOTATION = "quotation",
+    CODE_ROLE_REVISION = "revision"
     }
-}
-public type Provenance_Relevant_HistoryAgentType record {|
-    *r4:CodeableConcept;
-
-    @constraint:Array {
-       minLength: 1
-    }
-    Provenance_Relevant_HistoryAgentTypeCoding[] coding;
-|};
 

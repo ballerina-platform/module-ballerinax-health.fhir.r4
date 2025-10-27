@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_OBSERVATION_BODYHEIGHT = "http://hl7.org/fhir/StructureDefinition/bodyheight";
 public const RESOURCE_NAME_OBSERVATION_BODYHEIGHT = "Observation";
+
+public type observation_bodyheightExtensions (DiagnosticReportRisk|EventEventHistory|EventLocation|EventStatusReason|r4:Extension|ObservationAnalysisDateTime|ObservationBodyPosition|ObservationDelta|ObservationDeviceCode|ObservationFocusCode|ObservationGatewayDevice|ObservationGeneticsAllele|ObservationGeneticsAminoAcidChange|ObservationGeneticsAncestry|ObservationGeneticsCopyNumberEvent|ObservationGeneticsDNARegionName|ObservationGeneticsGene|ObservationGeneticsGenomicSourceClass|ObservationGeneticsInterpretation|ObservationGeneticsPhaseSet|ObservationGeneticsVariant|ObservationNatureOfAbnormalTest|ObservationPrecondition|ObservationReagent|ObservationReplaces|ObservationSecondaryFinding|ObservationSequelTo|ObservationSpecimenCode|ObservationStructureType|ObservationVSubid|WorkflowAdheresTo|WorkflowEpisodeOfCare|WorkflowInstantiatesCanonical|WorkflowInstantiatesUri|WorkflowReason|WorkflowReasonCode|WorkflowReasonReference|WorkflowRelatedArtifact|WorkflowResearchStudy|WorkflowSupportingInfo|WorkflowTriggeredBy);
 
 # FHIR observation_bodyheight resource record.
 #
@@ -370,7 +372,7 @@ public type observation_bodyheight record {|
     Observation_bodyheightValue valueQuantity?;
     r4:Identifier[] identifier?;
     r4:Reference[] performer?;
-    r4:Period effectivePeriod;
+    r4:Period effectivePeriod?;
     r4:CodeableConcept method?;
     r4:Reference[] hasMember?;
     r4:Reference encounter?;
@@ -378,12 +380,15 @@ public type observation_bodyheight record {|
     Observation_bodyheightComponent[] component?;
     r4:Resource[] contained?;
     Observation_bodyheightReferenceRange[] referenceRange?;
-    r4:dateTime effectiveDateTime;
+    r4:dateTime effectiveDateTime?;
     r4:CodeableConcept[] interpretation?;
     r4:Meta meta?;
     r4:uri implicitRules?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Observation.category constraint. This field must be an array containing at least one item."
+        }
     }
     r4:CodeableConcept[] category;
     r4:Reference device?;
@@ -402,6 +407,7 @@ public type observation_bodyheight record {|
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + valueCodeableConcept - Vital Sign Value recorded with UCUM.
 # + valueRatio - Vital Sign Value recorded with UCUM.
+# + referenceRange - Guidance on how to interpret the value by comparison to a normal or recommended range.
 # + valueString - Vital Sign Value recorded with UCUM.
 # + interpretation - A categorical assessment of an observation value. For example, high, low, normal.
 # + valueSampledData - Vital Sign Value recorded with UCUM.
@@ -495,6 +501,17 @@ public type observation_bodyheight record {|
             description: "Vital Sign Value recorded with UCUM.",
             path: "Observation.component.value[x]"
         },
+
+        "referenceRange": {
+            name: "referenceRange",
+            dataType: Observation_bodyheightReferenceRange,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Guidance on how to interpret the value by comparison to a normal or recommended range.",
+            path: "Observation.component.referenceRange"
+        },
+
         "valueString": {
             name: "valueString",
             dataType: string,
@@ -585,6 +602,7 @@ public type Observation_bodyheightComponent record {|
     r4:Extension[] modifierExtension?;
     r4:CodeableConcept valueCodeableConcept?;
     r4:Ratio valueRatio?;
+    Observation_bodyheightReferenceRange[] referenceRange?;
     string valueString?;
     r4:CodeableConcept[] interpretation?;
     r4:SampledData valueSampledData?;
@@ -745,7 +763,14 @@ public type Observation_bodyheightCategoryVSCat record {|
     *r4:CodeableConcept;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Observation.category.coding constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.Observation.category.coding constraint. This field must be an array containing at most one item."
+        }
     }
     Observation_bodyheightCategoryCoding[] coding;
     r4:Extension[] extension?;

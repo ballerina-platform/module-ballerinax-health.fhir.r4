@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -421,6 +421,7 @@ public type MedicinalProductIngredientSpecifiedSubstanceStrength record {|
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + code - The ingredient substance.
+# + strength - Quantity of the substance or specified substance present in the manufactured item or pharmaceutical product.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 @r4:DataTypeDefinition {
@@ -445,6 +446,17 @@ public type MedicinalProductIngredientSpecifiedSubstanceStrength record {|
             description: "The ingredient substance.",
             path: "MedicinalProductIngredient.substance.code"
         },
+
+        "strength": {
+            name: "strength",
+            dataType: MedicinalProductIngredientSpecifiedSubstanceStrength,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Quantity of the substance or specified substance present in the manufactured item or pharmaceutical product.",
+            path: "MedicinalProductIngredient.substance.strength"
+        },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -474,6 +486,7 @@ public type MedicinalProductIngredientSubstance record {|
 
     r4:Extension[] extension?;
     r4:CodeableConcept code;
+    MedicinalProductIngredientSpecifiedSubstanceStrength[] strength?;
     r4:Extension[] modifierExtension?;
     string id?;
 |};

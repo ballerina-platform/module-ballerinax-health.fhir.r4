@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -365,7 +365,10 @@ public type Claim record {|
     RESOURCE_NAME_CLAIM resourceType = RESOURCE_NAME_CLAIM;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.Claim.insurance constraint. This field must be an array containing at least one item."
+        }
     }
     ClaimInsurance[] insurance;
     r4:Extension[] extension?;
@@ -938,9 +941,9 @@ public type ClaimProcedure record {|
     r4:dateTime date?;
     r4:positiveInt sequence;
     r4:Extension[] extension?;
-    r4:CodeableConcept procedureCodeableConcept;
+    r4:CodeableConcept procedureCodeableConcept?;
     r4:Extension[] modifierExtension?;
-    r4:Reference procedureReference;
+    r4:Reference procedureReference?;
     string id?;
     r4:Reference[] udi?;
     r4:CodeableConcept[] 'type?;
@@ -1152,8 +1155,8 @@ public type ClaimDiagnosis record {|
     r4:Extension[] modifierExtension?;
     string id?;
     r4:CodeableConcept[] 'type?;
-    r4:Reference diagnosisReference;
-    r4:CodeableConcept diagnosisCodeableConcept;
+    r4:Reference diagnosisReference?;
+    r4:CodeableConcept diagnosisCodeableConcept?;
 |};
 
 # FHIR ClaimItemDetailSubDetail datatype record.

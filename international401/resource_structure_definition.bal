@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_STRUCTUREDEFINITION = "http://hl7.org/fhir/StructureDefinition/StructureDefinition";
 public const RESOURCE_NAME_STRUCTUREDEFINITION = "StructureDefinition";
+
+public type StructureDefinitionExtensions (CqfModelInfoIsIncluded|CqfModelInfoIsRetrievable|CqfModelInfoLabel|CqfModelInfoPrimaryCodePath|CqfShouldTraceDependency|ElementdefinitionNamespace|r4:Extension|Obligation|Replaces|ResourceApprovalDate|ResourceEffectivePeriod|ResourceLastReviewDate|StructuredefinitionAncestor|StructuredefinitionApplicableVersion|StructuredefinitionCategory|StructuredefinitionCompliesWithProfile|StructuredefinitionDependencies|StructuredefinitionFmmNoWarnings|StructuredefinitionImposeProfile|StructuredefinitionInheritanceControl|StructuredefinitionInterface|StructuredefinitionSecurityCategory|StructuredefinitionSummary|StructuredefinitionTemplateStatus|StructuredefinitionTypeCharacteristics|StructuredefinitionXmlNoOrder);
 
 # FHIR StructureDefinition resource record.
 #
@@ -462,7 +464,14 @@ public type StructureDefinitionDifferential record {|
     r4:Extension[] modifierExtension?;
     string id?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.StructureDefinition.differential.element constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.StructureDefinition.differential.element constraint. This field must be an array containing at most one item."
+        }
     }
     r4:ElementDefinition[] element;
 |};
@@ -643,7 +652,14 @@ public type StructureDefinitionSnapshot record {|
     r4:Extension[] modifierExtension?;
     string id?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.StructureDefinition.snapshot.element constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.StructureDefinition.snapshot.element constraint. This field must be an array containing at most one item."
+        }
     }
     r4:ElementDefinition[] element;
 |};

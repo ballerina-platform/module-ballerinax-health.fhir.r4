@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -41,6 +41,7 @@ public const RESOURCE_NAME_SUBSTANCESPECIFICATION = "SubstanceSpecification";
 # + relationship - A link between this substance and another, with details of the relationship.
 # + identifier - Identifier by which this substance is known.
 # + referenceInformation - General information detailing this substance.
+# + molecularWeight - The molecular weight or weight range (for proteins, polymers or nucleic acids).
 # + structure - Structural information.
 # + sourceMaterial - Material or taxonomic/anatomical source for the substance.
 # + contained - These resources do not have an independent existence apart from the resource that contains them - they cannot be identified independently, and nor can they have their own independent transaction scope.
@@ -185,6 +186,16 @@ public const RESOURCE_NAME_SUBSTANCESPECIFICATION = "SubstanceSpecification";
             isArray: false,
             path: "SubstanceSpecification.referenceInformation"
         },
+
+        "molecularWeight": {
+            name: "molecularWeight",
+            dataType: SubstanceSpecificationStructureIsotopeMolecularWeight,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            path: "SubstanceSpecification.molecularWeight"
+        },
+
         "structure" : {
             name: "structure",
             dataType: SubstanceSpecificationStructure,
@@ -292,6 +303,7 @@ public type SubstanceSpecification record {|
     SubstanceSpecificationRelationship[] relationship?;
     r4:Identifier identifier?;
     r4:Reference referenceInformation?;
+    SubstanceSpecificationStructureIsotopeMolecularWeight[] molecularWeight?;
     SubstanceSpecificationStructure structure?;
     r4:Reference sourceMaterial?;
     r4:Resource[] contained?;
@@ -435,7 +447,7 @@ public type SubstanceSpecification record {|
         },
         "relationship": {
             name: "relationship",
-            dataType: r4:CodeableConcept,
+            dataType: SubstanceSpecificationRelationshipRelationship,
             min: 0,
             max: 1,
             isArray: false,
@@ -472,7 +484,7 @@ public type SubstanceSpecificationRelationship record {|
     string amountString?;
     r4:Range amountRange?;
     string id?;
-    r4:CodeableConcept relationship?;
+    SubstanceSpecificationRelationshipRelationship relationship?;
     r4:Reference substanceReference?;
 |};
 
@@ -589,6 +601,7 @@ public type SubstanceSpecificationCode record {|
 # + molecularFormula - Molecular formula.
 # + molecularFormulaByMoiety - Specified per moiety according to the Hill system, i.e. first C, then H, then alphabetical, each moiety separated by a dot.
 # + stereochemistry - Stereochemistry type.
+# + molecularWeight - The molecular weight or weight range (for proteins, polymers or nucleic acids).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + isotope - Applicable for single substances that contain a radionuclide or a non-natural isotopic ratio.
 # + 'source - Supporting literature.
@@ -651,6 +664,17 @@ public type SubstanceSpecificationCode record {|
             description: "Stereochemistry type.",
             path: "SubstanceSpecification.structure.stereochemistry"
         },
+
+        "molecularWeight": {
+            name: "molecularWeight",
+            dataType: SubstanceSpecificationStructureIsotopeMolecularWeight,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The molecular weight or weight range (for proteins, polymers or nucleic acids).",
+            path: "SubstanceSpecification.structure.molecularWeight"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -702,6 +726,7 @@ public type SubstanceSpecificationStructure record {|
     string molecularFormula?;
     string molecularFormulaByMoiety?;
     r4:CodeableConcept stereochemistry?;
+    SubstanceSpecificationStructureIsotopeMolecularWeight molecularWeight?;
     string id?;
     SubstanceSpecificationStructureIsotope[] isotope?;
     r4:Reference[] 'source?;
@@ -816,15 +841,17 @@ public type SubstanceSpecificationStructureIsotope record {|
 # FHIR SubstanceSpecificationName datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
-# + domain - The use context of this name for example if there is a different name a drug active ingredient as opposed to a food colour additive.
 # + jurisdiction - The jurisdiction where this name applies.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + name - The actual name.
 # + official - Details of the official nature of this name.
 # + language - Language of the name.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + 'source - Supporting literature.
 # + 'type - Name type.
+# + synonym - A synonym of this name.
+# + domain - The use context of this name for example if there is a different name a drug active ingredient as opposed to a food colour additive.
+# + name - The actual name.
+# + translation - A translation for this name.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + preferred - If this is the preferred name for this substance.
 # + status - The status of the name.
 @r4:DataTypeDefinition {
@@ -840,15 +867,7 @@ public type SubstanceSpecificationStructureIsotope record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "SubstanceSpecification.name.extension"
         },
-        "domain": {
-            name: "domain",
-            dataType: r4:CodeableConcept,
-            min: 0,
-            max: int:MAX_VALUE,
-            isArray: true,
-            description: "The use context of this name for example if there is a different name a drug active ingredient as opposed to a food colour additive.",
-            path: "SubstanceSpecification.name.domain"
-        },
+
         "jurisdiction": {
             name: "jurisdiction",
             dataType: r4:CodeableConcept,
@@ -867,15 +886,7 @@ public type SubstanceSpecificationStructureIsotope record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "SubstanceSpecification.name.modifierExtension"
         },
-        "name": {
-            name: "name",
-            dataType: string,
-            min: 1,
-            max: 1,
-            isArray: false,
-            description: "The actual name.",
-            path: "SubstanceSpecification.name.name"
-        },
+
         "official": {
             name: "official",
             dataType: SubstanceSpecificationNameOfficial,
@@ -894,15 +905,7 @@ public type SubstanceSpecificationStructureIsotope record {|
             description: "Language of the name.",
             path: "SubstanceSpecification.name.language"
         },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "SubstanceSpecification.name.id"
-        },
+
         "source": {
             name: "source",
             dataType: r4:Reference,
@@ -921,6 +924,57 @@ public type SubstanceSpecificationStructureIsotope record {|
             description: "Name type.",
             path: "SubstanceSpecification.name.type"
         },
+
+        "synonym": {
+            name: "synonym",
+            dataType: SubstanceSpecificationName,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A synonym of this name.",
+            path: "SubstanceSpecification.name.synonym"
+        },
+
+        "domain": {
+            name: "domain",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The use context of this name for example if there is a different name a drug active ingredient as opposed to a food colour additive.",
+            path: "SubstanceSpecification.name.domain"
+        },
+
+        "name": {
+            name: "name",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The actual name.",
+            path: "SubstanceSpecification.name.name"
+        },
+
+        "translation": {
+            name: "translation",
+            dataType: SubstanceSpecificationName,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "A translation for this name.",
+            path: "SubstanceSpecification.name.translation"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "SubstanceSpecification.name.id"
+        },
+
         "preferred": {
             name: "preferred",
             dataType: boolean,
@@ -949,15 +1003,17 @@ public type SubstanceSpecificationName record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
-    r4:CodeableConcept[] domain?;
     r4:CodeableConcept[] jurisdiction?;
     r4:Extension[] modifierExtension?;
-    string name;
     SubstanceSpecificationNameOfficial[] official?;
     r4:CodeableConcept[] language?;
-    string id?;
     r4:Reference[] 'source?;
     r4:CodeableConcept 'type?;
+    SubstanceSpecificationName[] synonym?;
+    r4:CodeableConcept[] domain?;
+    string name;
+    SubstanceSpecificationName[] translation?;
+    string id?;
     boolean preferred?;
     r4:CodeableConcept status?;
 |};
@@ -1087,6 +1143,49 @@ public type SubstanceSpecificationProperty record {|
     string parameters?;
     r4:Reference definingSubstanceReference?;
     r4:CodeableConcept definingSubstanceCodeableConcept?;
+|};
+
+# FHIR SubstanceSpecificationRelationshipRelationship datatype record.
+#
+# + substanceCodeableConcept - A pointer to another substance, as a resource or just a representational code.
+# + substanceReference - A pointer to another substance, as a resource or just a representational code.
+
+@r4:DataTypeDefinition {
+    name: "SubstanceSpecificationRelationshipRelationship",
+    baseType: (),
+    elements: {
+        "substanceCodeableConcept": {
+            name: "substanceCodeableConcept",
+            dataType: r4:CodeableConcept,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A pointer to another substance, as a resource or just a representational code.",
+            path: "SubstanceSpecification.relationship.substance[x]"
+        },
+
+        "substanceReference": {
+            name: "substanceReference",
+            dataType: r4:Reference,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "A pointer to another substance, as a resource or just a representational code.",
+            path: "SubstanceSpecification.relationship.substance[x]"
+        }
+    },
+
+    serializers: {
+        'xml: r4:complexDataTypeXMLSerializer,
+        'json: r4:complexDataTypeJsonSerializer
+    }
+}
+
+public type SubstanceSpecificationRelationshipRelationship record {|
+    *r4:CodeableConcept;
+
+    r4:CodeableConcept substanceCodeableConcept?;
+    r4:Reference substanceReference?;
 |};
 
 # FHIR SubstanceSpecificationStructureRepresentation datatype record.

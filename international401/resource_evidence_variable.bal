@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_EVIDENCEVARIABLE = "http://hl7.org/fhir/StructureDefinition/EvidenceVariable";
 public const RESOURCE_NAME_EVIDENCEVARIABLE = "EvidenceVariable";
+
+public type EvidenceVariableExtensions (r4:Extension|Replaces);
 
 # FHIR EvidenceVariable resource record.
 #
@@ -375,7 +377,10 @@ public type EvidenceVariable record {|
     string title?;
     EvidenceVariableType 'type?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.EvidenceVariable.characteristic constraint. This field must be an array containing at least one item."
+        }
     }
     EvidenceVariableCharacteristic[] characteristic;
     r4:ContactDetail[] contact?;
@@ -609,20 +614,20 @@ public type EvidenceVariableCharacteristic record {|
     *r4:BackboneElement;
 
     r4:Timing participantEffectiveTiming?;
-    r4:CodeableConcept definitionCodeableConcept;
+    r4:CodeableConcept definitionCodeableConcept?;
     r4:Period participantEffectivePeriod?;
     r4:UsageContext[] usageContext?;
-    r4:canonical definitionCanonical;
+    r4:canonical definitionCanonical?;
     r4:Extension[] extension?;
-    r4:DataRequirement definitionDataRequirement;
+    r4:DataRequirement definitionDataRequirement?;
     EvidenceVariableCharacteristicGroupMeasure groupMeasure?;
     r4:dateTime participantEffectiveDateTime?;
     r4:Duration timeFromStart?;
-    r4:Reference definitionReference;
+    r4:Reference definitionReference?;
     r4:Extension[] modifierExtension?;
     string description?;
-    r4:Expression definitionExpression;
-    r4:TriggerDefinition definitionTriggerDefinition;
+    r4:Expression definitionExpression?;
+    r4:TriggerDefinition definitionTriggerDefinition?;
     boolean exclude?;
     r4:Duration participantEffectiveDuration?;
     string id?;

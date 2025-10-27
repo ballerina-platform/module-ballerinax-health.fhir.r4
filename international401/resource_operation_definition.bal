@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_OPERATIONDEFINITION = "http://hl7.org/fhir/StructureDefinition/OperationDefinition";
 public const RESOURCE_NAME_OPERATIONDEFINITION = "OperationDefinition";
+
+public type OperationDefinitionExtensions (r4:Extension|Replaces|ResourceApprovalDate|ResourceEffectivePeriod|ResourceLastReviewDate|WorkflowShallComplyWith);
 
 # FHIR OperationDefinition resource record.
 #
@@ -569,6 +571,7 @@ public enum OperationDefinitionKind {
 # + use - Whether this is an input or an output parameter.
 # + documentation - Describes the meaning or use of this parameter.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
+# + part - The parts of a nested Parameter.
 # + binding - Binds to a value set if this parameter is coded (code, Coding, CodeableConcept).
 # + 'type - The type for this parameter.
 # + referencedFrom - Identifies other resource parameters within the operation invocation that are expected to resolve to this resource.
@@ -634,6 +637,17 @@ public enum OperationDefinitionKind {
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "OperationDefinition.parameter.modifierExtension"
         },
+
+        "part": {
+            name: "part",
+            dataType: OperationDefinitionParameter,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "The parts of a nested Parameter.",
+            path: "OperationDefinition.parameter.part"
+        },
+
         "binding": {
             name: "binding",
             dataType: OperationDefinitionParameterBinding,
@@ -712,6 +726,7 @@ public type OperationDefinitionParameter record {|
     OperationDefinitionParameterUse use;
     string documentation?;
     r4:Extension[] modifierExtension?;
+    OperationDefinitionParameter[] part?;
     OperationDefinitionParameterBinding binding?;
     r4:code 'type?;
     OperationDefinitionParameterReferencedFrom[] referencedFrom?;

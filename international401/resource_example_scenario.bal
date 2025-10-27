@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_EXAMPLESCENARIO = "http://hl7.org/fhir/StructureDefinition/ExampleScenario";
 public const RESOURCE_NAME_EXAMPLESCENARIO = "ExampleScenario";
+
+public type ExampleScenarioExtensions (r4:Extension|Replaces);
 
 # FHIR ExampleScenario resource record.
 #
@@ -308,6 +310,7 @@ public enum ExampleScenarioStatus {
 # FHIR ExampleScenarioProcessStep datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + process - Nested process.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + alternative - Indicates an alternative step that can be taken instead of the operations on the base step in exceptional/atypical circumstances.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
@@ -326,6 +329,17 @@ public enum ExampleScenarioStatus {
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "ExampleScenario.process.step.extension"
         },
+
+        "process": {
+            name: "process",
+            dataType: ExampleScenarioProcess,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Nested process.",
+            path: "ExampleScenario.process.step.process"
+        },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -381,6 +395,7 @@ public type ExampleScenarioProcessStep record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
+    ExampleScenarioProcess[] process?;
     r4:Extension[] modifierExtension?;
     ExampleScenarioProcessStepAlternative[] alternative?;
     string id?;
@@ -399,6 +414,7 @@ public enum ExampleScenarioActorType {
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + description - A human-readable description of the alternative explaining when the alternative should occur rather than the base step.
+# + step - What happens in each alternative option.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + title - The label to display for the alternative that gives a sense of the circumstance in which the alternative should be invoked.
 @r4:DataTypeDefinition {
@@ -432,6 +448,17 @@ public enum ExampleScenarioActorType {
             description: "A human-readable description of the alternative explaining when the alternative should occur rather than the base step.",
             path: "ExampleScenario.process.step.alternative.description"
         },
+
+        "step": {
+            name: "step",
+            dataType: ExampleScenarioProcessStep,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "What happens in each alternative option.",
+            path: "ExampleScenario.process.step.alternative.step"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -462,6 +489,7 @@ public type ExampleScenarioProcessStepAlternative record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     r4:markdown description?;
+    ExampleScenarioProcessStep[] step?;
     string id?;
     string title;
 |};
@@ -822,29 +850,31 @@ public type ExampleScenarioInstanceVersion record {|
 
 # FHIR ExampleScenarioProcessStepOperation datatype record.
 #
-# + number - The sequential number of the interaction, e.g. 1.2.5.
+# + request - Each resource instance used by the initiator.
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + receiver - Who receives the transaction.
 # + initiator - Who starts the transaction.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
-# + name - The human-friendly name of the interaction.
 # + description - A comment to be inserted in the diagram.
-# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + receiverActive - Whether the receiver is deactivated right after the transaction.
 # + 'type - The type of operation - CRUD.
+# + number - The sequential number of the interaction, e.g. 1.2.5.
+# + response - Each resource instance used by the responder.
+# + name - The human-friendly name of the interaction.
+# + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + initiatorActive - Whether the initiator is deactivated right after the transaction.
 @r4:DataTypeDefinition {
     name: "ExampleScenarioProcessStepOperation",
     baseType: (),
     elements: {
-        "number": {
-            name: "number",
-            dataType: string,
-            min: 1,
+        "request": {
+            name: "request",
+            dataType: ExampleScenarioInstanceContainedInstance,
+            min: 0,
             max: 1,
             isArray: false,
-            description: "The sequential number of the interaction, e.g. 1.2.5.",
-            path: "ExampleScenario.process.step.operation.number"
+            description: "Each resource instance used by the initiator.",
+            path: "ExampleScenario.process.step.operation.request"
         },
         "extension": {
             name: "extension",
@@ -882,15 +912,7 @@ public type ExampleScenarioInstanceVersion record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).",
             path: "ExampleScenario.process.step.operation.modifierExtension"
         },
-        "name": {
-            name: "name",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "The human-friendly name of the interaction.",
-            path: "ExampleScenario.process.step.operation.name"
-        },
+
         "description": {
             name: "description",
             dataType: r4:markdown,
@@ -900,15 +922,7 @@ public type ExampleScenarioInstanceVersion record {|
             description: "A comment to be inserted in the diagram.",
             path: "ExampleScenario.process.step.operation.description"
         },
-        "id": {
-            name: "id",
-            dataType: string,
-            min: 0,
-            max: 1,
-            isArray: false,
-            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
-            path: "ExampleScenario.process.step.operation.id"
-        },
+
         "receiverActive": {
             name: "receiverActive",
             dataType: boolean,
@@ -927,6 +941,47 @@ public type ExampleScenarioInstanceVersion record {|
             description: "The type of operation - CRUD.",
             path: "ExampleScenario.process.step.operation.type"
         },
+
+        "number": {
+            name: "number",
+            dataType: string,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "The sequential number of the interaction, e.g. 1.2.5.",
+            path: "ExampleScenario.process.step.operation.number"
+        },
+
+        "response": {
+            name: "response",
+            dataType: ExampleScenarioInstanceContainedInstance,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Each resource instance used by the responder.",
+            path: "ExampleScenario.process.step.operation.response"
+        },
+
+        "name": {
+            name: "name",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "The human-friendly name of the interaction.",
+            path: "ExampleScenario.process.step.operation.name"
+        },
+
+        "id": {
+            name: "id",
+            dataType: string,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
+            path: "ExampleScenario.process.step.operation.id"
+        },
+
         "initiatorActive": {
             name: "initiatorActive",
             dataType: boolean,
@@ -945,16 +1000,18 @@ public type ExampleScenarioInstanceVersion record {|
 public type ExampleScenarioProcessStepOperation record {|
     *r4:BackboneElement;
 
-    string number;
+    ExampleScenarioInstanceContainedInstance request?;
     r4:Extension[] extension?;
     string receiver?;
     string initiator?;
     r4:Extension[] modifierExtension?;
-    string name?;
     r4:markdown description?;
-    string id?;
     boolean receiverActive?;
     string 'type?;
+    string number;
+    ExampleScenarioInstanceContainedInstance response?;
+    string name?;
+    string id?;
     boolean initiatorActive?;
 |};
 

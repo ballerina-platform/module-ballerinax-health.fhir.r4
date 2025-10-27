@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,17 +22,14 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_SERVICEREQUEST_GENETICS = "http://hl7.org/fhir/StructureDefinition/servicerequest-genetics";
 public const RESOURCE_NAME_SERVICEREQUEST_GENETICS = "ServiceRequest";
 
+public type ServiceRequest_GeneticsExtensions (BusinessEvent|r4:Extension|ProcedureApproachBodyStructure|ProcedureDirectedBy|ProcedureTargetBodyStructure|RequestStatusReason|ServicerequestOrderCallbackPhoneNumber|ServicerequestPrecondition|ServicerequestQuestionnaireRequest|WorkflowCompliesWith|WorkflowEpisodeOfCare|WorkflowFollowOnOf|WorkflowGeneratedFrom|WorkflowReleaseDate|WorkflowResearchStudy|WorkflowShallComplyWith|WorkflowTriggeredBy);
+
 # FHIR ServiceRequest_Genetics resource record.
 #
 # + resourceType - The type of the resource describes
 # + insurance - Insurance plans, coverage extensions, pre-authorizations and/or pre-determinations that may be needed for delivering the requested service.
 # + note - Any other notes and comments made about the service request. For example, internal billing notes.
 # + extension - An Extension
-# * extension Slicings
-# 1) Extension: The items the orderer requested
-#       - min = 0
-#       - max = *
-#
 # + code - A code that identifies a particular service (i.e., procedure, diagnostic investigation, or panel of investigations) that have been requested.
 # + requisition - A shared identifier common to all service requests that were authorized more or less simultaneously by a single author, representing the composite or group identifier.
 # + subject - On whom or what the service is to be performed. This is usually a human patient, but can also be requested on animals, groups of humans or animals, devices such as dialysis machines, or even locations (typically for environmental scans).

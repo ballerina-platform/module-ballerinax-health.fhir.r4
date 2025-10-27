@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_TESTSCRIPT = "http://hl7.org/fhir/StructureDefinition/TestScript";
 public const RESOURCE_NAME_TESTSCRIPT = "TestScript";
+
+public type TestScriptExtensions (r4:Extension|Replaces);
 
 # FHIR TestScript resource record.
 #
@@ -519,7 +521,14 @@ public type TestScriptTest record {|
     r4:Extension[] modifierExtension?;
     string name?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.TestScript.test.action constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.TestScript.test.action constraint. This field must be an array containing at most one item."
+        }
     }
     TestScriptTestAction[] action;
     string description?;
@@ -763,7 +772,14 @@ public type TestScriptSetup record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.TestScript.setup.action constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.TestScript.setup.action constraint. This field must be an array containing at most one item."
+        }
     }
     TestScriptSetupAction[] action;
     string id?;
@@ -838,7 +854,14 @@ public type TestScriptTeardown record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.TestScript.teardown.action constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.TestScript.teardown.action constraint. This field must be an array containing at most one item."
+        }
     }
     TestScriptTeardownAction[] action;
     string id?;
@@ -849,6 +872,8 @@ public type TestScriptTeardown record {|
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + operation - An operation would involve a REST request to a server.
+
 @r4:DataTypeDefinition {
     name: "TestScriptTeardownAction",
     baseType: (),
@@ -879,6 +904,16 @@ public type TestScriptTeardown record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "TestScript.teardown.action.id"
+        },
+
+        "operation": {
+            name: "operation",
+            dataType: TestScriptSetupActionOperation,
+            min: 1,
+            max: 1,
+            isArray: false,
+            description: "An operation would involve a REST request to a server.",
+            path: "TestScript.teardown.action.operation"
         }
     },
     serializers: {
@@ -892,6 +927,7 @@ public type TestScriptTeardownAction record {|
     r4:Extension[] extension?;
     r4:Extension[] modifierExtension?;
     string id?;
+    TestScriptSetupActionOperation operation;
 |};
 
 # FHIR TestScriptVariable datatype record.
@@ -1477,7 +1513,14 @@ public type TestScriptMetadata record {|
     *r4:BackboneElement;
 
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.TestScript.metadata.capability constraint. This field must be an array containing at least one item."
+        },
+        maxLength: {
+            value: 1,
+            message: "Validation failed for $.TestScript.metadata.capability constraint. This field must be an array containing at most one item."
+        }
     }
     TestScriptMetadataCapability[] capability;
     r4:Extension[] extension?;
@@ -2014,8 +2057,11 @@ public type TestScriptSetupActionOperation record {|
 # FHIR TestScriptTestAction datatype record.
 #
 # + extension - May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.
+# + assert - Evaluates the results of previous operations to determine if the server under test behaves appropriately.
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
+# + operation - An operation would involve a REST request to a server.
+
 @r4:DataTypeDefinition {
     name: "TestScriptTestAction",
     baseType: (),
@@ -2029,6 +2075,17 @@ public type TestScriptSetupActionOperation record {|
             description: "May be used to represent additional information that is not part of the basic definition of the element. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension.",
             path: "TestScript.test.action.extension"
         },
+
+        "assert": {
+            name: "assert",
+            dataType: TestScriptSetupActionAssert,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "Evaluates the results of previous operations to determine if the server under test behaves appropriately.",
+            path: "TestScript.test.action.assert"
+        },
+
         "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
@@ -2046,6 +2103,16 @@ public type TestScriptSetupActionOperation record {|
             isArray: false,
             description: "Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.",
             path: "TestScript.test.action.id"
+        },
+
+        "operation": {
+            name: "operation",
+            dataType: TestScriptSetupActionOperation,
+            min: 0,
+            max: 1,
+            isArray: false,
+            description: "An operation would involve a REST request to a server.",
+            path: "TestScript.test.action.operation"
         }
     },
     serializers: {
@@ -2057,7 +2124,9 @@ public type TestScriptTestAction record {|
     *r4:BackboneElement;
 
     r4:Extension[] extension?;
+    TestScriptSetupActionAssert assert?;
     r4:Extension[] modifierExtension?;
     string id?;
+    TestScriptSetupActionOperation operation?;
 |};
 

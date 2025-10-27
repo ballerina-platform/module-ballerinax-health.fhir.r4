@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_GUIDANCERESPONSE = "http://hl7.org/fhir/StructureDefinition/GuidanceResponse";
 public const RESOURCE_NAME_GUIDANCERESPONSE = "GuidanceResponse";
+
+public type GuidanceResponseExtensions (CqfInputParameters|r4:Extension);
 
 # FHIR GuidanceResponse resource record.
 #
@@ -276,16 +278,16 @@ public type GuidanceResponse record {|
     r4:code language?;
     r4:Reference result?;
     r4:Reference[] evaluationMessage?;
-    r4:canonical moduleCanonical;
+    r4:canonical moduleCanonical?;
     string id?;
     r4:CodeableConcept[] reasonCode?;
     r4:Narrative text?;
-    r4:uri moduleUri;
+    r4:uri moduleUri?;
     r4:Reference outputParameters?;
     r4:Identifier[] identifier?;
     r4:Reference performer?;
     r4:Reference encounter?;
-    r4:CodeableConcept moduleCodeableConcept;
+    r4:CodeableConcept moduleCodeableConcept?;
     r4:Resource[] contained?;
     r4:Meta meta?;
     r4:DataRequirement[] dataRequirement?;

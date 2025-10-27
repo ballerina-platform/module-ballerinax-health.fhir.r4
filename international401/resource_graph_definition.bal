@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,8 @@ import ballerinax/health.fhir.r4;
 
 public const string PROFILE_BASE_GRAPHDEFINITION = "http://hl7.org/fhir/StructureDefinition/GraphDefinition";
 public const RESOURCE_NAME_GRAPHDEFINITION = "GraphDefinition";
+
+public type GraphDefinitionExtensions (r4:Extension|Replaces);
 
 # FHIR GraphDefinition resource record.
 #
@@ -284,6 +286,7 @@ public type GraphDefinition record {|
 # + modifierExtension - May be used to represent additional information that is not part of the basic definition of the element and that modifies the understanding of the element in which it is contained and/or the understanding of the containing element's descendants. Usually modifier elements provide negation or qualification. To make the use of extensions safe and manageable, there is a strict set of governance applied to the definition and use of extensions. Though any implementer can define an extension, there is a set of requirements that SHALL be met as part of the definition of the extension. Applications processing a resource are required to check for modifier extensions. Modifier extensions SHALL NOT change the meaning of any elements on Resource or DomainResource (including cannot change the meaning of modifierExtension itself).
 # + profile - Profile for the target resource.
 # + compartment - Compartment Consistency Rules.
+# + link - Additional links from target resource.
 # + id - Unique id for the element within a resource (for internal references). This may be any string value that does not contain spaces.
 # + params - A set of parameters to look up.
 # + 'type - Type of resource this link refers to.
@@ -327,6 +330,17 @@ public type GraphDefinition record {|
             description: "Compartment Consistency Rules.",
             path: "GraphDefinition.link.target.compartment"
         },
+
+        "link": {
+            name: "link",
+            dataType: GraphDefinitionLink,
+            min: 0,
+            max: int:MAX_VALUE,
+            isArray: true,
+            description: "Additional links from target resource.",
+            path: "GraphDefinition.link.target.link"
+        },
+
         "id": {
             name: "id",
             dataType: string,
@@ -367,6 +381,7 @@ public type GraphDefinitionLinkTarget record {|
     r4:Extension[] modifierExtension?;
     r4:canonical profile?;
     GraphDefinitionLinkTargetCompartment[] compartment?;
+    GraphDefinitionLink[] link?;
     string id?;
     string params?;
     r4:code 'type;

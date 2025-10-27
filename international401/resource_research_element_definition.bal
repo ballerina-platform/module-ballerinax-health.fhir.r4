@@ -1,4 +1,4 @@
-// Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -444,7 +444,10 @@ public type ResearchElementDefinition record {|
     string title?;
     ResearchElementDefinitionType 'type;
     @constraint:Array {
-       minLength: 1
+        minLength: {
+            value: 1,
+            message: "Validation failed for $.ResearchElementDefinition.characteristic constraint. This field must be an array containing at least one item."
+        }
     }
     ResearchElementDefinitionCharacteristic[] characteristic;
     ResearchElementDefinitionVariableType variableType?;
@@ -743,14 +746,14 @@ public type ResearchElementDefinitionCharacteristic record {|
 
     r4:Timing participantEffectiveTiming?;
     r4:Period studyEffectivePeriod?;
-    r4:CodeableConcept definitionCodeableConcept;
+    r4:CodeableConcept definitionCodeableConcept?;
     r4:Period participantEffectivePeriod?;
     r4:Timing studyEffectiveTiming?;
     r4:UsageContext[] usageContext?;
-    r4:canonical definitionCanonical;
+    r4:canonical definitionCanonical?;
     r4:Extension[] extension?;
     r4:CodeableConcept unitOfMeasure?;
-    r4:DataRequirement definitionDataRequirement;
+    r4:DataRequirement definitionDataRequirement?;
     r4:dateTime participantEffectiveDateTime?;
     r4:Extension[] modifierExtension?;
     r4:Duration studyEffectiveDuration?;
@@ -758,7 +761,7 @@ public type ResearchElementDefinitionCharacteristic record {|
     r4:Duration studyEffectiveTimeFromStart?;
     ResearchElementDefinitionCharacteristicParticipantEffectiveGroupMeasure participantEffectiveGroupMeasure?;
     ResearchElementDefinitionCharacteristicStudyEffectiveGroupMeasure studyEffectiveGroupMeasure?;
-    r4:Expression definitionExpression;
+    r4:Expression definitionExpression?;
     string studyEffectiveDescription?;
     boolean exclude?;
     r4:Duration participantEffectiveDuration?;
