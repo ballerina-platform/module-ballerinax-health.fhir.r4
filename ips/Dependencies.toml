@@ -420,7 +420,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.ips"
-version = "4.0.0"
+version = "4.0.1"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
