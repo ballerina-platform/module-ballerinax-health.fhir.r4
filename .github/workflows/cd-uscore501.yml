@@ -17,5 +17,5 @@ jobs:
      uses: ./.github/workflows/build-executor.yml
      secrets: inherit
      with:
-      working_dir: ./uscore501
+      working_dir: ./uscore/uscore501
       bal_central_environment: ${{ inputs.bal_central_environment }}

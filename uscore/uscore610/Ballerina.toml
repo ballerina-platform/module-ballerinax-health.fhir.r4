@@ -1,10 +1,10 @@
 [package]
 org = "ballerinax"
-name = "health.fhir.r4.uscore400"
-version = "2.0.1"
-distribution = "2201.12.2"
+name = "health.fhir.r4.uscore610"
+version = "3.0.0"
+distribution = "2201.12.8"
 authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "R4", "uscore400"]
+keywords = ["Healthcare", "FHIR", "R4", "uscore610"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
 
 
