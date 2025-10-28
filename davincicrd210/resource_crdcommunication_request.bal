@@ -23,6 +23,8 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_CRDCOMMUNICATIONREQUEST = "http://hl7.org/fhir/us/davinci-crd/StructureDefinition/profile-communicationrequest";
 public const RESOURCE_NAME_CRDCOMMUNICATIONREQUEST = "CommunicationRequest";
 
+public type CRDCommunicationRequestExtensions (ExtCoverageInformation|r4:Extension);
+
 # FHIR CRDCommunicationRequest resource record.
 #
 # + resourceType - The type of the resource describes
@@ -371,11 +373,6 @@ r4:CodeableConcept statusReason?;
         minLength: {
             value: 1,
             message: "Validation failed for $.CommunicationRequest.payload constraint. This field must be an array containing at least one item."
-        },
-
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.CommunicationRequest.payload constraint. This field must be an array containing at most one item."
         }
     }
 CRDCommunicationRequestPayload   [] payload;
@@ -439,7 +436,7 @@ CRDCommunicationRequestStatus status;
     "contentReference": {
             name: "contentReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The communicated content (or for multi-part communications, one portion of the communication).",
@@ -449,7 +446,7 @@ CRDCommunicationRequestStatus status;
     "contentString": {
             name: "contentString",
             dataType: string,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The communicated content (or for multi-part communications, one portion of the communication).",
@@ -469,7 +466,7 @@ CRDCommunicationRequestStatus status;
     "contentAttachment": {
             name: "contentAttachment",
             dataType: r4:Attachment,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
             description: "The communicated content (or for multi-part communications, one portion of the communication).",
@@ -507,10 +504,10 @@ public type CRDCommunicationRequestPayload record {|
         }
     }
 r4:Extension   [] extension;
-r4:Reference contentReference;
-string contentString;
+    r4:Reference contentReference?;
+    string contentString?;
 r4:Extension   [] modifierExtension?;
-r4:Attachment contentAttachment;
+    r4:Attachment contentAttachment?;
 string id?;
 |};
 

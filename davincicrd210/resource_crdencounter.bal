@@ -23,6 +23,8 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_CRDENCOUNTER = "http://hl7.org/fhir/us/davinci-crd/StructureDefinition/profile-encounter";
 public const RESOURCE_NAME_CRDENCOUNTER = "Encounter";
 
+public type CRDEncounterExtensions (ExtCoverageInformation|r4:Extension);
+
 # FHIR CRDEncounter resource record.
 #
 # + resourceType - The type of the resource describes
@@ -371,11 +373,6 @@ r4:code language?;
         minLength: {
             value: 1,
             message: "Validation failed for $.Encounter.type constraint. This field must be an array containing at least one item."
-        },
-
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.Encounter.type constraint. This field must be an array containing at most one item."
         }
     }
 r4:CodeableConcept   [] 'type;

@@ -326,11 +326,6 @@ public type CRDPatient record {|
         minLength: {
             value: 1,
             message: "Validation failed for $.Patient.identifier constraint. This field must be an array containing at least one item."
-        },
-
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.Patient.identifier constraint. This field must be an array containing at most one item."
         }
     }
     CRDPatientIdentifier[] identifier;
@@ -348,11 +343,6 @@ public type CRDPatient record {|
         minLength: {
             value: 1,
             message: "Validation failed for $.Patient.name constraint. This field must be an array containing at least one item."
-        },
-
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.Patient.name constraint. This field must be an array containing at most one item."
         }
     }
     r4:HumanName[] name;
@@ -761,11 +751,8 @@ public enum CRDPatientTelecomSystem {
 # CRDPatientNameUse enum
 public enum CRDPatientNameUse {
     CODE_USE_MAIDEN = "maiden",
-
-    CODE_USE_USUAL = "usual",
-
     CODE_USE_TEMP = "temp",
-
+    CODE_USE_USUAL = "usual",
     CODE_USE_OLD = "old",
 
     CODE_USE_NICKNAME = "nickname",
@@ -1116,14 +1103,12 @@ public type CRDPatientIdentifier record {|
 
 # CRDPatientAddressUse enum
 public enum CRDPatientAddressUse {
-    CODE_USE_HOME = "home",
-
     CODE_USE_TEMP = "temp",
 
     CODE_USE_WORK = "work",
 
     CODE_USE_OLD = "old",
-
+    CODE_USE_HOME = "home",
     CODE_USE_BILLING = "billing"
 
 }

@@ -22,6 +22,8 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_CRDDEVICEREQUEST = "http://hl7.org/fhir/us/davinci-crd/StructureDefinition/profile-devicerequest";
 public const RESOURCE_NAME_CRDDEVICEREQUEST = "DeviceRequest";
 
+public type CRDDeviceRequestExtensions (ExtCoverageInformation|r4:Extension);
+
 # FHIR CRDDeviceRequest resource record.
 #
 # + resourceType - The type of the resource describes
@@ -159,7 +161,7 @@ public const RESOURCE_NAME_CRDDEVICEREQUEST = "DeviceRequest";
     "codeReference" : {
             name: "codeReference",
             dataType: r4:Reference,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
         path: "DeviceRequest.code[x]",
@@ -371,7 +373,7 @@ public const RESOURCE_NAME_CRDDEVICEREQUEST = "DeviceRequest";
     "codeCodeableConcept" : {
             name: "codeCodeableConcept",
             dataType: r4:CodeableConcept,
-            min: 1,
+            min: 0,
             max: 1,
             isArray: false,
         path: "DeviceRequest.code[x]",
@@ -409,7 +411,7 @@ r4:code language?;
 r4:Reference   [] priorRequest?;
 r4:uri   [] instantiatesUri?;
 r4:Reference   [] relevantHistory?;
-r4:Reference codeReference;
+    r4:Reference codeReference?;
 r4:Reference   [] supportingInfo?;
 CRDDeviceRequestParameter   [] 'parameter?;
 string id?;
@@ -432,7 +434,7 @@ r4:Meta meta?;
 r4:uri implicitRules?;
 r4:dateTime occurrenceDateTime?;
 r4:Identifier groupIdentifier?;
-r4:CodeableConcept codeCodeableConcept;
+    r4:CodeableConcept codeCodeableConcept?;
 CRDDeviceRequestStatus status;
     r4:Element ...;
 |};

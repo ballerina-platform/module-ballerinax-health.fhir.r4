@@ -23,6 +23,8 @@ import ballerinax/health.fhir.r4;
 public const string PROFILE_BASE_CRDAPPOINTMENTNOORDER = "http://hl7.org/fhir/us/davinci-crd/StructureDefinition/profile-appointment-no-order";
 public const RESOURCE_NAME_CRDAPPOINTMENTNOORDER = "Appointment";
 
+public type CRDAppointmentNoOrderExtensions (ExtCoverageInformation|r4:Extension);
+
 # FHIR CRDAppointmentNoOrder resource record.
 #
 # + resourceType - The type of the resource describes
@@ -371,11 +373,6 @@ r4:Reference   [] slot?;
         minLength: {
             value: 1,
             message: "Validation failed for $.Appointment.participant constraint. This field must be an array containing at least one item."
-        },
-
-        maxLength: {
-            value: 1,
-            message: "Validation failed for $.Appointment.participant constraint. This field must be an array containing at most one item."
         }
     }
 CRDAppointmentNoOrderParticipant   [] participant;
