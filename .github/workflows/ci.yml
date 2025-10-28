@@ -12,6 +12,7 @@ env:
   AU_PATTERN: 'au/*/*'
   DK_PATTERN: 'dk/*/*'
   BE_PATTERN: 'belgiumfederal/*/*'
+  USCORE_PATTERN: 'uscore/*/*'
   GITHUB_WORKFLOWS_DIR: '.github'
   BALLERINA_VERSION: 2201.12.8
 
@@ -62,6 +63,8 @@ jobs:
             elif [[ $file == $DK_PATTERN ]]; then
               EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1-2)
             elif [[ $file == $BE_PATTERN ]]; then
+              EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1-2)
+            elif [[ $file == $USCORE_PATTERN ]]; then
               EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1-2)
             elif [[ $file == $R4_PATTERN ]]; then
               EXTRACTED_PATH=$(echo "$file" | cut -d '/' -f 1)
