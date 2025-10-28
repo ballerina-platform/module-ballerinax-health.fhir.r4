@@ -1,7 +1,7 @@
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org.au/fhir/core/ implementation guide.
 
-# FHIR R4 aucore040 package
+# FHIR R4 health_fhir_r4_aucore040 package
 
 ## Package Overview
 
@@ -40,31 +40,31 @@ compliant with http://hl7.org.au/fhir/core/ implementation guide.
 | 18). AUCoreRespirationRate | [[Definition]][s18] [[Ballerina Record]][m18] |
 | 19). AUCoreBloodPressure | [[Definition]][s19] [[Ballerina Record]][m19] |
 | 20). AUCorePathologyResult | [[Definition]][s20] [[Ballerina Record]][m20] |
-| 21). AUCoreLocation | [[Definition]][s21] [[Ballerina Record]][m21] |
-| 22). AUCoreDiagnosticResult | [[Definition]][s22] [[Ballerina Record]][m22] |
+| 21). AUCoreDiagnosticResult | [[Definition]][s21] [[Ballerina Record]][m21] |
+| 22). AUCoreLocation | [[Definition]][s22] [[Ballerina Record]][m22] |
 
-[m1]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreOrganization
-[m2]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCorePatient
-[m3]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreImmunization
-[m4]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreBodyWeight
-[m5]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreWaistCircumference
-[m6]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreEncounter
-[m7]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreProcedure
-[m8]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreAllergyIntolerance
-[m9]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreBodyHeight
-[m10]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreBodyTemperature
-[m11]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCorePractitioner
-[m12]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreMedication
-[m13]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreMedicationRequest
-[m14]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreCondition
-[m15]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCorePractitionerRole
-[m16]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreHeartRate
-[m17]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreSmokingStatus
-[m18]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreRespirationRate
-[m19]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreBloodPressure
-[m20]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCorePathologyResult
-[m21]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreLocation
-[m22]: https://lib.ballerina.io/healthcare/aucore040/1.0.0#AUCoreDiagnosticResult
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreOrganization
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCorePatient
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreImmunization
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreBodyWeight
+[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreWaistCircumference
+[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreEncounter
+[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreProcedure
+[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreAllergyIntolerance
+[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreBodyHeight
+[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreBodyTemperature
+[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCorePractitioner
+[m12]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreMedication
+[m13]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreMedicationRequest
+[m14]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreCondition
+[m15]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCorePractitionerRole
+[m16]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreHeartRate
+[m17]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreSmokingStatus
+[m18]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreRespirationRate
+[m19]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreBloodPressure
+[m20]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCorePathologyResult
+[m21]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreDiagnosticResult
+[m22]: https://lib.ballerina.io/ballerinax/health.fhir.r4.aucore040/1.0.0#AUCoreLocation
 
 [s1]: http://hl7.org.au/fhir/core/StructureDefinition/au-core-organization
 [s2]: http://hl7.org.au/fhir/core/StructureDefinition/au-core-patient
@@ -86,5 +86,5 @@ compliant with http://hl7.org.au/fhir/core/ implementation guide.
 [s18]: http://hl7.org.au/fhir/core/StructureDefinition/au-core-resprate
 [s19]: http://hl7.org.au/fhir/core/StructureDefinition/au-core-bloodpressure
 [s20]: http://hl7.org.au/fhir/core/StructureDefinition/au-core-diagnosticresult-path
-[s21]: http://hl7.org.au/fhir/core/StructureDefinition/au-core-location
-[s22]: http://hl7.org.au/fhir/core/StructureDefinition/au-core-diagnosticresult
+[s21]: http://hl7.org.au/fhir/core/StructureDefinition/au-core-diagnosticresult
+[s22]: http://hl7.org.au/fhir/core/StructureDefinition/au-core-location
