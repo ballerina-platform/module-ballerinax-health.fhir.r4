@@ -164,7 +164,22 @@ public isolated function ccdaToDocumentReference(xml actElement, xml parentDocum
                         if (identifier is r4:Identifier) {
                             if (identifier.value is string) {
                                 documentReference.context = {
-                                    encounter: {reference: string `Encounter/${<string>identifier.value}`}
+                                    // Base Element definition of context.encounter states that it is a list.
+                                    // {
+                                    //     "id": "DocumentReference.context.encounter",
+                                    //     "path": "DocumentReference.context.encounter",
+                                    //     "short": "Context of the document  content",
+                                    //     "definition": "Describes the clinical encounter or type of care that the document content is associated with.",
+                                    //     "min": 0,
+                                    //     "max": "1",
+                                    //     "base": {
+                                    //          "path": "DocumentReference.context.encounter",
+                                    //          "min": 0,
+                                    //          "max": "*"
+                                    //     },
+                                    //     .....
+                                    // }
+                                    encounter: [{reference: string `Encounter/${<string>identifier.value}`}]
                                 };
                             }
                         }

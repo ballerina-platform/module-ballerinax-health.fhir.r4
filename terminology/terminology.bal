@@ -13,7 +13,6 @@
 import ballerina/http;
 import ballerina/lang.'int as langint;
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.international401 as i4;
 import ballerinax/health.fhir.r4.validator;
 
 final InMemoryTerminology inMemoryTerminology = new ();
@@ -387,7 +386,7 @@ public isolated function valueSetExpansion(map<r4:RequestSearchParameter[]>? sea
 # + terminology - Terminology - optional parameter allowing you to pass a custom implementation of the Terminology and by default we use InMemoryTerminology.
 # + return - Return Values either equivalent or not-subsumed if processing is successful, FHIRError processing fails
 public isolated function subsumes(r4:code|r4:Coding conceptA, r4:code|r4:Coding conceptB, r4:CodeSystem? cs = (),
-        r4:uri? system = (), string? version = (), Terminology? terminology = inMemoryTerminology) returns i4:Parameters|r4:FHIRError {
+        r4:uri? system = (), string? version = (), Terminology? terminology = inMemoryTerminology) returns r4:Parameters|r4:FHIRError {
     // Create and initialize a CodeSystem record with the mandatory fields
     r4:CodeSystem codeSystem = {content: "example", status: "unknown"};
     r4:CodeSystem?|error tmp = ();
@@ -794,7 +793,7 @@ public isolated function addValueSet(r4:ValueSet valueSet, Terminology? terminol
     }
 }
 
-public isolated function addConceptMap(i4:ConceptMap conceptMap, Terminology? terminology = inMemoryTerminology) returns r4:FHIRError? {
+public isolated function addConceptMap(r4:ConceptMap conceptMap, Terminology? terminology = inMemoryTerminology) returns r4:FHIRError? {
     if conceptMap.url == () {
         return r4:createFHIRError(
                     string `Cannot find the URL of the ConceptMap with name: ${conceptMap.name.toString()}`,
@@ -817,7 +816,7 @@ public isolated function addConceptMap(i4:ConceptMap conceptMap, Terminology? te
     }
     string url = <string>conceptMap.url;
     string rVersion = <string>conceptMap.version;
-    r4:FHIRValidationError? validateResult = validator:validate(conceptMap.clone(), i4:ConceptMap);
+    r4:FHIRValidationError? validateResult = validator:validate(conceptMap.clone(), r4:ConceptMap);
 
     if validateResult is r4:FHIRValidationError {
         return r4:createFHIRError(
