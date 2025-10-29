@@ -10,4 +10,4 @@ jobs:
     uses: ./.github/workflows/daily-build-executor.yml
     secrets: inherit
     with:
-      working_dir: uscore700
+      working_dir: uscore/uscore700
