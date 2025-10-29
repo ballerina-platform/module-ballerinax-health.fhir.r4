@@ -11,4 +11,3 @@ jobs:
      secrets: inherit
      with:
       working_dir: uscore/uscore501
-         
