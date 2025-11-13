@@ -225,3 +225,39 @@ isolated function validateOperationConfigs(r4:ResourceAPIConfig apiConfig) retur
     }
     return;
 }
+
+# Retrieves all headers from an HTTP request
+#
+# + request - The HTTP request object
+# + return - A map containing all header names as keys and their values as string arrays
+isolated function getRequestHeaders(http:Request request) returns map<string[]> {
+    
+    map<string[]> headers = {};
+    string[] headerNames = request.getHeaderNames();
+    
+    foreach string headerName in headerNames {
+        string[]|http:HeaderNotFoundError headerValues = request.getHeaders(headerName);
+        if headerValues is string[] {
+            headers[headerName] = headerValues;
+        }
+    }
+    return headers;
+}
+
+# Retrieves all headers from an HTTP response
+#
+# + response - The HTTP response object
+# + return - A map containing all header names as keys and their values as string arrays
+isolated function getResponseHeaders(http:Response response) returns map<string[]> {
+    
+    map<string[]> headers = {};
+    string[] headerNames = response.getHeaderNames();
+    
+    foreach string headerName in headerNames {
+        string[]|http:HeaderNotFoundError headerValues = response.getHeaders(headerName);
+        if headerValues is string[] {
+            headers[headerName] = headerValues;
+        }
+    }
+    return headers;
+}

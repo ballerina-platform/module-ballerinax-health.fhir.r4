@@ -91,6 +91,8 @@ public isolated class FHIRRegistry {
     // FHIR services map (key: resource type)
     private FHIRServicesCollection fhirServicesMap = {};
 
+    private map<FhirAnalyticsPublisher> analyticsPublishersMap = {};
+
     public function init() {
     }
 
@@ -377,6 +379,33 @@ public isolated class FHIRRegistry {
             }
         }
     }
+
+    # Add an analytics publisher to the registry
+    #
+    # + publisherName - The name of the analytics publisher
+    # + publisher - The FhirAnalyticsPublisher implementation
+    public isolated function registerAnalyticsPublisher(string publisherName, FhirAnalyticsPublisher publisher) {
+        lock {
+            if !self.analyticsPublishersMap.hasKey(publisherName) {
+                self.analyticsPublishersMap[publisherName] = publisher;
+            }
+        }
+    }
+
+    # Get an analytics publisher from the registry by name
+    #
+    # + publisherName - The name of the analytics publisher
+    # + return - The FHIR service information if found, otherwise ()
+    public isolated function getFhirAnalyticsPublisher(string publisherName) returns FhirAnalyticsPublisher? {
+        lock {
+            if self.analyticsPublishersMap.hasKey(publisherName) {
+                return self.analyticsPublishersMap.get(publisherName);
+            }
+        }
+        return ();
+    }
+
+
 
     # Get a FHIR service from the registry by resource type
     #
