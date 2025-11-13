@@ -377,7 +377,7 @@ public isolated class FHIRRegistry {
             }
         }
     }
-    
+
     # Get a FHIR service from the registry by resource type
     #
     # + resourceType - The resource type
