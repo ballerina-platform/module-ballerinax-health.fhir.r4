@@ -215,8 +215,11 @@ isolated function formatMoesifPayload(json data) returns MoesifActionsPayload {
         uri: rawPath is error ? "" : rawPath.toString()
     };
 
+    json|error userId = data.fhirUser;
+
     MoesifActionsPayload payload = {
         action_name: "FHIR Analytics Data Action",
+        user_id: userId is error ? () : userId.toString(),
         transaction_id: uuid:createType1AsString(),
         request: request,
         metadata: data
