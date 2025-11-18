@@ -183,6 +183,16 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         }
 
                     }
+                    CCDA_OBSERVATION_CODE => {
+                        CcdaToObservation ccdaToObservation = mapper.ccdaToObservation;
+                        mapCCDAToFHIRResult = ccdaToObservation(entryElement, xmlDocument);
+                        if mapCCDAToFHIRResult is uscore501:USCoreVitalSignsProfile {
+                            if patientId != "" {
+                                mapCCDAToFHIRResult.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                            }
+                            entries.push({'resource: mapCCDAToFHIRResult});
+                        }
+                        }
                 }
             }
         }
