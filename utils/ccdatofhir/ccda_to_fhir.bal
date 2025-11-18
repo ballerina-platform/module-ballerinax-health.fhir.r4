@@ -104,7 +104,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         }
                     }
                 }
-                
+
                 match codeVal {
                     CCDA_ALLERGY_CODE => {
                         CcdaToAllergyIntolerance ccdaToAllergyIntolerance = mapper.ccdaToAllergyIntolerance;
@@ -192,7 +192,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                             }
                             entries.push({'resource: mapCCDAToFHIRResult});
                         }
-                        }
+                    }
                 }
             }
         }
