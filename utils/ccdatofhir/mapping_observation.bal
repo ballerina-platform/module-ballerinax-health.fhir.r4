@@ -58,12 +58,18 @@ public isolated function ccdaToObservation(xml observationElement, xml parentDoc
     xml componentElement = observationElement/<v3:component|component>;
     xml entryRelationshipElement = observationElement/<v3:entryRelationship|entryRelationship>;
 
-    // Map identifiers
+    // Map identifiers and extract ID for FHIR resource
     r4:Identifier[] identifiers = [];
+    string? resourceId = ();
     foreach xml idElem in idElement {
         r4:Identifier? identifier = mapCcdaIdToFhirIdentifier(idElem);
         if identifier is r4:Identifier {
             identifiers.push(identifier);
+        }
+        // Extract root attribute for FHIR resource ID
+        string|error? rootAttr = idElem.root;
+        if rootAttr is string && resourceId is () {
+            resourceId = rootAttr;
         }
     }
     if identifiers.length() > 0 {
@@ -123,8 +129,19 @@ public isolated function ccdaToObservation(xml observationElement, xml parentDoc
         observation.component = components;
     }
 
-    // Generate ID for the observation
-    observation.id = uuid:createRandomUuid();
+    // Set ID for the observation - use C-CDA id/@root if available, otherwise generate UUID
+    if resourceId is string {
+        observation.id = resourceId;
+    } else {
+        observation.id = uuid:createRandomUuid();
+    }
+
+    // Set default subject reference if not already set
+    if observation.subject == {} {
+        observation.subject = {
+            reference: "Patient/patient"
+        };
+    }
 
     return observation;
 }

@@ -184,13 +184,32 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
 
                     }
                     CCDA_OBSERVATION_CODE => {
-                        CcdaToObservation ccdaToObservation = mapper.ccdaToObservation;
-                        mapCCDAToFHIRResult = ccdaToObservation(entryElement, xmlDocument);
-                        if mapCCDAToFHIRResult is uscore501:USCoreVitalSignsProfile {
-                            if patientId != "" {
-                                mapCCDAToFHIRResult.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                        // Check if entry contains an organizer (vital signs organizer)
+                        if isXMLElementNotNull(organizerElement) {
+                            // Process vital signs organizer - extract individual component observations
+                            xml organizerComponents = organizerElement/<v3:component|component>;
+                            foreach xml organizerComponent in organizerComponents {
+                                xml observationElement = organizerComponent/<v3:observation|observation>;
+                                if isXMLElementNotNull(observationElement) {
+                                    uscore501:USCoreVitalSignsProfile? vitalSignObs = ccdaVitalSignObservationToFhirObservation(observationElement, xmlDocument);
+                                    if vitalSignObs is uscore501:USCoreVitalSignsProfile {
+                                        if patientId != "" {
+                                            vitalSignObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                        }
+                                        entries.push({'resource: vitalSignObs});
+                                    }
+                                }
                             }
-                            entries.push({'resource: mapCCDAToFHIRResult});
+                        } else {
+                            // Process as individual observation
+                            CcdaToObservation ccdaToObservation = mapper.ccdaToObservation;
+                            mapCCDAToFHIRResult = ccdaToObservation(entryElement, xmlDocument);
+                            if mapCCDAToFHIRResult is uscore501:USCoreVitalSignsProfile {
+                                if patientId != "" {
+                                    mapCCDAToFHIRResult.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                }
+                                entries.push({'resource: mapCCDAToFHIRResult});
+                            }
                         }
                     }
                 }
