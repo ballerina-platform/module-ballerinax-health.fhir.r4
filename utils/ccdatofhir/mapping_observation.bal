@@ -304,6 +304,98 @@ isolated function enhanceBloodPressureObservation(uscore501:USCoreVitalSignsProf
     return observation;
 }
 
+# Create a Blood Pressure Panel observation from systolic and diastolic observations.
+#
+# + systolicObs - Systolic blood pressure observation
+# + diastolicObs - Diastolic blood pressure observation
+# + organizerElement - The C-CDA organizer element
+# + return - Blood Pressure Panel observation
+public isolated function createBloodPressurePanel(
+    uscore501:USCoreVitalSignsProfile systolicObs,
+    uscore501:USCoreVitalSignsProfile diastolicObs,
+    xml organizerElement
+) returns uscore501:USCoreVitalSignsProfile {
+
+    // Create Blood Pressure Panel observation
+    uscore501:USCoreVitalSignsProfile bpPanel = {
+        status: "final",
+        code: {
+            coding: [
+                {
+                    system: "http://loinc.org",
+                    code: "85354-9",
+                    display: "Blood pressure panel with all children optional"
+                }
+            ],
+            text: "Blood Pressure"
+        },
+        subject: {},
+        category: [{
+            coding: [
+                {
+                    system: "http://terminology.hl7.org/CodeSystem/observation-category",
+                    code: "vital-signs",
+                    display: "Vital Signs"
+                }
+            ]
+        }]
+    };
+
+    // Extract ID from organizer if available
+    xml idElement = organizerElement/<v3:id|id>;
+    string|error? rootAttr = idElement.root;
+    if rootAttr is string {
+        bpPanel.id = rootAttr;
+    } else {
+        bpPanel.id = uuid:createRandomUuid();
+    }
+
+    // Extract effective time from organizer
+    xml effectiveTimeElement = organizerElement/<v3:effectiveTime|effectiveTime>;
+    r4:dateTime? effectiveDateTime = mapCcdaDateTimeToFhirDateTime(effectiveTimeElement);
+    if effectiveDateTime is r4:dateTime {
+        bpPanel.effectiveDateTime = effectiveDateTime;
+    }
+
+    // Create components from systolic and diastolic observations
+    uscore501:USCoreVitalSignsProfileComponent[] components = [];
+
+    // Systolic component
+    if systolicObs.code is r4:CodeableConcept && systolicObs.valueQuantity is r4:Quantity {
+        uscore501:USCoreVitalSignsProfileComponent systolicComponent = {
+            code: systolicObs.code,
+            valueQuantity: systolicObs.valueQuantity
+        };
+        components.push(systolicComponent);
+    }
+
+    // Diastolic component
+    if diastolicObs.code is r4:CodeableConcept && diastolicObs.valueQuantity is r4:Quantity {
+        uscore501:USCoreVitalSignsProfileComponent diastolicComponent = {
+            code: diastolicObs.code,
+            valueQuantity: diastolicObs.valueQuantity
+        };
+        components.push(diastolicComponent);
+    }
+
+    bpPanel.component = components;
+
+    // Ensure no direct value on the panel (per constraint)
+    bpPanel.valueQuantity = ();
+    bpPanel.valueCodeableConcept = ();
+    bpPanel.valueString = ();
+    bpPanel.valueBoolean = ();
+    bpPanel.valueInteger = ();
+    bpPanel.valueRange = ();
+    bpPanel.valueRatio = ();
+    bpPanel.valueSampledData = ();
+    bpPanel.valueTime = ();
+    bpPanel.valueDateTime = ();
+    bpPanel.valuePeriod = ();
+
+    return bpPanel;
+}
+
 // --------------------------------------------------------------------------------------------#
 // Result Observation Mapping (for Laboratory Results)
 // --------------------------------------------------------------------------------------------#

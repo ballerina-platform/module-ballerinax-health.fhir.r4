@@ -186,19 +186,69 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                     CCDA_OBSERVATION_CODE => {
                         // Check if entry contains an organizer (vital signs organizer)
                         if isXMLElementNotNull(organizerElement) {
-                            // Process vital signs organizer - extract individual component observations
+                            // Process vital signs organizer - group BP observations into panel
                             xml organizerComponents = organizerElement/<v3:component|component>;
+
+                            // Collect systolic and diastolic observations for BP panel
+                            uscore501:USCoreVitalSignsProfile? systolicObs = ();
+                            uscore501:USCoreVitalSignsProfile? diastolicObs = ();
+                            uscore501:USCoreVitalSignsProfile[] otherObservations = [];
+
                             foreach xml organizerComponent in organizerComponents {
                                 xml observationElement = organizerComponent/<v3:observation|observation>;
                                 if isXMLElementNotNull(observationElement) {
+                                    xml obsCodeElement = observationElement/<v3:code|code>;
+                                    string|error? codeValue = obsCodeElement.code;
+
                                     uscore501:USCoreVitalSignsProfile? vitalSignObs = ccdaVitalSignObservationToFhirObservation(observationElement, xmlDocument);
+
                                     if vitalSignObs is uscore501:USCoreVitalSignsProfile {
-                                        if patientId != "" {
-                                            vitalSignObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                        // Check if this is systolic or diastolic BP
+                                        if codeValue is string {
+                                            if codeValue == "8480-6" {
+                                                systolicObs = vitalSignObs;
+                                            } else if codeValue == "8462-4" {
+                                                diastolicObs = vitalSignObs;
+                                            } else {
+                                                // Other vital signs
+                                                otherObservations.push(vitalSignObs);
+                                            }
+                                        } else {
+                                            otherObservations.push(vitalSignObs);
                                         }
-                                        entries.push({'resource: vitalSignObs});
                                     }
                                 }
+                            }
+
+                            // Create Blood Pressure Panel if both systolic and diastolic are present
+                            if systolicObs is uscore501:USCoreVitalSignsProfile && diastolicObs is uscore501:USCoreVitalSignsProfile {
+                                uscore501:USCoreVitalSignsProfile bpPanel = createBloodPressurePanel(systolicObs, diastolicObs, organizerElement);
+                                if patientId != "" {
+                                    bpPanel.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                }
+                                entries.push({'resource: bpPanel});
+                            } else {
+                                // If only one BP observation is present, add them individually
+                                if systolicObs is uscore501:USCoreVitalSignsProfile {
+                                    if patientId != "" {
+                                        systolicObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                    }
+                                    entries.push({'resource: systolicObs});
+                                }
+                                if diastolicObs is uscore501:USCoreVitalSignsProfile {
+                                    if patientId != "" {
+                                        diastolicObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                    }
+                                    entries.push({'resource: diastolicObs});
+                                }
+                            }
+
+                            // Add other vital sign observations
+                            foreach var obs in otherObservations {
+                                if patientId != "" {
+                                    obs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                }
+                                entries.push({'resource: obs});
                             }
                         } else {
                             // Process as individual observation
