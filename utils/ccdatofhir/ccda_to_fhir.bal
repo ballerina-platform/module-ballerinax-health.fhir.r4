@@ -189,9 +189,12 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                             // Process vital signs organizer - group BP observations into panel
                             xml organizerComponents = organizerElement/<v3:component|component>;
 
-                            // Collect systolic and diastolic observations for BP panel
+                            // Collect observations for special handling
                             uscore501:USCoreVitalSignsProfile? systolicObs = ();
                             uscore501:USCoreVitalSignsProfile? diastolicObs = ();
+                            uscore501:USCoreVitalSignsProfile? oxygenSaturationObs = ();
+                            uscore501:USCoreVitalSignsProfile? inhaledO2ConcObs = ();
+                            uscore501:USCoreVitalSignsProfile? inhaledO2FlowObs = ();
                             uscore501:USCoreVitalSignsProfile[] otherObservations = [];
 
                             foreach xml organizerComponent in organizerComponents {
@@ -203,12 +206,18 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                                     uscore501:USCoreVitalSignsProfile? vitalSignObs = ccdaVitalSignObservationToFhirObservation(observationElement, xmlDocument);
 
                                     if vitalSignObs is uscore501:USCoreVitalSignsProfile {
-                                        // Check if this is systolic or diastolic BP
+                                        // Categorize observations for special handling
                                         if codeValue is string {
                                             if codeValue == "8480-6" {
                                                 systolicObs = vitalSignObs;
                                             } else if codeValue == "8462-4" {
                                                 diastolicObs = vitalSignObs;
+                                            } else if codeValue == "59408-5" || codeValue == "2708-6" {
+                                                oxygenSaturationObs = vitalSignObs;
+                                            } else if codeValue == "3150-0" {
+                                                inhaledO2ConcObs = vitalSignObs;
+                                            } else if codeValue == "3151-8" {
+                                                inhaledO2FlowObs = vitalSignObs;
                                             } else {
                                                 // Other vital signs
                                                 otherObservations.push(vitalSignObs);
@@ -240,6 +249,29 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                                         diastolicObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
                                     }
                                     entries.push({'resource: diastolicObs});
+                                }
+                            }
+
+                            // Create Pulse Oximetry observation if oxygen saturation is present
+                            if oxygenSaturationObs is uscore501:USCoreVitalSignsProfile {
+                                uscore501:USCoreVitalSignsProfile pulseOxObs = createPulseOximetryObservation(oxygenSaturationObs, inhaledO2ConcObs, inhaledO2FlowObs);
+                                if patientId != "" {
+                                    pulseOxObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                }
+                                entries.push({'resource: pulseOxObs});
+                            } else {
+                                // If no O2 saturation but have inhaled oxygen observations, add them individually
+                                if inhaledO2ConcObs is uscore501:USCoreVitalSignsProfile {
+                                    if patientId != "" {
+                                        inhaledO2ConcObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                    }
+                                    entries.push({'resource: inhaledO2ConcObs});
+                                }
+                                if inhaledO2FlowObs is uscore501:USCoreVitalSignsProfile {
+                                    if patientId != "" {
+                                        inhaledO2FlowObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                    }
+                                    entries.push({'resource: inhaledO2FlowObs});
                                 }
                             }
 

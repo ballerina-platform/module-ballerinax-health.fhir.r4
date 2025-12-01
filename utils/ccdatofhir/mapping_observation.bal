@@ -396,6 +396,105 @@ public isolated function createBloodPressurePanel(
     return bpPanel;
 }
 
+# Create a Pulse Oximetry observation from oxygen saturation and optional inhaled oxygen observations.
+#
+# + oxygenSatObs - Oxygen saturation observation (59408-5 or 2708-6)
+# + inhaledO2ConcObs - Optional inhaled oxygen concentration observation (3150-0)
+# + inhaledO2FlowObs - Optional inhaled oxygen flow rate observation (3151-8)
+# + return - Pulse Oximetry observation
+public isolated function createPulseOximetryObservation(
+    uscore501:USCoreVitalSignsProfile oxygenSatObs,
+    uscore501:USCoreVitalSignsProfile? inhaledO2ConcObs,
+    uscore501:USCoreVitalSignsProfile? inhaledO2FlowObs
+) returns uscore501:USCoreVitalSignsProfile {
+
+    // Create Pulse Oximetry observation with dual coding (59408-5 and 2708-6)
+    uscore501:USCoreVitalSignsProfile pulseOxObs = {
+        status: oxygenSatObs.status,
+        code: {
+            coding: [
+                {
+                    system: "http://loinc.org",
+                    code: "59408-5",
+                    display: "Oxygen saturation in Arterial blood by Pulse oximetry"
+                },
+                {
+                    system: "http://loinc.org",
+                    code: "2708-6",
+                    display: "Oxygen saturation in Arterial blood"
+                }
+            ],
+            text: oxygenSatObs.code?.text ?: "Oxygen saturation"
+        },
+        subject: oxygenSatObs.subject,
+        category: [{
+            coding: [
+                {
+                    system: "http://terminology.hl7.org/CodeSystem/observation-category",
+                    code: "vital-signs",
+                    display: "Vital Signs"
+                }
+            ]
+        }]
+    };
+
+    // Copy ID, effective time, and identifiers from oxygen saturation observation
+    if oxygenSatObs?.id is string {
+        pulseOxObs.id = oxygenSatObs.id;
+    } else {
+        pulseOxObs.id = uuid:createRandomUuid();
+    }
+
+    if oxygenSatObs?.identifier is r4:Identifier[] {
+        pulseOxObs.identifier = oxygenSatObs.identifier;
+    }
+
+    if oxygenSatObs?.effectiveDateTime is r4:dateTime {
+        pulseOxObs.effectiveDateTime = oxygenSatObs.effectiveDateTime;
+    }
+
+    if oxygenSatObs?.effectivePeriod is r4:Period {
+        pulseOxObs.effectivePeriod = oxygenSatObs.effectivePeriod;
+    }
+
+    // Set the valueQuantity to the oxygen saturation value
+    if oxygenSatObs?.valueQuantity is r4:Quantity {
+        pulseOxObs.valueQuantity = oxygenSatObs.valueQuantity;
+    }
+
+    // Create components for inhaled oxygen measurements if they exist
+    uscore501:USCoreVitalSignsProfileComponent[] components = [];
+
+    // Add Inhaled Oxygen Concentration component if present
+    if inhaledO2ConcObs is uscore501:USCoreVitalSignsProfile {
+        if inhaledO2ConcObs.code is r4:CodeableConcept && inhaledO2ConcObs.valueQuantity is r4:Quantity {
+            uscore501:USCoreVitalSignsProfileComponent o2ConcComponent = {
+                code: inhaledO2ConcObs.code,
+                valueQuantity: inhaledO2ConcObs.valueQuantity
+            };
+            components.push(o2ConcComponent);
+        }
+    }
+
+    // Add Inhaled Oxygen Flow Rate component if present
+    if inhaledO2FlowObs is uscore501:USCoreVitalSignsProfile {
+        if inhaledO2FlowObs.code is r4:CodeableConcept && inhaledO2FlowObs.valueQuantity is r4:Quantity {
+            uscore501:USCoreVitalSignsProfileComponent o2FlowComponent = {
+                code: inhaledO2FlowObs.code,
+                valueQuantity: inhaledO2FlowObs.valueQuantity
+            };
+            components.push(o2FlowComponent);
+        }
+    }
+
+    // Set components if any exist
+    if components.length() > 0 {
+        pulseOxObs.component = components;
+    }
+
+    return pulseOxObs;
+}
+
 // --------------------------------------------------------------------------------------------#
 // Result Observation Mapping (for Laboratory Results)
 // --------------------------------------------------------------------------------------------#
