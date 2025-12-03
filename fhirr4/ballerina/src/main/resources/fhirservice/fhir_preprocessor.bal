@@ -1496,7 +1496,12 @@ isolated function getCommonSearchParamDefault(r4:CommonSearchParameterDefinition
             r4:SearchParameterDefaultValueProcessor defaultFn = <r4:SearchParameterDefaultValueProcessor>default;
             value = check defaultFn(definition, apiConfig);
         } else {
-            value = default;
+            // For _count parameter, use the configured pageSize instead of the hardcoded default
+            if definition.name == COUNT {
+                value = apiConfig.paginationConfig.pageSize;
+            } else {
+                value = default;
+            }
         }
         return check r4:createRequestSearchParameter(definition, (), value);
     }
