@@ -47,7 +47,7 @@ public function testEvaluateFhirPath() returns error? {
     }
     json|error testOne = getValuesFromFhirPath(samplePatient1, "Pat.name");
     if testOne is error {
-        test:assertEquals(testOne.message(), "Resource is not match with the FhirPath expression", msg = "Failed!");
+        test:assertEquals(testOne.message(), "The given FhirPath expression is incorrect for the given FHIR resource", msg = "Failed!");
     }
     json|error testTwo = getValuesFromFhirPath(samplePatient1, "Patient.address.name");
     if testTwo is error {

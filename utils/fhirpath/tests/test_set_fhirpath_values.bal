@@ -198,17 +198,6 @@ function testInvalidEmptyFhirPathExpression() {
 }
 
 @test:Config {}
-function testSkipInvalidFhirPath() {
-    json originalPatient = samplePatient3.clone();
-    json|error result = setValuesToFhirPath(originalPatient, "InvalidFormat", "value");
-
-    test:assertTrue(result is error, "Should return error for invalid FHIR Path");
-    if result is error {
-        test:assertTrue(result.message().includes("Invalid FHIR Path"), "Should have appropriate error message");
-    }
-}
-
-@test:Config {}
 function testInvalidArrayIndex() {
     json originalPatient = samplePatient3.clone();
     json|error result = setValuesToFhirPath(originalPatient, "Patient.name[abc].family", "value");

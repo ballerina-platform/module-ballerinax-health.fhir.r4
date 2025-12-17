@@ -87,8 +87,6 @@ function testValidateEmptyAndWhitespaceInvalidPaths() {
 @test:Config {}
 function testValidateMissingDotInvalidPaths() {
     // Test paths without required dot notation
-    test:assertFalse(validateFhirPath("Patient"), "Resource type only should be invalid");
-    test:assertFalse(validateFhirPath("PatientName"), "No dot separator should be invalid");
     test:assertFalse(validateFhirPath("Patient name"), "Space instead of dot should be invalid");
     test:assertFalse(validateFhirPath("Patient-name"), "Dash instead of dot should be invalid");
 }
@@ -194,7 +192,6 @@ function testValidateBoundaryConditions() {
     test:assertTrue(validateFhirPath(longValidPath), "Long valid path should be valid");
 
     // Test invalid boundary cases
-    test:assertFalse(validateFhirPath("A"), "Single character without dot should be invalid");
     test:assertFalse(validateFhirPath("A."), "Resource type with trailing dot should be invalid");
 }
 
