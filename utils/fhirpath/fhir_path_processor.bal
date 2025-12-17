@@ -49,7 +49,7 @@ public isolated function getValuesFromFhirPath(json fhirResource, string fhirPat
     }
 
     // Parse tokens once
-    Token[]|error tokenRecords = getTokens(fhirPathExpression);
+    Token[]|error tokenRecords = getTokens(fhirResource, fhirPathExpression);
     if tokenRecords is error {
         log:printDebug("Token parsing failed", fhirPath = fhirPathExpression);
         return createFhirPathError(tokenRecords.message(), fhirPathExpression);
@@ -92,7 +92,7 @@ public isolated function setValuesToFhirPath(json fhirResource, string fhirPathE
         check validateFhirResource(fhirResource);
     }
 
-    Token[]|error tokenRecords = getTokens(fhirPathExpression);
+    Token[]|error tokenRecords = getTokens(fhirResource, fhirPathExpression);
     if tokenRecords is error {
         return createFhirPathError(tokenRecords.message(), fhirPathExpression);
     }

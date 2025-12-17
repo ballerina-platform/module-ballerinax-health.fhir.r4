@@ -76,9 +76,10 @@ isolated function validateFhirResource(json fhirResource) returns FHIRPathError?
 
 # Tokenize the fhirpath expression based on the token types.
 #
+# + fhirResource - Input FHIR resource
 # + fhirPathExpression - requested fhirpath expression
 # + return - Token Array
-isolated function getTokens(string fhirPathExpression) returns Token[]|error {
+isolated function getTokens(json fhirResource, string fhirPathExpression) returns Token[]|error {
     string[] tokens = regexp:split(re `\.`, fhirPathExpression);
     int tokensLength = tokens.length();
     Token[] tokenRecordArray = [];
@@ -86,7 +87,14 @@ isolated function getTokens(string fhirPathExpression) returns Token[]|error {
     // Pre-allocate array size for better performance
     // Start from index 1 to skip the resource type (e.g., "Patient" in "Patient.name.given")
     // Only process field access tokens after the resource type
-    foreach int i in 1 ..< tokensLength {
+    int startIndex = 0;
+    json|error resourceTypeValue = fhirResource.resourceType;
+    if (resourceTypeValue !is error) {
+        if (tokens[0] === resourceTypeValue.toString()) {
+            startIndex = 1;
+        }
+    }
+    foreach int i in startIndex ..< tokensLength {
         string tokenStr = tokens[i];
         Token|error tokenResult = parseToken(tokenStr);
 
