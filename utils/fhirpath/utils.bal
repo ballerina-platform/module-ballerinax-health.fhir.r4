@@ -130,7 +130,7 @@ public type ModificationFunction isolated function (json param) returns json|err
 # + modificationFunction - Optional function to transform the current value
 # + newValue - Optional new value to set directly
 # + return - The modified value or an error if modification function fails
-isolated function getModifiedValue(json currentValue, ModificationFunction? modificationFunction,  json? newValue) returns json|error {
+isolated function getModifiedValue(json currentValue, ModificationFunction? modificationFunction, json? newValue) returns json|error {
     if currentValue !is () && modificationFunction !is () {
         // Apply modification function if provided and return result
         return modificationFunction(currentValue);
