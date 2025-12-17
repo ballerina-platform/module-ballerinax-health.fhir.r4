@@ -53,11 +53,11 @@ isolated function validateFhirPath(string fhirPathExpression) returns boolean {
 
     // Comprehensive regex pattern for FHIR path validation
     // Pattern breakdown:
-    // ^[A-Za-z][A-Za-z0-9_]*  - Resource type (starts with letter, followed by alphanumeric/underscore)
+    // ^[A-Za-z][A-Za-z0-9_]*(\[[0-9]+\])?  - Resource type (starts with letter, followed by alphanumeric/underscore) or field name with optional array access
     // (\.[A-Za-z][A-Za-z0-9_]* - Field names (dot followed by identifier)
     // (\[[0-9]+\])?)*         - Optional array access with numeric index
     // $                       - End of string
-    string:RegExp fhirPathPattern = re `^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*(\[[0-9]+\])?)+$`;
+    string:RegExp fhirPathPattern = re `^[A-Za-z][A-Za-z0-9_]*(\[[0-9]+\])?(\.[A-Za-z][A-Za-z0-9_]*(\[[0-9]+\])?)*$`;
 
     return fhirPathPattern.isFullMatch(fhirPathExpression);
 }
