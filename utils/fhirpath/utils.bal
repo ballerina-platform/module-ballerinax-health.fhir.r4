@@ -89,8 +89,8 @@ isolated function getTokens(json fhirResource, string fhirPathExpression) return
     // Only process field access tokens after the resource type
     int startIndex = 0;
     json|error resourceTypeValue = fhirResource.resourceType;
-    if (resourceTypeValue !is error) {
-        if (tokens[0] === resourceTypeValue.toString()) {
+    if resourceTypeValue !is error {
+        if tokens[0] === resourceTypeValue.toString() {
             startIndex = 1;
         }
     }
