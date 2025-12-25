@@ -31,7 +31,7 @@ public function testEvaluateFhirPath() returns error? {
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.managingOrganization.reference"), ["Organization/1"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.managingOrganization.display"), ["Burgers University Medical Center"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.address.use"), ["home", "work"], msg = "Failed!");
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name.given"), [["Peter", "James"], ["Jim"]], msg = "Failed!");
+    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name.given"), ["Peter", "James", "Jim"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name[0].given"), ["Peter", "James"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name.given[0]"), ["Peter", "Jim"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(sampleOrganization1, "Organization.address.use"), ["work"], msg = "Failed!");
@@ -87,7 +87,7 @@ public function testEvaluateFhirPathWithoutResourceType() returns error? {
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "managingOrganization.reference"), ["Organization/1"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "managingOrganization.display"), ["Burgers University Medical Center"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "address.use"), ["home", "work"], msg = "Failed!");
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "name.given"), [["Peter", "James"], ["Jim"]], msg = "Failed!");
+    test:assertEquals(getValuesFromFhirPath(samplePatient1, "name.given"), ["Peter", "James", "Jim"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "name[0].given"), ["Peter", "James"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "name.given[0]"), ["Peter", "Jim"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(sampleOrganization1, "address.use"), ["work"], msg = "Failed!");

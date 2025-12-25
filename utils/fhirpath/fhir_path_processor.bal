@@ -206,7 +206,7 @@ isolated function evaluateRegularToken(json current, Token token, Token[] tokens
     return evaluateRecursively(fieldValue, tokens, tokenIndex + 1);
 }
 
-# Process array elements efficiently - Fixed to preserve array structure
+# Process array elements from regular token evaluation.
 #
 # + arr - Array to process
 # + tokens - All tokens
@@ -221,12 +221,16 @@ isolated function processArrayElements(json[] arr, Token[] tokens, int tokenInde
         if elementResult is error {
             continue; // Skip failed elements
         }
-
-        // Preserve array structure - don't flatten arrays
+        if elementResult is json[] {
+            foreach json item in elementResult {
+                results[results.length()] = item;
+            }
+        } else {
         results[results.length()] = elementResult;
+        }
     }
 
-    return results.length() > 0 ? results : error(INVALID_FHIRPATH_MSG);
+    return results;
 }
 
 # Select the resource elements from the given FHIR resource.
