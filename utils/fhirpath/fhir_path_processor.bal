@@ -146,7 +146,7 @@ isolated function evaluateRecursively(json current, Token[] tokens, int tokenInd
 # + return - Evaluation result or error
 isolated function evaluateArrayAccessToken(json current, ArrayToken token, Token[] tokens, int tokenIndex, boolean isLastToken) returns json|error {
     if current !is map<json> {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found
     }
 
     map<json> currentMap = <map<json>>current;
@@ -154,18 +154,18 @@ isolated function evaluateArrayAccessToken(json current, ArrayToken token, Token
     int idx = token.index;
 
     if !currentMap.hasKey(key) {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found;
     }
 
     json fieldValue = currentMap[key];
     if fieldValue !is json[] {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found
     }
 
     json[] arr = <json[]>fieldValue;
     int arrayLength = arr.length();
     if arrayLength <= idx {
-        return createFhirPathError(ARRAY_INDEX_ERROR_MSG, "");
+        return []; // No results found
     }
 
     json arrayElement = arr[idx];
@@ -182,14 +182,14 @@ isolated function evaluateArrayAccessToken(json current, ArrayToken token, Token
 # + return - Evaluation result or error
 isolated function evaluateRegularToken(json current, Token token, Token[] tokens, int tokenIndex, boolean isLastToken) returns json|error {
     if current !is map<json> {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found
     }
 
     map<json> currentMap = <map<json>>current;
     string key = token.value;
 
     if !currentMap.hasKey(key) {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found
     }
 
     json fieldValue = currentMap[key];
@@ -226,7 +226,7 @@ isolated function processArrayElements(json[] arr, Token[] tokens, int tokenInde
                 results[results.length()] = item;
             }
         } else {
-        results[results.length()] = elementResult;
+            results[results.length()] = elementResult;
         }
     }
 
