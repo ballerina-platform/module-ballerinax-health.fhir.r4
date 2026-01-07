@@ -146,7 +146,7 @@ isolated function evaluateRecursively(json current, Token[] tokens, int tokenInd
 # + return - Evaluation result or error
 isolated function evaluateArrayAccessToken(json current, ArrayToken token, Token[] tokens, int tokenIndex, boolean isLastToken) returns json|error {
     if current !is map<json> {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found
     }
 
     map<json> currentMap = <map<json>>current;
@@ -154,18 +154,18 @@ isolated function evaluateArrayAccessToken(json current, ArrayToken token, Token
     int idx = token.index;
 
     if !currentMap.hasKey(key) {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found;
     }
 
     json fieldValue = currentMap[key];
     if fieldValue !is json[] {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found
     }
 
     json[] arr = <json[]>fieldValue;
     int arrayLength = arr.length();
     if arrayLength <= idx {
-        return createFhirPathError(ARRAY_INDEX_ERROR_MSG, "");
+        return []; // No results found
     }
 
     json arrayElement = arr[idx];
@@ -182,14 +182,14 @@ isolated function evaluateArrayAccessToken(json current, ArrayToken token, Token
 # + return - Evaluation result or error
 isolated function evaluateRegularToken(json current, Token token, Token[] tokens, int tokenIndex, boolean isLastToken) returns json|error {
     if current !is map<json> {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found
     }
 
     map<json> currentMap = <map<json>>current;
     string key = token.value;
 
     if !currentMap.hasKey(key) {
-        return createFhirPathError(INVALID_FHIRPATH_MSG, "");
+        return []; // No results found
     }
 
     json fieldValue = currentMap[key];
@@ -206,7 +206,7 @@ isolated function evaluateRegularToken(json current, Token token, Token[] tokens
     return evaluateRecursively(fieldValue, tokens, tokenIndex + 1);
 }
 
-# Process array elements efficiently - Fixed to preserve array structure
+# Process array elements from regular token evaluation.
 #
 # + arr - Array to process
 # + tokens - All tokens
@@ -221,12 +221,16 @@ isolated function processArrayElements(json[] arr, Token[] tokens, int tokenInde
         if elementResult is error {
             continue; // Skip failed elements
         }
-
-        // Preserve array structure - don't flatten arrays
-        results[results.length()] = elementResult;
+        if elementResult is json[] {
+            foreach json item in elementResult {
+                results[results.length()] = item;
+            }
+        } else {
+            results[results.length()] = elementResult;
+        }
     }
 
-    return results.length() > 0 ? results : error(INVALID_FHIRPATH_MSG);
+    return results;
 }
 
 # Select the resource elements from the given FHIR resource.
