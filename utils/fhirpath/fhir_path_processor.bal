@@ -48,25 +48,8 @@ public isolated function getValuesFromFhirPath(json fhirResource, string fhirPat
         return createFhirPathError("FHIR resource must be a JSON object", fhirPathExpression);
     }
 
-    map<json> resourceMap = <map<json>>fhirResource;
-
-    // Extract resource type efficiently
-    int? dotIndex = fhirPathExpression.indexOf(DOT_SEPARATOR);
-    if dotIndex is () {
-        return createFhirPathError("Invalid FhirPath expression format. Should have at least one dot(.) notation to traverse", fhirPathExpression);
-    }
-
-    string resourceType = fhirPathExpression.substring(0, dotIndex);
-
-    // Validate resource type match
-    json resourceTypeValue = resourceMap["resourceType"];
-    if resourceType != resourceTypeValue {
-        log:printDebug("ResourceType mismatch", expected = resourceType, actual = resourceTypeValue);
-        return createFhirPathError(RESOURCE_TYPE_MISMATCH_MSG, fhirPathExpression);
-    }
-
     // Parse tokens once
-    Token[]|error tokenRecords = getTokens(fhirPathExpression);
+    Token[]|error tokenRecords = getTokens(fhirResource, fhirPathExpression);
     if tokenRecords is error {
         log:printDebug("Token parsing failed", fhirPath = fhirPathExpression);
         return createFhirPathError(tokenRecords.message(), fhirPathExpression);
@@ -109,7 +92,7 @@ public isolated function setValuesToFhirPath(json fhirResource, string fhirPathE
         check validateFhirResource(fhirResource);
     }
 
-    Token[]|error tokenRecords = getTokens(fhirPathExpression);
+    Token[]|error tokenRecords = getTokens(fhirResource, fhirPathExpression);
     if tokenRecords is error {
         return createFhirPathError(tokenRecords.message(), fhirPathExpression);
     }
