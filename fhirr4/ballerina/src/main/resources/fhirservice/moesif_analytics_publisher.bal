@@ -64,10 +64,8 @@ isolated service class MoesifAnalyticsPublisher {
                 }
                 log:printInfo(string `[MoesifAnalyticsPublisher] Scheduled job started successfully.`);
             } else {
-                if !moesifPublisherJob.enabled {
-                    log:printWarn("[MoesifAnalyticsPublisher] Scheduled job is disabled.");
-                    return;
-                }
+                log:printWarn("[MoesifAnalyticsPublisher] Scheduled job is disabled.");
+                return;
             }
         }
     }
