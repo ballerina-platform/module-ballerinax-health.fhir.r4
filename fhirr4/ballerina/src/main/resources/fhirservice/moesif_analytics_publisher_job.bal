@@ -68,7 +68,7 @@ class MoesifAnalyticsPublisherJob {
         }
     }
 
-    # Executes the job to publish unpublished analytics data
+    # Executes the job to publish unpublished analytics data.
     public function execute() {
 
         log:printDebug("[MoesifPublisherJob] Starting scheduled job execution.");
