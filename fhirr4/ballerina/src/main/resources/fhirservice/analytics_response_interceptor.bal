@@ -58,6 +58,7 @@ isolated service class AnalyticsResponseInterceptor {
                 log:printDebug(`[AnalyticsResponseInterceptor] Moesif analytics publisher obtained from FHIR registry.`);
             } else {
                 r4:fhirRegistry.registerAnalyticsPublisher(analytics.publisher, new MoesifAnalyticsPublisher(apiConfig));
+                self.analyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
                 log:printDebug(`[AnalyticsResponseInterceptor] Moesif was not found in registry. Registered now.`);
             }
         } else if analytics.publisher == "opensearch" {
@@ -67,6 +68,7 @@ isolated service class AnalyticsResponseInterceptor {
                 log:printDebug(`[AnalyticsResponseInterceptor] OpenSearch analytics publisher obtained from FHIR registry.`);
             } else {
                 r4:fhirRegistry.registerAnalyticsPublisher(analytics.publisher, new OpenSearchAnalyticsPublisher(apiConfig));
+                self.analyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
                 log:printDebug(`[AnalyticsResponseInterceptor] OpenSearch analytics publisher was not found in registry. Registered now.`);
             }
         } else {
