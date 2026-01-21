@@ -39,45 +39,46 @@ isolated service class AnalyticsResponseInterceptor {
 
     private r4:FhirAnalyticsPublisher? analyticsPublisher = ();
 
-    # Initializes the AnalyticsResponseInterceptor
+    # Initializes the appropriate analytics publisher based on configuration
     #
     # + apiConfig - The API configuration
     function init(r4:ResourceAPIConfig apiConfig) {
         
-        if !analytics.enabled {
-            log:printWarn(`[AnalyticsResponseInterceptor] Analytics is disabled.`);
-            self.analyticsPublisher = ();
-            return;
-        }
-
-        // Select the appropriate publisher based on configuration
-        if analytics.publisher == "moesif" {
-            r4:FhirAnalyticsPublisher? fhirAnalyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
-            if fhirAnalyticsPublisher is r4:FhirAnalyticsPublisher {
-                self.analyticsPublisher = fhirAnalyticsPublisher;
-                log:printDebug(`[AnalyticsResponseInterceptor] Moesif analytics publisher obtained from FHIR registry.`);
+        if analytics.enabled {
+            // Select the appropriate publisher based on configuration
+            if analytics.publisher == "moesif" {
+                r4:FhirAnalyticsPublisher? fhirAnalyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
+                if fhirAnalyticsPublisher is r4:FhirAnalyticsPublisher {
+                    self.analyticsPublisher = fhirAnalyticsPublisher;
+                    log:printDebug(`[AnalyticsResponseInterceptor] Moesif analytics publisher obtained from FHIR registry.`);
+                } else {
+                    r4:fhirRegistry.registerAnalyticsPublisher(analytics.publisher, new MoesifAnalyticsPublisher(apiConfig));
+                    self.analyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
+                    log:printDebug(`[AnalyticsResponseInterceptor] Moesif was not found in registry. Registered now.`);
+                }
+            } else if analytics.publisher == "opensearch" {
+                r4:FhirAnalyticsPublisher? fhirAnalyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
+                if fhirAnalyticsPublisher is r4:FhirAnalyticsPublisher {
+                    self.analyticsPublisher = fhirAnalyticsPublisher;
+                    log:printDebug(`[AnalyticsResponseInterceptor] OpenSearch analytics publisher obtained from FHIR registry.`);
+                } else {
+                    r4:fhirRegistry.registerAnalyticsPublisher(analytics.publisher, new OpenSearchAnalyticsPublisher(apiConfig));
+                    self.analyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
+                    log:printDebug(`[AnalyticsResponseInterceptor] OpenSearch analytics publisher was not found in registry. Registered now.`);
+                }
             } else {
-                r4:fhirRegistry.registerAnalyticsPublisher(analytics.publisher, new MoesifAnalyticsPublisher(apiConfig));
-                self.analyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
-                log:printDebug(`[AnalyticsResponseInterceptor] Moesif was not found in registry. Registered now.`);
+                log:printWarn(`[AnalyticsResponseInterceptor] Invalid analytics publisher name configured. Skipping analytics data publishing.`);
+                self.analyticsPublisher = ();
             }
-        } else if analytics.publisher == "opensearch" {
-            r4:FhirAnalyticsPublisher? fhirAnalyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
-            if fhirAnalyticsPublisher is r4:FhirAnalyticsPublisher {
-                self.analyticsPublisher = fhirAnalyticsPublisher;
-                log:printDebug(`[AnalyticsResponseInterceptor] OpenSearch analytics publisher obtained from FHIR registry.`);
-            } else {
-                r4:fhirRegistry.registerAnalyticsPublisher(analytics.publisher, new OpenSearchAnalyticsPublisher(apiConfig));
-                self.analyticsPublisher = r4:fhirRegistry.getFhirAnalyticsPublisher(analytics.publisher);
-                log:printDebug(`[AnalyticsResponseInterceptor] OpenSearch analytics publisher was not found in registry. Registered now.`);
-            }
-        } else {
-            log:printWarn(`[AnalyticsResponseInterceptor] Invalid analytics publisher name configured. Skipping analytics data publishing.`);
-            self.analyticsPublisher = ();
         }
     }
 
     remote isolated function interceptResponse(http:RequestContext ctx, http:Request req, http:Response res) returns http:NextService|error? {
+
+        if !analytics.enabled {
+            log:printDebug(`[AnalyticsResponseInterceptor] Analytics is disabled. Skipping analytics data publishing.`);
+            return ctx.next();
+        }
 
         map<string[]> requestHeaders = getRequestHeaders(req);
         map<string[]> responseHeaders = getResponseHeaders(res);
@@ -86,26 +87,20 @@ isolated service class AnalyticsResponseInterceptor {
         int statusCode = res.statusCode;
         string requestPath  = req.rawPath;
 
-        r4:FhirAnalyticsPublisher? analyticsPublisher = ();
-
-        lock {
-	        analyticsPublisher = self.analyticsPublisher;
-            if analyticsPublisher is () {
-                log:printDebug(`[AnalyticsResponseInterceptor] No analytics publisher configured. Skipping analytics data publishing.`);
-                return ctx.next();
-            }
-        }
-
         string|error xJWT = req.getHeader(X_JWT_HEADER);
         if xJWT is error {
             log:printWarn(`[AnalyticsResponseInterceptor] Skipped publishing analytics data. Error: Missing x-jwt-assertion header.`);
             return ctx.next();
         }
 
-        log:printDebug(`[AnalyticsResponseInterceptor] Publishing analytics data using ${analytics.publisher} publisher.`);
-        
+        r4:FhirAnalyticsPublisher? analyticsPublisher;
+        lock {
+	        analyticsPublisher = self.analyticsPublisher;
+        }
+
         // Publish analytics data asynchronously
         if analyticsPublisher is r4:FhirAnalyticsPublisher {
+            log:printDebug(`[AnalyticsResponseInterceptor] Publishing analytics data using ${analytics.publisher} publisher.`);
             future<error?> _ = start analyticsPublisher.publish(requestHeaders.cloneReadOnly(), requestPayload.clone(), responseHeaders.cloneReadOnly(), responsePayload.clone(), statusCode, requestPath.cloneReadOnly());
         }
         return ctx.next();
