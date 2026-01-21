@@ -18,3 +18,8 @@ groupId = "io.ballerinax"
 artifactId = "fhirr4-native"
 version = "${project.version}"
 path = "./fhirr4-native-${project.version}.jar"
+
+[[platform.java21.dependency]]
+groupId = "io.ballerina.stdlib"
+artifactId = "persist.sql-native"
+version = "1.6.0"
