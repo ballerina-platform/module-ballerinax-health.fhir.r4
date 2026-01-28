@@ -946,25 +946,37 @@ isolated function preProcessOperation(string fhirResourceType, string fhirOperat
             return;
         }
 
-        // If there is a payload, it should be a valid Parameters resource
+        // If there is a payload, it should be a valid Parameters or Bundle resource
         // Validate and parse payload
         anydata|r4:FHIRParseError parsedResource = parser:parse(payload);
-        international401:Parameters|error parsedParametersPayload = parsedResource.ensureType();
 
-        if parsedResource is r4:FHIRParseError || parsedParametersPayload is error {
+        if parsedResource is r4:FHIRParseError {
             string message = "Invalid operation payload";
             string diagnostic = "Payload for operation \"$" + fhirOperation + "\" is not a valid \"Parameters\" "
-                        + "resource. Please provide a valid \"Parameters\" resource as the payload.";
+                        + "or \"Bundle\" resource. Please provide a valid resource as the payload.";
             return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
                     httpStatusCode = http:STATUS_BAD_REQUEST);
         }
 
-        // Process operation params of the payload
-        map<international401:ParametersParameter[]> processedParams = check processOperationPayloadParams(fhirOperation,
-                operationRequestScope, operationParameterDefinitions, operationParameterConfigs, parsedParametersPayload);
+        international401:Parameters|error parsedParametersPayload = parsedResource.ensureType();
+        r4:Bundle|error parsedBundlePayload = parsedResource.ensureType();
 
-        // Validate operation parameter cardinality
-        check validateOperationParamCardinality(fhirOperation, operationParameterConfigs, processedParams);
+        if parsedParametersPayload is error && parsedBundlePayload is error {
+            string message = "Invalid operation payload";
+            string diagnostic = "Payload for operation \"$" + fhirOperation + "\" is not a valid \"Parameters\" "
+                        + "or \"Bundle\" resource. Please provide a valid resource as the payload.";
+            return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+        // Process operation params of the payload only if it's a Parameters resource
+        if parsedParametersPayload is international401:Parameters {
+            map<international401:ParametersParameter[]> processedParams = check processOperationPayloadParams(fhirOperation,
+                    operationRequestScope, operationParameterDefinitions, operationParameterConfigs, parsedParametersPayload);
+
+            // Validate operation parameter cardinality
+            check validateOperationParamCardinality(fhirOperation, operationParameterConfigs, processedParams);
+        }
 
         return new r4:FHIRResourceEntity(parsedResource);
     } else {
