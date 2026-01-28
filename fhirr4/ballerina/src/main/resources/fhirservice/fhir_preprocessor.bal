@@ -958,12 +958,11 @@ isolated function preProcessOperation(string fhirResourceType, string fhirOperat
                     httpStatusCode = http:STATUS_BAD_REQUEST);
         }
 
-        international401:Parameters|error parsedParametersPayload = parsedResource.ensureType();
-        r4:Bundle|error parsedBundlePayload = parsedResource.ensureType();
+        international401:Parameters|r4:Bundle|error parsedParametersPayload = parsedResource.ensureType();
 
-        if parsedParametersPayload is error && parsedBundlePayload is error {
-            string message = "Invalid operation payload";
-            string diagnostic = "Payload for operation \"$" + fhirOperation + "\" is not a valid \"Parameters\" "
+        if parsedParametersPayload is error {
+            string message = "Invalid Resource Type in operation payload";
+            string diagnostic = "ResourceType for operation \"$" + fhirOperation + "\" is not a valid \"Parameters\" "
                         + "or \"Bundle\" resource. Please provide a valid resource as the payload.";
             return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
                     httpStatusCode = http:STATUS_BAD_REQUEST);
