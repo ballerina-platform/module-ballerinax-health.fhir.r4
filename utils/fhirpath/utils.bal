@@ -23,8 +23,6 @@ const BRACKET_START = "[";
 const DOT_SEPARATOR = ".";
 const INVALID_CHARACTER_MSG = "The given FhirPath expression is incorrect as it contains invalid " +
 "character instead of a number for array access";
-const INVALID_FHIRPATH_MSG = "The given FhirPath expression is incorrect for the given FHIR resource";
-const ARRAY_INDEX_ERROR_MSG = "The given array index is incorrect for the given FHIR resource";
 
 # Basic token type.
 #
