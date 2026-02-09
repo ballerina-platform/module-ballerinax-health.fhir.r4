@@ -15,6 +15,10 @@ import ballerinax/health.fhir.r4.ips;
 import ballerinax/health.fhir.r4.parser;
 import ballerina/http;
 import ballerina/log;
+import ballerina/time;
+import ballerina/file;
+import ballerina/io;
+import ballerina/jwt;
 
 isolated http:Client? conditionalInvokationClient = ();
 
@@ -225,3 +229,195 @@ isolated function validateOperationConfigs(r4:ResourceAPIConfig apiConfig) retur
     }
     return;
 }
+<<<<<<< HEAD
+=======
+
+# Retrieves all headers from an HTTP request
+#
+# + request - The HTTP request object
+# + return - A map containing all header names as keys and their first values as strings
+isolated function getRequestHeaders(http:Request request) returns map<string> {
+    
+    map<string> headers = {};
+    string[] headerNames = request.getHeaderNames();
+    
+    foreach string headerName in headerNames {
+        string[]|http:HeaderNotFoundError headerValues = request.getHeaders(headerName);
+        if headerValues is string[] && headerValues.length() > 0 {
+            if headerValues.length() == 1 {
+                headers[headerName] = headerValues[0];
+            } else {
+                // Join multiple values with comma and space as per HTTP specification
+                headers[headerName] = string:'join(", ", ...headerValues);
+            }
+        }
+    }
+    return headers;
+}
+
+# Retrieves all headers from an HTTP response
+#
+# + response - The HTTP response object
+# + return - A map containing all header names as keys and their values as strings
+isolated function getResponseHeaders(http:Response response) returns map<string> {
+    
+    map<string> headers = {};
+    string[] headerNames = response.getHeaderNames();
+    
+    foreach string headerName in headerNames {
+        string[]|http:HeaderNotFoundError headerValues = response.getHeaders(headerName);
+        if headerValues is string[] && headerValues.length() > 0 {
+            if headerValues.length() == 1 {
+                headers[headerName] = headerValues[0];
+            } else {
+                // Join multiple values with comma and space as per HTTP specification
+                headers[headerName] = string:'join(", ", ...headerValues);
+            }
+        }
+    }
+    return headers;
+}
+
+# Retrieves more information from the configured URL
+#
+# + data - The log data to send to retrieve more information
+# + moreInfoClient - The HTTP client to use for fetching more information
+# + return - A JSON object containing additional information
+isolated function getMoreInfo(json data, http:Client|http:ClientError moreInfoClient) returns json {
+    
+    if moreInfoClient is http:ClientError {
+        log:printError(`[AnalyticsResponseInterceptor] Failed to create HTTP client for fetching additional information`);
+        return {};
+    } else {
+        http:Response|http:ClientError result = moreInfoClient->/.post(data);
+        if (result is http:Response) {
+            json|error payload = result.getJsonPayload();
+            if payload is json {
+                return payload;
+            } else {
+                log:printError(`[AnalyticsResponseInterceptor] Failed to extract JSON payload from More Info response.`);
+                return {};
+            }
+        } else {
+            log:printError(`[AnalyticsResponseInterceptor] Failed to fetch more info from ${analytics.enrichAnalyticsPayload?.url} [Error]: ${result.toString()}`);
+            return {};
+        }
+    }
+}
+
+isolated function enrichAnalyticsData(map<string> analyticsData) {
+    
+    http:Client|http:ClientError? dataEnrichHttpClient;
+
+    final string? moreInfoUrl = analytics.enrichAnalyticsPayload?.url;
+    final string? moreInfoUsername = analytics.enrichAnalyticsPayload?.username;
+    final string? moreInfoPassword = analytics.enrichAnalyticsPayload?.password;
+
+    if moreInfoUrl is () {
+        dataEnrichHttpClient = ();
+    } else if moreInfoUsername !is () && moreInfoPassword !is () {
+        dataEnrichHttpClient = new (moreInfoUrl, auth = {
+            username: moreInfoUsername,
+            password: moreInfoPassword
+        });
+    } else {
+        dataEnrichHttpClient = new (moreInfoUrl);
+    }
+
+    if dataEnrichHttpClient !is http:ClientError && dataEnrichHttpClient is http:Client {
+        json moreInfo = getMoreInfo(analyticsData.toJson(), dataEnrichHttpClient);
+
+        log:printDebug(`[AnalyticsResponseInterceptor] More info fetched from: ${analytics.enrichAnalyticsPayload?.url} [More info]: ${moreInfo.toString()}`);
+        foreach var [key, value] in (<map<json>>moreInfo).entries() {
+            analyticsData[key] = value.toString();
+        }
+    }
+}
+
+// Calculate civil time for next day 12 AM
+isolated function calculateDelayUntilMidnight() returns time:Civil {
+    time:Utc currentUtc = time:utcNow();
+    time:Civil currentCivil = time:utcToCivil(currentUtc);
+
+    // Calculate next midnight
+    time:Civil nextMidnight = {
+        year: currentCivil.year,
+        month: currentCivil.month,
+        day: currentCivil.day + 1,
+        hour: 0,
+        minute: 0,
+        second: 0.0,
+        utcOffset: currentCivil.utcOffset
+    };
+
+    return nextMidnight;
+}
+
+# Check if the request path matches any of the excluded APIs for analytics
+# 
+# + requestPath - the API request path
+# + return - true if the request path matches any of the excluded APIs, false otherwise
+isolated function isFileExist(string requestPath) returns boolean|error? {
+
+    return file:test(requestPath, file:EXISTS);
+}
+
+# Check if the request path matches any of the excluded APIs for analytics
+#
+# + requestPath - the API request path
+# + return - true if the request path matches any of the excluded APIs, false otherwise
+isolated function isExcludedApi(string requestPath) returns boolean {
+    
+    foreach string excludedApi in analytics.excludedApis {
+        if requestPath.toLowerAscii().includes(excludedApi.toLowerAscii()) {
+            log:printWarn(`[AnalyticsResponseInterceptor] Request path ${requestPath} is excluded from analytics. 
+                                                                                    Skipping analytics data writing.`);
+            return true;
+        }
+    }
+    return false;
+}
+
+# Write data to a file at the specified path
+#
+# + path - The file path where the data should be written
+# + data - The string data to write to the file
+# + return - An error if the write operation fails, otherwise returns nothing
+isolated function writeDataToFile(string path, string data) returns error? {
+    
+    return io:fileWriteString(path, data, io:APPEND);
+}
+
+# Decode a JWT token and return its header and payload
+#
+# + jwt - The JWT token string to decode
+# + return - A tuple containing the decoded JWT
+isolated function decodeJWT(string jwt) returns [jwt:Header, jwt:Payload]|error {
+
+    return jwt:decode(jwt);
+}
+
+# Extract analytics data from the decoded JWT based on the configured attributes
+#
+# + dataAttributes - The list of attributes to extract from the JWT payload
+# + jwtPayload - The decoded JWT payload
+# + return - A map containing the extracted analytics data
+isolated function extractAnalyaticsDataFromJWT(string[] dataAttributes, jwt:Payload jwtPayload) returns map<string> {
+
+    return map from string attrKey in dataAttributes
+            where jwtPayload[attrKey] !== ()
+            select [attrKey, jwtPayload[attrKey].toString()];
+}
+
+# Convert a map to a JSON object
+#
+#  + data - The map to convert to JSON
+# + return - A JSON object representing the input map
+isolated function convertMapToJson(map<string> data) returns json {
+    
+    return map from string headerKey in data.keys()
+            select [headerKey, data[headerKey].toString()];
+}
+
+
+>>>>>>> 653d368... Add CMS analytics implementation
