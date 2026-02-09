@@ -229,8 +229,6 @@ isolated function validateOperationConfigs(r4:ResourceAPIConfig apiConfig) retur
     }
     return;
 }
-<<<<<<< HEAD
-=======
 
 # Retrieves all headers from an HTTP request
 #
@@ -418,6 +416,3 @@ isolated function convertMapToJson(map<string> data) returns json {
     return map from string headerKey in data.keys()
             select [headerKey, data[headerKey].toString()];
 }
-
-
->>>>>>> 653d368... Add CMS analytics implementation

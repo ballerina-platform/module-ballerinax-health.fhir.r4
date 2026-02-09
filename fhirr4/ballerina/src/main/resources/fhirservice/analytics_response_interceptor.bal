@@ -19,8 +19,6 @@ import ballerina/jwt;
 import ballerina/log;
 import ballerina/time;
 import ballerinax/health.fhir.r4;
-import ballerina/jwt;
-import ballerina/time;
 import ballerina/file;
 
 # AnalyticsResponseInterceptor is an HTTP response interceptor that writes analytics data to "cms-analytics.log" file.
