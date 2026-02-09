@@ -242,11 +242,12 @@ isolated function getRequestHeaders(http:Request request) returns map<string> {
     foreach string headerName in headerNames {
         string[]|http:HeaderNotFoundError headerValues = request.getHeaders(headerName);
         if headerValues is string[] && headerValues.length() > 0 {
+            string lowerCaseHeaderName = headerName.toLowerAscii();
             if headerValues.length() == 1 {
-                headers[headerName] = headerValues[0];
+                headers[lowerCaseHeaderName] = headerValues[0];
             } else {
                 // Join multiple values with comma and space as per HTTP specification
-                headers[headerName] = string:'join(", ", ...headerValues);
+                headers[lowerCaseHeaderName] = string:'join(", ", ...headerValues);
             }
         }
     }
@@ -265,11 +266,12 @@ isolated function getResponseHeaders(http:Response response) returns map<string>
     foreach string headerName in headerNames {
         string[]|http:HeaderNotFoundError headerValues = response.getHeaders(headerName);
         if headerValues is string[] && headerValues.length() > 0 {
+            string lowerCaseHeaderName = headerName.toLowerAscii();
             if headerValues.length() == 1 {
-                headers[headerName] = headerValues[0];
+                headers[lowerCaseHeaderName] = headerValues[0];
             } else {
                 // Join multiple values with comma and space as per HTTP specification
-                headers[headerName] = string:'join(", ", ...headerValues);
+                headers[lowerCaseHeaderName] = string:'join(", ", ...headerValues);
             }
         }
     }
@@ -279,15 +281,15 @@ isolated function getResponseHeaders(http:Response response) returns map<string>
 # Retrieves more information from the configured URL
 #
 # + data - The log data to send to retrieve more information
-# + moreInfoClient - The HTTP client to use for fetching more information
+# + dataEnrichmentHttpClient - The HTTP client to use for fetching more information
 # + return - A JSON object containing additional information
-isolated function getMoreInfo(json data, http:Client|http:ClientError moreInfoClient) returns json {
+isolated function getAnalyticsEnrichmentData(json data, http:Client|http:ClientError dataEnrichmentHttpClient) returns json {
     
-    if moreInfoClient is http:ClientError {
+    if dataEnrichmentHttpClient is http:ClientError {
         log:printError(`[AnalyticsResponseInterceptor] Failed to create HTTP client for fetching additional information`);
         return {};
     } else {
-        http:Response|http:ClientError result = moreInfoClient->/.post(data);
+        http:Response|http:ClientError result = dataEnrichmentHttpClient->/.post(data);
         if (result is http:Response) {
             json|error payload = result.getJsonPayload();
             if payload is json {
@@ -297,55 +299,65 @@ isolated function getMoreInfo(json data, http:Client|http:ClientError moreInfoCl
                 return {};
             }
         } else {
-            log:printError(`[AnalyticsResponseInterceptor] Failed to fetch more info from ${analytics.enrichAnalyticsPayload?.url} [Error]: ${result.toString()}`);
+            log:printError(`[AnalyticsResponseInterceptor] Failed to fetch analytics enrichment data from ${analytics.enrichAnalyticsPayload?.url} [Error]: ${result.toString()}`);
             return {};
         }
     }
 }
 
+# Call the analytics data enrichment service to fetch additional information and enrich the analytics data
+# 
+# + analyticsData - The analytics data to enrich with additional information
 isolated function enrichAnalyticsData(map<string> analyticsData) {
     
     http:Client|http:ClientError? dataEnrichHttpClient;
 
-    final string? moreInfoUrl = analytics.enrichAnalyticsPayload?.url;
-    final string? moreInfoUsername = analytics.enrichAnalyticsPayload?.username;
-    final string? moreInfoPassword = analytics.enrichAnalyticsPayload?.password;
+    final string? enrichAnalyticsDataUrl = analytics.enrichAnalyticsPayload?.url;
+    final string? username = analytics.enrichAnalyticsPayload?.username;
+    final string? password = analytics.enrichAnalyticsPayload?.password;
 
-    if moreInfoUrl is () {
+    if enrichAnalyticsDataUrl is () {
         dataEnrichHttpClient = ();
-    } else if moreInfoUsername !is () && moreInfoPassword !is () {
-        dataEnrichHttpClient = new (moreInfoUrl, auth = {
-            username: moreInfoUsername,
-            password: moreInfoPassword
+    } else if username !is () && password !is () {
+        dataEnrichHttpClient = new (enrichAnalyticsDataUrl, auth = {
+            username: username,
+            password: password
         });
     } else {
-        dataEnrichHttpClient = new (moreInfoUrl);
+        dataEnrichHttpClient = new (enrichAnalyticsDataUrl);
     }
 
     if dataEnrichHttpClient !is http:ClientError && dataEnrichHttpClient is http:Client {
-        json moreInfo = getMoreInfo(analyticsData.toJson(), dataEnrichHttpClient);
-
-        log:printDebug(`[AnalyticsResponseInterceptor] More info fetched from: ${analytics.enrichAnalyticsPayload?.url} [More info]: ${moreInfo.toString()}`);
-        foreach var [key, value] in (<map<json>>moreInfo).entries() {
-            analyticsData[key] = value.toString();
+        json enrichmentData = getAnalyticsEnrichmentData(analyticsData.toJson(), dataEnrichHttpClient);
+        log:printDebug(`[AnalyticsResponseInterceptor] Analytics enrichment data fetched from: ${analytics.enrichAnalyticsPayload?.url} [Enrichment Data]: ${enrichmentData.toString()}`);
+        if enrichmentData is map<json> {
+            foreach var [key, value] in enrichmentData.entries() {
+                analyticsData[key] = value.toString();
+            }
+        } else {
+            log:printWarn("[AnalyticsResponseInterceptor] Enrichment data response is not a JSON object.");
         }
     }
 }
 
-// Calculate civil time for next day 12 AM
-isolated function calculateDelayUntilMidnight() returns time:Civil {
-    time:Utc currentUtc = time:utcNow();
-    time:Civil currentCivil = time:utcToCivil(currentUtc);
+
+# Calculate the delay until the next midnight and return it as a time:Civil value
+# 
+# + currentUtc - The current time in UTC
+# + return - The time:Civil value representing the next midnight
+isolated function calculateDelayUntilMidnight(time:Utc currentUtc) returns time:Civil {
+    time:Utc nextDayUtc = time:utcAddSeconds(currentUtc, 86400);
+    time:Civil nextDayCivil = time:utcToCivil(nextDayUtc);
 
     // Calculate next midnight
     time:Civil nextMidnight = {
-        year: currentCivil.year,
-        month: currentCivil.month,
-        day: currentCivil.day + 1,
+        year: nextDayCivil.year,
+        month: nextDayCivil.month,
+        day: nextDayCivil.day,
         hour: 0,
         minute: 0,
         second: 0.0,
-        utcOffset: currentCivil.utcOffset
+        utcOffset: nextDayCivil.utcOffset
     };
 
     return nextMidnight;

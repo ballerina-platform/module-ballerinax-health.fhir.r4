@@ -30,31 +30,28 @@ isolated service class AnalyticsResponseInterceptor {
     # + apiConfig - The API configuration
     function init(r4:ResourceAPIConfig apiConfig) {
         
-        string logFilePath = analytics.analyticsFilePath + "/" + logFileName;
-
-        // Check if logs directory exists, create if not
-        boolean|error? fileExists = isFileExist(logFilePath);
-        if fileExists is boolean && !fileExists {
-            error? creationError = file:create(logFilePath);
-            if creationError is error {
-                log:printError("Error creating analytics log file", err = creationError.toBalString());
-                return;
+        if analytics.enabled {
+            string logFilePath = analytics.analyticsFilePath + "/" + logFileName;
+            // Check if logs directory exists, create if not
+            boolean|error? fileExists = isFileExist(logFilePath);
+            if fileExists is boolean && !fileExists {
+                error? creationError = file:create(logFilePath);
+                if creationError is error {
+                    log:printError(string `Configured directory ${analytics.analyticsFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`);
+                    return;
+                }
             }
+            // Initialize the file rotator
+            initFileRotator();
         }
-
-        // Initialize the file rotator
-        initFileRotator();
+        return;
     }
 
     remote isolated function interceptResponse(http:RequestContext ctx, http:Request req, http:Response res) returns http:NextService|error? {
-        if !analytics.enabled {
-            log:printDebug(`[AnalyticsResponseInterceptor] Analytics is disabled. Skipping analytics data writing.`);
+        
+        //check excluded APIs from config and skip analytics writing
+        if isExcludedApi(req.rawPath) {
             return ctx.next();
-        } else {
-            //check excluded APIs from config and perform
-            if isExcludedApi(req.rawPath) {
-                return ctx.next();
-            }
         }
 
         map<string> requestHeaders = getRequestHeaders(req);
@@ -90,13 +87,11 @@ public isolated function writeAnalyticsData(map<string> requestHeaders, json|htt
     }
     [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
 
-    // JWT data extraction
     map<string> analyticsData = extractAnalyaticsDataFromJWT(analytics.jwtAttributes, payload);
-
-    // Convert requestHeaders to JSON
     json requestHeadersJson = convertMapToJson(requestHeaders);
+    json responseHeadersJson = convertMapToJson(responseHeaders);
 
-    // If moreinfo is enabled, fetch and add to analytics data
+    // If analytics data enrichment is enabled, fetch and add to analytics data
     if analytics.enrichAnalyticsPayload is AnalyticsPayloadEnrich && analytics.enrichAnalyticsPayload?.enabled == true {
         enrichAnalyticsData(analyticsData);
     }
@@ -109,8 +104,6 @@ public isolated function writeAnalyticsData(map<string> requestHeaders, json|htt
         headers: requestHeadersJson
     };
 
-    json responseHeadersJson = convertMapToJson(responseHeaders);
-
     Response response = {
         time: time:utcToString(time:utcNow()),
         headers: responseHeadersJson,
@@ -120,33 +113,26 @@ public isolated function writeAnalyticsData(map<string> requestHeaders, json|htt
     // Decide payload analytics based on config
     if analytics.shouldPublishPayloads && requestPayload !is http:ClientError && responsePayload !is http:ClientError {
         json requestPayloadJson = requestPayload;
-        json reseponsePayloadJson = responsePayload;
+        json responsePayloadJson = responsePayload;
         request.body = requestPayloadJson;
-        response.body = reseponsePayloadJson;
+        response.body = responsePayloadJson;
     } else {
         log:printDebug("Payload publishing is disabled");
     }
 
-    // Add logic here to write to file
     AnalyticsData analyticsDataRecord = {
         request: request,
         response: response,
         metadata: analyticsData
     };
 
-    string logFilePath = analytics.analyticsFilePath + "/" + logFileName;
-
     // Convert analytics data to JSON string
     json analyticsJson = analyticsDataRecord.toJson();
     string logLine = analyticsJson.toJsonString() + "\n";
-
-    // Check if logs directory exists, create if not
-    boolean|error? fileExists = isFileExist(logFilePath);
+    string logFilePath = analytics.analyticsFilePath + "/" + logFileName;
     
-    if fileExists is boolean && fileExists {
-        // Append to file (creates file if it doesn't exist)
-        check writeDataToFile(logFilePath, logLine);
-        log:printDebug("Successfully wrote the analytics data to file");
-        return;
-    }
+    // Flow won't come to this point if we don't have a file to write to. Hence no checking required.
+    check writeDataToFile(logFilePath, logLine);
+    log:printDebug(string `Successfully wrote the analytics data to file: ${logFileName}`);
+    return;
 }

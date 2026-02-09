@@ -34,7 +34,7 @@ public isolated function initFileRotator() {
     AnalyticsFileRotationJob fileRotationJob = new();
     
     // Calculate delay until next 12 AM
-    time:Civil delayUntilMidnight = calculateDelayUntilMidnight();
+    time:Civil delayUntilMidnight = calculateDelayUntilMidnight(time:utcNow());
     
     // Schedule recurring execution every 24 hours starting from next midnight
     task:JobId|task:Error recurringResult = task:scheduleJobRecurByFrequency(fileRotationJob, 86400, maxCount = -1, 
