@@ -50,9 +50,36 @@ function run(string sourceCode) {
         return;
     }
 
-    // Print the AST (for now, interpreter to be implemented later)
+    // Example FHIR Patient resource for testing
+    json patientResource = {
+        "resourceType": "Patient",
+        "id": "example",
+        "name": [
+            {
+                "use": "official",
+                "family": "Chalmers",
+                "given": ["Peter", "James"]
+            },
+            {
+                "use": "usual",
+                "given": ["Jim"]
+            }
+        ],
+        "gender": "male",
+        "birthDate": "1974-12-25"
+    };
+
+    // Interpret the expression with the patient resource
     if expression is Expr {
-        io:println(printAst(expression));
+        io:println("AST: " + printAst(expression));
+
+        RuntimeError|json[] result = interpret(expression, patientResource);
+
+        if result is RuntimeError {
+            io:println("Runtime Error: " + result.message);
+        } else {
+            io:println("Result: ", result);
+        }
     }
 }
 

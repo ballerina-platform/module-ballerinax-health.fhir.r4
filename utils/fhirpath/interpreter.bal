@@ -57,17 +57,99 @@ function visitLiteralExpr(LiteralExpr expr, json context) returns json[] {
 
 // Visit an identifier expression
 function visitIdentifierExpr(IdentifierExpr expr, json context) returns RuntimeError|json[] {
-    // TODO: Implement identifier resolution from context
-    // For now, return empty collection
+    // Identifier accesses a property from the context
+    // This handles the first level access, e.g., "name" in context
+    if context is () {
+        return [];
+    }
+
+    // Handle map/object context
+    if context is map<json> {
+        string fieldName = expr.name;
+
+        // Check if identifier matches the resource type
+        // If so, return the entire context (e.g., "Patient" returns the Patient resource)
+        json|error resourceTypeValue = context.resourceType;
+        if resourceTypeValue !is error && resourceTypeValue is string {
+            if fieldName == resourceTypeValue {
+                return [context];
+            }
+        }
+
+        // Regular field access
+        if !context.hasKey(fieldName) {
+            return [];
+        }
+        json fieldValue = context[fieldName];
+        return wrapInCollection(fieldValue);
+    }
+
+    // Context is not accessible as a map
     return [];
 }
 
-// Visit a member access expression (e.g., Patient.name)
+// Visit a member access expression (e.g., Patient.name, name.given)
 function visitMemberAccessExpr(MemberAccessExpr expr, json context) returns RuntimeError|json[] {
-    // TODO: Implement member access
-    // 1. Evaluate the target expression
-    // 2. For each result, access the member property
-    // 3. Return the collection of results
+    // 1. Evaluate the target expression to get a collection of results
+    RuntimeError|json[] targetResults = evaluate(expr.target, context);
+
+    if targetResults is RuntimeError {
+        return targetResults;
+    }
+
+    // 2. For each result in the collection, access the member property
+    json[] results = [];
+    foreach json item in targetResults {
+        RuntimeError|json[] memberResults = accessMember(item, expr.member);
+
+        if memberResults is RuntimeError {
+            return memberResults;
+        }
+
+        // Flatten the results into the output collection
+        foreach json memberValue in memberResults {
+            results.push(memberValue);
+        }
+    }
+
+    return results;
+}
+
+// Access a member property from a JSON value
+// Returns a collection of results (could be empty, single, or multiple values)
+function accessMember(json item, string memberName) returns RuntimeError|json[] {
+    // Handle null/nil
+    if item is () {
+        return [];
+    }
+
+    // Handle map/object - direct property access
+    if item is map<json> {
+        if !item.hasKey(memberName) {
+            return [];
+        }
+        json fieldValue = item[memberName];
+        return wrapInCollection(fieldValue);
+    }
+
+    // Handle arrays - access member from each element
+    if item is json[] {
+        json[] results = [];
+        foreach json element in item {
+            RuntimeError|json[] elementResults = accessMember(element, memberName);
+
+            if elementResults is RuntimeError {
+                return elementResults;
+            }
+
+            foreach json value in elementResults {
+                results.push(value);
+            }
+        }
+        return results;
+    }
+
+    // Primitive types don't have members
     return [];
 }
 
@@ -126,6 +208,22 @@ function isEqual(anydata a, anydata b) returns boolean {
         return false;
     }
     return a == b;
+}
+
+// Helper function to wrap a JSON value in a collection
+// - If value is null/nil, returns empty collection []
+// - If value is already an array, returns it as-is
+// - Otherwise, wraps the value in a single-element array
+function wrapInCollection(json value) returns json[] {
+    if value is () {
+        return [];
+    }
+    if value is json[] {
+        // Already an array, return as-is
+        return value;
+    }
+    // Wrap single value in array
+    return [value];
 }
 
 // Report a FHIRPath runtime error
