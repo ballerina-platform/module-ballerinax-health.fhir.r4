@@ -36,6 +36,7 @@ function runPrompt() returns error? {
         run(line);
         hadError = false;
     }
+    // run("Patient.name[0]");
 }
 
 function run(string sourceCode) {

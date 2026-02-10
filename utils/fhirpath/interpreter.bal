@@ -153,13 +153,78 @@ function accessMember(json item, string memberName) returns RuntimeError|json[] 
     return [];
 }
 
-// Visit an indexer expression (e.g., Patient.name[0])
+// Visit an indexer expression (e.g., Patient.name[0], given[1])
 function visitIndexerExpr(IndexerExpr expr, json context) returns RuntimeError|json[] {
-    // TODO: Implement indexer access
-    // 1. Evaluate the target expression
-    // 2. Evaluate the index expression
-    // 3. Return the indexed element
-    return [];
+    // 1. Evaluate the target expression to get a collection
+    RuntimeError|json[] targetResults = evaluate(expr.target, context);
+
+    if targetResults is RuntimeError {
+        return targetResults;
+    }
+    // 2. Evaluate the index expression to get the index value
+    RuntimeError|json[] indexResults = evaluate(expr.index, context);
+
+    if indexResults is RuntimeError {
+        return indexResults;
+    }
+
+    // Index should be a single integer value
+    if indexResults.length() != 1 {
+        return []; // Invalid index - must be a single value
+    }
+
+    json indexValue = indexResults[0];
+
+    // Convert index to integer (handle both int and float literals)
+    int index;
+    if indexValue is int {
+        index = indexValue;
+    } else if indexValue is float {
+        // Check if float has no decimal part (e.g., 5.0 is ok, 5.5 is not)
+        float floatIndex = <float>indexValue;
+        if floatIndex % 1.0 != 0.0 {
+            return []; // Index must be a whole number (no decimals)
+        }
+        index = <int>floatIndex;
+    } else {
+        return []; // Index must be numeric
+    }
+
+    // 3. Apply indexing to the target collection directly
+    // Check bounds
+    if index < 0 || index >= targetResults.length() {
+        return []; // Out of bounds returns empty collection
+    }
+
+    // Return the element at the index
+    json element = targetResults[index];
+    return wrapInCollection(element);
+}
+
+// Apply array indexing to a JSON value
+// Returns the element at the specified index if the value is an array
+function applyIndex(json item, int index) returns RuntimeError|json[] {
+    // Handle null/nil
+    if item is () {
+        return [];
+    }
+
+    // Only arrays can be indexed
+    if item !is json[] {
+        return []; // Non-array values return empty collection
+    }
+
+    json[] arr = <json[]>item;
+    int arrayLength = arr.length();
+
+    // Check bounds
+    if index < 0 || index >= arrayLength {
+        return []; // Out of bounds returns empty collection
+    }
+
+    // Return the element at the index
+    json element = arr[index];
+    return wrapInCollection(element);
 }
 
 // Visit a function call expression (e.g., name.first())
