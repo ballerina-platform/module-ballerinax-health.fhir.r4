@@ -241,11 +241,103 @@ function visitFunctionExpr(FunctionExpr expr, json context) returns RuntimeError
 
 // Visit a binary expression (e.g., name = 'John' or age > 18)
 function visitBinaryExpr(BinaryExpr expr, json context) returns RuntimeError|json[] {
-    // TODO: Implement binary operations
     // 1. Evaluate left and right expressions
-    // 2. Apply the operator (=, !=, or, xor, and)
-    // 3. Return boolean result as collection
-    return [];
+    RuntimeError|json[] leftResults = evaluate(expr.left, context);
+    if leftResults is RuntimeError {
+        return leftResults;
+    }
+
+    RuntimeError|json[] rightResults = evaluate(expr.right, context);
+    if rightResults is RuntimeError {
+        return rightResults;
+    }
+
+    // 2. Apply the operator based on its type
+    TokenType operatorType = expr.operator.tokenType;
+
+    match operatorType {
+        EQUAL => {
+            return applyEqualityOperator(leftResults, rightResults, true);
+        }
+        BANG_EQUAL => {
+            return applyEqualityOperator(leftResults, rightResults, false);
+        }
+        AND => {
+            return applyAndOperator(leftResults, rightResults);
+        }
+        OR => {
+            return applyOrOperator(leftResults, rightResults);
+        }
+        XOR => {
+            return applyXorOperator(leftResults, rightResults);
+        }
+        _ => {
+            // Unknown operator
+            return {
+                token: expr.operator,
+                message: string `Unknown binary operator: ${expr.operator.lexeme}`
+            };
+        }
+    }
+}
+
+// Apply equality operator (= or !=)
+function applyEqualityOperator(json[] left, json[] right, boolean checkEqual) returns json[] {
+    // Empty collections
+    if left.length() == 0 && right.length() == 0 {
+        return [checkEqual]; // Empty = Empty is true, Empty != Empty is false
+    }
+
+    if left.length() == 0 || right.length() == 0 {
+        return [!checkEqual]; // One empty is not equal (or equal if !=)
+    }
+
+    // Compare collections
+    // In FHIRPath, equality works on collections:
+    // If both have single elements, compare values
+    if left.length() == 1 && right.length() == 1 {
+        anydata leftValue = left[0];
+        anydata rightValue = right[0];
+        boolean areEqual = isEqual(leftValue, rightValue);
+        return checkEqual ? [areEqual] : [!areEqual];
+    }
+
+    // For collections with multiple elements, check if they're equal as collections
+    if left.length() == right.length() {
+        boolean allEqual = true;
+        foreach int i in 0 ..< left.length() {
+            if !isEqual(left[i], right[i]) {
+                allEqual = false;
+                break;
+            }
+        }
+        return checkEqual ? [allEqual] : [!allEqual];
+    }
+
+    // Different lengths means not equal
+    return [!checkEqual];
+}
+
+// Apply AND operator
+function applyAndOperator(json[] left, json[] right) returns json[] {
+    boolean leftTruthy = isTruthy(left);
+    boolean rightTruthy = isTruthy(right);
+    return [leftTruthy && rightTruthy];
+}
+
+// Apply OR operator
+function applyOrOperator(json[] left, json[] right) returns json[] {
+    boolean leftTruthy = isTruthy(left);
+    boolean rightTruthy = isTruthy(right);
+    return [leftTruthy || rightTruthy];
+}
+
+// Apply XOR operator
+function applyXorOperator(json[] left, json[] right) returns json[] {
+    boolean leftTruthy = isTruthy(left);
+    boolean rightTruthy = isTruthy(right);
+    // XOR is true if exactly one operand is true
+    return [(leftTruthy && !rightTruthy) || (!leftTruthy && rightTruthy)];
 }
 
 // Helper function to check if FHIRPath result is truthy
