@@ -97,7 +97,7 @@ public isolated class DefaultConsentEnforcer {
             return error("OpenFGC client is not configured");
         }
 
-        log:printDebug("getConsentDetails");
+        log:printDebug("Retrieving consent details for userIds: " + userIds + " with consentStatuses: " + consentStatuses);
 
         map<string|string[]> headers = {
             "org-id": ORG_ID,
@@ -125,7 +125,7 @@ public isolated class DefaultConsentEnforcer {
             return error("OpenFGC client is not configured");
         }
 
-        log:printDebug(string `[validateConsent] Validating consent: ${consentId}`);
+        log:printDebug(string `Validating consent: ${consentId}`);
 
         map<string|string[]> headers = {
             "org-id": ORG_ID,
@@ -139,7 +139,7 @@ public isolated class DefaultConsentEnforcer {
 
         http:Response res = check openFgcClient->post(VALIDATE_CONSENT_API_PATH, payload, headers = headers);
         json responsePayload = check res.getJsonPayload();
-        log:printDebug(string `[validateConsent] Validation response: ${responsePayload.toString()}`);
+        log:printDebug(string `Validation response: ${responsePayload.toString()}`);
 
         // Parse the JSON response to ConsentValidationResponse model
         ConsentValidationResponse validationResponse = check responsePayload.fromJsonWithType();
@@ -160,13 +160,13 @@ public isolated class DefaultConsentEnforcer {
             return error("OpenFGC client is not configured");
         }
 
-        log:printDebug(`[DefaultConsentEnforcer] Getting and validating consents for user: ${patientId}`);
+        log:printDebug(string `Getting and validating consents for user: ${patientId}`);
 
         // Get consent details
         ConsentResponse consentListResult = check self.getConsentDetails(patientId);
 
         int totalConsents = consentListResult.metadata?.total ?: 0;
-        log:printDebug("Successfully retrieved consent list. Total consents: " + totalConsents.toString());
+        log:printDebug(string `Successfully retrieved consent list. Total consents: ${totalConsents}`);
 
         // Validate each consent and collect detailed consent information
         Consent[] validatedConsents = [];
@@ -246,12 +246,10 @@ public isolated class DefaultConsentEnforcer {
                     continue;
                 }
                 foreach ConsentElement element in elements {
-                    boolean? isApproved = element.isUserApproved;
-                    if isApproved == true {
+                    boolean isApproved = element.isUserApproved;
+                    if isApproved {
                         string elementName = element.name;
-                        log:printDebug("Approved Consent Element - Purpose: " + purpose.name +
-                                        ", Element: " + elementName +
-                                        ", Status: " + isApproved.toString());
+                        log:printDebug(string `Approved Consent Element - Purpose: ${purpose.name}, Element: ${elementName}, Status: ${isApproved.toString()}`);
 
                         record {}? attrs = element.attributes;
                         if attrs !is () && attrs.hasKey("resourceType") {
