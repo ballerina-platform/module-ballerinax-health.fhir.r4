@@ -237,19 +237,21 @@ isolated function resolvePatientID(string fhirResourceType, http:Request httpReq
     string? patientId = ();
 
     // First, try to extract from path (e.g., Patient/PATIENT_ID/$export)
-    string rawPath = httpRequest.rawPath;
-    if rawPath.includes(fhirResourceType + "/") {
-        int? indexResult = rawPath.indexOf(fhirResourceType + "/");
-        if indexResult is int {
-            int startIdx = indexResult + fhirResourceType.length() + 1;
-            int? endIdxResult = rawPath.indexOf("/$", startIdx);
-            if endIdxResult is int && endIdxResult > startIdx {
-                patientId = rawPath.substring(startIdx, endIdxResult);
+    // The path ID is only a patient ID if the resource type is Patient
+    if fhirResourceType == PATIENT_RESOURCE {
+        string rawPath = httpRequest.rawPath;
+        if rawPath.includes(fhirResourceType + "/") {
+            int? indexResult = rawPath.indexOf(fhirResourceType + "/");
+            if indexResult is int {
+                int startIdx = indexResult + fhirResourceType.length() + 1;
+                int? endIdxResult = rawPath.indexOf("/$", startIdx);
+                if endIdxResult is int && endIdxResult > startIdx {
+                    patientId = rawPath.substring(startIdx, endIdxResult);
+                }
             }
         }
+        log:printDebug("Extracted patient ID from path: " + (patientId ?: "not found").toString());
     }
-
-    log:printDebug("Extracted patient ID from path: " + (patientId ?: "not found").toString());
 
     // If not found in path, try query parameters
     if patientId is () {
