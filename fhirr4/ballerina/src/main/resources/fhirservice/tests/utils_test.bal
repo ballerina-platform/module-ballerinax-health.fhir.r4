@@ -39,7 +39,7 @@ function testDecodeJWTInvalid() {
     test:assertTrue(result is error, msg = "Invalid JWT should return error");
 }
 
-// Test: extractAnalyaticsDataFromJWT function
+// Test: extractAnalticsDataFromJWT function
 @test:Config {}
 function testExtractAnalyticsDataFromJWT() returns error? {
 
@@ -49,7 +49,7 @@ function testExtractAnalyticsDataFromJWT() returns error? {
     if decodedResult is [jwt:Header, jwt:Payload] {
         [jwt:Header, jwt:Payload] [_, payload] = decodedResult;
         string[] attributes = ["fhirUser", "client_id", "iss"];
-        map<string> analyticsData = extractAnalyaticsDataFromJWT(attributes, payload);
+        map<string> analyticsData = extractAnalyticsDataFromJWT(attributes, payload);
         
         test:assertEquals(analyticsData.length(), 3, msg = "Should extract 3 attributes");
         test:assertEquals(analyticsData["fhirUser"], "patient/103", msg = "fhirUser should match");
@@ -58,7 +58,7 @@ function testExtractAnalyticsDataFromJWT() returns error? {
     }
 }
 
-// Test: extractAnalyaticsDataFromJWT with missing attributes
+// Test: extractAnalyticsDataFromJWT with missing attributes
 @test:Config {}
 function testExtractAnalyticsDataFromJWTMissingAttributes() returns error? {
 
@@ -69,7 +69,7 @@ function testExtractAnalyticsDataFromJWTMissingAttributes() returns error? {
         [jwt:Header, jwt:Payload] [_, payload] = decodedResult;
         string[] attributes = ["fhirUser", "nonExistentAttribute", "iss"];
         
-        map<string> analyticsData = extractAnalyaticsDataFromJWT(attributes, payload);
+        map<string> analyticsData = extractAnalyticsDataFromJWT(attributes, payload);
         test:assertEquals(analyticsData.length(), 2, msg = "Should extract only existing attributes");
         test:assertTrue(analyticsData.hasKey("fhirUser"), msg = "Should have fhirUser");
         test:assertTrue(analyticsData.hasKey("iss"), msg = "Should have iss");

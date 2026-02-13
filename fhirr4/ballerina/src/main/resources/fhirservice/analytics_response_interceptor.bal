@@ -165,7 +165,7 @@ public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsD
     }
     [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
 
-    map<string> analyticsDataFromJwt = extractAnalyaticsDataFromJWT(analytics.jwtAttributes, payload);
+    map<string> analyticsDataFromJwt = extractAnalyticsDataFromJWT(analytics.jwtAttributes, payload);
     json requestHeadersJson = convertMapToJson(analyticsDataRecord.requestHeaders); // remove auth header // make configurable // consider record
     json responseHeadersJson = convertMapToJson(analyticsDataRecord.responseHeaders);
     string? fhirUser = extractFhirUserFromJWT(payload);

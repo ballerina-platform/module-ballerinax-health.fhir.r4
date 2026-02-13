@@ -40,25 +40,22 @@ public isolated function initFileRotator() {
             log:printDebug("Analytics file rotation task is already started. Skipping initialization.");
             return;
         }
-    }
-    
-    AnalyticsFileRotationJob fileRotationJob = new();
-    
-    // Calculate delay until next 12 AM
-    time:Civil delayUntilMidnight = calculateDelayUntilMidnight(time:utcNow());
-    
-    // Schedule recurring execution every 24 hours starting from next midnight
-    task:JobId|task:Error recurringResult = task:scheduleJobRecurByFrequency(fileRotationJob, 86400, maxCount = -1, // make configurable
-        startTime = delayUntilMidnight);
-    if recurringResult is task:Error {
-        log:printError("Failed to schedule analytics file rotation task", err = recurringResult.toBalString());
-    } else {
-        lock {
+        AnalyticsFileRotationJob fileRotationJob = new();
+        
+        // Calculate delay until next 12 AM
+        time:Civil delayUntilMidnight = calculateDelayUntilMidnight(time:utcNow());
+        
+        // Schedule recurring execution every 24 hours starting from next midnight
+        task:JobId|task:Error recurringResult = task:scheduleJobRecurByFrequency(fileRotationJob, 86400, maxCount = -1, // make configurable
+            startTime = delayUntilMidnight);
+        if recurringResult is task:Error {
+            log:printError("Failed to schedule analytics file rotation task", err = recurringResult.toBalString());
+        } else {
             fileRotationTaskStarted = true;
-        }
-        string|error delayUntilMidnightString = time:civilToString(delayUntilMidnight);
-        if delayUntilMidnightString is string {
-            log:printInfo(string `Analytics file rotation task scheduled successfully. First run at: ${delayUntilMidnightString}`);
+            string|error delayUntilMidnightString = time:civilToString(delayUntilMidnight);
+            if delayUntilMidnightString is string {
+                log:printInfo(string `Analytics file rotation task scheduled successfully. First run at: ${delayUntilMidnightString}`);
+            }
         }
     }
 }

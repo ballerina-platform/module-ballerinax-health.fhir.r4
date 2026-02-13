@@ -536,7 +536,7 @@ isolated function decodeJWT(string jwt) returns [jwt:Header, jwt:Payload]|error 
 # + dataAttributes - The list of attributes to extract from the JWT payload
 # + jwtPayload - The decoded JWT payload
 # + return - A map containing the extracted analytics data
-isolated function extractAnalyaticsDataFromJWT(string[] dataAttributes, jwt:Payload jwtPayload) returns map<string> {
+isolated function extractAnalyticsDataFromJWT(string[] dataAttributes, jwt:Payload jwtPayload) returns map<string> {
 
     return map from string attrKey in dataAttributes
             where jwtPayload[attrKey] !== ()
@@ -570,7 +570,7 @@ isolated function convertMapToJson(map<string> data) returns json {
 #
 # + return - The file path for analytics log
 isolated function getFilePathBasedOnConfiguration() returns string {
-    if analytics.filePath is "" {
+    if analytics.filePath == "" {
         return LOG_FILE_DIRECTORY;
     } else {
         return analytics.filePath;
@@ -581,7 +581,7 @@ isolated function getFilePathBasedOnConfiguration() returns string {
 # 
 # + return - The file name for analytics log
 isolated function getFileNameBasedOnConfiguration() returns string {
-    if analytics.fileName is "" {
+    if analytics.fileName == "" {
         return LOG_FILE_NAME;
     } else {
         return analytics.fileName;
