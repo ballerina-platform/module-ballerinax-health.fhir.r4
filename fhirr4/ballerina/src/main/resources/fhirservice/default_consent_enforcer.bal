@@ -24,7 +24,7 @@ const string CONTENT_TYPE_JSON = "application/json";
 const string ACCEPT_HEADER = "application/json";
 const string CONSENTS_API_PATH = "/api/v1/consents";
 const string VALIDATE_CONSENT_API_PATH = "/api/v1/consents/validate";
-const string DEFAULT_CONSENT_STATUS = "ACTIVE";
+const string ACTIVE_CONSENT_STATUS = "ACTIVE";
 
 # ConsentEnforcementConfig Record.
 #
@@ -91,7 +91,7 @@ public isolated class DefaultConsentEnforcer {
     # + userIds - Comma-separated user IDs to filter by
     # + consentStatuses - Comma-separated consent statuses to filter by
     # + return - ConsentResponse if successful, or an error if the consent details retrieval fails
-    public isolated function getConsentDetails(string userIds, string consentStatuses = DEFAULT_CONSENT_STATUS) returns ConsentResponse|error {
+    public isolated function getConsentDetails(string userIds, string consentStatuses = ACTIVE_CONSENT_STATUS) returns ConsentResponse|error {
         http:Client? openFgcClient = self.openFgcClient;
         if openFgcClient is () {
             return error("OpenFGC client is not configured");
