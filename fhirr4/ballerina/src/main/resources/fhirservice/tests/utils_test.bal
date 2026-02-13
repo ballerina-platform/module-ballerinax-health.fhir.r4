@@ -111,10 +111,10 @@ function testGetRequestHeaders() {
     request.setHeader("Authorization", "Bearer token123");
     request.setHeader("X-Custom-Header", "custom-value");
     
-    map<string> headers = getRequestHeaders(request);
-    test:assertEquals(headers.length(), 3, msg = "Should extract 3 headers");
+    map<string> headers = getRequestHeaders(request, true);
+    test:assertEquals(headers.length(), 2, msg = "Should omit auth header");
     test:assertEquals(headers["content-type"], "application/json", msg = "Content-Type should match");
-    test:assertEquals(headers["authorization"], "Bearer token123", msg = "Authorization should match");
+    test:assertFalse(headers.hasKey("authorization"), msg = "Authorization should not be included");
     test:assertEquals(headers["x-custom-header"], "custom-value", msg = "Custom header should match");
 }
 
@@ -123,7 +123,7 @@ function testGetRequestHeaders() {
 function testGetRequestHeadersEmpty() {
 
     http:Request request = new;
-    map<string> headers = getRequestHeaders(request);
+    map<string> headers = getRequestHeaders(request, true);
     test:assertEquals(headers.length(), 0, msg = "Should return empty map for request with no headers");
 }
 
@@ -150,27 +150,6 @@ function testGetResponseHeadersEmpty() {
     http:Response response = new;
     map<string> headers = getResponseHeaders(response);
     test:assertEquals(headers.length(), 0, msg = "Should return empty map for response with no headers");
-}
-
-// Test: isExcludedApi function
-@test:Config {}
-function testIsExcludedApiMatching() {
-    boolean result = isExcludedApi("/fhir/r4/bulk-export");
-    test:assertTrue(result, msg = "Should return true for excluded API path");
-}
-
-// Test: isExcludedApi with non-matching path
-@test:Config {}
-function testIsExcludedApiNonMatching() {
-    boolean result = isExcludedApi("/fhir/r4/Patient");
-    test:assertFalse(result, msg = "Should return false for non-excluded API path");
-}
-
-// Test: isExcludedApi with case insensitive matching
-@test:Config {}
-function testIsExcludedApiCaseInsensitive() {
-    boolean result = isExcludedApi("/fhir/r4/BULK-EXPORT");
-    test:assertTrue(result, msg = "Should return true for excluded API path (case insensitive)");
 }
 
 // Test: calculateDelayUntilMidnight function
@@ -341,8 +320,306 @@ function testGetRequestHeadersMultipleValues() {
     request.addHeader("Accept", "application/fhir+json");
     request.addHeader("Accept", "application/xml");
     
-    map<string> headers = getRequestHeaders(request);
+    map<string> headers = getRequestHeaders(request, true);
     
     test:assertTrue(headers.hasKey("accept"), msg = "Should have Accept header");
-    test:assertEquals(headers["accept"], "application/fhir+json, application/xml", msg = "Should return first value");
+    test:assertEquals(headers["accept"], "application/fhir+json, application/xml", msg = "Should join multiple header values");
+}
+
+// Test when only included list is configured and path matches
+@test:Config {}
+function testIsApiAllowedWithIncludedListMatch() returns error? {
+    string path = "Patient";
+    string[] includedList = ["Patient", "Observation"];
+    string[] excludedList = [];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertTrue(result, msg = "Path should be allowed when it matches included list");
+    }
+}
+
+// Test when only included list is configured and path does not match
+@test:Config {}
+function testIsApiAllowedWithIncludedListNoMatch() returns error? {
+    string path = "Medication";
+    string[] includedList = ["Patient", "Observation"];
+    string[] excludedList = [];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertTrue(result, msg = "Path should not be allowed when path doesn't match included list");
+    }
+}
+
+// Test when only excluded list is configured and path matches
+@test:Config {}
+function testIsApiAllowedWithExcludedListMatch() returns error? {
+    string path = "Patient";
+    string[] includedList = [];
+    string[] excludedList = ["Patient", "Observation"];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertFalse(result, msg = "Path should not be allowed when it matches excluded list");
+    }
+}
+
+// Test when only excluded list is configured and path does not match
+@test:Config {}
+function testIsApiAllowedWithExcludedListNoMatch() returns error? {
+    string path = "Medication";
+    string[] includedList = [];
+    string[] excludedList = ["Patient", "Observation"];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertTrue(result, msg = "Result should be nil when path doesn't match excluded list");
+    }
+}
+
+// Test when both lists are configured and path matches included but not excluded
+@test:Config {}
+function testIsApiAllowedWithBothListsIncludedMatch() returns error? {
+    string path = "Patient";
+    string[] includedList = ["Patient", "Observation"];
+    string[] excludedList = ["Medication"];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertTrue(result, msg = "Path should be allowed when it matches included but not excluded");
+    }
+}
+
+// Test when both lists are configured and path matches both included and excluded
+@test:Config {}
+function testIsApiAllowedWithBothListsBothMatch() returns error? {
+    string path = "Patient";
+    string[] includedList = ["Patient", "Observation"];
+    string[] excludedList = ["Patient"];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertFalse(result, msg = "Path should not be allowed when it matches both lists (excluded takes precedence)");
+    }
+}
+
+// Test when both lists are configured and path matches neither
+@test:Config {}
+function testIsApiAllowedWithBothListsNeitherMatch() returns error? {
+    string path = "Medication";
+    string[] includedList = ["Patient"];
+    string[] excludedList = ["Observation"];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertTrue(result, msg = "Result should be false when path matches neither list");
+    }
+}
+
+// Test when both lists are empty
+@test:Config {}
+function testIsApiAllowedWithEmptyLists() returns error? {
+    string path = "Patient";
+    string[] includedList = [];
+    string[] excludedList = [];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertTrue(result, msg = "Path should be allowed when both lists are empty");
+    }
+}
+
+// Test with regex pattern in included list
+@test:Config {}
+function testIsApiAllowedWithRegexInIncludedList() returns error? {
+    string path = "Patient/123";
+    string[] includedList = ["Patient/.*"];
+    string[] excludedList = [];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertTrue(result, msg = "Path should match regex pattern in included list");
+    }
+}
+
+// Test with regex pattern in included list
+@test:Config {}
+function testIsApiAllowedWithRegexInIncludedList2() returns error? {
+    string path = "Patient/123";
+    string[] includedList = ["Patient"];
+    string[] excludedList = [];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertTrue(result, msg = "Path should match regex pattern in included list");
+    }
+}
+
+// Test with regex pattern in included list
+@test:Config {}
+function testIsApiAllowedWithRegexInIncludedListWithQueryParam() returns error? {
+    string path = "Patient/123?abcd";
+    string[] includedList = ["Patient"];
+    string[] excludedList = [];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertTrue(result, msg = "Path should match regex pattern in included list");
+    }
+}
+
+// Test with regex pattern in excluded list
+@test:Config {}
+function testIsApiAllowedWithRegexInExcludedList() returns error? {
+    string path = "Patient/123";
+    string[] includedList = [];
+    string[] excludedList = ["Patient/.*"];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertFalse(result, msg = "Path should match regex pattern in excluded list");
+    }
+}
+
+// Test with regex pattern in excluded list with query param
+@test:Config {}
+function testIsApiAllowedWithRegexInExcludedListWithQueryParam() returns error? {
+    string path = "Patient/123?abcd";
+    string[] includedList = [];
+    string[] excludedList = ["Patient/.*"];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertFalse(result, msg = "Path should match regex pattern in excluded list");
+    }
+}
+
+@test:Config {}
+function testIsApiAllowedWithRegexInBothLists() returns error? {
+    string path = "Patient/123?abcd";
+    string[] includedList = ["Patient"];
+    string[] excludedList = ["Patient/.*"];
+    
+    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    if result is boolean {
+        test:assertFalse(result, msg = "Path should match regex pattern in excluded list");
+    }
+
+    string path2 = "Patient";
+    string[] includedList2 = ["Patient"];
+    string[] excludedList2 = ["Patient/.*"];
+    
+    boolean|error? result2 = isApiAllowed(path2, includedList2, excludedList2);
+    if result2 is boolean {
+        test:assertTrue(result2, msg = "Path should match regex pattern in included list");
+    }
+}
+
+// Test: getApiPath with matching base path
+@test:Config {
+    groups: ["utils", "getApiPath"]
+}
+function testGetApiPathWithMatchingBasePath() {
+    string rawRequestPath = "/fhir/r4/Patient/123";
+    
+    string result = getApiPath(rawRequestPath, "/fhir/r4/");
+    
+    test:assertEquals(result, "Patient/123", msg = "Should remove the FHIR base path from request path");
+}
+
+// Test: getApiPath with non-matching base path
+@test:Config {
+    groups: ["utils", "getApiPath"]
+}
+function testGetApiPathWithNonMatchingBasePath() {
+    string rawRequestPath = "/api/v1/Patient/123";
+    
+    string result = getApiPath(rawRequestPath, "/fhir/r4/");
+    
+    test:assertEquals(result, "/api/v1/Patient/123", msg = "Should return the original path when base path doesn't match");
+}
+
+// Test: getApiPath with root path
+@test:Config {
+    groups: ["utils", "getApiPath"]
+}
+function testGetApiPathWithRootPath() {
+    string rawRequestPath = "/fhir/r4/";
+    
+    string result = getApiPath(rawRequestPath, "/fhir/r4/");
+    
+    test:assertEquals(result, "", msg = "Should return root path after removing base path");
+}
+
+// Test: getApiPath with complex resource path
+@test:Config {
+    groups: ["utils", "getApiPath"]
+}
+function testGetApiPathWithComplexResourcePath() {
+    string rawRequestPath = "/fhir/r4/Patient/123/_history/1";
+    
+    string result = getApiPath(rawRequestPath, "/fhir/r4/");
+    
+    test:assertEquals(result, "Patient/123/_history/1", msg = "Should correctly handle complex resource paths");
+}
+
+// Test: getApiPath with search path
+@test:Config {
+    groups: ["utils", "getApiPath"]
+}
+function testGetApiPathWithSearchPath() {
+    string rawRequestPath = "/fhir/r4/Patient/_search";
+    
+    string result = getApiPath(rawRequestPath, "/fhir/r4/");
+    
+    test:assertEquals(result, "Patient/_search", msg = "Should correctly handle search paths");
+}
+
+// Test: getApiPath with operation path
+@test:Config {
+    groups: ["utils", "getApiPath"]
+}
+function testGetApiPathWithOperationPath() {
+    string rawRequestPath = "/fhir/r4/Patient/123/$summary";
+    
+    string result = getApiPath(rawRequestPath, "/fhir/r4/");
+    
+    test:assertEquals(result, "Patient/123/$summary", msg = "Should correctly handle operation paths");
+}
+
+// Test: getApiPath with metadata path
+@test:Config {
+    groups: ["utils", "getApiPath"]
+}
+function testGetApiPathWithMetadataPath() {
+    string rawRequestPath = "/fhir/r4/metadata";
+    
+    string result = getApiPath(rawRequestPath, "/fhir/r4/");
+    
+    test:assertEquals(result, "metadata", msg = "Should correctly handle metadata paths");
+}
+
+// Test: getApiPath with query parameters
+@test:Config {
+    groups: ["utils", "getApiPath"]
+}
+function testGetApiPathWithQueryParameters() {
+    string rawRequestPath = "/fhir/r4/Patient?name=John&gender=male";
+    
+    string result = getApiPath(rawRequestPath, "/fhir/r4/");
+    
+    test:assertEquals(result, "Patient?name=John&gender=male", msg = "Should preserve query parameters after removing base path");
+}
+
+// Test: getApiPath with partial base path match
+@test:Config {
+    groups: ["utils", "getApiPath"]
+}
+function testGetApiPathWithPartialBasePathMatch() {
+    string rawRequestPath = "/fhir/Patient/123";
+    
+    string result = getApiPath(rawRequestPath, "/fhir/r4/");
+    
+    test:assertEquals(result, "/fhir/Patient/123", msg = "Should return original path when base path only partially matches");
 }

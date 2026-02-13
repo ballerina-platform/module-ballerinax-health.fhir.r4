@@ -21,64 +21,142 @@ import ballerina/time;
 import ballerinax/health.fhir.r4;
 import ballerina/file;
 
-# AnalyticsResponseInterceptor is an HTTP response interceptor that writes analytics data to "cms-analytics.log" file.
+configurable AnalyticsConfig analytics = {
+    enabled: true,
+    fhirServerContext: "/fhir/r4/",
+    jwtAttributes : [
+        "client_id",
+        "iss"
+    ],
+    shouldPublishPayloads: false,
+    filePath: "log", 
+    fileName: "fhir-analytics",
+    allowedApiResources: [],
+    excludedApiResources: [],
+    enrichPayload: {
+        enabled: false,
+        url: "",
+        username: "",
+        password: ""
+    }
+};
+
+configurable AnalyticsPayloadEnrich analyticsPayloadEnrichConfig = {
+    enabled: false,
+    url: "",
+    username: "",
+    password: ""
+};
+
+# AnalyticsResponseInterceptor is an HTTP response interceptor that writes analytics data to "fhir-analytics.log" file.
 isolated service class AnalyticsResponseInterceptor {
     *http:ResponseInterceptor;
 
+    private http:Client|http:ClientError? enrichmentHttpClient;
+    
     # Initializes file rotator.
     #
     # + apiConfig - The API configuration
-    function init(r4:ResourceAPIConfig apiConfig) {
+    isolated function init(r4:ResourceAPIConfig apiConfig) {
         
         if analytics.enabled {
-            string logFilePath = analytics.analyticsFilePath + "/" + logFileName;
-            // Check if logs directory exists, create if not
-            boolean|error? fileExists = isFileExist(logFilePath);
-            if fileExists is boolean && !fileExists {
-                error? creationError = file:create(logFilePath);
-                if creationError is error {
-                    log:printError(string `Configured directory ${analytics.analyticsFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`);
-                    return;
+            if analytics.enrichPayload is AnalyticsPayloadEnrich && analytics.enrichPayload?.enabled == true {
+                lock {
+                    self.enrichmentHttpClient = initializeEnrichmentHttpClient();
+                    if self.enrichmentHttpClient is http:ClientError || self.enrichmentHttpClient is () {
+                        log:printWarn("Failed to initialize enrichment HTTP client. ");
+                    }
                 }
+            }
+
+            error? fileCreateError = createFileIfNotExist();
+            if fileCreateError is error {
+                log:printError("Failed to create log file.", fileCreateError);
+                return;
             }
             // Initialize the file rotator
             initFileRotator();
         }
-        return;
     }
 
     remote isolated function interceptResponse(http:RequestContext ctx, http:Request req, http:Response res) returns http:NextService|error? {
         
         //check excluded APIs from config and skip analytics writing
-        if isExcludedApi(req.rawPath) {
+        boolean|error? isApiAllowedResult = isApiAllowed(getApiPath(req.rawPath, analytics.fhirServerContext), analytics.allowedApiResources, analytics.excludedApiResources);
+        if isApiAllowedResult is boolean {
+            if isApiAllowedResult == false {
+                return ctx.next();
+            }
+        } else {
+            log:printDebug("Error while validating API for analytics writing.", isApiAllowedResult);
             return ctx.next();
         }
-
-        map<string> requestHeaders = getRequestHeaders(req);
-        map<string> responseHeaders = getResponseHeaders(res);
-        json|http:ClientError requestPayload = req.getJsonPayload();
-        json|http:ClientError responsePayload = res.getJsonPayload();
-        int statusCode = res.statusCode;
-        string requestPath  = req.rawPath;
 
         string|error xJWT = req.getHeader(X_JWT_HEADER);
         if xJWT is error {
-            log:printWarn(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Missing x-jwt-assertion header.`);
-            return ctx.next();
+            log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Missing x-jwt-assertion header.`, err = xJWT.toBalString());
+            return ctx.next(); // skip this if header is not present
         }
 
-        // Write analytics data asynchronously
-        log:printDebug(`[AnalyticsResponseInterceptor] Writing analytics data using the analytics writer.`);
-        future<error?> _ = start writeAnalyticsData(requestHeaders.cloneReadOnly(), requestPayload.clone(), responseHeaders.cloneReadOnly(), responsePayload.clone(), statusCode, requestPath.cloneReadOnly(), req.method);
-        return ctx.next();
+        AnalyticsDataRecord|http:NextService|error? dataToWrite = construcAnalyticsDataRecord(ctx, req, res);
+        if dataToWrite is http:NextService || dataToWrite is error {
+            if dataToWrite is error {
+                log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error constructing analytics data record.`, err = dataToWrite.toBalString());
+            }
+            return dataToWrite;
+        }
+
+        if dataToWrite is AnalyticsDataRecord {
+            // Write analytics data asynchronously
+            log:printDebug(`[AnalyticsResponseInterceptor] Writing analytics data using the analytics writer.`);
+            future<error?> _ = start writeAnalyticsDataToFile(dataToWrite);
+            return ctx.next();
+        }
+        return;
     }
 }
 
-public isolated function writeAnalyticsData(map<string> requestHeaders, json|http:ClientError requestPayload, 
-                                map<string> responseHeaders, json|http:ClientError responsePayload, int statusCode, 
-                                string requestPath, string httpMethod) returns error? {
+public isolated function construcAnalyticsDataRecord(http:RequestContext ctx, http:Request req, http:Response res) returns AnalyticsDataRecord|http:NextService|error? {
 
-    string jwt = requestHeaders.get(X_JWT_HEADER);
+    map<string> & readonly requestHeaders = getRequestHeaders(req, true);
+    map<string> & readonly responseHeaders = getResponseHeaders(res);
+    int statusCode = res.statusCode;
+    string requestPath  = req.rawPath;
+
+    if analytics.shouldPublishPayloads {
+        (json|http:ClientError) & readonly requestPayload = req.getJsonPayload().cloneReadOnly();
+        if requestPayload is http:ClientError {
+            log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read request payload.`, err = requestPayload.toBalString());
+            return ctx.next(); // skip this if we can't read the payload
+        }
+        (json|http:ClientError) & readonly responsePayload = res.getJsonPayload().cloneReadOnly();
+        if responsePayload is http:ClientError {
+            log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read response payload.`, err = responsePayload.toBalString());
+            return ctx.next(); // skip this if we can't read the payload
+        }
+
+        return {
+            requestHeaders: requestHeaders,
+            responseHeaders: responseHeaders,
+            statusCode: statusCode,
+            requestPath: requestPath,
+            httpMethod: req.method,
+            requestPayload: requestPayload,
+            responsePayload: responsePayload
+        };
+    }
+    return {
+        requestHeaders: requestHeaders,
+        responseHeaders: responseHeaders,
+        statusCode: statusCode,
+        requestPath: requestPath,
+        httpMethod: req.method
+    };
+}
+
+public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsDataRecord) returns error? { // check clientError
+
+    string jwt = analyticsDataRecord.requestHeaders.get(X_JWT_HEADER);
     
     [jwt:Header, jwt:Payload]|error decodedJWT = decodeJWT(jwt);
     if decodedJWT is error {
@@ -87,52 +165,52 @@ public isolated function writeAnalyticsData(map<string> requestHeaders, json|htt
     }
     [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
 
-    map<string> analyticsData = extractAnalyaticsDataFromJWT(analytics.jwtAttributes, payload);
-    json requestHeadersJson = convertMapToJson(requestHeaders);
-    json responseHeadersJson = convertMapToJson(responseHeaders);
+    map<string> analyticsDataFromJwt = extractAnalyaticsDataFromJWT(analytics.jwtAttributes, payload);
+    json requestHeadersJson = convertMapToJson(analyticsDataRecord.requestHeaders); // remove auth header // make configurable // consider record
+    json responseHeadersJson = convertMapToJson(analyticsDataRecord.responseHeaders);
+    string? fhirUser = extractFhirUserFromJWT(payload);
 
-    // If analytics data enrichment is enabled, fetch and add to analytics data
-    if analytics.enrichAnalyticsPayload is AnalyticsPayloadEnrich && analytics.enrichAnalyticsPayload?.enabled == true {
-        enrichAnalyticsData(analyticsData);
+    // Enrich payload is only available if the payload publishing is enabled.
+    if analytics.shouldPublishPayloads == true {
+        // If analytics data enrichment is enabled, fetch and add to analytics data
+        if analytics.enrichPayload is AnalyticsPayloadEnrich && analytics.enrichPayload?.enabled == true {
+            enrichAnalyticsData(analyticsDataFromJwt);
+        }
     }
 
     // Construct the analytics data record
     Request request = {
         time: time:utcToString(time:utcNow()),
-        uri: requestPath,
-        verb: httpMethod,
+        uri: analyticsDataRecord.requestPath,
+        verb: analyticsDataRecord.httpMethod,
         headers: requestHeadersJson
     };
 
     Response response = {
         time: time:utcToString(time:utcNow()),
         headers: responseHeadersJson,
-        status: statusCode
+        status: analyticsDataRecord.statusCode
     };
+    request.body = analyticsDataRecord?.requestPayload;
+    response.body = analyticsDataRecord?.responsePayload;
 
-    // Decide payload analytics based on config
-    if analytics.shouldPublishPayloads && requestPayload !is http:ClientError && responsePayload !is http:ClientError {
-        json requestPayloadJson = requestPayload;
-        json responsePayloadJson = responsePayload;
-        request.body = requestPayloadJson;
-        response.body = responsePayloadJson;
-    } else {
-        log:printDebug("Payload publishing is disabled");
-    }
-
-    AnalyticsData analyticsDataRecord = {
+    AnalyticsData analyticsData = {
         request: request,
         response: response,
-        metadata: analyticsData
+        metadata: analyticsDataFromJwt
     };
 
+    if fhirUser is string {
+        analyticsData.user_id = fhirUser;
+    }
+
     // Convert analytics data to JSON string
-    json analyticsJson = analyticsDataRecord.toJson();
+    json analyticsJson = analyticsData.toJson();
     string logLine = analyticsJson.toJsonString() + "\n";
-    string logFilePath = analytics.analyticsFilePath + "/" + logFileName;
+    string logFilePath = getFilePathBasedOnConfiguration() + file:pathSeparator + getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION;
     
     // Flow won't come to this point if we don't have a file to write to. Hence no checking required.
     check writeDataToFile(logFilePath, logLine);
-    log:printDebug(string `Successfully wrote the analytics data to file: ${logFileName}`);
+    log:printDebug(string `Successfully wrote the analytics data to file: ${getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION}`);
     return;
 }

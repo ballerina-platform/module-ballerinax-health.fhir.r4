@@ -19,6 +19,7 @@ import ballerina/time;
 import ballerina/file;
 import ballerina/io;
 import ballerina/jwt;
+import ballerina/lang.regexp;
 
 isolated http:Client? conditionalInvokationClient = ();
 
@@ -233,8 +234,10 @@ isolated function validateOperationConfigs(r4:ResourceAPIConfig apiConfig) retur
 # Retrieves all headers from an HTTP request
 #
 # + request - The HTTP request object
+# + excludeAuthHeader - A boolean flag indicating whether to exclude the Authorization header from the result
+# 
 # + return - A map containing all header names as keys and their first values as strings
-isolated function getRequestHeaders(http:Request request) returns map<string> {
+isolated function getRequestHeaders(http:Request request, boolean excludeAuthHeader) returns map<string> & readonly {
     
     map<string> headers = {};
     string[] headerNames = request.getHeaderNames();
@@ -243,6 +246,12 @@ isolated function getRequestHeaders(http:Request request) returns map<string> {
         string[]|http:HeaderNotFoundError headerValues = request.getHeaders(headerName);
         if headerValues is string[] && headerValues.length() > 0 {
             string lowerCaseHeaderName = headerName.toLowerAscii();
+
+            // Skip authorization header if exists
+            if excludeAuthHeader && lowerCaseHeaderName == AUTHORIZATION_HEADER {
+                continue;
+            }
+
             if headerValues.length() == 1 {
                 headers[lowerCaseHeaderName] = headerValues[0];
             } else {
@@ -251,14 +260,14 @@ isolated function getRequestHeaders(http:Request request) returns map<string> {
             }
         }
     }
-    return headers;
+    return headers.cloneReadOnly();
 }
 
 # Retrieves all headers from an HTTP response
 #
 # + response - The HTTP response object
 # + return - A map containing all header names as keys and their values as strings
-isolated function getResponseHeaders(http:Response response) returns map<string> {
+isolated function getResponseHeaders(http:Response response) returns map<string> & readonly {
     
     map<string> headers = {};
     string[] headerNames = response.getHeaderNames();
@@ -275,7 +284,7 @@ isolated function getResponseHeaders(http:Response response) returns map<string>
             }
         }
     }
-    return headers;
+    return headers.cloneReadOnly();
 }
 
 # Retrieves more information from the configured URL
@@ -299,7 +308,7 @@ isolated function getAnalyticsEnrichmentData(json data, http:Client|http:ClientE
                 return {};
             }
         } else {
-            log:printError(`[AnalyticsResponseInterceptor] Failed to fetch analytics enrichment data from ${analytics.enrichAnalyticsPayload?.url} [Error]: ${result.toString()}`);
+            log:printError(`[AnalyticsResponseInterceptor] Failed to fetch analytics enrichment data from ${analytics.enrichPayload?.url}. Make sure the URL is correct and the service is reachable. [Error]: ${result.toString()}`);
             return {};
         }
     }
@@ -312,9 +321,9 @@ isolated function enrichAnalyticsData(map<string> analyticsData) {
     
     http:Client|http:ClientError? dataEnrichHttpClient;
 
-    final string? enrichAnalyticsDataUrl = analytics.enrichAnalyticsPayload?.url;
-    final string? username = analytics.enrichAnalyticsPayload?.username;
-    final string? password = analytics.enrichAnalyticsPayload?.password;
+    final string? enrichAnalyticsDataUrl = analytics.enrichPayload?.url;
+    final string? username = analytics.enrichPayload?.username;
+    final string? password = analytics.enrichPayload?.password;
 
     if enrichAnalyticsDataUrl is () {
         dataEnrichHttpClient = ();
@@ -329,7 +338,7 @@ isolated function enrichAnalyticsData(map<string> analyticsData) {
 
     if dataEnrichHttpClient !is http:ClientError && dataEnrichHttpClient is http:Client {
         json enrichmentData = getAnalyticsEnrichmentData(analyticsData.toJson(), dataEnrichHttpClient);
-        log:printDebug(`[AnalyticsResponseInterceptor] Analytics enrichment data fetched from: ${analytics.enrichAnalyticsPayload?.url} [Enrichment Data]: ${enrichmentData.toString()}`);
+        log:printDebug(`[AnalyticsResponseInterceptor] Analytics enrichment data fetched from: ${analytics.enrichPayload?.url} [Enrichment Data]: ${enrichmentData.toString()}`);
         if enrichmentData is map<json> {
             foreach var [key, value] in enrichmentData.entries() {
                 analyticsData[key] = value.toString();
@@ -340,12 +349,36 @@ isolated function enrichAnalyticsData(map<string> analyticsData) {
     }
 }
 
+# Initialize the HTTP client for fetching analytics enrichment data based on the configuration
+# 
+# + return - An initialized HTTP client or an error if the client could not be created
+isolated function initializeEnrichmentHttpClient() returns http:Client?|http:ClientError? {
+    http:Client?|http:ClientError? dataEnrichHttpClient;
+
+    final string? enrichAnalyticsDataUrl = analytics.enrichPayload?.url;
+    final string? username = analytics.enrichPayload?.username;
+    final string? password = analytics.enrichPayload?.password;
+
+    if enrichAnalyticsDataUrl is () {
+        dataEnrichHttpClient = ();
+    } else if username !is () && password !is () {
+        dataEnrichHttpClient = new (enrichAnalyticsDataUrl, auth = {
+            username: username,
+            password: password
+        });
+    } else {
+        dataEnrichHttpClient = new (enrichAnalyticsDataUrl);
+    }
+    return dataEnrichHttpClient;
+}
+
 
 # Calculate the delay until the next midnight and return it as a time:Civil value
 # 
 # + currentUtc - The current time in UTC
 # + return - The time:Civil value representing the next midnight
 isolated function calculateDelayUntilMidnight(time:Utc currentUtc) returns time:Civil {
+    
     time:Utc nextDayUtc = time:utcAddSeconds(currentUtc, 86400);
     time:Civil nextDayCivil = time:utcToCivil(nextDayUtc);
 
@@ -372,18 +405,103 @@ isolated function isFileExist(string requestPath) returns boolean|error? {
     return file:test(requestPath, file:EXISTS);
 }
 
-# Check if the request path matches any of the excluded APIs for analytics
-#
-# + requestPath - the API request path
-# + return - true if the request path matches any of the excluded APIs, false otherwise
-isolated function isExcludedApi(string requestPath) returns boolean {
+isolated function isApiAllowed(string path, string[] includedList, string[] excludedList) returns boolean|error? {
     
-    foreach string excludedApi in analytics.excludedApis {
-        if requestPath.toLowerAscii().includes(excludedApi.toLowerAscii()) {
-            log:printWarn(`[AnalyticsResponseInterceptor] Request path ${requestPath} is excluded from analytics. 
-                                                                                    Skipping analytics data writing.`);
+    // If only included list is configured
+    if (includedList.length() > 0 && excludedList.length() == 0) {
+        // check included list and return
+        foreach string item in includedList {
+            string:RegExp pattern = check regexp:fromString(item);
+            // return true at the earliest match found in the included list
+            if (!path.matches(pattern)) {
+                continue;
+            } else {
+                return true;
+            }
+        }
+    }
+
+    // If only included list is configured
+    if (includedList.length() == 0 && excludedList.length() > 0) {
+        // check excluded list and return
+        foreach string item in excludedList {
+            string:RegExp pattern = check regexp:fromString(item);
+            // return true at the earliest match found in the excluded list
+            if (path.matches(pattern)) {
+                return false;
+            } else {
+                continue;
+            }
+        }
+    }
+
+    if (includedList.length() > 0 && excludedList.length() > 0) {
+
+        boolean pathMatchesInIncludedList = false;
+        boolean pathMatchesInExcludedList = false;
+
+        // check existance in included list
+        foreach string item in includedList {
+            string:RegExp includedPattern = check regexp:fromString(item);
+            if (path.matches(includedPattern)) {
+                pathMatchesInIncludedList = true;
+                break;
+            }
+        }
+
+        // check existance in excluded list
+        foreach string item in excludedList {
+            string:RegExp excludedPattern = check regexp:fromString(item);
+            if (path.matches(excludedPattern)) {
+                pathMatchesInExcludedList = true;
+                break;
+            }
+        }
+
+        // If path matches in both lists, don't allow
+        if pathMatchesInExcludedList && pathMatchesInIncludedList {
+            return false;
+        } else if pathMatchesInIncludedList {
+            return true;
+        } else if pathMatchesInExcludedList {
+            return false;
+        } else {
+            // If path doesn't match in both lists, allow by default
             return true;
         }
+    }
+    return true;
+}
+
+# Remove the FHIR base path from the request path to get the API context for analytics validation
+# 
+# + rawRequestPath - The raw request path from the HTTP request
+# + configuredBasePath - The configured base path for the FHIR server
+# + return - The API context path after removing the FHIR base path
+isolated function getApiPath(string rawRequestPath, string configuredBasePath) returns string {
+
+    if configuredBasePath != "" && rawRequestPath.startsWith(configuredBasePath) {
+        return rawRequestPath.substring(configuredBasePath.length());
+    }
+    return rawRequestPath;
+}
+
+
+# Check if the request path matches the excluded/allowed API contexts regex pattern for analytics exclusion/allowance
+# 
+# + 'resource - the API request path
+# + configuredRegexPattern - the regex pattern to match against the request path
+# + return - true if the request path matches the regex pattern, false otherwise
+isolated function isValidRegex(string 'resource, string configuredRegexPattern) returns boolean|error? {
+
+    string:RegExp|error? pattern = regexp:fromString(configuredRegexPattern);
+    
+    if pattern is error {
+        log:printError(string `[AnalyticsResponseInterceptor] Invalid regex pattern provided for excluded API context regex: ${configuredRegexPattern}. Error: ${pattern.message()}`);
+        return pattern;
+    }
+    if pattern !is () {
+        return 'resource.matches(pattern);
     }
     return false;
 }
@@ -419,6 +537,15 @@ isolated function extractAnalyaticsDataFromJWT(string[] dataAttributes, jwt:Payl
             select [attrKey, jwtPayload[attrKey].toString()];
 }
 
+# Extract analytics data from the decoded JWT based on the configured attributes
+#
+# + jwtPayload - The decoded JWT payload
+# + return - A map containing the extracted analytics data
+isolated function extractFhirUserFromJWT(jwt:Payload jwtPayload) returns string? {
+
+    return jwtPayload["fhirUser"].toString();
+}
+
 # Convert a map to a JSON object
 #
 #  + data - The map to convert to JSON
@@ -427,4 +554,72 @@ isolated function convertMapToJson(map<string> data) returns json {
     
     return map from string headerKey in data.keys()
             select [headerKey, data[headerKey].toString()];
+}
+
+# Get the file path for analytics log based on the configuration, if not configured, return the default path
+#
+# + return - The file path for analytics log
+isolated function getFilePathBasedOnConfiguration() returns string {
+    if analytics.filePath is "" {
+        return LOG_FILE_DIRECTORY;
+    } else {
+        return analytics.filePath;
+    }
+}
+
+# Get the file name for analytics log based on the configuration, if not configured, return the default file name
+# 
+# + return - The file name for analytics log
+isolated function getFileNameBasedOnConfiguration() returns string {
+    if analytics.fileName is "" {
+        return LOG_FILE_NAME;
+    } else {
+        return analytics.fileName;
+    }
+}
+
+# Check whether the configured path directory and file exists and if not handle and create them gracefully.
+# 
+# + return - An error if the directory or file creation fails, otherwise returns nothing
+isolated function createFileIfNotExist() returns error? {
+   
+   string logFilePath = getFilePathBasedOnConfiguration();
+   string logFileName = getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION;
+   string logFileFullPath = logFilePath + file:pathSeparator + logFileName;
+
+   boolean|error? dirExists = file:test(logFilePath, file:EXISTS);
+    if dirExists is error {
+        log:printError("Error checking analytics log directory existence at " + logFilePath, err = dirExists.toBalString());
+        return dirExists;
+    } else {
+        if dirExists is boolean && !dirExists {
+            file:Error? dir = file:createDir(logFilePath, file:RECURSIVE);
+            if dir is file:Error {
+                log:printError(string `Failed to create directory for analytics logs at ${logFilePath}. Analytics data will not be written.`, err = dir.toBalString());
+                return dir;
+            }
+            log:printDebug(string `Directory ${logFilePath} created`);
+            error? creationError = file:create(logFileFullPath);
+            if creationError is error {
+                log:printError(string `Configured directory ${logFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`, err = creationError.toBalString());
+                return creationError;
+            }
+            log:printDebug(string `File ${logFileName} created successfully inside directory ${logFilePath}`);
+        } else {
+            boolean|error? fileExists = isFileExist(logFileFullPath);
+            if fileExists is error {
+                log:printError(string `Error checking analytics log file existence at ${logFileFullPath}`, err = fileExists.toBalString());
+                return fileExists;
+            } else {
+                if fileExists is boolean && !fileExists { // check and create directory and proceed
+                    error? creationError = file:create(logFileFullPath);
+                    if creationError is error {
+                        log:printError(string `Configured directory ${logFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`, err = creationError.toBalString()); //terminate
+                        return creationError;
+                    }
+                    log:printDebug(string `File ${logFileName} created successfully inside directory ${logFilePath}`);
+                }
+            }
+        }
+    }
 }

@@ -19,6 +19,9 @@ import ballerina/task;
 import ballerina/time;
 import ballerina/log;
 
+// Flag to track if the file rotation task is already started
+isolated boolean fileRotationTaskStarted = false;
+
 // File rotation job implementation
 class AnalyticsFileRotationJob {
     *task:Job;
@@ -31,17 +34,28 @@ class AnalyticsFileRotationJob {
 // Initialize log rotator to run daily at 12 AM
 public isolated function initFileRotator() {
     
+    // Check if task is already started
+    lock {
+        if fileRotationTaskStarted {
+            log:printDebug("Analytics file rotation task is already started. Skipping initialization.");
+            return;
+        }
+    }
+    
     AnalyticsFileRotationJob fileRotationJob = new();
     
     // Calculate delay until next 12 AM
     time:Civil delayUntilMidnight = calculateDelayUntilMidnight(time:utcNow());
     
     // Schedule recurring execution every 24 hours starting from next midnight
-    task:JobId|task:Error recurringResult = task:scheduleJobRecurByFrequency(fileRotationJob, 86400, maxCount = -1, 
+    task:JobId|task:Error recurringResult = task:scheduleJobRecurByFrequency(fileRotationJob, 10, maxCount = -1, // make configurable
         startTime = delayUntilMidnight);
     if recurringResult is task:Error {
         log:printError("Failed to schedule analytics file rotation task", err = recurringResult.toBalString());
     } else {
+        lock {
+            fileRotationTaskStarted = true;
+        }
         string|error delayUntilMidnightString = time:civilToString(delayUntilMidnight);
         if delayUntilMidnightString is string {
             log:printInfo(string `Analytics file rotation task scheduled successfully. First run at: ${delayUntilMidnightString}`);
@@ -56,13 +70,13 @@ isolated function rotateAnalyticsDataFile() {
     time:Utc utc = time:utcAddSeconds(time:utcNow(), -86400);
     string date = time:utcToString(utc).substring(0, 10); // YYYY-MM-DD format
     
-    string currentLogFile = analytics.analyticsFilePath + "/" + logFileName;
-    string rotatedLogFile = analytics.analyticsFilePath + "/cms-analytics-" + date + ".log";
+    string currentLogFile = analytics.filePath + file:pathSeparator + getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION;
+    string rotatedLogFile = analytics.filePath + file:pathSeparator + getFileNameBasedOnConfiguration() + "-" + date + LOG_FILE_EXTENSION;
     
     // Check if the current log file exists
     boolean|error fileExists = file:test(currentLogFile, file:EXISTS);
     
-    if fileExists is boolean {
+    if fileExists is boolean { // do early error handle
         if fileExists {
             // Rename the current log file with the date
             error? renamingError = file:rename(currentLogFile, rotatedLogFile);

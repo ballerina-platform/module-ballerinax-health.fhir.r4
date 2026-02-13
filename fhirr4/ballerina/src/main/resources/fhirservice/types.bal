@@ -1,5 +1,5 @@
 // Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com).
-
+//
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
@@ -16,7 +16,10 @@
 
 const X_JWT_HEADER = "x-jwt-assertion";
 final string rotationErrorMessage = "Error rotating analytics log file";
-final string logFileName = "cms-analytics.log";
+const LOG_FILE_NAME = "fhir-analytics";
+const LOG_FILE_EXTENSION = ".log";
+const LOG_FILE_DIRECTORY = "resources";
+const AUTHORIZATION_HEADER = "authorization";
 
 # Represents a FHIR service type
 public type Service distinct service object{};
@@ -78,15 +81,20 @@ public type AnalyticsData record {|
 # + enabled - if analytics is enabled or not
 # + jwtAttributes - the attributes that should be extracted from JWT for analytics
 # + shouldPublishPayloads - whether to include request/response payloads in analytics
-# + analyticsFilePath - the file path where analytics logs are stored
-# + excludedApis - list of API paths to exclude from analytics
+# + filePath - the file path where analytics logs are stored, if not configured, defaults to the server's directory
+# + fileName - the name of the analytics log file
+# + allowedApiContexts - list of API paths to include for analytics
+# + excludedApiContexts - list of API paths to exclude from analytics
 public type AnalyticsConfig readonly & record {|
     boolean enabled = false;
-    string[] jwtAttributes = ["fhirUser", "client_id", "iss"];
+    string fhirServerContext;
+    string[] jwtAttributes;
     boolean shouldPublishPayloads = false;
-    string analyticsFilePath = "/logs/";
-    string[] excludedApis = ["bulk-export"];
-    AnalyticsPayloadEnrich enrichAnalyticsPayload?;
+    string filePath;
+    string fileName;
+    string[] allowedApiResources;
+    string[] excludedApiResources;
+    AnalyticsPayloadEnrich enrichPayload?;
 |};
 
 # MoreInfoConfig Record.
@@ -100,4 +108,14 @@ public type AnalyticsPayloadEnrich readonly & record {|
     string url?;
     string username?;
     string password?;
+|};
+
+public type AnalyticsDataRecord readonly & record {|
+    map<string> requestHeaders;
+    json requestPayload?;
+    map<string> responseHeaders;
+    json  responsePayload?;
+    int statusCode;
+    string requestPath;
+    string httpMethod;
 |};
