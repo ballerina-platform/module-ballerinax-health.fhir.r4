@@ -12,6 +12,7 @@
 // under the License.
 
 import ballerina/http;
+import ballerina/lang.regexp;
 import ballerina/log;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.ips;
@@ -236,18 +237,23 @@ isolated function validateOperationConfigs(r4:ResourceAPIConfig apiConfig) retur
 isolated function resolvePatientID(string fhirResourceType, http:Request httpRequest) returns string? {
     string? patientId = ();
 
-    // First, try to extract from path (e.g., Patient/PATIENT_ID/$export)
+    // First, try to extract from path
+    // Handles multiple scenarios:
+    // - Patient/001 (Standard Resource ID)
+    // - Patient/001/Observation (Patient Compartment)
+    // - Patient/001$everything (Instance Operation)
+    // - Patient/$export (Type-level Operation - no ID)
+    // - Patient/_history (Interaction - no ID)
     // The path ID is only a patient ID if the resource type is Patient
     if fhirResourceType == PATIENT_RESOURCE {
         string rawPath = httpRequest.rawPath;
-        if rawPath.includes(fhirResourceType + "/") {
-            int? indexResult = rawPath.indexOf(fhirResourceType + "/");
-            if indexResult is int {
-                int startIdx = indexResult + fhirResourceType.length() + 1;
-                int? endIdxResult = rawPath.indexOf("/$", startIdx);
-                if endIdxResult is int && endIdxResult > startIdx {
-                    patientId = rawPath.substring(startIdx, endIdxResult);
-                }
+        // Use regex to extract patient ID from path
+        // Pattern: Patient/{id} where id doesn't start with $ or _ and ends at /, $, or end of string
+        regexp:Groups? groups = re `Patient/([^/$_][^/$]*)`.findGroups(rawPath);
+        if groups is regexp:Groups && groups.length() > 1 {
+            regexp:Span? idGroup = groups[1];
+            if idGroup is regexp:Span {
+                patientId = rawPath.substring(idGroup.startIndex, idGroup.endIndex);
             }
         }
         log:printDebug("Extracted patient ID from path: " + (patientId ?: "not found").toString());

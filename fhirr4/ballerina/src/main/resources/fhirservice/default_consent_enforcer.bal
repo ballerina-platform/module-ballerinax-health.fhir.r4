@@ -139,7 +139,7 @@ public isolated class DefaultConsentEnforcer {
 
         http:Response res = check openFgcClient->post(VALIDATE_CONSENT_API_PATH, payload, headers = headers);
         json responsePayload = check res.getJsonPayload();
-        log:printDebug(string `Validation response: ${responsePayload.toString()}`);
+        log:printDebug(string `Validation response: ${responsePayload.toJsonString()}`);
 
         // Parse the JSON response to ConsentValidationResponse model
         ConsentValidationResponse validationResponse = check responsePayload.fromJsonWithType();
@@ -175,13 +175,13 @@ public isolated class DefaultConsentEnforcer {
             foreach Consent consent in consentData {
                 string? consentId = consent.id;
                 if consentId is () {
-                    continue;
+                    return error("Consent record is missing consent ID");
                 }
                 ConsentValidationResponse|error validationResult = self.validateConsent(consentId);
 
                 if validationResult is error {
                     log:printError(string `Error validating consent ${consentId}: ${validationResult.message()}`);
-                    continue;
+                    return error(string `Error validating consent ${consentId}: ${validationResult.message()}`, validationResult);
                 }
 
                 boolean? isValid = validationResult.isValid;
@@ -251,9 +251,9 @@ public isolated class DefaultConsentEnforcer {
                         string elementName = element.name;
                         log:printDebug(string `Approved Consent Element - Purpose: ${purpose.name}, Element: ${elementName}, Status: ${isApproved.toString()}`);
 
-                        record {}? attrs = element.attributes;
-                        if attrs !is () && attrs.hasKey("resourceType") {
-                            string? resourceTypeAttr = <string?>attrs["resourceType"];
+                        record {}? props = element.properties;
+                        if props !is () && props.hasKey("resourceType") {
+                            string? resourceTypeAttr = <string?>props["resourceType"];
                             if resourceTypeAttr !is () && approvedResourceTypes.indexOf(resourceTypeAttr) is () {
                                 approvedResourceTypes.push(resourceTypeAttr);
                             }

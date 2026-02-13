@@ -23,15 +23,15 @@
 # + isMandatory - Indicates whether this element is mandatory
 # + type - The type of the element (e.g., "string-type")
 # + description - Description of what this element allows
-# + attributes - Additional attributes containing resource-specific information
+# + properties - Additional properties containing resource-specific information
 public type ConsentElement record {|
     string name;
     boolean isUserApproved;
-    record {} value;
+    record {} value?;
     boolean isMandatory?;
     string 'type?;
     string description?;
-    record {} attributes?;
+    record {} properties?;
 |};
 
 # Represents a purpose with associated elements.
