@@ -396,7 +396,7 @@ isolated function calculateDelayUntilMidnight(time:Utc currentUtc) returns time:
     return nextMidnight;
 }
 
-# Check if the request path matches any of the excluded APIs for analytics
+# Check if the file exists at the given request path
 # 
 # + requestPath - the API request path
 # + return - true if the request path matches any of the excluded APIs, false otherwise
@@ -409,30 +409,36 @@ isolated function isApiAllowed(string path, string[] includedList, string[] excl
     
     // If only included list is configured
     if (includedList.length() > 0 && excludedList.length() == 0) {
+
+        boolean pathMatchesInIncludedList = false;
+
         // check included list and return
         foreach string item in includedList {
             string:RegExp pattern = check regexp:fromString(item);
             // return true at the earliest match found in the included list
-            if (!path.matches(pattern)) {
-                continue;
-            } else {
-                return true;
+            if (path.matches(pattern)) {
+                pathMatchesInIncludedList = true;
+                break;
             }
         }
+        return pathMatchesInIncludedList;
     }
 
     // If only included list is configured
     if (includedList.length() == 0 && excludedList.length() > 0) {
+
+        boolean pathMatchesInExcludedList = true;
+
         // check excluded list and return
         foreach string item in excludedList {
             string:RegExp pattern = check regexp:fromString(item);
             // return true at the earliest match found in the excluded list
             if (path.matches(pattern)) {
-                return false;
-            } else {
-                continue;
+                pathMatchesInExcludedList = false;
+                break;
             }
         }
+        return pathMatchesInExcludedList;
     }
 
     if (includedList.length() > 0 && excludedList.length() > 0) {
@@ -543,7 +549,11 @@ isolated function extractAnalyaticsDataFromJWT(string[] dataAttributes, jwt:Payl
 # + return - A map containing the extracted analytics data
 isolated function extractFhirUserFromJWT(jwt:Payload jwtPayload) returns string? {
 
-    return jwtPayload["fhirUser"].toString();
+    anydata fhirUser = jwtPayload["fhirUser"];
+    if fhirUser is () {
+        return ();
+    }
+    return fhirUser.toString();
 }
 
 # Convert a map to a JSON object

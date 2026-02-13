@@ -48,7 +48,7 @@ public isolated function initFileRotator() {
     time:Civil delayUntilMidnight = calculateDelayUntilMidnight(time:utcNow());
     
     // Schedule recurring execution every 24 hours starting from next midnight
-    task:JobId|task:Error recurringResult = task:scheduleJobRecurByFrequency(fileRotationJob, 10, maxCount = -1, // make configurable
+    task:JobId|task:Error recurringResult = task:scheduleJobRecurByFrequency(fileRotationJob, 86400, maxCount = -1, // make configurable
         startTime = delayUntilMidnight);
     if recurringResult is task:Error {
         log:printError("Failed to schedule analytics file rotation task", err = recurringResult.toBalString());
@@ -84,7 +84,7 @@ isolated function rotateAnalyticsDataFile() {
                 log:printError(rotationErrorMessage, err = renamingError.toBalString());
                 return;
             }
-            log:printDebug(string `CMS analytics log file rotated successfully to: ${rotatedLogFile}`);
+            log:printDebug(string `Log file rotated successfully to: ${rotatedLogFile}`);
             
             // Create a new empty analytics.log file
             error? creationError = file:create(currentLogFile);
@@ -92,9 +92,9 @@ isolated function rotateAnalyticsDataFile() {
                 log:printError(rotationErrorMessage, err = creationError.toBalString());
                 return;
             }
-            log:printWarn(string `New CMS analytics.log file created: ${currentLogFile}`);
+            log:printInfo(string `New log file created: ${currentLogFile}`);
         } else {
-            log:printWarn(string `No CMS analytics.log file found to rotate at: ${currentLogFile}`);
+            log:printWarn(string `No log file found to rotate at: ${currentLogFile}`);
         }
     } else {
         log:printError(rotationErrorMessage, err = fileExists.toBalString());

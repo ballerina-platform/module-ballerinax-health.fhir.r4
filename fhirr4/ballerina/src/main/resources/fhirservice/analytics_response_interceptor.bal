@@ -98,7 +98,7 @@ isolated service class AnalyticsResponseInterceptor {
             return ctx.next(); // skip this if header is not present
         }
 
-        AnalyticsDataRecord|http:NextService|error? dataToWrite = construcAnalyticsDataRecord(ctx, req, res);
+        AnalyticsDataRecord|http:NextService|error? dataToWrite = constructAnalyticsDataRecord(ctx, req, res);
         if dataToWrite is http:NextService || dataToWrite is error {
             if dataToWrite is error {
                 log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error constructing analytics data record.`, err = dataToWrite.toBalString());
@@ -116,7 +116,7 @@ isolated service class AnalyticsResponseInterceptor {
     }
 }
 
-public isolated function construcAnalyticsDataRecord(http:RequestContext ctx, http:Request req, http:Response res) returns AnalyticsDataRecord|http:NextService|error? {
+public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, http:Request req, http:Response res) returns AnalyticsDataRecord|http:NextService|error? {
 
     map<string> & readonly requestHeaders = getRequestHeaders(req, true);
     map<string> & readonly responseHeaders = getResponseHeaders(res);
@@ -160,7 +160,7 @@ public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsD
     
     [jwt:Header, jwt:Payload]|error decodedJWT = decodeJWT(jwt);
     if decodedJWT is error {
-        log:printError("[MoesifAnalyticsPublisher] Error decoding JWT token.", decodedJWT);
+        log:printError("[AnalyticsResponseInterceptor] Error decoding JWT token.", decodedJWT);
         return;
     }
     [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;

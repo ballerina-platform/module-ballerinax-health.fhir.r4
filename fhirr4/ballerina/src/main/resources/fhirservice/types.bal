@@ -83,8 +83,9 @@ public type AnalyticsData record {|
 # + shouldPublishPayloads - whether to include request/response payloads in analytics
 # + filePath - the file path where analytics logs are stored, if not configured, defaults to the server's directory
 # + fileName - the name of the analytics log file
-# + allowedApiContexts - list of API paths to include for analytics
-# + excludedApiContexts - list of API paths to exclude from analytics
+# + allowedApiResources - list of API paths to include for analytics
+# + excludedApiResources - list of API paths to exclude from analytics
+# + enrichPayload - configuration for enriching analytics payloads with additional information
 public type AnalyticsConfig readonly & record {|
     boolean enabled = false;
     string fhirServerContext;
