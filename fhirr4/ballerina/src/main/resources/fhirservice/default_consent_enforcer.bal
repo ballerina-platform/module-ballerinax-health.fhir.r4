@@ -19,12 +19,12 @@ import ballerina/log;
 import ballerinax/health.fhir.r4;
 
 // Constants for API communication
-const string ORG_ID = "ORG-001";
 const string CONTENT_TYPE_JSON = "application/json";
 const string ACCEPT_HEADER = "application/json";
 const string CONSENTS_API_PATH = "/api/v1/consents";
 const string VALIDATE_CONSENT_API_PATH = "/api/v1/consents/validate";
 const string ACTIVE_CONSENT_STATUS = "ACTIVE";
+const string DEFAULT_ORG_ID = "ORG-001";
 
 # ConsentEnforcementConfig Record.
 #
@@ -40,10 +40,12 @@ public type ConsentEnforcementConfig readonly & record {|
 # + url - Open FGC server URL
 # + username - Open FGC client basicAuth username
 # + password - Open FGC client basicAuth password
+# + orgId - Organization ID for API requests
 public type OpenFgcClientConfig record {|
     string url?;
     string username?;
     string password?;
+    string orgId = DEFAULT_ORG_ID;
 |};
 
 configurable ConsentEnforcementConfig consentEnforcement = {};
@@ -55,10 +57,12 @@ public isolated class DefaultConsentEnforcer {
 
     final http:Client? openFgcClient;
     final boolean enabled;
+    final string orgId;
 
     # Initializes the DefaultConsentEnforcer and creates the OpenFGC client
     public isolated function init() {
         self.enabled = consentEnforcement.enabled;
+        self.orgId = consentEnforcement.openFgcClient?.orgId ?: DEFAULT_ORG_ID;
 
         final string? openFgcUrl = consentEnforcement.openFgcClient?.url;
         final string? openFgcUsername = consentEnforcement.openFgcClient?.username;
@@ -100,7 +104,7 @@ public isolated class DefaultConsentEnforcer {
         log:printDebug("Retrieving consent details for userIds: " + userIds + " with consentStatuses: " + consentStatuses);
 
         map<string|string[]> headers = {
-            "org-id": ORG_ID,
+            "org-id": self.orgId,
             "Accept": ACCEPT_HEADER
         };
 
@@ -128,7 +132,7 @@ public isolated class DefaultConsentEnforcer {
         log:printDebug(string `Validating consent: ${consentId}`);
 
         map<string|string[]> headers = {
-            "org-id": ORG_ID,
+            "org-id": self.orgId,
             "Content-Type": CONTENT_TYPE_JSON,
             "Accept": ACCEPT_HEADER
         };
