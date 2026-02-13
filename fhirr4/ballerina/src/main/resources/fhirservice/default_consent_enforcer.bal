@@ -16,6 +16,7 @@
 
 import ballerina/http;
 import ballerina/log;
+import ballerina/url;
 import ballerinax/health.fhir.r4;
 
 // Constants for API communication
@@ -74,6 +75,7 @@ public isolated class DefaultConsentEnforcer {
         } else {
             if openFgcUrl is () {
                 log:printError("Consent enforcement is enabled but OpenFGC URL is not configured");
+                self.openFgcClient = ();
                 return;
             }
             if openFgcUsername !is () && openFgcPassword !is () {
@@ -81,10 +83,20 @@ public isolated class DefaultConsentEnforcer {
                     username: openFgcUsername,
                     password: openFgcPassword
                 });
-                self.openFgcClient = clientResult is http:Client ? clientResult : ();
+                if clientResult is http:Client {
+                    self.openFgcClient = clientResult;
+                } else {
+                    log:printError(string `Failed to create OpenFGC client with authentication for URL: ${openFgcUrl}, username: ${openFgcUsername}`, 'error = clientResult);
+                    self.openFgcClient = ();
+                }
             } else {
                 http:Client|http:ClientError clientResult = new (openFgcUrl);
-                self.openFgcClient = clientResult is http:Client ? clientResult : ();
+                if clientResult is http:Client {
+                    self.openFgcClient = clientResult;
+                } else {
+                    log:printError(string `Failed to create OpenFGC client for URL: ${openFgcUrl}`, 'error = clientResult);
+                    self.openFgcClient = ();
+                }
             }
         }
         return;
@@ -108,9 +120,20 @@ public isolated class DefaultConsentEnforcer {
             "Accept": ACCEPT_HEADER
         };
 
-        string path = string `${CONSENTS_API_PATH}?consentStatuses=${consentStatuses}&userIds=${userIds}`;
+        string encodedConsentStatuses = check url:encode(consentStatuses, "UTF-8");
+        string encodedUserIds = check url:encode(userIds, "UTF-8");
+        string path = string `${CONSENTS_API_PATH}?consentStatuses=${encodedConsentStatuses}&userIds=${encodedUserIds}`;
 
         http:Response res = check openFgcClient->get(path, headers = headers);
+
+        // Validate HTTP response status before deserialization
+        int statusCode = res.statusCode;
+        if statusCode < 200 || statusCode >= 300 {
+            string errorBody = res.getTextPayload() is string ? check res.getTextPayload() : "Unable to read response body";
+            log:printError(string `Failed to retrieve consent details. Status: ${statusCode}, Body: ${errorBody}`);
+            return error(string `HTTP ${statusCode}: Failed to retrieve consent details - ${errorBody}`);
+        }
+
         json payload = check res.getJsonPayload();
 
         // Parse the JSON response to ConsentResponse model
@@ -142,6 +165,15 @@ public isolated class DefaultConsentEnforcer {
         };
 
         http:Response res = check openFgcClient->post(VALIDATE_CONSENT_API_PATH, payload, headers = headers);
+
+        // Validate HTTP response status before deserialization
+        int statusCode = res.statusCode;
+        if statusCode < 200 || statusCode >= 300 {
+            string errorBody = res.getTextPayload() is string ? check res.getTextPayload() : "Unable to read response body";
+            log:printError(string `Failed to validate consent. Status: ${statusCode}, Body: ${errorBody}`);
+            return error(string `HTTP ${statusCode}: Failed to validate consent - ${errorBody}`);
+        }
+
         json responsePayload = check res.getJsonPayload();
         log:printDebug(string `Validation response: ${responsePayload.toJsonString()}`);
 
@@ -257,9 +289,12 @@ public isolated class DefaultConsentEnforcer {
 
                         record {}? props = element.properties;
                         if props !is () && props.hasKey("resourceType") {
-                            string? resourceTypeAttr = <string?>props["resourceType"];
-                            if resourceTypeAttr !is () && approvedResourceTypes.indexOf(resourceTypeAttr) is () {
-                                approvedResourceTypes.push(resourceTypeAttr);
+                            // Safe type check instead of unsafe cast
+                            anydata resourceTypeValue = props["resourceType"];
+                            if resourceTypeValue is string {
+                                if approvedResourceTypes.indexOf(resourceTypeValue) is () {
+                                    approvedResourceTypes.push(resourceTypeValue);
+                                }
                             }
                         }
                     }
