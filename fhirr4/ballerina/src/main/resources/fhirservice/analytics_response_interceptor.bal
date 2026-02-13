@@ -1,4 +1,4 @@
-// Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com).
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
 
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -19,188 +19,198 @@ import ballerina/jwt;
 import ballerina/log;
 import ballerina/time;
 import ballerinax/health.fhir.r4;
+import ballerina/file;
 
-# AnalyticsConfig Record.
-#
-# + enabled - if analytics is enabled or not
-# + attributes - the list of attributes picked from x-jwt-assertion to publish
-# + url - the URL of the analytics server to publish logs
-# + username - the username for the analytics server
-# + password - the password for the analytics server
-# + moreInfo - configuration for fetching more information
-public type AnalyticsConfig readonly & record {|
-    boolean enabled = false;
-    string[] attributes = ["fhirUser", "client_id", "iss"];
-    string url = "http://localhost:9200/fhirr4/_doc";
-    string username?;
-    string password?;
-    MoreInfoConfig moreInfo = {};
-|};
+configurable AnalyticsConfig analytics = {
+    enabled: true,
+    fhirServerContext: "/fhir/r4/",
+    jwtAttributes : [
+        "client_id",
+        "iss"
+    ],
+    shouldPublishPayloads: false,
+    filePath: "log", 
+    fileName: "fhir-analytics",
+    allowedApiResources: [],
+    excludedApiResources: [],
+    enrichPayload: {
+        enabled: false,
+        url: "",
+        username: "",
+        password: ""
+    }
+};
 
-# MoreInfoConfig Record.
-#
-# + enabled - if more info fetching is enabled or not
-# + url - the URL to fetch more information
-# + username - the username for the more info server
-# + password - the password for the more info server
-public type MoreInfoConfig record {|
-    boolean enabled = false;
-    string url?;
-    string username?;
-    string password?;
-|};
+configurable AnalyticsPayloadEnrich analyticsPayloadEnrichConfig = {
+    enabled: false,
+    url: "",
+    username: "",
+    password: ""
+};
 
-configurable AnalyticsConfig analytics = {};
-
-# Mandatory header to be present in the request for analytics
-const X_JWT_HEADER = "x-jwt-assertion";
-
-# AnalyticsResponseInterceptor is an HTTP response interceptor that publishes analytics data
+# AnalyticsResponseInterceptor is an HTTP response interceptor that writes analytics data to "fhir-analytics.log" file.
 isolated service class AnalyticsResponseInterceptor {
     *http:ResponseInterceptor;
-    final string resourceType;
-    final http:Client|http:ClientError? logPublisherHttpClient;
-    final http:Client|http:ClientError? moreInfoHttpClient;
 
-    # Initializes the AnalyticsResponseInterceptor
-    public function init(r4:ResourceAPIConfig apiConfig) {
-        self.resourceType = apiConfig.resourceType;
-
-        final string? analyticsUsername = analytics?.username;
-        final string? analyticsPassword = analytics?.password;
-
-        // Initialize the log publisher HTTP client
-        if !analytics.enabled {
-            return;
-        } else if analyticsUsername !is () && analyticsPassword !is () {
-            self.logPublisherHttpClient = new (analytics.url, auth = {
-                username: analyticsUsername,
-                password: analyticsPassword
-            });
-        } else {
-            self.logPublisherHttpClient = new (analytics.url);
-        }
-
-        final string? moreInfoUrl = analytics.moreInfo?.url;
-        final string? moreInfoUsername = analytics.moreInfo?.username;
-        final string? moreInfoPassword = analytics.moreInfo?.password;
-
-        // Initialize the analytics more info HTTP client
-        if !analytics.moreInfo.enabled || moreInfoUrl is () {
-            self.moreInfoHttpClient = ();
-        } else if moreInfoUsername !is () && moreInfoPassword !is () {
-            self.moreInfoHttpClient = new (moreInfoUrl, auth = {
-                username: moreInfoUsername,
-                password: moreInfoPassword
-            });
-        } else {
-            self.moreInfoHttpClient = new (moreInfoUrl);
-        }
-    }
-
-    # Publishes the log data to the analytics server
+    private http:Client|http:ClientError? enrichmentHttpClient;
+    
+    # Initializes file rotator.
     #
-    # + logData - The log data json to be published
-    isolated function publish(json logData) {
-        http:Client|http:ClientError? logPublisher = self.logPublisherHttpClient;
-        log:printDebug(`[AnalyticsResponseInterceptor] Sending log to: ${analytics.url}`);
-        if logPublisher is () || logPublisher is http:ClientError {
-            log:printError(`[AnalyticsResponseInterceptor] Failed to create Analytics HTTP client`);
-        } else {
-            http:Response|http:ClientError result = logPublisher->/.post(logData);
-            if result is http:ClientError {
-                log:printError(`[AnalyticsResponseInterceptor] Failed publishing log to ${analytics.url} [Error]: ${result.toString()}`);
-            } else if result.statusCode < 200 || result.statusCode >= 300 {
-                log:printError(`[AnalyticsResponseInterceptor] Failed publishing log to ${analytics.url} [Error]: ${result.reasonPhrase}`);
-            } else {
-                log:printInfo(`[AnalyticsResponseInterceptor] Log published successfully to ${analytics.url}`);
-            }
-        }
-    }
-
-    # Retrieves more information from the configured URL
-    #
-    # + logData - The log data to send to retrieve more information
-    # + return - A JSON object containing additional information
-    isolated function getMoreInfo(json logData) returns json {
-        http:Client|http:ClientError? moreInfoClient = self.moreInfoHttpClient;
-        if moreInfoClient is () || moreInfoClient is http:ClientError {
-            log:printError(`[AnalyticsResponseInterceptor] Failed to create More Info HTTP client`);
-            return {};
-        } else {
-            http:Response|http:ClientError result = moreInfoClient->/.post(logData);
-            if (result is http:Response) {
-                json|error payload = result.getJsonPayload();
-                if payload is json {
-                    return payload;
-                } else {
-                    log:printError(`[AnalyticsResponseInterceptor] Failed to extract JSON payload from More Info response.`);
-                    return {};
-                }
-            } else {
-                log:printError(`[AnalyticsResponseInterceptor] Failed to fetch more info from ${analytics.moreInfo.url} [Error]: ${result.toString()}`);
-                return {};
-            }
-        }
-    }
-
-    # Publishes the analytics data based on the x-jwt-assertion header
-    # + jwt - The JWT token from the x-jwt-assertion header
-    # + statusCode - The HTTP status code of the response
-    # + return - An error if the publishing fails
-    isolated function publishAnalyticsData(string jwt, int statusCode) returns error? {
-        [jwt:Header, jwt:Payload]|error decodedJWT = jwt:decode(jwt);
-        if decodedJWT is [jwt:Header, jwt:Payload] {
-            [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
-
-            // Filter logData to include only keys in x_jwt_attributes
-            map<string> filteredLogData = map from string attrKey in analytics.attributes
-                where payload[attrKey] !== ()
-                select [attrKey, payload[attrKey].toString()];
-
-            filteredLogData["resourceType"] = self.resourceType;
-
-            // Get more information if configured
-            if analytics.moreInfo.enabled {
-                json moreInfo = self.getMoreInfo(filteredLogData.toJson());
-                log:printDebug(`[AnalyticsResponseInterceptor] More info fetched from: ${analytics.moreInfo.url} [More info]: ${moreInfo.toString()}`);
-                foreach var [key, value] in (<map<json>>moreInfo).entries() {
-                    filteredLogData[key] = value.toString();
+    # + apiConfig - The API configuration
+    isolated function init(r4:ResourceAPIConfig apiConfig) {
+        
+        if analytics.enabled {
+            if analytics.enrichPayload is AnalyticsPayloadEnrich && analytics.enrichPayload?.enabled == true {
+                lock {
+                    self.enrichmentHttpClient = initializeEnrichmentHttpClient();
+                    if self.enrichmentHttpClient is http:ClientError || self.enrichmentHttpClient is () {
+                        log:printWarn("Failed to initialize enrichment HTTP client. ");
+                    }
                 }
             }
 
-            filteredLogData["timestamp"] = time:utcToString(time:utcNow());
-            filteredLogData["statusCode"] = statusCode.toString();
-
-            log:printDebug(`[AnalyticsResponseInterceptor] Publishing log: ${filteredLogData.toString()}`);
-            self.publish(filteredLogData.toJson());
-        } else {
-            log:printError(`[AnalyticsResponseInterceptor] Error decoding x-jwt-assertion header.`);
+            error? fileCreateError = createFileIfNotExist();
+            if fileCreateError is error {
+                log:printError("Failed to create log file.", fileCreateError);
+                return;
+            }
+            // Initialize the file rotator
+            initFileRotator();
         }
-
     }
 
-    # Interceptor function that processes the response and publishes analytics data
-    # + ctx - The request context
-    # + req - The HTTP request
-    # + res - The HTTP response
-    # + return - The next service in the interceptor chain or an error
     remote isolated function interceptResponse(http:RequestContext ctx, http:Request req, http:Response res) returns http:NextService|error? {
-        if !analytics.enabled {
-            log:printDebug(`[AnalyticsResponseInterceptor] Analytics is disabled. Skipping analytics data publishing.`);
+        
+        //check excluded APIs from config and skip analytics writing
+        boolean|error? isApiAllowedResult = isApiAllowed(getApiPath(req.rawPath, analytics.fhirServerContext), analytics.allowedApiResources, analytics.excludedApiResources);
+        if isApiAllowedResult is boolean {
+            if isApiAllowedResult == false {
+                return ctx.next();
+            }
+        } else {
+            log:printDebug("Error while validating API for analytics writing.", isApiAllowedResult);
             return ctx.next();
         }
 
         string|error xJWT = req.getHeader(X_JWT_HEADER);
         if xJWT is error {
-            log:printError(`[AnalyticsResponseInterceptor] Skipped publishing logs. Error: Missing x-jwt-assertion header.`);
-            return ctx.next();
+            log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Missing x-jwt-assertion header.`, err = xJWT.toBalString());
+            return ctx.next(); // skip this if header is not present
         }
 
-        log:printDebug(`[AnalyticsResponseInterceptor] Publishing analytics data.`);
-        future<error?> _ = start self.publishAnalyticsData(xJWT, res.statusCode);
+        AnalyticsDataRecord|http:NextService|error? dataToWrite = constructAnalyticsDataRecord(ctx, req, res);
+        if dataToWrite is http:NextService || dataToWrite is error {
+            if dataToWrite is error {
+                log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error constructing analytics data record.`, err = dataToWrite.toBalString());
+            }
+            return dataToWrite;
+        }
 
-        // Returns the next interceptor in the pipeline.
-        return ctx.next();
+        if dataToWrite is AnalyticsDataRecord {
+            // Write analytics data asynchronously
+            log:printDebug(`[AnalyticsResponseInterceptor] Writing analytics data using the analytics writer.`);
+            future<error?> _ = start writeAnalyticsDataToFile(dataToWrite);
+            return ctx.next();
+        }
+        return;
     }
+}
+
+public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, http:Request req, http:Response res) returns AnalyticsDataRecord|http:NextService|error? {
+
+    map<string> & readonly requestHeaders = getRequestHeaders(req, true);
+    map<string> & readonly responseHeaders = getResponseHeaders(res);
+    int statusCode = res.statusCode;
+    string requestPath  = req.rawPath;
+
+    if analytics.shouldPublishPayloads {
+        (json|http:ClientError) & readonly requestPayload = req.getJsonPayload().cloneReadOnly();
+        if requestPayload is http:ClientError {
+            log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read request payload.`, err = requestPayload.toBalString());
+            return ctx.next(); // skip this if we can't read the payload
+        }
+        (json|http:ClientError) & readonly responsePayload = res.getJsonPayload().cloneReadOnly();
+        if responsePayload is http:ClientError {
+            log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read response payload.`, err = responsePayload.toBalString());
+            return ctx.next(); // skip this if we can't read the payload
+        }
+
+        return {
+            requestHeaders: requestHeaders,
+            responseHeaders: responseHeaders,
+            statusCode: statusCode,
+            requestPath: requestPath,
+            httpMethod: req.method,
+            requestPayload: requestPayload,
+            responsePayload: responsePayload
+        };
+    }
+    return {
+        requestHeaders: requestHeaders,
+        responseHeaders: responseHeaders,
+        statusCode: statusCode,
+        requestPath: requestPath,
+        httpMethod: req.method
+    };
+}
+
+public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsDataRecord) returns error? { // check clientError
+
+    string jwt = analyticsDataRecord.requestHeaders.get(X_JWT_HEADER);
+    
+    [jwt:Header, jwt:Payload]|error decodedJWT = decodeJWT(jwt);
+    if decodedJWT is error {
+        log:printError("[AnalyticsResponseInterceptor] Error decoding JWT token.", decodedJWT);
+        return;
+    }
+    [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
+
+    map<string> analyticsDataFromJwt = extractAnalyticsDataFromJWT(analytics.jwtAttributes, payload);
+    json requestHeadersJson = convertMapToJson(analyticsDataRecord.requestHeaders); // remove auth header // make configurable // consider record
+    json responseHeadersJson = convertMapToJson(analyticsDataRecord.responseHeaders);
+    string? fhirUser = extractFhirUserFromJWT(payload);
+
+    // Enrich payload is only available if the payload publishing is enabled.
+    if analytics.shouldPublishPayloads == true {
+        // If analytics data enrichment is enabled, fetch and add to analytics data
+        if analytics.enrichPayload is AnalyticsPayloadEnrich && analytics.enrichPayload?.enabled == true {
+            enrichAnalyticsData(analyticsDataFromJwt);
+        }
+    }
+
+    // Construct the analytics data record
+    Request request = {
+        time: time:utcToString(time:utcNow()),
+        uri: analyticsDataRecord.requestPath,
+        verb: analyticsDataRecord.httpMethod,
+        headers: requestHeadersJson
+    };
+
+    Response response = {
+        time: time:utcToString(time:utcNow()),
+        headers: responseHeadersJson,
+        status: analyticsDataRecord.statusCode
+    };
+    request.body = analyticsDataRecord?.requestPayload;
+    response.body = analyticsDataRecord?.responsePayload;
+
+    AnalyticsData analyticsData = {
+        request: request,
+        response: response,
+        metadata: analyticsDataFromJwt
+    };
+
+    if fhirUser is string {
+        analyticsData.user_id = fhirUser;
+    }
+
+    // Convert analytics data to JSON string
+    json analyticsJson = analyticsData.toJson();
+    string logLine = analyticsJson.toJsonString() + "\n";
+    string logFilePath = getFilePathBasedOnConfiguration() + file:pathSeparator + getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION;
+    
+    // Flow won't come to this point if we don't have a file to write to. Hence no checking required.
+    check writeDataToFile(logFilePath, logLine);
+    log:printDebug(string `Successfully wrote the analytics data to file: ${getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION}`);
+    return;
 }
