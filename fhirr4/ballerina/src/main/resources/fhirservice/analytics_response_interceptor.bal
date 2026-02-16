@@ -51,8 +51,6 @@ configurable AnalyticsPayloadEnrich analyticsPayloadEnrichConfig = {
 # AnalyticsResponseInterceptor is an HTTP response interceptor that writes analytics data to "fhir-analytics.log" file.
 isolated service class AnalyticsResponseInterceptor {
     *http:ResponseInterceptor;
-
-    private http:Client|http:ClientError? enrichmentHttpClient;
     
     # Initializes file rotator.
     #
@@ -60,15 +58,6 @@ isolated service class AnalyticsResponseInterceptor {
     isolated function init(r4:ResourceAPIConfig apiConfig) {
         
         if analytics.enabled {
-            if analytics.enrichPayload is AnalyticsPayloadEnrich && analytics.enrichPayload?.enabled == true {
-                lock {
-                    self.enrichmentHttpClient = initializeEnrichmentHttpClient();
-                    if self.enrichmentHttpClient is http:ClientError || self.enrichmentHttpClient is () {
-                        log:printWarn("Failed to initialize enrichment HTTP client. ");
-                    }
-                }
-            }
-
             error? fileCreateError = createFileIfNotExist();
             if fileCreateError is error {
                 log:printError("Failed to create log file.", fileCreateError);
@@ -94,8 +83,8 @@ isolated service class AnalyticsResponseInterceptor {
 
         string|error xJWT = req.getHeader(X_JWT_HEADER);
         if xJWT is error {
-            log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Missing x-jwt-assertion header.`, err = xJWT.toBalString());
-            return ctx.next(); // skip this if header is not present
+            log:printDebug(`[AnalyticsResponseInterceptor] Skipped writing analytics data. Missing x-jwt-assertion header.`, err = xJWT.toBalString());
+            return ctx.next();
         }
 
         AnalyticsDataRecord|http:NextService|error? dataToWrite = constructAnalyticsDataRecord(ctx, req, res);

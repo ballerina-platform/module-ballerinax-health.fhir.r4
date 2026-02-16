@@ -81,7 +81,7 @@ isolated function rotateAnalyticsDataFile() {
                 log:printError(rotationErrorMessage, err = renamingError.toBalString());
                 return;
             }
-            log:printDebug(string `Log file rotated successfully to: ${rotatedLogFile}`);
+            log:printInfo(string `Log file rotated successfully to: ${rotatedLogFile}`);
             
             // Create a new empty analytics.log file
             error? creationError = file:create(currentLogFile);
