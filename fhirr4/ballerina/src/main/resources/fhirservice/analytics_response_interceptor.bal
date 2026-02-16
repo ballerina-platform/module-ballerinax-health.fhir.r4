@@ -23,14 +23,14 @@ import ballerina/file;
 
 configurable AnalyticsConfig analytics = {
     enabled: false,
-    fhirServerContext: "/fhir/r4/",
+    fhirServerContext: DEFAULT_SERVER_CONTEXT,
     jwtAttributes : [
         "client_id",
         "iss"
     ],
     shouldPublishPayloads: false,
-    filePath: "log", 
-    fileName: "fhir-analytics",
+    filePath: DEFAULT_FILE_LOCATION, 
+    fileName: LOG_FILE_NAME,
     allowedApiContexts: [],
     excludedApiContexts: [],
     enrichPayload: {

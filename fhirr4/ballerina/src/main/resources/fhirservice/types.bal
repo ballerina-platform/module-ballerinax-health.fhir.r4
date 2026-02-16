@@ -18,8 +18,10 @@ const X_JWT_HEADER = "x-jwt-assertion";
 final string rotationErrorMessage = "Error rotating analytics log file";
 const LOG_FILE_NAME = "fhir-analytics";
 const LOG_FILE_EXTENSION = ".log";
+const DEFAULT_FILE_LOCATION = "log";
 const LOG_FILE_DIRECTORY = "resources";
 const AUTHORIZATION_HEADER = "authorization";
+const DEFAULT_SERVER_CONTEXT = "/fhir/r4/";
 
 # Represents a FHIR service type
 public type Service distinct service object{};
@@ -88,11 +90,11 @@ public type AnalyticsData record {|
 # + enrichPayload - configuration for enriching analytics payloads with additional information
 public type AnalyticsConfig readonly & record {|
     boolean enabled = false;
-    string fhirServerContext;
+    string fhirServerContext = DEFAULT_SERVER_CONTEXT;
     string[] jwtAttributes;
     boolean shouldPublishPayloads = false;
-    string filePath;
-    string fileName;
+    string filePath = DEFAULT_FILE_LOCATION;
+    string fileName = LOG_FILE_NAME;
     string[] allowedApiContexts;
     string[] excludedApiContexts;
     AnalyticsPayloadEnrich enrichPayload?;
