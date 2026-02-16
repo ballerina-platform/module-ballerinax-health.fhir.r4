@@ -11,9 +11,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/http;
-import ballerina/lang.regexp;
-import ballerina/log;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.ips;
 import ballerinax/health.fhir.r4.parser;
