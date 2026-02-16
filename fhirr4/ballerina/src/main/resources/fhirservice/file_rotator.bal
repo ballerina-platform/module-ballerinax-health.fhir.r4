@@ -42,11 +42,21 @@ public isolated function initFileRotator() {
         }
         AnalyticsFileRotationJob fileRotationJob = new();
         
+        time:Zone|error zone = time:loadSystemZone();
+        if zone is error {
+            log:printError("Failed to load system time zone for scheduling file rotation task", err = zone.toBalString());
+            return;
+        }
+
         // Calculate delay until next 12 AM
-        time:Civil delayUntilMidnight = calculateDelayUntilMidnight(time:utcNow());
-        
+        time:Civil|error delayUntilMidnight = calculateDelayUntilMidnight(time:utcNow(), zone);
+        if delayUntilMidnight is error {
+            log:printError("Failed to calculate delay until next midnight for scheduling file rotation task", err = delayUntilMidnight.toBalString());
+            return;
+        }
+
         // Schedule recurring execution every 24 hours starting from next midnight
-        task:JobId|task:Error recurringResult = task:scheduleJobRecurByFrequency(fileRotationJob, 86400, maxCount = -1, // make configurable
+        task:JobId|task:Error recurringResult = task:scheduleJobRecurByFrequency(fileRotationJob, 86400, maxCount = -1,
             startTime = delayUntilMidnight);
         if recurringResult is task:Error {
             log:printError("Failed to schedule analytics file rotation task", err = recurringResult.toBalString());
@@ -65,7 +75,7 @@ isolated function rotateAnalyticsDataFile() {
 
     // Get the date for the previous day
     time:Utc utc = time:utcAddSeconds(time:utcNow(), -86400);
-    string date = time:utcToString(utc).substring(0, 10); // YYYY-MM-DD format
+    string date = time:utcToString(utc).substring(0, 10);
     
     string currentLogFile = analytics.filePath + file:pathSeparator + getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION;
     string rotatedLogFile = analytics.filePath + file:pathSeparator + getFileNameBasedOnConfiguration() + "-" + date + LOG_FILE_EXTENSION;

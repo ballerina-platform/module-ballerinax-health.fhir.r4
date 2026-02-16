@@ -377,24 +377,22 @@ isolated function initializeEnrichmentHttpClient() returns http:Client?|http:Cli
 # Calculate the delay until the next midnight and return it as a time:Civil value
 # 
 # + currentUtc - The current time in UTC
+# + zone - The time zone to consider for calculating the next midnight
 # + return - The time:Civil value representing the next midnight
-isolated function calculateDelayUntilMidnight(time:Utc currentUtc) returns time:Civil {
+isolated function calculateDelayUntilMidnight(time:Utc currentUtc, time:Zone zone) returns error|time:Civil {
     
     time:Utc nextDayUtc = time:utcAddSeconds(currentUtc, 86400);
-    time:Civil nextDayCivil = time:utcToCivil(nextDayUtc);
+    time:Civil nextDayCivil = zone.utcToCivil(nextDayUtc);
 
-    // Calculate next midnight
-    time:Civil nextMidnight = {
-        year: nextDayCivil.year,
-        month: nextDayCivil.month,
-        day: nextDayCivil.day,
-        hour: 0,
-        minute: 0,
-        second: 0.0,
-        utcOffset: nextDayCivil.utcOffset
-    };
-
-    return nextMidnight;
+    //todo: Add the proper fix after fixing the issue: https://github.com/wso2-enterprise/wso2-integration-internal/issues/4614
+    string nextDayCivilStr = check time:civilToString(nextDayCivil);
+    time:Civil nextDayCivilFromStr = check time:civilFromString(nextDayCivilStr);
+    
+    nextDayCivilFromStr.hour = 0;
+    nextDayCivilFromStr.minute = 0;
+    nextDayCivilFromStr.second = 0.0;
+    
+    return nextDayCivil;
 }
 
 # Check if the file exists at the given request path

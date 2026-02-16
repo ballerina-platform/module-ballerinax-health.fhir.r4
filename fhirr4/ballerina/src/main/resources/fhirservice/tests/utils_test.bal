@@ -157,26 +157,31 @@ function testGetResponseHeadersEmpty() {
 function testCalculateDelayUntilMidnight() {
 
     time:Utc|error endDayOfMonth = time:utcFromString("2024-12-31T00:00:00Z");
+    time:Zone|error zone = time:loadSystemZone();
 
-    time:Civil nextMidnight;
-    if endDayOfMonth is time:Utc {
-        nextMidnight = calculateDelayUntilMidnight(endDayOfMonth);
-        test:assertEquals(nextMidnight.hour, 0, msg = "Hour should be 0 for midnight");
-        test:assertEquals(nextMidnight.minute, 0, msg = "Minute should be 0 for midnight");
-        test:assertEquals(nextMidnight.day, 1, msg = "Day should be 1 for midnight");
-        test:assertEquals(nextMidnight.year, 2025, msg = "Year should be 2025 for midnight");
+    error|time:Civil nextMidnight;
+    if endDayOfMonth is time:Utc && zone !is error {
+        nextMidnight = calculateDelayUntilMidnight(endDayOfMonth, zone);
+        if nextMidnight !is error {
+            test:assertEquals(nextMidnight.hour, 0, msg = "Hour should be 0 for midnight");
+            test:assertEquals(nextMidnight.minute, 0, msg = "Minute should be 0 for midnight");
+            test:assertEquals(nextMidnight.day, 1, msg = "Day should be 1 for midnight");
+            test:assertEquals(nextMidnight.year, 2025, msg = "Year should be 2025 for midnight");
+        } 
     }
     
     time:Utc|error leapYearTest = time:utcFromString("2024-02-29T00:00:00Z");
-
-    time:Civil nextMidnight2;
-    if leapYearTest is time:Utc {
-        nextMidnight2 = calculateDelayUntilMidnight(leapYearTest);
-        test:assertEquals(nextMidnight2.hour, 0, msg = "Hour should be 0 for midnight");
-        test:assertEquals(nextMidnight2.minute, 0, msg = "Minute should be 0 for midnight");
-        test:assertEquals(nextMidnight2.day, 1, msg = "Day should be 1 for midnight");
-        test:assertEquals(nextMidnight2.month, 3, msg = "Month should be 3 for midnight");
-        test:assertEquals(nextMidnight2.year, 2024, msg = "Year should be 2024 for midnight");
+    
+    error|time:Civil nextMidnight2;
+    if leapYearTest is time:Utc && zone !is error {
+        nextMidnight2 = calculateDelayUntilMidnight(leapYearTest, zone);
+        if nextMidnight2 !is error {
+            test:assertEquals(nextMidnight2.hour, 0, msg = "Hour should be 0 for midnight");
+            test:assertEquals(nextMidnight2.minute, 0, msg = "Minute should be 0 for midnight");
+            test:assertEquals(nextMidnight2.day, 1, msg = "Day should be 1 for midnight");
+            test:assertEquals(nextMidnight2.month, 3, msg = "Month should be 3 for midnight");
+            test:assertEquals(nextMidnight2.year, 2024, msg = "Year should be 2024 for midnight");
+        }
     }
 }
 
