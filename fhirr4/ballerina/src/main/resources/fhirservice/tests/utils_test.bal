@@ -335,8 +335,8 @@ function testGetRequestHeadersMultipleValues() {
 @test:Config {}
 function testIsApiAllowedWithIncludedListMatch() returns error? {
     string path = "Patient";
-    string[] includedList = ["Patient", "Observation"];
-    string[] excludedList = [];
+    string[] & readonly includedList = ["Patient", "Observation"];
+    string[] & readonly excludedList = [];
     
     boolean|error? result = isApiAllowed(path, includedList, excludedList);
     if result is boolean {
@@ -348,8 +348,8 @@ function testIsApiAllowedWithIncludedListMatch() returns error? {
 @test:Config {}
 function testIsApiAllowedWithIncludedListNoMatch() returns error? {
     string path = "Medication";
-    string[] includedList = ["Patient", "Observation"];
-    string[] excludedList = [];
+    string[] & readonly includedList = ["Patient", "Observation"];
+    string[] & readonly excludedList = [];
     
     boolean|error? result = isApiAllowed(path, includedList, excludedList);
     if result is boolean {
@@ -361,8 +361,8 @@ function testIsApiAllowedWithIncludedListNoMatch() returns error? {
 @test:Config {}
 function testIsApiAllowedWithExcludedListMatch() returns error? {
     string path = "Patient";
-    string[] includedList = [];
-    string[] excludedList = ["Patient", "Observation"];
+    string[] & readonly includedList = [];
+    string[] & readonly excludedList = ["Patient", "Observation"];
     
     boolean|error? result = isApiAllowed(path, includedList, excludedList);
     if result is boolean {
@@ -374,8 +374,8 @@ function testIsApiAllowedWithExcludedListMatch() returns error? {
 @test:Config {}
 function testIsApiAllowedWithExcludedListNoMatch() returns error? {
     string path = "Medication";
-    string[] includedList = [];
-    string[] excludedList = ["Patient", "Observation"];
+    string[] & readonly includedList = [];
+    string[] & readonly excludedList = ["Patient", "Observation"];
     
     boolean|error? result = isApiAllowed(path, includedList, excludedList);
     if result is boolean {
@@ -387,10 +387,9 @@ function testIsApiAllowedWithExcludedListNoMatch() returns error? {
 @test:Config {}
 function testIsApiAllowedWithBothListsIncludedMatch() returns error? {
     string path = "Patient";
-    string[] includedList = ["Patient", "Observation"];
-    string[] excludedList = ["Medication"];
+    string[] & readonly excludedList = ["Medication"];
     
-    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    boolean|error? result = isApiAllowed(path, (), excludedList);
     if result is boolean {
         test:assertTrue(result, msg = "Path should be allowed when it matches included but not excluded");
     }
@@ -400,10 +399,9 @@ function testIsApiAllowedWithBothListsIncludedMatch() returns error? {
 @test:Config {}
 function testIsApiAllowedWithBothListsBothMatch() returns error? {
     string path = "Patient";
-    string[] includedList = ["Patient", "Observation"];
-    string[] excludedList = ["Patient"];
+    string[] & readonly excludedList = ["Patient"];
     
-    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    boolean|error? result = isApiAllowed(path, (), excludedList);
     if result is boolean {
         test:assertFalse(result, msg = "Path should not be allowed when it matches both lists (excluded takes precedence)");
     }
@@ -413,10 +411,9 @@ function testIsApiAllowedWithBothListsBothMatch() returns error? {
 @test:Config {}
 function testIsApiAllowedWithBothListsNeitherMatch() returns error? {
     string path = "Medication";
-    string[] includedList = ["Patient"];
-    string[] excludedList = ["Observation"];
+    string[] & readonly excludedList = ["Observation"];
     
-    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    boolean|error? result = isApiAllowed(path, (), excludedList);
     if result is boolean {
         test:assertTrue(result, msg = "Result should be true when path matches neither list");
     }
@@ -426,8 +423,8 @@ function testIsApiAllowedWithBothListsNeitherMatch() returns error? {
 @test:Config {}
 function testIsApiAllowedWithEmptyLists() returns error? {
     string path = "Patient";
-    string[] includedList = [];
-    string[] excludedList = [];
+    string[] & readonly includedList = [];
+    string[] & readonly excludedList = [];
     
     boolean|error? result = isApiAllowed(path, includedList, excludedList);
     if result is boolean {
@@ -439,10 +436,9 @@ function testIsApiAllowedWithEmptyLists() returns error? {
 @test:Config {}
 function testIsApiAllowedWithRegexInIncludedList() returns error? {
     string path = "Patient/123";
-    string[] includedList = ["Patient/.*"];
-    string[] excludedList = [];
+    string[] & readonly includedList = ["Patient/.*"];
     
-    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    boolean|error? result = isApiAllowed(path, includedList, ());
     if result is boolean {
         test:assertTrue(result, msg = "Path should match regex pattern in included list");
     }
@@ -452,10 +448,9 @@ function testIsApiAllowedWithRegexInIncludedList() returns error? {
 @test:Config {}
 function testIsApiAllowedWithRegexInIncludedList2() returns error? {
     string path = "Patient/123";
-    string[] includedList = ["Patient/.*"];
-    string[] excludedList = [];
+    string[] & readonly includedList = ["Patient/.*"];
     
-    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    boolean|error? result = isApiAllowed(path, includedList, ());
     if result is boolean {
         test:assertTrue(result, msg = "Path should match regex pattern in included list");
     }
@@ -465,10 +460,9 @@ function testIsApiAllowedWithRegexInIncludedList2() returns error? {
 @test:Config {}
 function testIsApiAllowedWithRegexInIncludedListWithQueryParam() returns error? {
     string path = "Patient/123?abcd";
-    string[] includedList = ["Patient"];
-    string[] excludedList = [];
+    string[] & readonly includedList = ["Patient"];
     
-    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    boolean|error? result = isApiAllowed(path, includedList, ());
     if result is boolean {
         test:assertFalse(result, msg = "Path should match regex pattern in included list");
     }
@@ -478,10 +472,9 @@ function testIsApiAllowedWithRegexInIncludedListWithQueryParam() returns error? 
 @test:Config {}
 function testIsApiAllowedWithRegexInExcludedList() returns error? {
     string path = "Patient/123";
-    string[] includedList = [];
-    string[] excludedList = ["Patient/.*"];
+    string[] & readonly excludedList = ["Patient/.*"];
     
-    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    boolean|error? result = isApiAllowed(path, (), excludedList);
     if result is boolean {
         test:assertFalse(result, msg = "Path should match regex pattern in excluded list");
     }
@@ -491,10 +484,9 @@ function testIsApiAllowedWithRegexInExcludedList() returns error? {
 @test:Config {}
 function testIsApiAllowedWithRegexInExcludedListWithQueryParam() returns error? {
     string path = "Patient/123?abcd";
-    string[] includedList = [];
-    string[] excludedList = ["Patient/.*"];
+    string[] & readonly  excludedList = ["Patient/.*"];
     
-    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    boolean|error? result = isApiAllowed(path, (), excludedList);
     if result is boolean {
         test:assertFalse(result, msg = "Path should match regex pattern in excluded list");
     }
@@ -503,19 +495,17 @@ function testIsApiAllowedWithRegexInExcludedListWithQueryParam() returns error? 
 @test:Config {}
 function testIsApiAllowedWithRegexInBothLists() returns error? {
     string path = "Patient/123?abcd";
-    string[] includedList = ["Patient"];
-    string[] excludedList = ["Patient/.*"];
+    string[] & readonly excludedList = ["Patient/.*"];
     
-    boolean|error? result = isApiAllowed(path, includedList, excludedList);
+    boolean|error? result = isApiAllowed(path, (), excludedList);
     if result is boolean {
         test:assertFalse(result, msg = "Path should match regex pattern in excluded list");
     }
 
     string path2 = "Patient";
-    string[] includedList2 = ["Patient"];
-    string[] excludedList2 = ["Patient/.*"];
+    string[] & readonly includedList2 = ["Patient"];
     
-    boolean|error? result2 = isApiAllowed(path2, includedList2, excludedList2);
+    boolean|error? result2 = isApiAllowed(path2, includedList2, ());
     if result2 is boolean {
         test:assertTrue(result2, msg = "Path should match regex pattern in included list");
     }

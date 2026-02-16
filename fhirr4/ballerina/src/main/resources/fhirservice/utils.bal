@@ -392,7 +392,7 @@ isolated function calculateDelayUntilMidnight(time:Utc currentUtc, time:Zone zon
     nextDayCivilFromStr.minute = 0;
     nextDayCivilFromStr.second = 0.0;
     
-    return nextDayCivil;
+    return nextDayCivilFromStr;
 }
 
 # Check if the file exists at the given request path
@@ -420,76 +420,70 @@ isolated function isFileExist(string requestPath) returns boolean|error? {
 # + allowedList - the list of allowed API contexts configured for analytics writing
 # + excludedList - the list of excluded API contexts configured for analytics writing
 # + return - true if the request path matches the allowed/excluded API contexts for analytics writing
-isolated function isApiAllowed(string path, string[] allowedList, string[] excludedList) returns boolean|error? {
+isolated function isApiAllowed(string path, (string[] & readonly)? allowedList, (string[] & readonly)? excludedList) returns boolean|error? {
     
     // If only allowed list is configured
-    if (allowedList.length() > 0 && excludedList.length() == 0) {
+    if (allowedList !is () && (excludedList is () || excludedList.length() == 0)) {
+        if (allowedList.length() > 0) {
 
-        boolean pathMatchesInAllowedList = false;
+            boolean pathMatchesInAllowedList = false;
 
-        // check allowed list and return
-        foreach string item in allowedList {
-            string:RegExp pattern = check regexp:fromString(item);
-            // return true at the earliest match found in the included list
-            if (path.matches(pattern)) {
-                pathMatchesInAllowedList = true;
-                break;
+            // check allowed list and return
+            foreach string item in allowedList {
+                string:RegExp pattern = check regexp:fromString(item);
+                // return true at the earliest match found in the included list
+                if (path.matches(pattern)) {
+                    pathMatchesInAllowedList = true;
+                    break;
+                }
             }
+            return pathMatchesInAllowedList;
         }
-        return pathMatchesInAllowedList;
     }
 
-    // If only included list is configured
-    if (allowedList.length() == 0 && excludedList.length() > 0) {
+    if (excludedList !is () && (allowedList is () || allowedList.length() == 0)) {
+        // If only included list is configured
+        if (excludedList.length() > 0) {
 
-        boolean pathMatchesInExcludedList = true;
+            boolean pathMatchesInExcludedList = true;
 
-        // check excluded list and return
-        foreach string item in excludedList {
-            string:RegExp pattern = check regexp:fromString(item);
-            // return true at the earliest match found in the excluded list
-            if (path.matches(pattern)) {
-                pathMatchesInExcludedList = false;
-                break;
+            // check excluded list and return
+            foreach string item in excludedList {
+                string:RegExp pattern = check regexp:fromString(item);
+                // return true at the earliest match found in the excluded list
+                if (path.matches(pattern)) {
+                    pathMatchesInExcludedList = false;
+                    break;
+                }
             }
+            return pathMatchesInExcludedList;
         }
-        return pathMatchesInExcludedList;
     }
 
-    if (allowedList.length() > 0 && excludedList.length() > 0) {
+    // If both lists are configured, the priority is given for the excluded list. Allowed list is ignored.
+    if (excludedList !is () && allowedList !is ()) {
 
-        boolean pathMatchesInAlloweddList = false;
-        boolean pathMatchesInExcludedList = false;
+        if (excludedList.length() > 0) {
 
-        // check existance in allowed list
-        foreach string item in allowedList {
-            string:RegExp allowedPattern = check regexp:fromString(item);
-            if (path.matches(allowedPattern)) {
-                pathMatchesInAlloweddList = true;
-                break;
+            boolean pathMatchesInExcludedList = false;
+
+            // check existance in excluded list
+            foreach string item in excludedList {
+                string:RegExp excludedPattern = check regexp:fromString(item);
+                if (path.matches(excludedPattern)) {
+                    pathMatchesInExcludedList = true;
+                    break;
+                }
             }
-        }
 
-        // check existance in excluded list
-        foreach string item in excludedList {
-            string:RegExp excludedPattern = check regexp:fromString(item);
-            if (path.matches(excludedPattern)) {
-                pathMatchesInExcludedList = true;
-                break;
+            // If path matches in both lists, don't allow
+            if pathMatchesInExcludedList {
+                return false;
+            } else {
+                // If path doesn't match in the excluded list, allow
+                return true;
             }
-        }
-
-        // If path matches in both lists, don't allow
-        if pathMatchesInExcludedList && pathMatchesInAlloweddList {
-            return false;
-        } else if pathMatchesInAlloweddList {
-            return true;
-        } else if pathMatchesInExcludedList {
-            return false;
-        } else {
-            // If path doesn't match in both lists, allow by default
-            return true;
-        }
+        }   
     }
     return true;
 }

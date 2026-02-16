@@ -95,8 +95,8 @@ public type AnalyticsConfig readonly & record {|
     boolean shouldPublishPayloads = false;
     string filePath = DEFAULT_FILE_LOCATION;
     string fileName = LOG_FILE_NAME;
-    string[] allowedApiContexts;
-    string[] excludedApiContexts;
+    string[] allowedApiContexts?;
+    string[] excludedApiContexts?;
     AnalyticsPayloadEnrich enrichPayload?;
 |};
 
