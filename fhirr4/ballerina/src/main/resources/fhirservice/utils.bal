@@ -309,7 +309,7 @@ isolated function getAnalyticsEnrichmentData(json data, http:Client|http:ClientE
                 return {};
             }
         } else {
-            log:printError(`[AnalyticsResponseInterceptor] Failed to fetch analytics enrichment data from ${analytics.enrichPayload?.url}. Make sure the URL is correct and the service is reachable. [Error]: ${result.toString()}`);
+            log:printError(`[AnalyticsResponseInterceptor] Failed to fetch analytics enrichment data. Make sure the URL is correct and the service is reachable. ${result.toString()}`);
             return {};
         }
     }
@@ -406,27 +406,43 @@ isolated function isFileExist(string requestPath) returns boolean|error? {
     return file:test(requestPath, file:EXISTS);
 }
 
-isolated function isApiAllowed(string path, string[] includedList, string[] excludedList) returns boolean|error? {
+# Validate whether the incoming API request path matches the allowed/excluded API contexts configured for analytics writing and return the validation result
+# 
+# If only allowed list is configured, the request path should match at least one of the regex patterns in the allowed list to be allowed for analytics writing.
+# If only excluded list is configured, and if the path matches any of the regex patterns in the excluded list, it will not be allowed for analytics writing. If it doesn't match any pattern in the excluded list, it will be allowed for analytics writing.
+# If both allowed and excluded lists are configured, and if the path matches any pattern in the excluded list, it will not be allowed for analytics writing. If it doesn't match any pattern in the excluded list, it should match at least one pattern in the allowed list to be allowed for analytics writing.
+# If both lists are empty, all API paths will be allowed for analytics writing by default.
+# 
+# The lists also support regex patterns. For example, if you want to allow all APIs under the "Patient" context, you can add "Patient/.*" to the allowed list. If you want to exclude all APIs under the "Observation" context, you can add "Observation/.*" to the excluded list.
+# If you want to allow only the "Patient" context and not "Patient/123", you can add "Patient" to the allowed list and "Patient/.*" to the excluded list.
+# 
+# In all the cases, the first match will be given priority. For example, if the allowed list has two regexes that matches the path, the first match will win.
+# 
+# + path - the API request path after removing the FHIR base path
+# + allowedList - the list of allowed API contexts configured for analytics writing
+# + excludedList - the list of excluded API contexts configured for analytics writing
+# + return - true if the request path matches the allowed/excluded API contexts for analytics writing
+isolated function isApiAllowed(string path, string[] allowedList, string[] excludedList) returns boolean|error? {
     
-    // If only included list is configured
-    if (includedList.length() > 0 && excludedList.length() == 0) {
+    // If only allowed list is configured
+    if (allowedList.length() > 0 && excludedList.length() == 0) {
 
-        boolean pathMatchesInIncludedList = false;
+        boolean pathMatchesInAllowedList = false;
 
-        // check included list and return
-        foreach string item in includedList {
+        // check allowed list and return
+        foreach string item in allowedList {
             string:RegExp pattern = check regexp:fromString(item);
             // return true at the earliest match found in the included list
             if (path.matches(pattern)) {
-                pathMatchesInIncludedList = true;
+                pathMatchesInAllowedList = true;
                 break;
             }
         }
-        return pathMatchesInIncludedList;
+        return pathMatchesInAllowedList;
     }
 
     // If only included list is configured
-    if (includedList.length() == 0 && excludedList.length() > 0) {
+    if (allowedList.length() == 0 && excludedList.length() > 0) {
 
         boolean pathMatchesInExcludedList = true;
 
@@ -442,16 +458,16 @@ isolated function isApiAllowed(string path, string[] includedList, string[] excl
         return pathMatchesInExcludedList;
     }
 
-    if (includedList.length() > 0 && excludedList.length() > 0) {
+    if (allowedList.length() > 0 && excludedList.length() > 0) {
 
-        boolean pathMatchesInIncludedList = false;
+        boolean pathMatchesInAlloweddList = false;
         boolean pathMatchesInExcludedList = false;
 
-        // check existance in included list
-        foreach string item in includedList {
-            string:RegExp includedPattern = check regexp:fromString(item);
-            if (path.matches(includedPattern)) {
-                pathMatchesInIncludedList = true;
+        // check existance in allowed list
+        foreach string item in allowedList {
+            string:RegExp allowedPattern = check regexp:fromString(item);
+            if (path.matches(allowedPattern)) {
+                pathMatchesInAlloweddList = true;
                 break;
             }
         }
@@ -466,9 +482,9 @@ isolated function isApiAllowed(string path, string[] includedList, string[] excl
         }
 
         // If path matches in both lists, don't allow
-        if pathMatchesInExcludedList && pathMatchesInIncludedList {
+        if pathMatchesInExcludedList && pathMatchesInAlloweddList {
             return false;
-        } else if pathMatchesInIncludedList {
+        } else if pathMatchesInAlloweddList {
             return true;
         } else if pathMatchesInExcludedList {
             return false;

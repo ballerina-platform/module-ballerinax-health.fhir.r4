@@ -93,8 +93,8 @@ public type AnalyticsConfig readonly & record {|
     boolean shouldPublishPayloads = false;
     string filePath;
     string fileName;
-    string[] allowedApiResources;
-    string[] excludedApiResources;
+    string[] allowedApiContexts;
+    string[] excludedApiContexts;
     AnalyticsPayloadEnrich enrichPayload?;
 |};
 
