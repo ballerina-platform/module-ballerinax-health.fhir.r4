@@ -82,14 +82,14 @@ isolated function rotateAnalyticsDataFile() {
 
     if previousDate is time:Civil {
         string date = string `${previousDate.year}-${previousDate.month}-${previousDate.day}`;
-        string currentLogFile = string:'join(analytics.filePath, file:pathSeparator, getFileNameBasedOnConfiguration(), LOG_FILE_EXTENSION);
-        string rotatedLogFile = string:'join(analytics.filePath, file:pathSeparator, getFileNameBasedOnConfiguration(), "-", date, LOG_FILE_EXTENSION);
+        string currentLogFile = analytics.filePath.concat(file:pathSeparator, getFileNameBasedOnConfiguration(), LOG_FILE_EXTENSION);
+        string rotatedLogFile = analytics.filePath.concat(file:pathSeparator, getFileNameBasedOnConfiguration(), "-", date, LOG_FILE_EXTENSION);
         
         // Check if the current log file exists
         boolean|error fileExists = file:test(currentLogFile, file:EXISTS);
         
         if fileExists is error {
-            log:printError(rotationErrorMessage, err = fileExists.toBalString());
+            log:printError(rotationErrorMessage, fileExists);
         } else {
             if fileExists {
                 // Rename the current log file with the date

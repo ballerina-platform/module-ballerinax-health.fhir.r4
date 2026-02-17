@@ -610,32 +610,32 @@ isolated function createFileIfNotExist() returns error? {
 
    boolean|error? dirExists = file:test(logFilePath, file:EXISTS);
     if dirExists is error {
-        log:printError("Error checking analytics log directory existence at " + logFilePath, err = dirExists.toBalString());
+        log:printError("Error checking analytics log directory existence at " + logFilePath, dirExists);
         return dirExists;
     } else {
         if dirExists is boolean && !dirExists {
             file:Error? dir = file:createDir(logFilePath, file:RECURSIVE);
             if dir is file:Error {
-                log:printError(string `Failed to create directory for analytics logs at ${logFilePath}. Analytics data will not be written.`, err = dir.toBalString());
+                log:printError(string `Failed to create directory for analytics logs at ${logFilePath}. Analytics data will not be written.`, dir);
                 return dir;
             }
             log:printDebug(string `Directory ${logFilePath} created`);
             error? creationError = file:create(logFileFullPath);
             if creationError is error {
-                log:printError(string `Configured directory ${logFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`, err = creationError.toBalString());
+                log:printError(string `Configured directory ${logFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`, creationError);
                 return creationError;
             }
             log:printDebug(string `File ${logFileName} created successfully inside directory ${logFilePath}`);
         } else {
             boolean|error? fileExists = isFileExist(logFileFullPath);
             if fileExists is error {
-                log:printError(string `Error checking analytics log file existence at ${logFileFullPath}`, err = fileExists.toBalString());
+                log:printError(string `Error checking analytics log file existence at ${logFileFullPath}`, fileExists);
                 return fileExists;
             } else {
                 if fileExists is boolean && !fileExists { // check and create directory and proceed
                     error? creationError = file:create(logFileFullPath);
                     if creationError is error {
-                        log:printError(string `Configured directory ${logFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`, err = creationError.toBalString()); //terminate
+                        log:printError(string `Configured directory ${logFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`, creationError); //terminate
                         return creationError;
                     }
                     log:printDebug(string `File ${logFileName} created successfully inside directory ${logFilePath}`);
@@ -712,7 +712,7 @@ isolated function getPreviousCivilDate() returns time:Civil|error? {
 
     time:Zone|error zone = time:loadSystemZone();
     if zone is error {
-        log:printError("Failed to load system time zone for scheduling file rotation task", err = zone.toBalString());
+        log:printError("Failed to load system time zone for scheduling file rotation task", zone);
         return zone;
     }
 
@@ -724,5 +724,4 @@ isolated function getPreviousCivilDate() returns time:Civil|error? {
     string previousDayCivilStr = check time:civilToString(previousDayCivil);
     time:Civil previousDayCivilFromStr = check time:civilFromString(previousDayCivilStr);    
     return previousDayCivilFromStr;
-    
 }

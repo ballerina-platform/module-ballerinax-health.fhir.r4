@@ -106,7 +106,7 @@ isolated service class AnalyticsResponseInterceptor {
         string|error xJWT = req.getHeader(X_JWT_HEADER);
         if xJWT is error {
             log:printDebug("[AnalyticsResponseInterceptor] Skipped writing analytics data. Missing x-jwt-assertion " +
-            "header.", err = xJWT.toBalString());
+            "header.", xJWT);
             return ctx.next();
         }
 
@@ -114,7 +114,7 @@ isolated service class AnalyticsResponseInterceptor {
         if dataToWrite is http:NextService || dataToWrite is error {
             if dataToWrite is error {
                 log:printDebug("[AnalyticsResponseInterceptor] Skipped writing analytics data. Error constructing " +
-                "analytics data record.", err = dataToWrite.toBalString());
+                "analytics data record.", dataToWrite);
             }
             return dataToWrite;
         }
@@ -146,13 +146,13 @@ public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, h
         (json|http:ClientError) & readonly requestPayload = req.getJsonPayload().cloneReadOnly();
         if requestPayload is http:ClientError {
             log:printDebug("[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read " +
-            "request payload.", err = requestPayload.toBalString());
+            "request payload.", requestPayload);
             return ctx.next();
         }
         (json|http:ClientError) & readonly responsePayload = res.getJsonPayload().cloneReadOnly();
         if responsePayload is http:ClientError {
             log:printDebug("[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read " +
-            "response payload.", err = responsePayload.toBalString());
+            "response payload.", responsePayload);
             return ctx.next();
         }
 
@@ -233,12 +233,11 @@ public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsD
         // Convert analytics data to JSON string
         json analyticsJson = analyticsData.toJson();
         string logLine = analyticsJson.toJsonString() + "\n";
-        string logFilePath = getFilePathBasedOnConfiguration() + file:pathSeparator + getFileNameBasedOnConfiguration() 
-        + LOG_FILE_EXTENSION;
+        string logFilePath = getFilePathBasedOnConfiguration().concat(file:pathSeparator, getFileNameBasedOnConfiguration(), LOG_FILE_EXTENSION);
         
         // Flow won't come to this point if we don't have a file to write to. Hence no checking required.
         check writeDataToFile(logFilePath, logLine);
-        log:printDebug(string `Successfully wrote the analytics data to file: ${getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION}`);
+        log:printDebug(string `Successfully wrote the analytics data to file: ${getFileNameBasedOnConfiguration().concat(LOG_FILE_EXTENSION)}`);
         return;
     }
 }
