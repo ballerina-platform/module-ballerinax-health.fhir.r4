@@ -318,24 +318,25 @@ isolated function getAnalyticsEnrichmentData(json data, http:Client|http:ClientE
 # Call the analytics data enrichment service to fetch additional information and enrich the analytics data
 # 
 # + analyticsData - The analytics data to enrich with additional information
-isolated function enrichAnalyticsData(map<string> analyticsData) {
+# + dataEnrichHttpClient - The HTTP client to use for fetching additional information
+isolated function enrichAnalyticsData(map<string> analyticsData, (http:Client|http:ClientError)? dataEnrichHttpClient) {
     
-    http:Client|http:ClientError? dataEnrichHttpClient;
+    // http:Client|http:ClientError? dataEnrichHttpClient;
 
-    final string? enrichAnalyticsDataUrl = analytics.enrichPayload?.url;
-    final string? username = analytics.enrichPayload?.username;
-    final string? password = analytics.enrichPayload?.password;
+    // final string? enrichAnalyticsDataUrl = analytics.enrichPayload?.url;
+    // final string? username = analytics.enrichPayload?.username;
+    // final string? password = analytics.enrichPayload?.password;
 
-    if enrichAnalyticsDataUrl is () {
-        dataEnrichHttpClient = ();
-    } else if username !is () && password !is () {
-        dataEnrichHttpClient = new (enrichAnalyticsDataUrl, auth = {
-            username: username,
-            password: password
-        });
-    } else {
-        dataEnrichHttpClient = new (enrichAnalyticsDataUrl);
-    }
+    // if enrichAnalyticsDataUrl is () || enrichAnalyticsDataUrl == "" {
+    //     dataEnrichHttpClient = ();
+    // } else if ((username !is () && password !is ()) && (username != "" && password != "")) {
+    //     dataEnrichHttpClient = new (enrichAnalyticsDataUrl, auth = {
+    //         username: username,
+    //         password: password
+    //     });
+    // } else {
+    //     dataEnrichHttpClient = new (enrichAnalyticsDataUrl);
+    // }
 
     if dataEnrichHttpClient !is http:ClientError && dataEnrichHttpClient is http:Client {
         json enrichmentData = getAnalyticsEnrichmentData(analyticsData.toJson(), dataEnrichHttpClient);
@@ -353,7 +354,7 @@ isolated function enrichAnalyticsData(map<string> analyticsData) {
 # Initialize the HTTP client for fetching analytics enrichment data based on the configuration
 # 
 # + return - An initialized HTTP client or an error if the client could not be created
-isolated function initializeEnrichmentHttpClient() returns http:Client?|http:ClientError? {
+isolated function initializeEnrichmentHttpClient() returns http:Client|http:ClientError? {
     http:Client?|http:ClientError? dataEnrichHttpClient;
 
     final string? enrichAnalyticsDataUrl = analytics.enrichPayload?.url;
@@ -362,7 +363,7 @@ isolated function initializeEnrichmentHttpClient() returns http:Client?|http:Cli
 
     if enrichAnalyticsDataUrl is () {
         dataEnrichHttpClient = ();
-    } else if username !is () && password !is () {
+    } else if ((username !is () && password !is ()) && (username != "" && password != "")) {
         dataEnrichHttpClient = new (enrichAnalyticsDataUrl, auth = {
             username: username,
             password: password
@@ -370,7 +371,7 @@ isolated function initializeEnrichmentHttpClient() returns http:Client?|http:Cli
     } else {
         dataEnrichHttpClient = new (enrichAnalyticsDataUrl);
     }
-    return dataEnrichHttpClient;
+    return check dataEnrichHttpClient;
 }
 
 

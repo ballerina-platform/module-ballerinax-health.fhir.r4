@@ -48,6 +48,8 @@ configurable AnalyticsPayloadEnrich analyticsPayloadEnrichConfig = {
     password: ""
 };
 
+isolated http:Client|http:ClientError? dataEnrichHttpClient = ();
+
 # AnalyticsResponseInterceptor is an HTTP response interceptor that writes analytics data to a configured log file.
 isolated service class AnalyticsResponseInterceptor {
     *http:ResponseInterceptor;
@@ -58,10 +60,24 @@ isolated service class AnalyticsResponseInterceptor {
     isolated function init(r4:ResourceAPIConfig apiConfig) {
         
         if analytics.enabled {
-            error? fileCreateError = createFileIfNotExist();
-            if fileCreateError is error {
-                log:printError("Failed to create log file.", fileCreateError);
-                return;
+            lock {
+                error? fileCreateError = createFileIfNotExist();
+                if fileCreateError is error {
+                    log:printError("Failed to create log file.", fileCreateError);
+                    return;
+                }
+
+                if analytics.shouldPublishPayloads == true {
+                    if analytics.enrichPayload is AnalyticsPayloadEnrich && analytics.enrichPayload?.enabled == true {
+                        if dataEnrichHttpClient is () {
+                            dataEnrichHttpClient = initializeEnrichmentHttpClient();
+                            if dataEnrichHttpClient is http:ClientError {
+                                log:printError(string `Failed to initialize data enrichment HTTP client.`);
+                                return;
+                            }
+                        }
+                    }
+                }
             }
             // Initialize the file rotator
             initFileRotator();
@@ -165,62 +181,64 @@ public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, h
 # + return - An error if writing fails
 public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsDataRecord) returns error? {
 
-    string jwt = analyticsDataRecord.requestHeaders.get(X_JWT_HEADER);
+    lock {
+        string jwt = analyticsDataRecord.requestHeaders.get(X_JWT_HEADER);
     
-    [jwt:Header, jwt:Payload]|error decodedJWT = decodeJWT(jwt);
-    if decodedJWT is error {
-        log:printError("[AnalyticsResponseInterceptor] Error decoding JWT token.", decodedJWT);
+        [jwt:Header, jwt:Payload]|error decodedJWT = decodeJWT(jwt);
+        if decodedJWT is error {
+            log:printError("[AnalyticsResponseInterceptor] Error decoding JWT token.", decodedJWT);
+            return;
+        }
+        [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
+
+        map<string> analyticsDataFromJwt = extractAnalyticsDataFromJWT(analytics.jwtAttributes, payload);
+        json requestHeadersJson = convertMapToJson(analyticsDataRecord.requestHeaders);
+        json responseHeadersJson = convertMapToJson(analyticsDataRecord.responseHeaders);
+        string? fhirUser = extractFhirUserFromJWT(payload);
+
+        // Enrich payload is only available if the payload publishing is enabled.
+        if analytics.shouldPublishPayloads == true {
+            // If analytics data enrichment is enabled, fetch and add to analytics data
+            if analytics.enrichPayload is AnalyticsPayloadEnrich && analytics.enrichPayload?.enabled == true {
+                enrichAnalyticsData(analyticsDataFromJwt, dataEnrichHttpClient);
+            }
+        }
+
+        // Construct the analytics data record
+        Request request = {
+            time: time:utcToString(time:utcNow()),
+            uri: analyticsDataRecord.requestPath,
+            verb: analyticsDataRecord.httpMethod,
+            headers: requestHeadersJson
+        };
+
+        Response response = {
+            time: time:utcToString(time:utcNow()),
+            headers: responseHeadersJson,
+            status: analyticsDataRecord.statusCode
+        };
+        request.body = analyticsDataRecord?.requestPayload;
+        response.body = analyticsDataRecord?.responsePayload;
+
+        AnalyticsData analyticsData = {
+            request: request,
+            response: response,
+            metadata: analyticsDataFromJwt
+        };
+
+        if fhirUser is string {
+            analyticsData.user_id = fhirUser;
+        }
+
+        // Convert analytics data to JSON string
+        json analyticsJson = analyticsData.toJson();
+        string logLine = analyticsJson.toJsonString() + "\n";
+        string logFilePath = getFilePathBasedOnConfiguration() + file:pathSeparator + getFileNameBasedOnConfiguration() 
+        + LOG_FILE_EXTENSION;
+        
+        // Flow won't come to this point if we don't have a file to write to. Hence no checking required.
+        check writeDataToFile(logFilePath, logLine);
+        log:printDebug(string `Successfully wrote the analytics data to file: ${getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION}`);
         return;
     }
-    [jwt:Header, jwt:Payload] [_, payload] = decodedJWT;
-
-    map<string> analyticsDataFromJwt = extractAnalyticsDataFromJWT(analytics.jwtAttributes, payload);
-    json requestHeadersJson = convertMapToJson(analyticsDataRecord.requestHeaders);
-    json responseHeadersJson = convertMapToJson(analyticsDataRecord.responseHeaders);
-    string? fhirUser = extractFhirUserFromJWT(payload);
-
-    // Enrich payload is only available if the payload publishing is enabled.
-    if analytics.shouldPublishPayloads == true {
-        // If analytics data enrichment is enabled, fetch and add to analytics data
-        if analytics.enrichPayload is AnalyticsPayloadEnrich && analytics.enrichPayload?.enabled == true {
-            enrichAnalyticsData(analyticsDataFromJwt);
-        }
-    }
-
-    // Construct the analytics data record
-    Request request = {
-        time: time:utcToString(time:utcNow()),
-        uri: analyticsDataRecord.requestPath,
-        verb: analyticsDataRecord.httpMethod,
-        headers: requestHeadersJson
-    };
-
-    Response response = {
-        time: time:utcToString(time:utcNow()),
-        headers: responseHeadersJson,
-        status: analyticsDataRecord.statusCode
-    };
-    request.body = analyticsDataRecord?.requestPayload;
-    response.body = analyticsDataRecord?.responsePayload;
-
-    AnalyticsData analyticsData = {
-        request: request,
-        response: response,
-        metadata: analyticsDataFromJwt
-    };
-
-    if fhirUser is string {
-        analyticsData.user_id = fhirUser;
-    }
-
-    // Convert analytics data to JSON string
-    json analyticsJson = analyticsData.toJson();
-    string logLine = analyticsJson.toJsonString() + "\n";
-    string logFilePath = getFilePathBasedOnConfiguration() + file:pathSeparator + getFileNameBasedOnConfiguration() 
-    + LOG_FILE_EXTENSION;
-    
-    // Flow won't come to this point if we don't have a file to write to. Hence no checking required.
-    check writeDataToFile(logFilePath, logLine);
-    log:printDebug(string `Successfully wrote the analytics data to file: ${getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION}`);
-    return;
 }
