@@ -582,7 +582,7 @@ isolated function convertMapToJson(map<string> data) returns json {
 # + return - The file path for analytics log
 isolated function getFilePathBasedOnConfiguration() returns string {
     if analytics.filePath == "" {
-        return LOG_FILE_DIRECTORY;
+        return DEFAULT_FILE_LOCATION;
     } else {
         return analytics.filePath;
     }

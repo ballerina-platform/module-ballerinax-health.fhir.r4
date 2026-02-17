@@ -82,8 +82,8 @@ isolated function rotateAnalyticsDataFile() {
 
     if previousDate is time:Civil {
         string date = string `${previousDate.year}-${previousDate.month}-${previousDate.day}`;
-        string currentLogFile = analytics.filePath.concat(file:pathSeparator, getFileNameBasedOnConfiguration(), LOG_FILE_EXTENSION);
-        string rotatedLogFile = analytics.filePath.concat(file:pathSeparator, getFileNameBasedOnConfiguration(), "-", date, LOG_FILE_EXTENSION);
+        string currentLogFile = string `${analytics.filePath}${file:pathSeparator}${getFileNameBasedOnConfiguration()}${LOG_FILE_EXTENSION}`;
+        string rotatedLogFile = string `${analytics.filePath}${file:pathSeparator}${getFileNameBasedOnConfiguration()}-${date}${LOG_FILE_EXTENSION}`;
         
         // Check if the current log file exists
         boolean|error fileExists = file:test(currentLogFile, file:EXISTS);

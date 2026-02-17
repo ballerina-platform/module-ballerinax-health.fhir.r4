@@ -233,8 +233,8 @@ public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsD
         // Convert analytics data to JSON string
         json analyticsJson = analyticsData.toJson();
         string logLine = analyticsJson.toJsonString() + "\n";
-        string logFilePath = getFilePathBasedOnConfiguration().concat(file:pathSeparator, getFileNameBasedOnConfiguration(), LOG_FILE_EXTENSION);
-        
+        string logFilePath = string `${getFilePathBasedOnConfiguration()}${file:pathSeparator}${getFileNameBasedOnConfiguration()}${LOG_FILE_EXTENSION}`;
+
         // Flow won't come to this point if we don't have a file to write to. Hence no checking required.
         check writeDataToFile(logFilePath, logLine);
         log:printDebug(string `Successfully wrote the analytics data to file: ${getFileNameBasedOnConfiguration().concat(LOG_FILE_EXTENSION)}`);
