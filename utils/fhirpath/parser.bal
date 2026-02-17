@@ -151,8 +151,8 @@ function parsePostfixExpression(ParserState state) returns [Expr?, ParserState] 
             if invocationExpr is IdentifierExpr {
                 currentExpr = createMemberAccessExpr(currentExpr, invocationExpr.name);
             } else if invocationExpr is FunctionExpr {
-                // For member function call, the object becomes the implicit first parameter
-                currentExpr = createFunctionExpr(invocationExpr.name, [currentExpr, ...invocationExpr.params]);
+                // For member function call, set the target to the left-hand expression
+                currentExpr = createFunctionExpr(invocationExpr.name, currentExpr, invocationExpr.params);
             } else {
                 return [(), newState];
             }
@@ -215,7 +215,7 @@ function parseInvocation(ParserState state) returns [Expr?, ParserState] {
             }
             newState = consumeResult[1];
 
-            return [createFunctionExpr(name, params), newState];
+            return [createFunctionExpr(name, (), params), newState];
         }
 
         // Just an identifier
@@ -318,7 +318,7 @@ function parsePrimary(ParserState state) returns [Expr?, ParserState] {
             }
             newState = consumeResult[1];
 
-            return [createFunctionExpr(name, params), newState];
+            return [createFunctionExpr(name, (), params), newState];
         }
 
         // Just an identifier

@@ -229,14 +229,30 @@ function applyIndex(json item, int index) returns RuntimeError|json[] {
 
 // Visit a function call expression (e.g., name.first())
 function visitFunctionExpr(FunctionExpr expr, json context) returns RuntimeError|json[] {
-    // TODO: Implement function calls
-    // Common FHIRPath functions:
-    // - first(), last()
-    // - where(condition)
-    // - exists(), empty()
-    // - count()
-    // etc.
-    return [];
+    // 1. Evaluate the target expression if it exists (e.g., Patient in Patient.where())
+    json[] targetResults;
+    Expr? targetExpr = expr.target;
+    if targetExpr is Expr {
+        RuntimeError|json[] evalResult = evaluate(targetExpr, context);
+        if evalResult is RuntimeError {
+            return evalResult;
+        }
+        targetResults = evalResult;
+    } else {
+        // No target means standalone function call - use context as-is
+        targetResults = wrapInCollection(context);
+    }
+
+    // 2. Apply the function based on its name
+    match expr.name {
+        "where" => {
+            return applyWhereFunction(targetResults, expr.params, context);
+        }
+        _ => {
+            // Unknown function
+            return [];
+        }
+    }
 }
 
 // Visit a binary expression (e.g., name = 'John' or age > 18)
@@ -381,6 +397,36 @@ function wrapInCollection(json value) returns json[] {
     }
     // Wrap single value in array
     return [value];
+}
+
+// FHIRPath function implementations
+
+// where(condition) - filters the collection to items where condition is true
+function applyWhereFunction(json[] collection, Expr[] params, json originalContext) returns RuntimeError|json[] {
+    // where() requires exactly one parameter (the condition expression)
+    if params.length() != 1 {
+        return [];
+    }
+
+    Expr conditionExpr = params[0];
+    json[] results = [];
+
+    // Evaluate the condition for each item in the collection
+    foreach json item in collection {
+        // Evaluate condition with item as the context
+        RuntimeError|json[] conditionResult = evaluate(conditionExpr, item);
+        
+        if conditionResult is RuntimeError {
+            return conditionResult;
+        }
+
+        // Include item if condition is truthy
+        if isTruthy(conditionResult) {
+            results.push(item);
+        }
+    }
+
+    return results;
 }
 
 // Report a FHIRPath runtime error

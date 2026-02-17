@@ -27,6 +27,7 @@ public type IdentifierExpr record {|
 public type FunctionExpr record {|
     "Function" kind;
     string name;
+    Expr? target; // The expression the function is called on (e.g., Patient in Patient.where())
     Expr[] params;
 |};
 
@@ -68,10 +69,11 @@ public function createIdentifierExpr(string name) returns IdentifierExpr {
     };
 }
 
-public function createFunctionExpr(string name, Expr[] params) returns FunctionExpr {
+public function createFunctionExpr(string name, Expr? target, Expr[] params) returns FunctionExpr {
     return {
         kind: "Function",
         name: name,
+        target: target,
         params: params
     };
 }
