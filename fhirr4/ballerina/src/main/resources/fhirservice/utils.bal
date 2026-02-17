@@ -702,3 +702,25 @@ isolated function addConsentContextToFHIRContext(string fhirResourceType, http:R
         }
     }
 }
+
+# Gets the civil date for the previous day
+# 
+# + return - civil date of the previous day
+isolated function getPreviousCivilDate() returns time:Civil|error? {
+
+    time:Zone|error zone = time:loadSystemZone();
+    if zone is error {
+        log:printError("Failed to load system time zone for scheduling file rotation task", err = zone.toBalString());
+        return zone;
+    }
+
+    // Adding less than a day is enough to get the previous date since we execute the job on midnight.
+    time:Utc previousDayUtc = time:utcAddSeconds(time:utcNow(), -43200);
+    time:Civil previousDayCivil = zone.utcToCivil(previousDayUtc);
+
+    //todo: Add the proper fix after fixing the issue: https://github.com/wso2-enterprise/wso2-integration-internal/issues/4614
+    string previousDayCivilStr = check time:civilToString(previousDayCivil);
+    time:Civil previousDayCivilFromStr = check time:civilFromString(previousDayCivilStr);    
+    return previousDayCivilFromStr;
+    
+}

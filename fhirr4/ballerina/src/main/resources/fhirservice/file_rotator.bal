@@ -74,36 +74,44 @@ public isolated function initFileRotator() {
 isolated function rotateAnalyticsDataFile() {
 
     // Get the date for the previous day
-    time:Utc utc = time:utcAddSeconds(time:utcNow(), -86400);
-    string date = time:utcToString(utc).substring(0, 10);
-    
-    string currentLogFile = analytics.filePath + file:pathSeparator + getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION;
-    string rotatedLogFile = analytics.filePath + file:pathSeparator + getFileNameBasedOnConfiguration() + "-" + date + LOG_FILE_EXTENSION;
-    
-    // Check if the current log file exists
-    boolean|error fileExists = file:test(currentLogFile, file:EXISTS);
-    
-    if fileExists is boolean { // do early error handle
-        if fileExists {
-            // Rename the current log file with the date
-            error? renamingError = file:rename(currentLogFile, rotatedLogFile);
-            if renamingError is error {
-                log:printError(rotationErrorMessage, err = renamingError.toBalString());
-                return;
+    time:Civil|error? previousDate = getPreviousCivilDate();
+    if previousDate is error {
+        log:printError("Failed to get the previous date for the file rotation task", err = previousDate.toBalString());
+        return;
+    }
+
+    string date;
+    if previousDate is time:Civil {
+        date = string `${previousDate.year}-${previousDate.month}-${previousDate.day}`;
+        string currentLogFile = analytics.filePath + file:pathSeparator + getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION;
+        string rotatedLogFile = analytics.filePath + file:pathSeparator + getFileNameBasedOnConfiguration() + "-" + date + LOG_FILE_EXTENSION;
+        
+        // Check if the current log file exists
+        boolean|error fileExists = file:test(currentLogFile, file:EXISTS);
+        
+        if fileExists is error {
+            log:printError(rotationErrorMessage, err = fileExists.toBalString());
+        } else { // do early error handle
+            if fileExists {
+                // Rename the current log file with the date
+                error? renamingError = file:rename(currentLogFile, rotatedLogFile);
+                if renamingError is error {
+                    log:printError(rotationErrorMessage, err = renamingError.toBalString());
+                    return;
+                }
+                log:printInfo(string `Log file rotated successfully to: ${rotatedLogFile}`);
+                
+                // Create a new empty analytics.log file
+                error? creationError = file:create(currentLogFile);
+                if creationError is error {
+                    log:printError(rotationErrorMessage, err = creationError.toBalString());
+                    return;
+                }
+                log:printInfo(string `New log file created: ${currentLogFile}`);
+            } else {
+               log:printWarn(string `No log file found to rotate at: ${currentLogFile}`);
+               return;
             }
-            log:printInfo(string `Log file rotated successfully to: ${rotatedLogFile}`);
-            
-            // Create a new empty analytics.log file
-            error? creationError = file:create(currentLogFile);
-            if creationError is error {
-                log:printError(rotationErrorMessage, err = creationError.toBalString());
-                return;
-            }
-            log:printInfo(string `New log file created: ${currentLogFile}`);
-        } else {
-            log:printWarn(string `No log file found to rotate at: ${currentLogFile}`);
         }
-    } else {
-        log:printError(rotationErrorMessage, err = fileExists.toBalString());
     }
 }
