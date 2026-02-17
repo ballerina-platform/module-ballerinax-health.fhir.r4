@@ -48,7 +48,7 @@ configurable AnalyticsPayloadEnrich analyticsPayloadEnrichConfig = {
     password: ""
 };
 
-# AnalyticsResponseInterceptor is an HTTP response interceptor that writes analytics data to "fhir-analytics.log" file.
+# AnalyticsResponseInterceptor is an HTTP response interceptor that writes analytics data to a configured log file.
 isolated service class AnalyticsResponseInterceptor {
     *http:ResponseInterceptor;
     
@@ -113,6 +113,12 @@ isolated service class AnalyticsResponseInterceptor {
     }
 }
 
+# Constructs the analytics data record from the HTTP request and response.
+# 
+# + ctx - The HTTP request context
+# + req - The HTTP request
+# + res - The HTTP response
+# + return - The constructed analytics data record or an error if construction fails
 public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, http:Request req, http:Response res) returns AnalyticsDataRecord|http:NextService|error? {
 
     map<string> & readonly requestHeaders = getRequestHeaders(req, true);
@@ -125,13 +131,13 @@ public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, h
         if requestPayload is http:ClientError {
             log:printDebug("[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read " +
             "request payload.", err = requestPayload.toBalString());
-            return ctx.next(); // skip this if we can't read the payload
+            return ctx.next();
         }
         (json|http:ClientError) & readonly responsePayload = res.getJsonPayload().cloneReadOnly();
         if responsePayload is http:ClientError {
             log:printDebug("[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read " +
             "response payload.", err = responsePayload.toBalString());
-            return ctx.next(); // skip this if we can't read the payload
+            return ctx.next();
         }
 
         return {
@@ -153,7 +159,11 @@ public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, h
     };
 }
 
-public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsDataRecord) returns error? { // check clientError
+# Writes the analytics data to a file.
+# 
+# + analyticsDataRecord - The analytics data record to write
+# + return - An error if writing fails
+public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsDataRecord) returns error? {
 
     string jwt = analyticsDataRecord.requestHeaders.get(X_JWT_HEADER);
     

@@ -406,13 +406,14 @@ isolated function isFileExist(string requestPath) returns boolean|error? {
 
 # Validate whether the incoming API request path matches the allowed/excluded API contexts configured for analytics writing and return the validation result
 # 
-# If only allowed list is configured, the request path should match at least one of the regex patterns in the allowed list to be allowed for analytics writing.
-# If only excluded list is configured, and if the path matches any of the regex patterns in the excluded list, it will not be allowed for analytics writing. If it doesn't match any pattern in the excluded list, it will be allowed for analytics writing.
-# If both allowed and excluded lists are configured, and if the path matches any pattern in the excluded list, it will not be allowed for analytics writing. If it doesn't match any pattern in the excluded list, it should match at least one pattern in the allowed list to be allowed for analytics writing.
-# If both lists are empty, all API paths will be allowed for analytics writing by default.
+# Only one list should be configured at a time.
 # 
-# The lists also support regex patterns. For example, if you want to allow all APIs under the "Patient" context, you can add "Patient/.*" to the allowed list. If you want to exclude all APIs under the "Observation" context, you can add "Observation/.*" to the excluded list.
-# If you want to allow only the "Patient" context and not "Patient/123", you can add "Patient" to the allowed list and "Patient/.*" to the excluded list.
+# When allowed list is configured, the request path should match at least one of the regex patterns in the allowed list to be allowed for analytics writing.
+# When excluded list is configured, and if the path matches any of the regex patterns in the excluded list, it will not be allowed for analytics writing.
+# 
+# If both allowed and excluded lists are configured, only the excluded list is considered for validation. If the request path matches any of the regex patterns in the excluded list, it will not be allowed for analytics writing, even if it matches a pattern in the allowed list.
+# 
+# The lists support regex patterns. For example, if you want to allow all APIs under the "Patient" context, you can add "Patient/.*" to the allowed list. If you want to exclude all APIs under the "Observation" context, you can add "Observation/.*" to the excluded list.
 # 
 # In all the cases, the first match will be given priority. For example, if the allowed list has two regexes that matches the path, the first match will win.
 # 
