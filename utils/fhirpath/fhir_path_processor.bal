@@ -32,13 +32,8 @@ configurable boolean createMissingPaths = false;
 # + fhirResource - Input FHIR resource
 # + fhirPathExpression - fhirpath expression to get values from
 # + validateInputFHIRResource - whether to validate the input FHIR resource (default = false)
-# + return - list of results of the fhirpath expression or FHIRPathError
-public isolated function getValuesFromFhirPath(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation) returns json[]|FHIRPathError {
-    // Input FHIR Path validation
-    if !validateFhirPath(fhirPathExpression) {
-        return createFhirPathError("Invalid FHIR Path expression", fhirPathExpression);
-    }
-
+# + return - list of results of the fhirpath expression or FhirpathScannerError or FhirpathParserError or FhirpathInterpreterError or FHIRPathError
+public function getValuesFromFhirPath(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation) returns json[]|FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError|FHIRPathError {
     // Validate input FHIR resource and throw error if invalid
     if validateInputFHIRResource {
         check validateFhirResource(fhirResource);
@@ -48,24 +43,31 @@ public isolated function getValuesFromFhirPath(json fhirResource, string fhirPat
         return createFhirPathError("FHIR resource must be a JSON object", fhirPathExpression);
     }
 
-    // Parse tokens once
-    Token[]|error tokenRecords = getTokens(fhirResource, fhirPathExpression);
-    if tokenRecords is error {
-        log:printDebug("Token parsing failed", fhirPath = fhirPathExpression);
-        return createFhirPathError(tokenRecords.message(), fhirPathExpression);
+    // Scan tokens
+    FhirpathScannerError|FhirPathToken[] scanResult = scanTokens(fhirPathExpression);
+    if scanResult is FhirpathScannerError {
+        return scanResult;
+    }
+    FhirPathToken[] tokens = scanResult;
+
+    // Parse expression
+    FhirpathParserError|Expr? parseResult = parse(tokens);
+    if parseResult is FhirpathParserError {
+        return parseResult;
+    }
+    Expr? expr = parseResult;
+    if expr is () {
+        log:printDebug("Parsing failed", fhirPath = fhirPathExpression);
+        return createFhirPathError("Failed to parse FHIRPath expression", fhirPathExpression);
     }
 
-    // Use recursive evaluation
-    json|error evaluationResult = evaluateRecursively(fhirResource, tokenRecords, 0);
-    if evaluationResult is error {
-        return createFhirPathError(evaluationResult.message(), fhirPathExpression);
-    }
-
-    // Format the return value to always return a list of jsons.
-    if evaluationResult is json[] {
+    // Interpret the expression
+    FhirpathInterpreterError|json[] evaluationResult = interpret(expr, fhirResource);
+    if evaluationResult is FhirpathInterpreterError {
         return evaluationResult;
     }
-    return [evaluationResult];
+
+    return evaluationResult;
 }
 
 # Updates a FHIR resource at the specified FHIRPath with either a new value or by applying a ModificationFunction
