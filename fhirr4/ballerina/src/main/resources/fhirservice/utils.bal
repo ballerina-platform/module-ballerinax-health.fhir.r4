@@ -321,23 +321,6 @@ isolated function getAnalyticsEnrichmentData(json data, http:Client|http:ClientE
 # + dataEnrichHttpClient - The HTTP client to use for fetching additional information
 isolated function enrichAnalyticsData(map<string> analyticsData, (http:Client|http:ClientError)? dataEnrichHttpClient) {
     
-    // http:Client|http:ClientError? dataEnrichHttpClient;
-
-    // final string? enrichAnalyticsDataUrl = analytics.enrichPayload?.url;
-    // final string? username = analytics.enrichPayload?.username;
-    // final string? password = analytics.enrichPayload?.password;
-
-    // if enrichAnalyticsDataUrl is () || enrichAnalyticsDataUrl == "" {
-    //     dataEnrichHttpClient = ();
-    // } else if ((username !is () && password !is ()) && (username != "" && password != "")) {
-    //     dataEnrichHttpClient = new (enrichAnalyticsDataUrl, auth = {
-    //         username: username,
-    //         password: password
-    //     });
-    // } else {
-    //     dataEnrichHttpClient = new (enrichAnalyticsDataUrl);
-    // }
-
     if dataEnrichHttpClient !is http:ClientError && dataEnrichHttpClient is http:Client {
         json enrichmentData = getAnalyticsEnrichmentData(analyticsData.toJson(), dataEnrichHttpClient);
         log:printDebug(`[AnalyticsResponseInterceptor] Analytics enrichment data fetched from: ${analytics.enrichPayload?.url} [Enrichment Data]: ${enrichmentData.toString()}`);
