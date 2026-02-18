@@ -1,27 +1,20 @@
 // Interpreter for FHIRPath expressions
 
-import ballerina/io;
-
 // Runtime error type for FHIRPath
-public type RuntimeError record {|
+type InterpreterError record {|
     FhirPathToken token;
-    string message;
 |};
 
+public type FhirpathInterpreterError distinct error<InterpreterError>;
+
 // Interpret a FHIRPath expression with a JSON context object
-public function interpret(Expr expression, json context) returns RuntimeError|json[] {
-    RuntimeError|json[] value = evaluate(expression, context);
-
-    if value is RuntimeError {
-        reportRuntimeError(value);
-        return value;
-    }
-
+public function interpret(Expr expression, json context) returns FhirpathInterpreterError|json[] {
+    FhirpathInterpreterError|json[] value = evaluate(expression, context);
     return value;
 }
 
 // Evaluate a FHIRPath expression
-function evaluate(Expr expr, json context) returns RuntimeError|json[] {
+function evaluate(Expr expr, json context) returns FhirpathInterpreterError|json[] {
     match expr.kind {
         "Literal" => {
             return visitLiteralExpr(<LiteralExpr>expr, context);
@@ -56,7 +49,7 @@ function visitLiteralExpr(LiteralExpr expr, json context) returns json[] {
 }
 
 // Visit an identifier expression
-function visitIdentifierExpr(IdentifierExpr expr, json context) returns RuntimeError|json[] {
+function visitIdentifierExpr(IdentifierExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // Identifier accesses a property from the context
     // This handles the first level access, e.g., "name" in context
     if context is () {
@@ -89,20 +82,20 @@ function visitIdentifierExpr(IdentifierExpr expr, json context) returns RuntimeE
 }
 
 // Visit a member access expression (e.g., Patient.name, name.given)
-function visitMemberAccessExpr(MemberAccessExpr expr, json context) returns RuntimeError|json[] {
+function visitMemberAccessExpr(MemberAccessExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate the target expression to get a collection of results
-    RuntimeError|json[] targetResults = evaluate(expr.target, context);
+    FhirpathInterpreterError|json[] targetResults = evaluate(expr.target, context);
 
-    if targetResults is RuntimeError {
+    if targetResults is FhirpathInterpreterError {
         return targetResults;
     }
 
     // 2. For each result in the collection, access the member property
     json[] results = [];
     foreach json item in targetResults {
-        RuntimeError|json[] memberResults = accessMember(item, expr.member);
+        FhirpathInterpreterError|json[] memberResults = accessMember(item, expr.member);
 
-        if memberResults is RuntimeError {
+        if memberResults is FhirpathInterpreterError {
             return memberResults;
         }
 
@@ -117,7 +110,7 @@ function visitMemberAccessExpr(MemberAccessExpr expr, json context) returns Runt
 
 // Access a member property from a JSON value
 // Returns a collection of results (could be empty, single, or multiple values)
-function accessMember(json item, string memberName) returns RuntimeError|json[] {
+function accessMember(json item, string memberName) returns FhirpathInterpreterError|json[] {
     // Handle null/nil
     if item is () {
         return [];
@@ -136,9 +129,9 @@ function accessMember(json item, string memberName) returns RuntimeError|json[] 
     if item is json[] {
         json[] results = [];
         foreach json element in item {
-            RuntimeError|json[] elementResults = accessMember(element, memberName);
+            FhirpathInterpreterError|json[] elementResults = accessMember(element, memberName);
 
-            if elementResults is RuntimeError {
+            if elementResults is FhirpathInterpreterError {
                 return elementResults;
             }
 
@@ -154,17 +147,17 @@ function accessMember(json item, string memberName) returns RuntimeError|json[] 
 }
 
 // Visit an indexer expression (e.g., Patient.name[0], given[1])
-function visitIndexerExpr(IndexerExpr expr, json context) returns RuntimeError|json[] {
+function visitIndexerExpr(IndexerExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate the target expression to get a collection
-    RuntimeError|json[] targetResults = evaluate(expr.target, context);
+    FhirpathInterpreterError|json[] targetResults = evaluate(expr.target, context);
 
-    if targetResults is RuntimeError {
+    if targetResults is FhirpathInterpreterError {
         return targetResults;
     }
     // 2. Evaluate the index expression to get the index value
-    RuntimeError|json[] indexResults = evaluate(expr.index, context);
+    FhirpathInterpreterError|json[] indexResults = evaluate(expr.index, context);
 
-    if indexResults is RuntimeError {
+    if indexResults is FhirpathInterpreterError {
         return indexResults;
     }
 
@@ -203,7 +196,7 @@ function visitIndexerExpr(IndexerExpr expr, json context) returns RuntimeError|j
 
 // Apply array indexing to a JSON value
 // Returns the element at the specified index if the value is an array
-function applyIndex(json item, int index) returns RuntimeError|json[] {
+function applyIndex(json item, int index) returns FhirpathInterpreterError|json[] {
     // Handle null/nil
     if item is () {
         return [];
@@ -228,13 +221,13 @@ function applyIndex(json item, int index) returns RuntimeError|json[] {
 }
 
 // Visit a function call expression (e.g., name.first())
-function visitFunctionExpr(FunctionExpr expr, json context) returns RuntimeError|json[] {
+function visitFunctionExpr(FunctionExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate the target expression if it exists (e.g., Patient in Patient.where())
     json[] targetResults;
     Expr? targetExpr = expr.target;
     if targetExpr is Expr {
-        RuntimeError|json[] evalResult = evaluate(targetExpr, context);
-        if evalResult is RuntimeError {
+        FhirpathInterpreterError|json[] evalResult = evaluate(targetExpr, context);
+        if evalResult is FhirpathInterpreterError {
             return evalResult;
         }
         targetResults = evalResult;
@@ -256,15 +249,15 @@ function visitFunctionExpr(FunctionExpr expr, json context) returns RuntimeError
 }
 
 // Visit a binary expression (e.g., name = 'John' or age > 18)
-function visitBinaryExpr(BinaryExpr expr, json context) returns RuntimeError|json[] {
+function visitBinaryExpr(BinaryExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate left and right expressions
-    RuntimeError|json[] leftResults = evaluate(expr.left, context);
-    if leftResults is RuntimeError {
+    FhirpathInterpreterError|json[] leftResults = evaluate(expr.left, context);
+    if leftResults is FhirpathInterpreterError {
         return leftResults;
     }
 
-    RuntimeError|json[] rightResults = evaluate(expr.right, context);
-    if rightResults is RuntimeError {
+    FhirpathInterpreterError|json[] rightResults = evaluate(expr.right, context);
+    if rightResults is FhirpathInterpreterError {
         return rightResults;
     }
 
@@ -289,10 +282,8 @@ function visitBinaryExpr(BinaryExpr expr, json context) returns RuntimeError|jso
         }
         _ => {
             // Unknown operator
-            return {
-                token: expr.operator,
-                message: string `Unknown binary operator: ${expr.operator.lexeme}`
-            };
+            return error FhirpathInterpreterError(string `Unknown binary operator: ${expr.operator.lexeme}`,
+                token = expr.operator);
         }
     }
 }
@@ -402,7 +393,7 @@ function wrapInCollection(json value) returns json[] {
 // FHIRPath function implementations
 
 // where(condition) - filters the collection to items where condition is true
-function applyWhereFunction(json[] collection, Expr[] params, json originalContext) returns RuntimeError|json[] {
+function applyWhereFunction(json[] collection, Expr[] params, json originalContext) returns FhirpathInterpreterError|json[] {
     // where() requires exactly one parameter (the condition expression)
     if params.length() != 1 {
         return [];
@@ -414,9 +405,9 @@ function applyWhereFunction(json[] collection, Expr[] params, json originalConte
     // Evaluate the condition for each item in the collection
     foreach json item in collection {
         // Evaluate condition with item as the context
-        RuntimeError|json[] conditionResult = evaluate(conditionExpr, item);
-        
-        if conditionResult is RuntimeError {
+        FhirpathInterpreterError|json[] conditionResult = evaluate(conditionExpr, item);
+
+        if conditionResult is FhirpathInterpreterError {
             return conditionResult;
         }
 
@@ -428,9 +419,3 @@ function applyWhereFunction(json[] collection, Expr[] params, json originalConte
 
     return results;
 }
-
-// Report a FHIRPath runtime error
-function reportRuntimeError(RuntimeError err) {
-    io:println(string `FHIRPath Error: ${err.message}\n[line ${err.token.line}, position ${err.token.position}]`);
-}
-
