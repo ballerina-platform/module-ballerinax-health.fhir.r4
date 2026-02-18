@@ -1,3 +1,10 @@
+// Scanner error type for FHIRPath
+type ScannerError record {|
+    int position;
+|};
+
+public type FhirpathScannerError distinct error<ScannerError>;
+
 // Scanner state record
 type ScannerState record {|
     string sourceCode;
@@ -25,12 +32,16 @@ function createScannerState(string sourceCode) returns ScannerState {
 }
 
 // Main scanning function
-public function scanTokens(string sourceCode) returns FhirPathToken[] {
+public function scanTokens(string sourceCode) returns FhirpathScannerError|FhirPathToken[] {
     ScannerState state = createScannerState(sourceCode);
 
     while !isScannerAtEnd(state) {
         state.startIndex = state.current;
-        state = scanToken(state);
+        FhirpathScannerError|ScannerState result = scanToken(state);
+        if result is FhirpathScannerError {
+            return result;
+        }
+        state = result;
     }
 
     state.tokens.push(createToken(EOF, "", (), state.current));
@@ -38,7 +49,7 @@ public function scanTokens(string sourceCode) returns FhirPathToken[] {
 }
 
 // Scan a single token
-function scanToken(ScannerState state) returns ScannerState {
+function scanToken(ScannerState state) returns FhirpathScannerError|ScannerState {
     [string, ScannerState] result = advanceScanner(state);
     string c = result[0];
     ScannerState newState = result[1];
@@ -62,8 +73,8 @@ function scanToken(ScannerState state) returns ScannerState {
         if matchResult[0] {
             return addToken(matchResult[1], BANG_EQUAL);
         } else {
-            reportError(newState.current, "Unexpected character '!'.");
-            return matchResult[1];
+            return error FhirpathScannerError("Unexpected character '!'.",
+                position = newState.current);
         }
     } else if c == " " || c == "\r" || c == "\t" {
         // Ignore whitespace
@@ -80,8 +91,8 @@ function scanToken(ScannerState state) returns ScannerState {
     } else if isAlpha(c) {
         return scanIdentifier(newState);
     } else {
-        reportError(newState.current, "Unexpected character.");
-        return newState;
+        return error FhirpathScannerError("Unexpected character.",
+            position = newState.current);
     }
 }
 
@@ -100,7 +111,7 @@ function scanIdentifier(ScannerState state) returns ScannerState {
 }
 
 // Scan delimited identifier (backtick-delimited)
-function scanDelimitedIdentifier(ScannerState state) returns ScannerState {
+function scanDelimitedIdentifier(ScannerState state) returns FhirpathScannerError|ScannerState {
     ScannerState newState = state;
     while peekScanner(newState) != "`" && !isScannerAtEnd(newState) {
         // Handle escape sequences
@@ -118,8 +129,8 @@ function scanDelimitedIdentifier(ScannerState state) returns ScannerState {
     }
 
     if isScannerAtEnd(newState) {
-        reportError(newState.current, "Unterminated delimited identifier.");
-        return newState;
+        return error FhirpathScannerError("Unterminated delimited identifier.",
+            position = newState.current);
     }
 
     // The closing `
@@ -160,7 +171,7 @@ function scanNumber(ScannerState state) returns ScannerState {
 }
 
 // Scan string (single-quote delimited)
-function scanString(ScannerState state) returns ScannerState {
+function scanString(ScannerState state) returns FhirpathScannerError|ScannerState {
     ScannerState newState = state;
     while peekScanner(newState) != "'" && !isScannerAtEnd(newState) {
         // Handle escape sequences
@@ -178,8 +189,8 @@ function scanString(ScannerState state) returns ScannerState {
     }
 
     if isScannerAtEnd(newState) {
-        reportError(newState.current, "Unterminated string.");
-        return newState;
+        return error FhirpathScannerError("Unterminated string.",
+            position = newState.current);
     }
 
     // The closing '
