@@ -141,37 +141,64 @@ public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, h
     map<string> & readonly responseHeaders = getResponseHeaders(res);
     int statusCode = res.statusCode;
     string requestPath  = req.rawPath;
+    string httpMethod = req.method;
 
     if analytics.shouldPublishPayloads {
         (json|http:ClientError) & readonly requestPayload = req.getJsonPayload().cloneReadOnly();
         if requestPayload is http:ClientError {
-            log:printDebug("[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read " +
-            "request payload.", requestPayload);
-            return ctx.next();
+            // This means a payload is not present
+            requestPayload = ();
         }
         (json|http:ClientError) & readonly responsePayload = res.getJsonPayload().cloneReadOnly();
         if responsePayload is http:ClientError {
-            log:printDebug("[AnalyticsResponseInterceptor] Skipped writing analytics data. Error: Unable to read " +
-            "response payload.", responsePayload);
-            return ctx.next();
+            // This means a payload is not present
+            responsePayload = ();
         }
 
-        return {
-            requestHeaders: requestHeaders,
-            responseHeaders: responseHeaders,
-            statusCode: statusCode,
-            requestPath: requestPath,
-            httpMethod: req.method,
-            requestPayload: requestPayload,
-            responsePayload: responsePayload
-        };
+        if requestPayload is () && responsePayload is () {
+            return {
+                requestHeaders: requestHeaders,
+                responseHeaders: responseHeaders,
+                statusCode: statusCode,
+                requestPath: requestPath,
+                httpMethod: httpMethod
+            };
+        } else if (requestPayload is json) && responsePayload is () {
+            return {
+                requestHeaders: requestHeaders,
+                responseHeaders: responseHeaders,
+                statusCode: statusCode,
+                requestPath: requestPath,
+                httpMethod: httpMethod,
+                requestPayload: requestPayload
+            };
+        } else if (requestPayload is () && responsePayload is json) {
+            return {
+                requestHeaders: requestHeaders,
+                responseHeaders: responseHeaders,
+                statusCode: statusCode,
+                requestPath: requestPath,
+                httpMethod: httpMethod,
+                responsePayload: responsePayload
+            };
+        } else if (requestPayload is json && responsePayload is json) {
+            return {
+                requestHeaders: requestHeaders,
+                responseHeaders: responseHeaders,
+                statusCode: statusCode,
+                requestPath: requestPath,
+                httpMethod: httpMethod,
+                requestPayload: requestPayload,
+                responsePayload: responsePayload
+            };
+        }
     }
     return {
         requestHeaders: requestHeaders,
         responseHeaders: responseHeaders,
         statusCode: statusCode,
         requestPath: requestPath,
-        httpMethod: req.method
+        httpMethod: httpMethod
     };
 }
 
