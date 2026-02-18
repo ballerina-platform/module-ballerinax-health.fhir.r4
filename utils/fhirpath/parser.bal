@@ -8,9 +8,17 @@ type ParserState record {|
 
 // Parser error type
 type ParseError record {|
-    string message;
     FhirPathToken token;
 |};
+
+public type FhirpathParserError distinct error<ParseError>;
+
+// Type aliases for return types
+type ParseResult [Expr?, ParserState];
+
+type ParseParamListResult [Expr[], ParserState];
+
+type ConsumeResult [boolean, ParserState];
 
 // Create parser state
 function createParserState(FhirPathToken[] tokens) returns ParserState {
@@ -21,20 +29,26 @@ function createParserState(FhirPathToken[] tokens) returns ParserState {
 }
 
 // Main parse function
-public function parse(FhirPathToken[] tokens) returns Expr? {
+public function parse(FhirPathToken[] tokens) returns FhirpathParserError|Expr? {
     ParserState state = createParserState(tokens);
-    [Expr?, ParserState] result = Expression(state);
+    FhirpathParserError|ParseResult result = Expression(state);
+    if result is FhirpathParserError {
+        return result;
+    }
     return result[0];
 }
 
 // expression -> orExpression
-function Expression(ParserState state) returns [Expr?, ParserState] {
+function Expression(ParserState state) returns FhirpathParserError|ParseResult {
     return parseOrExpression(state);
 }
 
 // orExpression -> andExpression ( ( "or" | "xor" ) andExpression )*
-function parseOrExpression(ParserState state) returns [Expr?, ParserState] {
-    [Expr?, ParserState] result = parseAndExpression(state);
+function parseOrExpression(ParserState state) returns FhirpathParserError|[Expr?, ParserState] {
+    FhirpathParserError|ParseResult result = parseAndExpression(state);
+    if result is FhirpathParserError {
+        return result;
+    }
     Expr? expr = result[0];
     ParserState newState = result[1];
 
@@ -47,7 +61,10 @@ function parseOrExpression(ParserState state) returns [Expr?, ParserState] {
     while matchResult[0] {
         newState = matchResult[1];
         FhirPathToken operator = previousparse(newState);
-        [Expr?, ParserState] rightResult = parseAndExpression(newState);
+        FhirpathParserError|ParseResult rightResult = parseAndExpression(newState);
+        if rightResult is FhirpathParserError {
+            return rightResult;
+        }
         Expr? right = rightResult[0];
         newState = rightResult[1];
 
@@ -62,8 +79,11 @@ function parseOrExpression(ParserState state) returns [Expr?, ParserState] {
 }
 
 // andExpression -> equalityExpression ( "and" equalityExpression )*
-function parseAndExpression(ParserState state) returns [Expr?, ParserState] {
-    [Expr?, ParserState] result = parseEqualityExpression(state);
+function parseAndExpression(ParserState state) returns FhirpathParserError|ParseResult {
+    FhirpathParserError|ParseResult result = parseEqualityExpression(state);
+    if result is FhirpathParserError {
+        return result;
+    }
     Expr? expr = result[0];
     ParserState newState = result[1];
 
@@ -76,7 +96,10 @@ function parseAndExpression(ParserState state) returns [Expr?, ParserState] {
     while matchResult[0] {
         newState = matchResult[1];
         FhirPathToken operator = previousparse(newState);
-        [Expr?, ParserState] rightResult = parseEqualityExpression(newState);
+        FhirpathParserError|ParseResult rightResult = parseEqualityExpression(newState);
+        if rightResult is FhirpathParserError {
+            return rightResult;
+        }
         Expr? right = rightResult[0];
         newState = rightResult[1];
 
@@ -91,8 +114,11 @@ function parseAndExpression(ParserState state) returns [Expr?, ParserState] {
 }
 
 // equalityExpression -> postfixExpression ( ( "=" | "!=" ) postfixExpression )*
-function parseEqualityExpression(ParserState state) returns [Expr?, ParserState] {
-    [Expr?, ParserState] result = parsePostfixExpression(state);
+function parseEqualityExpression(ParserState state) returns FhirpathParserError|ParseResult {
+    FhirpathParserError|ParseResult result = parsePostfixExpression(state);
+    if result is FhirpathParserError {
+        return result;
+    }
     Expr? expr = result[0];
     ParserState newState = result[1];
 
@@ -105,7 +131,10 @@ function parseEqualityExpression(ParserState state) returns [Expr?, ParserState]
     while matchResult[0] {
         newState = matchResult[1];
         FhirPathToken operator = previousparse(newState);
-        [Expr?, ParserState] rightResult = parsePostfixExpression(newState);
+        FhirpathParserError|ParseResult rightResult = parsePostfixExpression(newState);
+        if rightResult is FhirpathParserError {
+            return rightResult;
+        }
         Expr? right = rightResult[0];
         newState = rightResult[1];
 
@@ -121,8 +150,11 @@ function parseEqualityExpression(ParserState state) returns [Expr?, ParserState]
 
 // postfixExpression -> primary ( postfixOp )*
 // postfixOp -> "." invocation | "[" expression "]"
-function parsePostfixExpression(ParserState state) returns [Expr?, ParserState] {
-    [Expr?, ParserState] result = parsePrimary(state);
+function parsePostfixExpression(ParserState state) returns FhirpathParserError|ParseResult {
+    FhirpathParserError|ParseResult result = parsePrimary(state);
+    if result is FhirpathParserError {
+        return result;
+    }
     Expr? expr = result[0];
     ParserState newState = result[1];
 
@@ -139,7 +171,10 @@ function parsePostfixExpression(ParserState state) returns [Expr?, ParserState] 
         if dotMatch[0] {
             newState = dotMatch[1];
             // invocation -> identifier | function
-            [Expr?, ParserState] invocationResult = parseInvocation(newState);
+            FhirpathParserError|ParseResult invocationResult = parseInvocation(newState);
+            if invocationResult is FhirpathParserError {
+                return invocationResult;
+            }
             Expr? invocationExpr = invocationResult[0];
             newState = invocationResult[1];
 
@@ -163,7 +198,10 @@ function parsePostfixExpression(ParserState state) returns [Expr?, ParserState] 
         [boolean, ParserState] bracketMatch = matchToken(newState, LEFT_BRACKET);
         if bracketMatch[0] {
             newState = bracketMatch[1];
-            [Expr?, ParserState] indexResult = Expression(newState);
+            FhirpathParserError|ParseResult indexResult = Expression(newState);
+            if indexResult is FhirpathParserError {
+                return indexResult;
+            }
             Expr? indexExpr = indexResult[0];
             newState = indexResult[1];
 
@@ -171,7 +209,10 @@ function parsePostfixExpression(ParserState state) returns [Expr?, ParserState] 
                 return [(), newState];
             }
 
-            [boolean, ParserState] consumeResult = consumeparse(newState, RIGHT_BRACKET, "Expect ']' after index expression.");
+            FhirpathParserError|ConsumeResult consumeResult = consumeparse(newState, RIGHT_BRACKET, "Expect ']' after index expression.");
+            if consumeResult is FhirpathParserError {
+                return consumeResult;
+            }
             if !consumeResult[0] {
                 return [(), consumeResult[1]];
             }
@@ -188,7 +229,7 @@ function parsePostfixExpression(ParserState state) returns [Expr?, ParserState] 
 }
 
 // invocation -> identifier | function
-function parseInvocation(ParserState state) returns [Expr?, ParserState] {
+function parseInvocation(ParserState state) returns FhirpathParserError|ParseResult {
     // Try to parse as identifier or function
     [boolean, ParserState] idMatch = matchToken(state, IDENTIFIER, DELIMITED_IDENTIFIER);
     if idMatch[0] {
@@ -205,11 +246,17 @@ function parseInvocation(ParserState state) returns [Expr?, ParserState] {
         if parenMatch[0] {
             newState = parenMatch[1];
             // Parse parameter list
-            [Expr[], ParserState] paramsResult = parseParamList(newState);
+            FhirpathParserError|ParseParamListResult paramsResult = parseParamList(newState);
+            if paramsResult is FhirpathParserError {
+                return paramsResult;
+            }
             Expr[] params = paramsResult[0];
             newState = paramsResult[1];
 
-            [boolean, ParserState] consumeResult = consumeparse(newState, RIGHT_PAREN, "Expect ')' after parameters.");
+            FhirpathParserError|ConsumeResult consumeResult = consumeparse(newState, RIGHT_PAREN, "Expect ')' after parameters.");
+            if consumeResult is FhirpathParserError {
+                return consumeResult;
+            }
             if !consumeResult[0] {
                 return [(), consumeResult[1]];
             }
@@ -222,12 +269,13 @@ function parseInvocation(ParserState state) returns [Expr?, ParserState] {
         return [createIdentifierExpr(name), newState];
     }
 
-    reportParseError(peekparse(state), "Expect identifier or function.");
-    return [(), state];
+    FhirPathToken token = peekparse(state);
+    return error FhirpathParserError("Expect identifier or function.",
+        token = token);
 }
 
 // paramList -> expression ( "," expression )*
-function parseParamList(ParserState state) returns [Expr[], ParserState] {
+function parseParamList(ParserState state) returns FhirpathParserError|ParseParamListResult {
     Expr[] params = [];
     ParserState newState = state;
 
@@ -236,7 +284,10 @@ function parseParamList(ParserState state) returns [Expr[], ParserState] {
         return [params, newState];
     }
 
-    [Expr?, ParserState] exprResult = Expression(newState);
+    FhirpathParserError|ParseResult exprResult = Expression(newState);
+    if exprResult is FhirpathParserError {
+        return exprResult;
+    }
     Expr? expr = exprResult[0];
     newState = exprResult[1];
 
@@ -249,7 +300,10 @@ function parseParamList(ParserState state) returns [Expr[], ParserState] {
     [boolean, ParserState] matchResult = matchToken(newState, COMMA);
     while matchResult[0] {
         newState = matchResult[1];
-        [Expr?, ParserState] nextResult = Expression(newState);
+        FhirpathParserError|ParseResult nextResult = Expression(newState);
+        if nextResult is FhirpathParserError {
+            return nextResult;
+        }
         Expr? nextExpr = nextResult[0];
         newState = nextResult[1];
 
@@ -265,7 +319,7 @@ function parseParamList(ParserState state) returns [Expr[], ParserState] {
 }
 
 // primary -> literal | function | identifier
-function parsePrimary(ParserState state) returns [Expr?, ParserState] {
+function parsePrimary(ParserState state) returns FhirpathParserError|ParseResult {
     // Literals
     [boolean, ParserState] matchResult = matchToken(state, FALSE);
     if matchResult[0] {
@@ -308,11 +362,17 @@ function parsePrimary(ParserState state) returns [Expr?, ParserState] {
         if parenMatch[0] {
             newState = parenMatch[1];
             // Parse parameter list
-            [Expr[], ParserState] paramsResult = parseParamList(newState);
+            FhirpathParserError|ParseParamListResult paramsResult = parseParamList(newState);
+            if paramsResult is FhirpathParserError {
+                return paramsResult;
+            }
             Expr[] params = paramsResult[0];
             newState = paramsResult[1];
 
-            [boolean, ParserState] consumeResult = consumeparse(newState, RIGHT_PAREN, "Expect ')' after parameters.");
+            FhirpathParserError|ConsumeResult consumeResult = consumeparse(newState, RIGHT_PAREN, "Expect ')' after parameters.");
+            if consumeResult is FhirpathParserError {
+                return consumeResult;
+            }
             if !consumeResult[0] {
                 return [(), consumeResult[1]];
             }
@@ -325,8 +385,9 @@ function parsePrimary(ParserState state) returns [Expr?, ParserState] {
         return [createIdentifierExpr(name), newState];
     }
 
-    reportParseError(peekparse(state), "Expect expression.");
-    return [(), state];
+    FhirPathToken token = peekparse(state);
+    return error FhirpathParserError("Expect expression.",
+        token = token);
 }
 
 // Helper functions
@@ -340,13 +401,14 @@ function matchToken(ParserState state, TokenType... types) returns [boolean, Par
     return [false, state];
 }
 
-function consumeparse(ParserState state, TokenType tokenType, string message) returns [boolean, ParserState] {
+function consumeparse(ParserState state, TokenType tokenType, string message) returns FhirpathParserError|ConsumeResult {
     if checkToken(state, tokenType) {
         return [true, advanceparse(state)];
     }
 
-    reportParseError(peekparse(state), message);
-    return [false, state];
+    FhirPathToken token = peekparse(state);
+    return error FhirpathParserError(message,
+        token = token);
 }
 
 function checkToken(ParserState state, TokenType tokenType) returns boolean {
@@ -374,13 +436,5 @@ function peekparse(ParserState state) returns FhirPathToken {
 
 function previousparse(ParserState state) returns FhirPathToken {
     return state.tokens[state.current - 1];
-}
-
-function reportParseError(FhirPathToken token, string message) {
-    if token.tokenType == EOF {
-        reportError(token.line, " at end: " + message);
-    } else {
-        reportError(token.line, " at '" + token.lexeme + "': " + message);
-    }
 }
 
