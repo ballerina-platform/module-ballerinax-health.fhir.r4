@@ -365,7 +365,16 @@ public enum QuestionnaireItemType {
     CODE_TYPE_DISPLAY = "display",
     CODE_TYPE_INTEGER = "integer",
     CODE_TYPE_DECIMAL = "decimal",
-    CODE_TYPE_GROUP = "group"
+    CODE_TYPE_GROUP = "group",
+    CODE_TYPE_TIME = "time",
+    CODE_TYPE_STRING = "string",
+    CODE_TYPE_TEXT = "text",
+    CODE_TYPE_URL = "url",
+    CODE_TYPE_CHOICE = "choice",
+    CODE_TYPE_OPEN_CHOICE = "open-choice",
+    CODE_TYPE_ATTACHMENT = "attachment",
+    CODE_TYPE_REFERENCE = "reference",
+    CODE_TYPE_QUANTITY = "quantity"
 }
 
 # FHIR QuestionnaireItemAnswerOption datatype record.
