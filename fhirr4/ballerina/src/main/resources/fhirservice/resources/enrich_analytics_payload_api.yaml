@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: More Info API
+  title: Enrich Analytics Payload API
   version: 1.0.0
-  description: 'More Info API to get more information to publish for analytics.'
+  description: 'API to enrich analytics payload with additional information before publishing.'
 paths:
   /enrich-analytics-payload:
     post:
