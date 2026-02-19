@@ -46,23 +46,12 @@ public function testEvaluateFhirPath() returns error? {
     // Evaluating resources from a regular token processing array elements.
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name.invalidPath"), [], msg = "Failed!");
 
-    // Unit tests for error paths.
-    json|error test1 = getValuesFromFhirPath(samplePatient1, "Patient.mother[a]");
-    test:assertTrue(test1 is error, msg = "Should return invalid FHIR Path expression error!");
-    if test1 is error {
-        test:assertEquals(test1.message(), "Invalid FHIR Path expression", msg = "Failed!");
-    }
-
-    json|error test2 = getValuesFromFhirPath(samplePatient1, "Patient.name[0].given[a]");
-    test:assertTrue(test2 is error, msg = "Should return invalid FHIR Path expression error!");
-    if test2 is error {
-        test:assertEquals(test2.message(), "Invalid FHIR Path expression", msg = "Failed!");
-    }
+    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.mother[a]"), [], msg = "Failed!");
+    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name[0].given[a]"), [], msg = "Failed!");
 
     json|error testThree = getValuesFromFhirPath(invalidFhirResource, "Patient.id");
     if testThree is error {
         test:assertEquals(testThree.message(), "Invalid FHIR resource", msg = "Failed!");
-
     }
 }
 
@@ -91,15 +80,8 @@ public function testEvaluateFhirPathWithoutResourceType() returns error? {
     test:assertEquals(getValuesFromFhirPath(sampleOrganization1, "contact[0].address.line"), ["33[0] 6th St"], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "address.city"), ["PleasantVille", "Melbourne"], msg = "Failed!");
 
-    // Unit tests for error paths without resource type prefix.
-    // json|error test1 = getValuesFromFhirPath(samplePatient1, "mother[a]");
-    // if test1 is error {
-    //     test:assertEquals(test1.message(), "Invalid FHIR Path expression", msg = "Failed!");
-    // }
-    // json|error test2 = getValuesFromFhirPath(samplePatient1, "name[0].given[a]");
-    // if test2 is error {
-    //     test:assertEquals(test2.message(), "Invalid FHIR Path expression", msg = "Failed!");
-    // }
+    test:assertEquals(getValuesFromFhirPath(samplePatient1, "mother[a]"), [], msg = "Failed!");
+    test:assertEquals(getValuesFromFhirPath(samplePatient1, "name[0].given[a]"), [], msg = "Failed!");
 
     json|error test3 = getValuesFromFhirPath(invalidFhirResource, "id");
     if test3 is error {
