@@ -80,10 +80,7 @@ isolated function createParserState(FhirPathToken[] tokens) returns ParserState 
 # + return - An expression AST on success, or a FhirpathParserError if parsing fails
 public isolated function parse(FhirPathToken[] tokens) returns FhirpathParserError|Expr? {
     ParserState state = createParserState(tokens);
-    FhirpathParserError|ParseResult result = Expression(state);
-    if result is FhirpathParserError {
-        return result;
-    }
+    ParseResult result = check Expression(state);
     return result[0];
 }
 
@@ -109,10 +106,7 @@ isolated function Expression(ParserState state) returns FhirpathParserError|Pars
 # + state - The current parser state
 # + return - A parse result with the binary expression and updated state, or an error
 isolated function parseOrExpression(ParserState state) returns FhirpathParserError|[Expr?, ParserState] {
-    FhirpathParserError|ParseResult result = parseAndExpression(state);
-    if result is FhirpathParserError {
-        return result;
-    }
+    ParseResult result = check parseAndExpression(state);
     Expr? expr = result[0];
     ParserState newState = result[1];
 
@@ -125,10 +119,7 @@ isolated function parseOrExpression(ParserState state) returns FhirpathParserErr
     while matchResult[0] {
         newState = matchResult[1];
         FhirPathToken operator = previousparse(newState);
-        FhirpathParserError|ParseResult rightResult = parseAndExpression(newState);
-        if rightResult is FhirpathParserError {
-            return rightResult;
-        }
+        ParseResult rightResult = check parseAndExpression(newState);
         Expr? right = rightResult[0];
         newState = rightResult[1];
 
@@ -148,10 +139,7 @@ isolated function parseOrExpression(ParserState state) returns FhirpathParserErr
 # + state - The current parser state
 # + return - A parse result with the binary expression and updated state, or an error
 isolated function parseAndExpression(ParserState state) returns FhirpathParserError|ParseResult {
-    FhirpathParserError|ParseResult result = parseEqualityExpression(state);
-    if result is FhirpathParserError {
-        return result;
-    }
+    ParseResult result = check parseEqualityExpression(state);
     Expr? expr = result[0];
     ParserState newState = result[1];
 
@@ -164,10 +152,7 @@ isolated function parseAndExpression(ParserState state) returns FhirpathParserEr
     while matchResult[0] {
         newState = matchResult[1];
         FhirPathToken operator = previousparse(newState);
-        FhirpathParserError|ParseResult rightResult = parseEqualityExpression(newState);
-        if rightResult is FhirpathParserError {
-            return rightResult;
-        }
+        ParseResult rightResult = check parseEqualityExpression(newState);
         Expr? right = rightResult[0];
         newState = rightResult[1];
 
@@ -187,10 +172,7 @@ isolated function parseAndExpression(ParserState state) returns FhirpathParserEr
 # + state - The current parser state
 # + return - A parse result with the binary expression and updated state, or an error
 isolated function parseEqualityExpression(ParserState state) returns FhirpathParserError|ParseResult {
-    FhirpathParserError|ParseResult result = parsePostfixExpression(state);
-    if result is FhirpathParserError {
-        return result;
-    }
+    ParseResult result = check parsePostfixExpression(state);
     Expr? expr = result[0];
     ParserState newState = result[1];
 
@@ -203,10 +185,7 @@ isolated function parseEqualityExpression(ParserState state) returns FhirpathPar
     while matchResult[0] {
         newState = matchResult[1];
         FhirPathToken operator = previousparse(newState);
-        FhirpathParserError|ParseResult rightResult = parsePostfixExpression(newState);
-        if rightResult is FhirpathParserError {
-            return rightResult;
-        }
+        ParseResult rightResult = check parsePostfixExpression(newState);
         Expr? right = rightResult[0];
         newState = rightResult[1];
 
@@ -227,10 +206,7 @@ isolated function parseEqualityExpression(ParserState state) returns FhirpathPar
 # + state - The current parser state
 # + return - A parse result with the postfix expression and updated state, or an error
 isolated function parsePostfixExpression(ParserState state) returns FhirpathParserError|ParseResult {
-    FhirpathParserError|ParseResult result = parsePrimary(state);
-    if result is FhirpathParserError {
-        return result;
-    }
+    ParseResult result = check parsePrimary(state);
     Expr? expr = result[0];
     ParserState newState = result[1];
 
@@ -247,10 +223,7 @@ isolated function parsePostfixExpression(ParserState state) returns FhirpathPars
         if dotMatch[0] {
             newState = dotMatch[1];
             // invocation -> identifier | function
-            FhirpathParserError|ParseResult invocationResult = parseInvocation(newState);
-            if invocationResult is FhirpathParserError {
-                return invocationResult;
-            }
+            ParseResult invocationResult = check parseInvocation(newState);
             Expr? invocationExpr = invocationResult[0];
             newState = invocationResult[1];
 
@@ -274,10 +247,7 @@ isolated function parsePostfixExpression(ParserState state) returns FhirpathPars
         [boolean, ParserState] bracketMatch = matchToken(newState, LEFT_BRACKET);
         if bracketMatch[0] {
             newState = bracketMatch[1];
-            FhirpathParserError|ParseResult indexResult = Expression(newState);
-            if indexResult is FhirpathParserError {
-                return indexResult;
-            }
+            ParseResult indexResult = check Expression(newState);
             Expr? indexExpr = indexResult[0];
             newState = indexResult[1];
 
@@ -285,10 +255,7 @@ isolated function parsePostfixExpression(ParserState state) returns FhirpathPars
                 return [(), newState];
             }
 
-            FhirpathParserError|ConsumeResult consumeResult = consumeparse(newState, RIGHT_BRACKET, "Expect ']' after index expression.");
-            if consumeResult is FhirpathParserError {
-                return consumeResult;
-            }
+            ConsumeResult consumeResult = check consumeparse(newState, RIGHT_BRACKET, "Expect ']' after index expression.");
             if !consumeResult[0] {
                 return [(), consumeResult[1]];
             }
@@ -326,17 +293,11 @@ isolated function parseInvocation(ParserState state) returns FhirpathParserError
         if parenMatch[0] {
             newState = parenMatch[1];
             // Parse parameter list
-            FhirpathParserError|ParseParamListResult paramsResult = parseParamList(newState);
-            if paramsResult is FhirpathParserError {
-                return paramsResult;
-            }
+            ParseParamListResult paramsResult = check parseParamList(newState);
             Expr[] params = paramsResult[0];
             newState = paramsResult[1];
 
-            FhirpathParserError|ConsumeResult consumeResult = consumeparse(newState, RIGHT_PAREN, "Expect ')' after parameters.");
-            if consumeResult is FhirpathParserError {
-                return consumeResult;
-            }
+            ConsumeResult consumeResult = check consumeparse(newState, RIGHT_PAREN, "Expect ')' after parameters.");
             if !consumeResult[0] {
                 return [(), consumeResult[1]];
             }
@@ -368,10 +329,7 @@ isolated function parseParamList(ParserState state) returns FhirpathParserError|
         return [params, newState];
     }
 
-    FhirpathParserError|ParseResult exprResult = Expression(newState);
-    if exprResult is FhirpathParserError {
-        return exprResult;
-    }
+    ParseResult exprResult = check Expression(newState);
     Expr? expr = exprResult[0];
     newState = exprResult[1];
 
@@ -384,10 +342,7 @@ isolated function parseParamList(ParserState state) returns FhirpathParserError|
     [boolean, ParserState] matchResult = matchToken(newState, COMMA);
     while matchResult[0] {
         newState = matchResult[1];
-        FhirpathParserError|ParseResult nextResult = Expression(newState);
-        if nextResult is FhirpathParserError {
-            return nextResult;
-        }
+        ParseResult nextResult = check Expression(newState);
         Expr? nextExpr = nextResult[0];
         newState = nextResult[1];
 
@@ -450,17 +405,11 @@ isolated function parsePrimary(ParserState state) returns FhirpathParserError|Pa
         if parenMatch[0] {
             newState = parenMatch[1];
             // Parse parameter list
-            FhirpathParserError|ParseParamListResult paramsResult = parseParamList(newState);
-            if paramsResult is FhirpathParserError {
-                return paramsResult;
-            }
+            ParseParamListResult paramsResult = check parseParamList(newState);
             Expr[] params = paramsResult[0];
             newState = paramsResult[1];
 
-            FhirpathParserError|ConsumeResult consumeResult = consumeparse(newState, RIGHT_PAREN, "Expect ')' after parameters.");
-            if consumeResult is FhirpathParserError {
-                return consumeResult;
-            }
+            ConsumeResult consumeResult = check consumeparse(newState, RIGHT_PAREN, "Expect ')' after parameters.");
             if !consumeResult[0] {
                 return [(), consumeResult[1]];
             }

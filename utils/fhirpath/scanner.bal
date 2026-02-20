@@ -83,11 +83,7 @@ isolated function scanTokens(string sourceCode) returns FhirpathScannerError|Fhi
 
     while !isScannerAtEnd(state) {
         state.startIndex = state.current;
-        FhirpathScannerError|ScannerState result = scanToken(state);
-        if result is FhirpathScannerError {
-            return result;
-        }
-        state = result;
+        state = check scanToken(state);
     }
 
     state.tokens.push(createToken(EOF, "", (), state.current));

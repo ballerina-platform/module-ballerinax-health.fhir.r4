@@ -133,20 +133,12 @@ isolated function visitIdentifierExpr(IdentifierExpr expr, json context) returns
 # + return - A flattened collection of all member values, or an error
 isolated function visitMemberAccessExpr(MemberAccessExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate the target expression to get a collection of results
-    FhirpathInterpreterError|json[] targetResults = evaluate(expr.target, context);
-
-    if targetResults is FhirpathInterpreterError {
-        return targetResults;
-    }
+    json[] targetResults = check evaluate(expr.target, context);
 
     // 2. For each result in the collection, access the member property
     json[] results = [];
     foreach json item in targetResults {
-        FhirpathInterpreterError|json[] memberResults = accessMember(item, expr.member);
-
-        if memberResults is FhirpathInterpreterError {
-            return memberResults;
-        }
+        json[] memberResults = check accessMember(item, expr.member);
 
         // Flatten the results into the output collection
         foreach json memberValue in memberResults {
@@ -182,11 +174,7 @@ isolated function accessMember(json item, string memberName) returns FhirpathInt
     if item is json[] {
         json[] results = [];
         foreach json element in item {
-            FhirpathInterpreterError|json[] elementResults = accessMember(element, memberName);
-
-            if elementResults is FhirpathInterpreterError {
-                return elementResults;
-            }
+            json[] elementResults = check accessMember(element, memberName);
 
             foreach json value in elementResults {
                 results.push(value);
@@ -207,17 +195,10 @@ isolated function accessMember(json item, string memberName) returns FhirpathInt
 # + return - A single-element collection with the indexed value, empty if out of bounds, or an error
 isolated function visitIndexerExpr(IndexerExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate the target expression to get a collection
-    FhirpathInterpreterError|json[] targetResults = evaluate(expr.target, context);
+    json[] targetResults = check evaluate(expr.target, context);
 
-    if targetResults is FhirpathInterpreterError {
-        return targetResults;
-    }
     // 2. Evaluate the index expression to get the index value
-    FhirpathInterpreterError|json[] indexResults = evaluate(expr.index, context);
-
-    if indexResults is FhirpathInterpreterError {
-        return indexResults;
-    }
+    json[] indexResults = check evaluate(expr.index, context);
 
     // Index should be a single integer value
     if indexResults.length() != 1 {
@@ -293,11 +274,7 @@ isolated function visitFunctionExpr(FunctionExpr expr, json context) returns Fhi
     json[] targetResults;
     Expr? targetExpr = expr.target;
     if targetExpr is Expr {
-        FhirpathInterpreterError|json[] evalResult = evaluate(targetExpr, context);
-        if evalResult is FhirpathInterpreterError {
-            return evalResult;
-        }
-        targetResults = evalResult;
+        targetResults = check evaluate(targetExpr, context);
     } else {
         // No target means standalone function call - use context as-is
         targetResults = wrapInCollection(context);
@@ -323,15 +300,8 @@ isolated function visitFunctionExpr(FunctionExpr expr, json context) returns Fhi
 # + return - A collection with the boolean result of the operation, or an error
 isolated function visitBinaryExpr(BinaryExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate left and right expressions
-    FhirpathInterpreterError|json[] leftResults = evaluate(expr.left, context);
-    if leftResults is FhirpathInterpreterError {
-        return leftResults;
-    }
-
-    FhirpathInterpreterError|json[] rightResults = evaluate(expr.right, context);
-    if rightResults is FhirpathInterpreterError {
-        return rightResults;
-    }
+    json[] leftResults = check evaluate(expr.left, context);
+    json[] rightResults = check evaluate(expr.right, context);
 
     // 2. Apply the operator based on its type
     TokenType operatorType = expr.operator.tokenType;
@@ -510,11 +480,7 @@ isolated function applyWhereFunction(json[] collection, Expr[] params, json orig
     // Evaluate the condition for each item in the collection
     foreach json item in collection {
         // Evaluate condition with item as the context
-        FhirpathInterpreterError|json[] conditionResult = evaluate(conditionExpr, item);
-
-        if conditionResult is FhirpathInterpreterError {
-            return conditionResult;
-        }
+        json[] conditionResult = check evaluate(conditionExpr, item);
 
         // Include item if condition is truthy
         if isTruthy(conditionResult) {
