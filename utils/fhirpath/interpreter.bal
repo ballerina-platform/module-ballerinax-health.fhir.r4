@@ -1,19 +1,54 @@
-// Interpreter for FHIRPath expressions
+// Copyright (c) 2023-2025, WSO2 LLC. (http://www.wso2.com).
 
-// Runtime error type for FHIRPath
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+
+// http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+// ========================================
+// INTERPRETER FOR FHIRPATH EXPRESSIONS
+// ========================================
+// This module implements the interpreter/evaluator for FHIRPath expressions.
+// It traverses the AST produced by the parser and evaluates expressions
+// against JSON context objects (FHIR resources).
+
+# Represents an interpreter runtime error with token information.
+#
+# + token - The token where the runtime error occurred
 type InterpreterError record {|
     FhirPathToken token;
 |};
 
+# Public error type for FHIRPath interpreter runtime errors.
+# This error is raised when the interpreter encounters runtime issues.
 public type FhirpathInterpreterError distinct error<InterpreterError>;
 
-// Interpret a FHIRPath expression with a JSON context object
+# Interprets a FHIRPath expression against a JSON context object.
+# This is the main entry point for expression evaluation.
+#
+# + expression - The parsed FHIRPath expression (AST)
+# + context - The JSON context object (typically a FHIR resource)
+# + return - A collection of JSON results, or a FhirpathInterpreterError if evaluation fails
 public function interpret(Expr expression, json context) returns FhirpathInterpreterError|json[] {
     FhirpathInterpreterError|json[] value = evaluate(expression, context);
     return value;
 }
 
-// Evaluate a FHIRPath expression
+# Evaluates a FHIRPath expression node against a context.
+# Dispatches to the appropriate visitor function based on expression type.
+#
+# + expr - The expression node to evaluate
+# + context - The current evaluation context (JSON value)
+# + return - A collection of JSON results, or a FhirpathInterpreterError if evaluation fails
 function evaluate(Expr expr, json context) returns FhirpathInterpreterError|json[] {
     match expr.kind {
         "Literal" => {
@@ -38,7 +73,11 @@ function evaluate(Expr expr, json context) returns FhirpathInterpreterError|json
     return [];
 }
 
-// Visit a literal expression
+# Evaluates a literal expression (e.g., true, false, 42, 'hello').
+#
+# + expr - The literal expression node
+# + context - The current evaluation context (unused for literals)
+# + return - A single-element collection containing the literal value, or empty if nil
 function visitLiteralExpr(LiteralExpr expr, json context) returns json[] {
     // Return the literal value as a single-element collection
     json value = <json>expr.value;
@@ -48,7 +87,12 @@ function visitLiteralExpr(LiteralExpr expr, json context) returns json[] {
     return [value];
 }
 
-// Visit an identifier expression
+# Evaluates an identifier expression (e.g., name, resourceType).
+# Accesses a property from the context object, or checks for resource type match.
+#
+# + expr - The identifier expression node
+# + context - The current evaluation context
+# + return - A collection of values from the identified field, or empty if not found
 function visitIdentifierExpr(IdentifierExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // Identifier accesses a property from the context
     // This handles the first level access, e.g., "name" in context
@@ -81,7 +125,12 @@ function visitIdentifierExpr(IdentifierExpr expr, json context) returns Fhirpath
     return [];
 }
 
-// Visit a member access expression (e.g., Patient.name, name.given)
+# Evaluates a member access expression (e.g., Patient.name, name.given).
+# First evaluates the target to get a collection, then accesses the member from each item.
+#
+# + expr - The member access expression node
+# + context - The current evaluation context
+# + return - A flattened collection of all member values, or an error
 function visitMemberAccessExpr(MemberAccessExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate the target expression to get a collection of results
     FhirpathInterpreterError|json[] targetResults = evaluate(expr.target, context);
@@ -108,8 +157,12 @@ function visitMemberAccessExpr(MemberAccessExpr expr, json context) returns Fhir
     return results;
 }
 
-// Access a member property from a JSON value
-// Returns a collection of results (could be empty, single, or multiple values)
+# Accesses a member property from a JSON value.
+# Handles objects, arrays, and primitives differently.
+#
+# + item - The JSON value to access a member from
+# + memberName - The name of the member/property to access
+# + return - A collection of results (could be empty, single, or multiple values), or an error
 function accessMember(json item, string memberName) returns FhirpathInterpreterError|json[] {
     // Handle null/nil
     if item is () {
@@ -146,7 +199,12 @@ function accessMember(json item, string memberName) returns FhirpathInterpreterE
     return [];
 }
 
-// Visit an indexer expression (e.g., Patient.name[0], given[1])
+# Evaluates an indexer expression (e.g., Patient.name[0], given[1]).
+# Accesses a specific element from a collection by index.
+#
+# + expr - The indexer expression node
+# + context - The current evaluation context
+# + return - A single-element collection with the indexed value, empty if out of bounds, or an error
 function visitIndexerExpr(IndexerExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate the target expression to get a collection
     FhirpathInterpreterError|json[] targetResults = evaluate(expr.target, context);
@@ -194,8 +252,12 @@ function visitIndexerExpr(IndexerExpr expr, json context) returns FhirpathInterp
     return wrapInCollection(element);
 }
 
-// Apply array indexing to a JSON value
-// Returns the element at the specified index if the value is an array
+# Applies array indexing to a JSON value.
+# Only works on JSON arrays; returns empty for non-arrays.
+#
+# + item - The JSON value to index into
+# + index - The zero-based index to access
+# + return - A single-element collection with the indexed value, empty if out of bounds or non-array, or an error
 function applyIndex(json item, int index) returns FhirpathInterpreterError|json[] {
     // Handle null/nil
     if item is () {
@@ -220,7 +282,12 @@ function applyIndex(json item, int index) returns FhirpathInterpreterError|json[
     return wrapInCollection(element);
 }
 
-// Visit a function call expression (e.g., name.first())
+# Evaluates a function call expression (e.g., name.first(), where(condition)).
+# Dispatches to the appropriate function implementation based on function name.
+#
+# + expr - The function expression node
+# + context - The current evaluation context
+# + return - A collection of results from the function, or an error
 function visitFunctionExpr(FunctionExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate the target expression if it exists (e.g., Patient in Patient.where())
     json[] targetResults;
@@ -248,7 +315,12 @@ function visitFunctionExpr(FunctionExpr expr, json context) returns FhirpathInte
     }
 }
 
-// Visit a binary expression (e.g., name = 'John' or age > 18)
+# Evaluates a binary expression (e.g., name = 'John', age > 18, a and b).
+# Evaluates both operands and applies the operator.
+#
+# + expr - The binary expression node
+# + context - The current evaluation context
+# + return - A collection with the boolean result of the operation, or an error
 function visitBinaryExpr(BinaryExpr expr, json context) returns FhirpathInterpreterError|json[] {
     // 1. Evaluate left and right expressions
     FhirpathInterpreterError|json[] leftResults = evaluate(expr.left, context);
@@ -288,7 +360,13 @@ function visitBinaryExpr(BinaryExpr expr, json context) returns FhirpathInterpre
     }
 }
 
-// Apply equality operator (= or !=)
+# Applies the equality or inequality operator to two collections.
+# Handles FHIRPath equality semantics for collections.
+#
+# + left - The left operand collection
+# + right - The right operand collection
+# + checkEqual - True for '=' operator, false for '!=' operator
+# + return - A single-element collection with the boolean result
 function applyEqualityOperator(json[] left, json[] right, boolean checkEqual) returns json[] {
     // Empty collections
     if left.length() == 0 && right.length() == 0 {
@@ -325,21 +403,33 @@ function applyEqualityOperator(json[] left, json[] right, boolean checkEqual) re
     return [!checkEqual];
 }
 
-// Apply AND operator
+# Applies the logical AND operator to two collections.
+#
+# + left - The left operand collection
+# + right - The right operand collection
+# + return - A single-element collection with the boolean result of AND operation
 function applyAndOperator(json[] left, json[] right) returns json[] {
     boolean leftTruthy = isTruthy(left);
     boolean rightTruthy = isTruthy(right);
     return [leftTruthy && rightTruthy];
 }
 
-// Apply OR operator
+# Applies the logical OR operator to two collections.
+#
+# + left - The left operand collection
+# + right - The right operand collection
+# + return - A single-element collection with the boolean result of OR operation
 function applyOrOperator(json[] left, json[] right) returns json[] {
     boolean leftTruthy = isTruthy(left);
     boolean rightTruthy = isTruthy(right);
     return [leftTruthy || rightTruthy];
 }
 
-// Apply XOR operator
+# Applies the logical XOR (exclusive OR) operator to two collections.
+#
+# + left - The left operand collection
+# + right - The right operand collection
+# + return - A single-element collection with the boolean result of XOR operation
 function applyXorOperator(json[] left, json[] right) returns json[] {
     boolean leftTruthy = isTruthy(left);
     boolean rightTruthy = isTruthy(right);
@@ -347,7 +437,11 @@ function applyXorOperator(json[] left, json[] right) returns json[] {
     return [(leftTruthy && !rightTruthy) || (!leftTruthy && rightTruthy)];
 }
 
-// Helper function to check if FHIRPath result is truthy
+# Checks if a FHIRPath result collection is truthy.
+# Empty collections are falsy; single boolean values use their value; non-empty collections are truthy.
+#
+# + result - The collection to check
+# + return - True if the collection is considered truthy, false otherwise
 function isTruthy(json[] result) returns boolean {
     // In FHIRPath, empty collections are falsy
     if result.length() == 0 {
@@ -363,7 +457,11 @@ function isTruthy(json[] result) returns boolean {
     return true;
 }
 
-// Helper function to check equality in FHIRPath
+# Checks equality between two values according to FHIRPath semantics.
+#
+# + a - The first value
+# + b - The second value
+# + return - True if the values are equal, false otherwise
 function isEqual(anydata a, anydata b) returns boolean {
     if a is () && b is () {
         return true;
@@ -374,10 +472,13 @@ function isEqual(anydata a, anydata b) returns boolean {
     return a == b;
 }
 
-// Helper function to wrap a JSON value in a collection
-// - If value is null/nil, returns empty collection []
-// - If value is already an array, returns it as-is
-// - Otherwise, wraps the value in a single-element array
+# Wraps a JSON value in a collection according to FHIRPath conventions.
+# - If value is null/nil, returns empty collection []
+# - If value is already an array, returns it as-is
+# - Otherwise, wraps the value in a single-element array
+#
+# + value - The JSON value to wrap
+# + return - A JSON array containing the value
 function wrapInCollection(json value) returns json[] {
     if value is () {
         return [];
@@ -390,9 +491,13 @@ function wrapInCollection(json value) returns json[] {
     return [value];
 }
 
-// FHIRPath function implementations
-
-// where(condition) - filters the collection to items where condition is true
+# Implements the FHIRPath where() function.
+# Filters the collection to items where the condition expression evaluates to true.
+#
+# + collection - The collection to filter
+# + params - Function parameters (expects exactly one condition expression)
+# + originalContext - The original evaluation context (unused in where)
+# + return - A filtered collection containing only items where the condition is truthy, or an error
 function applyWhereFunction(json[] collection, Expr[] params, json originalContext) returns FhirpathInterpreterError|json[] {
     // where() requires exactly one parameter (the condition expression)
     if params.length() != 1 {
