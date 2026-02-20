@@ -4,17 +4,15 @@ public type FhirPathToken record {|
     string lexeme;
     anydata? literal;
     int position;
-    int line;
 |};
 
 // Create a new token
-public function createToken(TokenType tokenType, string lexeme, anydata? literal, int position, int line = 1) returns FhirPathToken {
+public function createToken(TokenType tokenType, string lexeme, anydata? literal, int position) returns FhirPathToken {
     return {
         tokenType: tokenType,
         lexeme: lexeme,
         literal: literal,
-        position: position,
-        line: line
+        position: position
     };
 }
 
