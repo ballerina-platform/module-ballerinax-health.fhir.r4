@@ -11,12 +11,16 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/http;
-import ballerina/lang.regexp;
-import ballerina/log;
 import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.ips;
 import ballerinax/health.fhir.r4.parser;
+import ballerina/http;
+import ballerina/log;
+import ballerina/time;
+import ballerina/file;
+import ballerina/io;
+import ballerina/jwt;
+import ballerina/lang.regexp;
 
 isolated http:Client? conditionalInvokationClient = ();
 
@@ -228,6 +232,402 @@ isolated function validateOperationConfigs(r4:ResourceAPIConfig apiConfig) retur
     return;
 }
 
+# Retrieves all headers from an HTTP request
+#
+# + request - The HTTP request object
+# + excludeAuthHeader - A boolean flag indicating whether to exclude the Authorization header from the result
+# 
+# + return - A map containing all header names as keys and their first values as strings
+isolated function getRequestHeaders(http:Request request, boolean excludeAuthHeader) returns map<string> & readonly {
+    
+    map<string> headers = {};
+    string[] headerNames = request.getHeaderNames();
+    
+    foreach string headerName in headerNames {
+        string[]|http:HeaderNotFoundError headerValues = request.getHeaders(headerName);
+        if headerValues is string[] && headerValues.length() > 0 {
+            string lowerCaseHeaderName = headerName.toLowerAscii();
+
+            // Skip authorization header if exists
+            if excludeAuthHeader && lowerCaseHeaderName == AUTHORIZATION_HEADER {
+                continue;
+            }
+
+            if headerValues.length() == 1 {
+                headers[lowerCaseHeaderName] = headerValues[0];
+            } else {
+                // Join multiple values with comma and space as per HTTP specification
+                headers[lowerCaseHeaderName] = string:'join(", ", ...headerValues);
+            }
+        }
+    }
+    return headers.cloneReadOnly();
+}
+
+# Retrieves all headers from an HTTP response
+#
+# + response - The HTTP response object
+# + return - A map containing all header names as keys and their values as strings
+isolated function getResponseHeaders(http:Response response) returns map<string> & readonly {
+    
+    map<string> headers = {};
+    string[] headerNames = response.getHeaderNames();
+    
+    foreach string headerName in headerNames {
+        string[]|http:HeaderNotFoundError headerValues = response.getHeaders(headerName);
+        if headerValues is string[] && headerValues.length() > 0 {
+            string lowerCaseHeaderName = headerName.toLowerAscii();
+            if headerValues.length() == 1 {
+                headers[lowerCaseHeaderName] = headerValues[0];
+            } else {
+                // Join multiple values with comma and space as per HTTP specification
+                headers[lowerCaseHeaderName] = string:'join(", ", ...headerValues);
+            }
+        }
+    }
+    return headers.cloneReadOnly();
+}
+
+# Retrieves more information from the configured URL
+#
+# + data - The log data to send to retrieve more information
+# + dataEnrichmentHttpClient - The HTTP client to use for fetching more information
+# + return - A JSON object containing additional information
+isolated function getAnalyticsEnrichmentData(json data, http:Client|http:ClientError dataEnrichmentHttpClient) returns json {
+    
+    if dataEnrichmentHttpClient is http:ClientError {
+        log:printError(`[AnalyticsResponseInterceptor] Failed to create HTTP client for fetching additional information`);
+        return {};
+    } else {
+        http:Response|http:ClientError result = dataEnrichmentHttpClient->/.post(data);
+        if (result is http:Response) {
+            json|error payload = result.getJsonPayload();
+            if payload is json {
+                return payload;
+            } else {
+                log:printError(`[AnalyticsResponseInterceptor] Failed to extract JSON payload from More Info response.`);
+                return {};
+            }
+        } else {
+            log:printError(`[AnalyticsResponseInterceptor] Failed to fetch analytics enrichment data. Make sure the URL is correct and the service is reachable. ${result.toString()}`);
+            return {};
+        }
+    }
+}
+
+# Call the analytics data enrichment service to fetch additional information and enrich the analytics data
+# 
+# + analyticsData - The analytics data to enrich with additional information
+# + dataEnrichHttpClient - The HTTP client to use for fetching additional information
+isolated function enrichAnalyticsData(map<string> analyticsData, (http:Client|http:ClientError)? dataEnrichHttpClient) {
+    
+    if dataEnrichHttpClient !is http:ClientError && dataEnrichHttpClient is http:Client {
+        json enrichmentData = getAnalyticsEnrichmentData(analyticsData.toJson(), dataEnrichHttpClient);
+        log:printDebug(`[AnalyticsResponseInterceptor] Analytics enrichment data fetched from: ${analytics.enrichPayload?.url} [Enrichment Data]: ${enrichmentData.toString()}`);
+        if enrichmentData is map<json> {
+            foreach var [key, value] in enrichmentData.entries() {
+                analyticsData[key] = value.toString();
+            }
+        } else {
+            log:printWarn("[AnalyticsResponseInterceptor] Enrichment data response is not a JSON object.");
+        }
+    }
+}
+
+# Initialize the HTTP client for fetching analytics enrichment data based on the configuration
+# 
+# + return - An initialized HTTP client or an error if the client could not be created
+isolated function initializeEnrichmentHttpClient() returns http:Client|http:ClientError? {
+    http:Client?|http:ClientError? dataEnrichHttpClient;
+
+    final string? enrichAnalyticsDataUrl = analytics.enrichPayload?.url;
+    final string? username = analytics.enrichPayload?.username;
+    final string? password = analytics.enrichPayload?.password;
+
+    if enrichAnalyticsDataUrl is () {
+        dataEnrichHttpClient = ();
+    } else if ((username !is () && password !is ()) && (username != "" && password != "")) {
+        dataEnrichHttpClient = new (enrichAnalyticsDataUrl, auth = {
+            username: username,
+            password: password
+        });
+    } else {
+        dataEnrichHttpClient = new (enrichAnalyticsDataUrl);
+    }
+    return check dataEnrichHttpClient;
+}
+
+
+# Calculate the delay until the next midnight and return it as a time:Civil value
+# 
+# + currentUtc - The current time in UTC
+# + zone - The time zone to consider for calculating the next midnight
+# + return - The time:Civil value representing the next midnight
+isolated function calculateDelayUntilMidnight(time:Utc currentUtc, time:Zone zone) returns error|time:Civil {
+    
+    time:Utc nextDayUtc = time:utcAddSeconds(currentUtc, 86400);
+    time:Civil nextDayCivil = zone.utcToCivil(nextDayUtc);
+
+    //todo: Add the proper fix after fixing the issue: https://github.com/wso2-enterprise/wso2-integration-internal/issues/4614
+    string nextDayCivilStr = check time:civilToString(nextDayCivil);
+    time:Civil nextDayCivilFromStr = check time:civilFromString(nextDayCivilStr);
+    
+    nextDayCivilFromStr.hour = 0;
+    nextDayCivilFromStr.minute = 0;
+    nextDayCivilFromStr.second = 0.0;
+    
+    return nextDayCivilFromStr;
+}
+
+# Check if the file exists at the given request path
+# 
+# + requestPath - the API request path
+# + return - true if the request path matches any of the excluded APIs, false otherwise
+isolated function isFileExist(string requestPath) returns boolean|error? {
+
+    return file:test(requestPath, file:EXISTS);
+}
+
+# Validate whether the incoming API request path matches the allowed/excluded API contexts configured for analytics writing and return the validation result
+# 
+# Only one list should be configured at a time.
+# 
+# When allowed list is configured, the request path should match at least one of the regex patterns in the allowed list to be allowed for analytics writing.
+# When excluded list is configured, and if the path matches any of the regex patterns in the excluded list, it will not be allowed for analytics writing.
+# 
+# If both allowed and excluded lists are configured, only the excluded list is considered for validation. If the request path matches any of the regex patterns in the excluded list, it will not be allowed for analytics writing, even if it matches a pattern in the allowed list.
+# 
+# The lists support regex patterns. For example, if you want to allow all APIs under the "Patient" context, you can add "Patient/.*" to the allowed list. If you want to exclude all APIs under the "Observation" context, you can add "Observation/.*" to the excluded list.
+# 
+# In all the cases, the first match will be given priority. For example, if the allowed list has two regexes that matches the path, the first match will win.
+# 
+# + path - the API request path after removing the FHIR base path
+# + allowedList - the list of allowed API contexts configured for analytics writing
+# + excludedList - the list of excluded API contexts configured for analytics writing
+# + return - true if the request path matches the allowed/excluded API contexts for analytics writing
+isolated function isApiAllowed(string path, (string[] & readonly)? allowedList, (string[] & readonly)? excludedList) returns boolean|error? {
+    
+    // If only allowed list is configured
+    if (allowedList !is () && (excludedList is () || excludedList.length() == 0)) {
+        if (allowedList.length() > 0) {
+
+            boolean pathMatchesInAllowedList = false;
+
+            // check allowed list and return
+            foreach string item in allowedList {
+                string:RegExp pattern = check regexp:fromString(item);
+                // return true at the earliest match found in the included list
+                if (path.matches(pattern)) {
+                    pathMatchesInAllowedList = true;
+                    break;
+                }
+            }
+            return pathMatchesInAllowedList;
+        }
+    }
+
+    if (excludedList !is () && (allowedList is () || allowedList.length() == 0)) {
+        // If only included list is configured
+        if (excludedList.length() > 0) {
+
+            boolean pathMatchesInExcludedList = true;
+
+            // check excluded list and return
+            foreach string item in excludedList {
+                string:RegExp pattern = check regexp:fromString(item);
+                // return true at the earliest match found in the excluded list
+                if (path.matches(pattern)) {
+                    pathMatchesInExcludedList = false;
+                    break;
+                }
+            }
+            return pathMatchesInExcludedList;
+        }
+    }
+
+    // If both lists are configured, the priority is given for the excluded list. Allowed list is ignored.
+    if (excludedList !is () && allowedList !is ()) {
+
+        if (excludedList.length() > 0) {
+
+            boolean pathMatchesInExcludedList = false;
+
+            // check existance in excluded list
+            foreach string item in excludedList {
+                string:RegExp excludedPattern = check regexp:fromString(item);
+                if (path.matches(excludedPattern)) {
+                    pathMatchesInExcludedList = true;
+                    break;
+                }
+            }
+
+            // If path matches in both lists, don't allow
+            if pathMatchesInExcludedList {
+                return false;
+            } else {
+                // If path doesn't match in the excluded list, allow
+                return true;
+            }
+        }   
+    }
+    return true;
+}
+
+# Remove the FHIR base path from the request path to get the API context for analytics validation
+# 
+# + rawRequestPath - The raw request path from the HTTP request
+# + configuredBasePath - The configured base path for the FHIR server
+# + return - The API context path after removing the FHIR base path
+isolated function getApiPath(string rawRequestPath, string configuredBasePath) returns string {
+
+    if configuredBasePath != "" && rawRequestPath.startsWith(configuredBasePath) {
+        return rawRequestPath.substring(configuredBasePath.length());
+    }
+    return rawRequestPath;
+}
+
+
+# Check if the request path matches the excluded/allowed API contexts regex pattern for analytics exclusion/allowance
+# 
+# + 'resource - the API request path
+# + configuredRegexPattern - the regex pattern to match against the request path
+# + return - true if the request path matches the regex pattern, false otherwise
+isolated function isValidRegex(string 'resource, string configuredRegexPattern) returns boolean|error? {
+
+    string:RegExp|error? pattern = regexp:fromString(configuredRegexPattern);
+    
+    if pattern is error {
+        log:printError(string `[AnalyticsResponseInterceptor] Invalid regex pattern provided for excluded API context regex: ${configuredRegexPattern}. Error: ${pattern.message()}`);
+        return pattern;
+    }
+    if pattern !is () {
+        return 'resource.matches(pattern);
+    }
+    return false;
+}
+
+# Write data to a file at the specified path
+#
+# + path - The file path where the data should be written
+# + data - The string data to write to the file
+# + return - An error if the write operation fails, otherwise returns nothing
+isolated function writeDataToFile(string path, string data) returns error? {
+    
+    return io:fileWriteString(path, data, io:APPEND);
+}
+
+# Decode a JWT token and return its header and payload
+#
+# + jwt - The JWT token string to decode
+# + return - A tuple containing the decoded JWT
+isolated function decodeJWT(string jwt) returns [jwt:Header, jwt:Payload]|error {
+
+    return jwt:decode(jwt);
+}
+
+# Extract analytics data from the decoded JWT based on the configured attributes
+#
+# + dataAttributes - The list of attributes to extract from the JWT payload
+# + jwtPayload - The decoded JWT payload
+# + return - A map containing the extracted analytics data
+isolated function extractAnalyticsDataFromJWT(string[] dataAttributes, jwt:Payload jwtPayload) returns map<string> {
+
+    return map from string attrKey in dataAttributes
+            where jwtPayload[attrKey] !== ()
+            select [attrKey, jwtPayload[attrKey].toString()];
+}
+
+# Extract analytics data from the decoded JWT based on the configured attributes
+#
+# + jwtPayload - The decoded JWT payload
+# + return - A map containing the extracted analytics data
+isolated function extractFhirUserFromJWT(jwt:Payload jwtPayload) returns string? {
+
+    anydata fhirUser = jwtPayload["fhirUser"];
+    if fhirUser is () {
+        return ();
+    }
+    return fhirUser.toString();
+}
+
+# Convert a map to a JSON object
+#
+#  + data - The map to convert to JSON
+# + return - A JSON object representing the input map
+isolated function convertMapToJson(map<string> data) returns json {
+    
+    return map from string headerKey in data.keys()
+            select [headerKey, data[headerKey].toString()];
+}
+
+# Get the file path for analytics log based on the configuration, if not configured, return the default path
+#
+# + return - The file path for analytics log
+isolated function getFilePathBasedOnConfiguration() returns string {
+    if analytics.filePath == "" {
+        return DEFAULT_FILE_LOCATION;
+    } else {
+        return analytics.filePath;
+    }
+}
+
+# Get the file name for analytics log based on the configuration, if not configured, return the default file name
+# 
+# + return - The file name for analytics log
+isolated function getFileNameBasedOnConfiguration() returns string {
+    if analytics.fileName == "" {
+        return LOG_FILE_NAME;
+    } else {
+        return analytics.fileName;
+    }
+}
+
+# Check whether the configured path directory and file exists and if not handle and create them gracefully.
+# 
+# + return - An error if the directory or file creation fails, otherwise returns nothing
+isolated function createFileIfNotExist() returns error? {
+   
+   string logFilePath = getFilePathBasedOnConfiguration();
+   string logFileName = getFileNameBasedOnConfiguration() + LOG_FILE_EXTENSION;
+   string logFileFullPath = logFilePath + file:pathSeparator + logFileName;
+
+   boolean|error? dirExists = file:test(logFilePath, file:EXISTS);
+    if dirExists is error {
+        log:printError("Error checking analytics log directory existence at " + logFilePath, dirExists);
+        return dirExists;
+    } else {
+        if dirExists is boolean && !dirExists {
+            file:Error? dir = file:createDir(logFilePath, file:RECURSIVE);
+            if dir is file:Error {
+                log:printError(string `Failed to create directory for analytics logs at ${logFilePath}. Analytics data will not be written.`, dir);
+                return dir;
+            }
+            log:printDebug(string `Directory ${logFilePath} created`);
+            error? creationError = file:create(logFileFullPath);
+            if creationError is error {
+                log:printError(string `Configured directory ${logFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`, creationError);
+                return creationError;
+            }
+            log:printDebug(string `File ${logFileName} created successfully inside directory ${logFilePath}`);
+        } else {
+            boolean|error? fileExists = isFileExist(logFileFullPath);
+            if fileExists is error {
+                log:printError(string `Error checking analytics log file existence at ${logFileFullPath}`, fileExists);
+                return fileExists;
+            } else {
+                if fileExists is boolean && !fileExists { // check and create directory and proceed
+                    error? creationError = file:create(logFileFullPath);
+                    if creationError is error {
+                        log:printError(string `Configured directory ${logFilePath} doesn't exist. Error creating analytics log file: ${logFileName}. Analytics data will not be written.`, creationError); //terminate
+                        return creationError;
+                    }
+                    log:printDebug(string `File ${logFileName} created successfully inside directory ${logFilePath}`);
+                }
+            }
+        }
+    }
+}
+
 # Resolves the patient ID from the HTTP request.
 # Tries to extract from the request path first, then from query parameters.
 #
@@ -286,4 +686,25 @@ isolated function addConsentContextToFHIRContext(string fhirResourceType, http:R
             fhirCtx.setConsentContext(consentCtx);
         }
     }
+}
+
+# Gets the civil date for the previous day
+# 
+# + return - civil date of the previous day
+isolated function getPreviousCivilDate() returns time:Civil|error? {
+
+    time:Zone|error zone = time:loadSystemZone();
+    if zone is error {
+        log:printError("Failed to load system time zone for scheduling file rotation task", zone);
+        return zone;
+    }
+
+    // Adding less than a day is enough to get the previous date since we execute the job on midnight.
+    time:Utc previousDayUtc = time:utcAddSeconds(time:utcNow(), -43200);
+    time:Civil previousDayCivil = zone.utcToCivil(previousDayUtc);
+
+    //todo: Add the proper fix after fixing the issue: https://github.com/wso2-enterprise/wso2-integration-internal/issues/4614
+    string previousDayCivilStr = check time:civilToString(previousDayCivil);
+    time:Civil previousDayCivilFromStr = check time:civilFromString(previousDayCivilStr);    
+    return previousDayCivilFromStr;
 }

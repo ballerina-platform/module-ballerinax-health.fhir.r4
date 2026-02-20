@@ -1,44 +1,66 @@
-# Analytics with FHIR R4 service
+# CMS FHIR API Analytics
 
-FHIR R4 service comes with inbuilt analytics service, which can publish analytics logs to a configured server using a REST API call.
+CMS requires Patient Access API Metrics to be published to CMS annually. This requirement can be achieved using the `AnalyticsResponseInterceptor`, which comes inbuilt in the `health.fhirr4` service.
 
-This is achieved through the `AnalyticsResponseInterceptor` which can intercept the outgoing responses, collect the required attribute values and publishing to the configured Analytics Server.
+# Overview
 
-## Configuring Analytics
+The ```AnalyticsResponseInterceptor``` intercepts the FHIR APIs and writes the required data in a preconfigured log file. Based on the following configuration, the log file path and the name will be decided. Also, there is the capability to allow or exclude APIs as required using the configurations. The optional support of payload publishing is also provided through a configuration. 
 
-Inside the module which imports `ballerinax.health.fhirr4`, we need to have a `Config.toml` at the same level as `Ballerina.toml` including the necessary configs. Following is a clarification on those configs.
+In addition to that, the a separate configuration is introduced to host a separate service in case additional data needs to be included. Find more information on this in the ```Enrich Analytics Payload Endpoint``` section.
 
-```
+## Configurations
+The following configuration model is used in this analytics solution. The default configuration is provided below. By default it is disabled.
+
+ ```toml
 [ballerinax.health.fhirr4.analytics]
+enabled = false
+fhirServerContext = "/fhir/r4/"
+jwtAttributes = ["client_id", "iss"]
+shouldPublishPayloads = false
+filePath = "logs"
+fileName = "fhir-analytics"
+allowedApiContexts = []
+excludedApiContexts = []
 ```
-> - `enabled` : To enable publishing logs to the configured analytics server
-> - `attributes` : Only the attributes listed here are taken from the jwt (`x-jwt-assertion` header value) to publish
-> - `url` : Analytics server url
-> - `username` : BasicAuth username for the analytics server
-> - `password` : BasicAuth password for the analytics server
 
+* **Configuration Descriptions**:
+> - enabled: 
+	 - enable or disable analytics. Disable by default.
+> - fhirServerContext:
+	- this is the context path of the FHIR server (mandatory). **Must match the server path and must end with the trailing slash**.
+> - jwtAttributes: 
+	- a comma-separated list of strings of the attributes that are contained in the x-jwt-assertion header that should be considered for data writing. If no values are required, the list should remain empty. The values should exactly match the claims present in the x-jwt-assertion header. Only the specified values are considered for analytics. In the above example, the ```client_id``` and ```iss``` is expected to be present in the ```x-jwt-assertion``` header.
+> - shouldPublishPayloads: 
+	- determines whether the request payloads (request/response) should be written to the log file. Disabled by default.
+> - filePath:
+	- path where the log file should be created. This is relative to the server location. A nested path can also be configured if required (eg: foo/bar). If the directories are not created during the server startup, they will be automatically created. If ```filePath``` is not configured, a default directory named ```logs``` will be created.
+> - fileName:
+	- name of the log file that is created. If the file doesn’t exist in the configured path, the file will be automatically created during the server startup. If ```fileName``` is not configured, a default log file named ```fhir-analytics``` will be created inside the default ```filePath```.
+> - allowedApiContexts:
+	- a list of comma-separated regexes. If it requires allowing only a set of defined APIs through the interceptor, they should be configured in this list as comma-separated strings. These can be valid regexes.
+> - excludedApiContexts: 
+	- a list of comma-separated regexes. If it requires to not to allow only a set of defined APIs through the interceptor, they should be configured in this list as comma-separated strings. These can be valid regexes. If both lists are configured, the priority will be given to the excluded list, and the allowed list will be ignored.
+
+## Enrich Analytics Payload Endpoint
+
+This endpoint is provided for the user to optionally add any additional data to the analytics payload from a separate backend. The configuration below is used to define the URL of this backend server and the security credentials for basic authentication. Note that this payload enrichment only applies when the ```shouldPublishPayloads``` configuration is set to true.
+
+```toml
+[ballerinax.health.fhirr4.analytics.enrichPayload]
+enabled = true
+url = "http://<HOST>:<PORT>/enrich-analytics-payload"
+username = ""
+password = ""
 ```
-[ballerinax.health.fhirr4.analytics.moreInfo]
-```
-> - `enabled` : Whether more information is required or not
-> - `url` : An api to fetch more information required for analytics
-> - `username` : BasicAuth username for more info api
-> - `password` : BasicAuth password for more info api
 
-### x-jwt-assertion Header :
-
-The data which is published for analytics are taken mostly from the `x-jwt-assertion` header coming in the http request. Only the attributes in the `ballerinax.health.fhirr4.analytics.attributes` list are published.
-
-### Analytics Server :
-
-Analytics server can be any server which can capture analytics logs using API requests. AnalyticsResponseInterceptor only supports JSON format, where it sends logs as a JSON with string values to the configured server. Currently only Basic Auth is used (if configured) for api security.
-
-For example `Opensearch` & `Opensearch Dashboards` can be used to capture logs, analyze and visualize.
-
-### More Info API :
-
-There can be information which are out of scope for the FHIR server, but may be required for analytics. The party which uses FHIR analytics can expose these info using an API (POST endpoint) which accepts a json with `ballerinax.health.fhirr4.analytics.attributes` as keys, and returns more info as a json with key:\<string>value pairs.
-
-Check `more_info_api.yaml` for an open-api sample swagger.
-
-> Note: The keys of the json response of the more info api should not change per request since analytics servers like Opensearch creates the index patterns at the very first log publishing request, and any new keys sent later will not be persisted under that index pattern.
+* **Configuration Descriptions**:
+> - enabled:
+	- payload data enrichment will only work if this is set to true and the ```shouldPublishPayloads``` configuration is enabled.
+> - url: 
+	- the URL of the external server
+> - username:
+	- username for the basic authentication of the server
+> - password:
+	- password for the basic authentication of the server
+    
+Check ```enrich_analytics_payload_api.yaml``` in ```module-ballerinax-health.fhir.r4/fhirr4/ballerina/src/main/resources/fhirservice/resources``` for a sample open-api swagger.
