@@ -70,7 +70,7 @@ function createScannerState(string sourceCode) returns ScannerState {
 }
 
 // ========================================
-// PUBLIC API
+// API
 // ========================================
 
 # Scans a FHIRPath expression and converts it into a sequence of tokens.
