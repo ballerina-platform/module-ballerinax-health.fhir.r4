@@ -62,7 +62,7 @@ type ConsumeResult [boolean, ParserState];
 #
 # + tokens - The list of tokens to be parsed
 # + return - A new ParserState initialized for parsing
-function createParserState(FhirPathToken[] tokens) returns ParserState {
+isolated function createParserState(FhirPathToken[] tokens) returns ParserState {
     return {
         tokens: tokens,
         current: 0
@@ -78,7 +78,7 @@ function createParserState(FhirPathToken[] tokens) returns ParserState {
 #
 # + tokens - The list of tokens produced by the scanner
 # + return - An expression AST on success, or a FhirpathParserError if parsing fails
-function parse(FhirPathToken[] tokens) returns FhirpathParserError|Expr? {
+public isolated function parse(FhirPathToken[] tokens) returns FhirpathParserError|Expr? {
     ParserState state = createParserState(tokens);
     FhirpathParserError|ParseResult result = Expression(state);
     if result is FhirpathParserError {
@@ -99,7 +99,7 @@ function parse(FhirPathToken[] tokens) returns FhirpathParserError|Expr? {
 #
 # + state - The current parser state
 # + return - A parse result with the expression and updated state, or an error
-function Expression(ParserState state) returns FhirpathParserError|ParseResult {
+isolated function Expression(ParserState state) returns FhirpathParserError|ParseResult {
     return parseOrExpression(state);
 }
 
@@ -108,7 +108,7 @@ function Expression(ParserState state) returns FhirpathParserError|ParseResult {
 #
 # + state - The current parser state
 # + return - A parse result with the binary expression and updated state, or an error
-function parseOrExpression(ParserState state) returns FhirpathParserError|[Expr?, ParserState] {
+isolated function parseOrExpression(ParserState state) returns FhirpathParserError|[Expr?, ParserState] {
     FhirpathParserError|ParseResult result = parseAndExpression(state);
     if result is FhirpathParserError {
         return result;
@@ -147,7 +147,7 @@ function parseOrExpression(ParserState state) returns FhirpathParserError|[Expr?
 #
 # + state - The current parser state
 # + return - A parse result with the binary expression and updated state, or an error
-function parseAndExpression(ParserState state) returns FhirpathParserError|ParseResult {
+isolated function parseAndExpression(ParserState state) returns FhirpathParserError|ParseResult {
     FhirpathParserError|ParseResult result = parseEqualityExpression(state);
     if result is FhirpathParserError {
         return result;
@@ -186,7 +186,7 @@ function parseAndExpression(ParserState state) returns FhirpathParserError|Parse
 #
 # + state - The current parser state
 # + return - A parse result with the binary expression and updated state, or an error
-function parseEqualityExpression(ParserState state) returns FhirpathParserError|ParseResult {
+isolated function parseEqualityExpression(ParserState state) returns FhirpathParserError|ParseResult {
     FhirpathParserError|ParseResult result = parsePostfixExpression(state);
     if result is FhirpathParserError {
         return result;
@@ -226,7 +226,7 @@ function parseEqualityExpression(ParserState state) returns FhirpathParserError|
 #
 # + state - The current parser state
 # + return - A parse result with the postfix expression and updated state, or an error
-function parsePostfixExpression(ParserState state) returns FhirpathParserError|ParseResult {
+isolated function parsePostfixExpression(ParserState state) returns FhirpathParserError|ParseResult {
     FhirpathParserError|ParseResult result = parsePrimary(state);
     if result is FhirpathParserError {
         return result;
@@ -309,7 +309,7 @@ function parsePostfixExpression(ParserState state) returns FhirpathParserError|P
 #
 # + state - The current parser state
 # + return - A parse result with the identifier or function expression, or an error
-function parseInvocation(ParserState state) returns FhirpathParserError|ParseResult {
+isolated function parseInvocation(ParserState state) returns FhirpathParserError|ParseResult {
     // Try to parse as identifier or function
     [boolean, ParserState] idMatch = matchToken(state, IDENTIFIER, DELIMITED_IDENTIFIER);
     if idMatch[0] {
@@ -359,7 +359,7 @@ function parseInvocation(ParserState state) returns FhirpathParserError|ParseRes
 #
 # + state - The current parser state
 # + return - A parse result with the parameter list and updated state, or an error
-function parseParamList(ParserState state) returns FhirpathParserError|ParseParamListResult {
+isolated function parseParamList(ParserState state) returns FhirpathParserError|ParseParamListResult {
     Expr[] params = [];
     ParserState newState = state;
 
@@ -407,7 +407,7 @@ function parseParamList(ParserState state) returns FhirpathParserError|ParsePara
 #
 # + state - The current parser state
 # + return - A parse result with the primary expression and updated state, or an error
-function parsePrimary(ParserState state) returns FhirpathParserError|ParseResult {
+isolated function parsePrimary(ParserState state) returns FhirpathParserError|ParseResult {
     // Literals
     [boolean, ParserState] matchResult = matchToken(state, FALSE);
     if matchResult[0] {
@@ -488,7 +488,7 @@ function parsePrimary(ParserState state) returns FhirpathParserError|ParseResult
 # + state - The current parser state
 # + types - Variable number of token types to match against
 # + return - A tuple of [match success, updated state] where state is advanced if matched
-function matchToken(ParserState state, TokenType... types) returns [boolean, ParserState] {
+isolated function matchToken(ParserState state, TokenType... types) returns [boolean, ParserState] {
     foreach TokenType tokenType in types {
         if checkToken(state, tokenType) {
             return [true, advanceparse(state)];
@@ -504,7 +504,7 @@ function matchToken(ParserState state, TokenType... types) returns [boolean, Par
 # + tokenType - The expected token type
 # + message - Error message to display if the token doesn't match
 # + return - A consume result with success flag and updated state, or a parser error
-function consumeparse(ParserState state, TokenType tokenType, string message) returns FhirpathParserError|ConsumeResult {
+isolated function consumeparse(ParserState state, TokenType tokenType, string message) returns FhirpathParserError|ConsumeResult {
     if checkToken(state, tokenType) {
         return [true, advanceparse(state)];
     }
@@ -519,7 +519,7 @@ function consumeparse(ParserState state, TokenType tokenType, string message) re
 # + state - The current parser state
 # + tokenType - The token type to check against
 # + return - True if the current token matches the expected type, false otherwise
-function checkToken(ParserState state, TokenType tokenType) returns boolean {
+isolated function checkToken(ParserState state, TokenType tokenType) returns boolean {
     if isparseAtEnd(state) {
         return false;
     }
@@ -534,7 +534,7 @@ function checkToken(ParserState state, TokenType tokenType) returns boolean {
 #
 # + state - The current parser state
 # + return - Updated parser state with advanced position
-function advanceparse(ParserState state) returns ParserState {
+isolated function advanceparse(ParserState state) returns ParserState {
     ParserState newState = state;
     if !isparseAtEnd(newState) {
         newState.current += 1;
@@ -546,7 +546,7 @@ function advanceparse(ParserState state) returns ParserState {
 #
 # + state - The current parser state
 # + return - True if at end of tokens (EOF token), false otherwise
-function isparseAtEnd(ParserState state) returns boolean {
+isolated function isparseAtEnd(ParserState state) returns boolean {
     return peekparse(state).tokenType == EOF;
 }
 
@@ -554,7 +554,7 @@ function isparseAtEnd(ParserState state) returns boolean {
 #
 # + state - The current parser state
 # + return - The current token
-function peekparse(ParserState state) returns FhirPathToken {
+isolated function peekparse(ParserState state) returns FhirPathToken {
     return state.tokens[state.current];
 }
 
@@ -562,7 +562,7 @@ function peekparse(ParserState state) returns FhirPathToken {
 #
 # + state - The current parser state
 # + return - The previous token (at current position - 1)
-function previousparse(ParserState state) returns FhirPathToken {
+isolated function previousparse(ParserState state) returns FhirPathToken {
     return state.tokens[state.current - 1];
 }
 

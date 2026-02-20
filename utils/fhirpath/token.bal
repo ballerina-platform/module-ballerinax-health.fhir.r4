@@ -7,7 +7,7 @@ public type FhirPathToken record {|
 |};
 
 // Create a new token
-public function createToken(TokenType tokenType, string lexeme, anydata? literal, int position) returns FhirPathToken {
+isolated function createToken(TokenType tokenType, string lexeme, anydata? literal, int position) returns FhirPathToken {
     return {
         tokenType: tokenType,
         lexeme: lexeme,
@@ -17,6 +17,6 @@ public function createToken(TokenType tokenType, string lexeme, anydata? literal
 }
 
 // Convert token to string
-public function tokenToString(FhirPathToken token) returns string {
+isolated function tokenToString(FhirPathToken token) returns string {
     return string `${token.tokenType} ${token.lexeme} ${token.literal.toString()}`;
 }

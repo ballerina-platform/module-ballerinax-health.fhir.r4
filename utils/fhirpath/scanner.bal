@@ -53,7 +53,7 @@ type ScannerState record {|
 #
 # + sourceCode - The FHIRPath expression to be tokenized
 # + return - A new ScannerState initialized for scanning
-function createScannerState(string sourceCode) returns ScannerState {
+isolated function createScannerState(string sourceCode) returns ScannerState {
     return {
         sourceCode: sourceCode,
         tokens: [],
@@ -78,7 +78,7 @@ function createScannerState(string sourceCode) returns ScannerState {
 #
 # + sourceCode - The FHIRPath expression to tokenize
 # + return - An array of tokens on success, or a FhirpathScannerError if scanning fails
-function scanTokens(string sourceCode) returns FhirpathScannerError|FhirPathToken[] {
+isolated function scanTokens(string sourceCode) returns FhirpathScannerError|FhirPathToken[] {
     ScannerState state = createScannerState(sourceCode);
 
     while !isScannerAtEnd(state) {
@@ -103,7 +103,7 @@ function scanTokens(string sourceCode) returns FhirpathScannerError|FhirPathToke
 #
 # + state - The current scanner state
 # + return - Updated scanner state on success, or a FhirpathScannerError for unexpected characters
-function scanToken(ScannerState state) returns FhirpathScannerError|ScannerState {
+isolated function scanToken(ScannerState state) returns FhirpathScannerError|ScannerState {
     [string, ScannerState] result = advanceScanner(state);
     string c = result[0];
     ScannerState newState = result[1];
@@ -156,7 +156,7 @@ function scanToken(ScannerState state) returns FhirpathScannerError|ScannerState
 #
 # + state - The current scanner state
 # + return - Updated scanner state with the identifier token added
-function scanIdentifier(ScannerState state) returns ScannerState {
+isolated function scanIdentifier(ScannerState state) returns ScannerState {
     ScannerState newState = state;
     while isAlphaNumeric(peekScanner(newState)) {
         [string, ScannerState] result = advanceScanner(newState);
@@ -174,7 +174,7 @@ function scanIdentifier(ScannerState state) returns ScannerState {
 #
 # + state - The current scanner state (positioned after the opening backtick)
 # + return - Updated scanner state with the delimited identifier token, or an error if unterminated
-function scanDelimitedIdentifier(ScannerState state) returns FhirpathScannerError|ScannerState {
+isolated function scanDelimitedIdentifier(ScannerState state) returns FhirpathScannerError|ScannerState {
     ScannerState newState = state;
     while peekScanner(newState) != "`" && !isScannerAtEnd(newState) {
         // Handle escape sequences
@@ -210,7 +210,7 @@ function scanDelimitedIdentifier(ScannerState state) returns FhirpathScannerErro
 #
 # + state - The current scanner state (positioned at the first digit)
 # + return - Updated scanner state with the number token added
-function scanNumber(ScannerState state) returns ScannerState {
+isolated function scanNumber(ScannerState state) returns ScannerState {
     ScannerState newState = state;
     while isDigit(peekScanner(newState)) {
         [string, ScannerState] result = advanceScanner(newState);
@@ -242,7 +242,7 @@ function scanNumber(ScannerState state) returns ScannerState {
 #
 # + state - The current scanner state (positioned after the opening quote)
 # + return - Updated scanner state with the string token, or an error if unterminated
-function scanString(ScannerState state) returns FhirpathScannerError|ScannerState {
+isolated function scanString(ScannerState state) returns FhirpathScannerError|ScannerState {
     ScannerState newState = state;
     while peekScanner(newState) != "'" && !isScannerAtEnd(newState) {
         // Handle escape sequences
@@ -283,7 +283,7 @@ function scanString(ScannerState state) returns FhirpathScannerError|ScannerStat
 # + state - The current scanner state
 # + expected - The character to match
 # + return - A tuple of [match result, updated state] where the state is advanced if matched
-function matchChar(ScannerState state, string expected) returns [boolean, ScannerState] {
+isolated function matchChar(ScannerState state, string expected) returns [boolean, ScannerState] {
     if isScannerAtEnd(state) {
         return [false, state];
     }
@@ -301,7 +301,7 @@ function matchChar(ScannerState state, string expected) returns [boolean, Scanne
 #
 # + state - The current scanner state
 # + return - The current character, or "\0" if at end of source
-function peekScanner(ScannerState state) returns string {
+isolated function peekScanner(ScannerState state) returns string {
     if isScannerAtEnd(state) {
         return "\\0";
     }
@@ -313,7 +313,7 @@ function peekScanner(ScannerState state) returns string {
 #
 # + state - The current scanner state
 # + return - The next character, or "\0" if at or past end of source
-function peekScannerNext(ScannerState state) returns string {
+isolated function peekScannerNext(ScannerState state) returns string {
     if state.current + 1 >= state.sourceCode.length() {
         return "\\0";
     }
@@ -328,7 +328,7 @@ function peekScannerNext(ScannerState state) returns string {
 #
 # + c - The character to check (should be a single character)
 # + return - True if the character is alphabetic or underscore, false otherwise
-function isAlpha(string c) returns boolean {
+isolated function isAlpha(string c) returns boolean {
     if c.length() != 1 {
         return false;
     }
@@ -343,7 +343,7 @@ function isAlpha(string c) returns boolean {
 #
 # + c - The character to check
 # + return - True if the character is alphanumeric, false otherwise
-function isAlphaNumeric(string c) returns boolean {
+isolated function isAlphaNumeric(string c) returns boolean {
     return isAlpha(c) || isDigit(c);
 }
 
@@ -351,7 +351,7 @@ function isAlphaNumeric(string c) returns boolean {
 #
 # + c - The character to check (should be a single character)
 # + return - True if the character is a digit, false otherwise
-function isDigit(string c) returns boolean {
+isolated function isDigit(string c) returns boolean {
     if c.length() != 1 {
         return false;
     }
@@ -368,7 +368,7 @@ function isDigit(string c) returns boolean {
 #
 # + state - The current scanner state
 # + return - True if at end of source, false otherwise
-function isScannerAtEnd(ScannerState state) returns boolean {
+isolated function isScannerAtEnd(ScannerState state) returns boolean {
     return state.current >= state.sourceCode.length();
 }
 
@@ -376,7 +376,7 @@ function isScannerAtEnd(ScannerState state) returns boolean {
 #
 # + state - The current scanner state
 # + return - A tuple of [current character, updated state with advanced position]
-function advanceScanner(ScannerState state) returns [string, ScannerState] {
+isolated function advanceScanner(ScannerState state) returns [string, ScannerState] {
     string char = charAt(state.sourceCode, state.current);
     ScannerState newState = state;
     newState.current += 1;
@@ -388,7 +388,7 @@ function advanceScanner(ScannerState state) returns [string, ScannerState] {
 # + str - The source string
 # + index - The zero-based index of the character to retrieve
 # + return - The character at the specified index
-function charAt(string str, int index) returns string {
+isolated function charAt(string str, int index) returns string {
     return str.substring(index, index + 1);
 }
 
@@ -401,7 +401,7 @@ function charAt(string str, int index) returns string {
 # + state - The current scanner state
 # + tokenType - The type of token to add
 # + return - Updated scanner state with the token added
-function addToken(ScannerState state, TokenType tokenType) returns ScannerState {
+isolated function addToken(ScannerState state, TokenType tokenType) returns ScannerState {
     return addTokenWithLiteral(state, tokenType, ());
 }
 
@@ -411,7 +411,7 @@ function addToken(ScannerState state, TokenType tokenType) returns ScannerState 
 # + tokenType - The type of token to add
 # + literal - The literal value associated with the token (e.g., number value, string content)
 # + return - Updated scanner state with the token added
-function addTokenWithLiteral(ScannerState state, TokenType tokenType, anydata? literal) returns ScannerState {
+isolated function addTokenWithLiteral(ScannerState state, TokenType tokenType, anydata? literal) returns ScannerState {
     string text = state.sourceCode.substring(state.startIndex, state.current);
     ScannerState newState = state;
     newState.tokens.push(createToken(tokenType, text, literal, newState.startIndex));

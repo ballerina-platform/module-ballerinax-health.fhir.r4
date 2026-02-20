@@ -46,7 +46,7 @@ public type IndexerExpr record {|
 |};
 
 // Constructor functions
-public function createBinaryExpr(Expr left, FhirPathToken operator, Expr right) returns BinaryExpr {
+isolated function createBinaryExpr(Expr left, FhirPathToken operator, Expr right) returns BinaryExpr {
     return {
         kind: "Binary",
         left: left,
@@ -55,21 +55,21 @@ public function createBinaryExpr(Expr left, FhirPathToken operator, Expr right) 
     };
 }
 
-public function createLiteralExpr(anydata? value) returns LiteralExpr {
+isolated function createLiteralExpr(anydata? value) returns LiteralExpr {
     return {
         kind: "Literal",
         value: value
     };
 }
 
-public function createIdentifierExpr(string name) returns IdentifierExpr {
+isolated function createIdentifierExpr(string name) returns IdentifierExpr {
     return {
         kind: "Identifier",
         name: name
     };
 }
 
-public function createFunctionExpr(string name, Expr? target, Expr[] params) returns FunctionExpr {
+isolated function createFunctionExpr(string name, Expr? target, Expr[] params) returns FunctionExpr {
     return {
         kind: "Function",
         name: name,
@@ -78,7 +78,7 @@ public function createFunctionExpr(string name, Expr? target, Expr[] params) ret
     };
 }
 
-public function createMemberAccessExpr(Expr target, string member) returns MemberAccessExpr {
+isolated function createMemberAccessExpr(Expr target, string member) returns MemberAccessExpr {
     return {
         kind: "MemberAccess",
         target: target,
@@ -86,7 +86,7 @@ public function createMemberAccessExpr(Expr target, string member) returns Membe
     };
 }
 
-public function createIndexerExpr(Expr target, Expr index) returns IndexerExpr {
+isolated function createIndexerExpr(Expr target, Expr index) returns IndexerExpr {
     return {
         kind: "Indexer",
         target: target,
