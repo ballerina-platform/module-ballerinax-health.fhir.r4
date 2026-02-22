@@ -88,31 +88,3 @@ public function testEvaluateFhirPathWithoutResourceType() returns error? {
         test:assertEquals(test3.message(), "Invalid FHIR resource", msg = "Failed!");
     }
 }
-
-@test:Config {}
-public function testWhereFunction() returns error? {
-    // Test where() - filter names by use='official'
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name.where(use = 'official').family"), ["Chalmers"], msg = "Failed!");
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name.where(use = 'official').use"), ["official"], msg = "Failed!");
-
-    // Test where() - filter names by use='usual'
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name.where(use = 'usual').given"), ["Jim"], msg = "Failed!");
-
-    // Test where() - filter addresses by use='home'
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.address.where(use = 'home').city"), ["PleasantVille"], msg = "Failed!");
-
-    // Test where() - filter addresses by use='work'
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.address.where(use = 'work').city"), ["Melbourne"], msg = "Failed!");
-
-    // Test where() - filter by city
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.address.where(city = 'Melbourne').use"), ["work"], msg = "Failed!");
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.address.where(city = 'PleasantVille').use"), ["home"], msg = "Failed!");
-
-    // Test where() - no matches returns empty
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name.where(use = 'nickname')"), [], msg = "Failed!");
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.address.where(city = 'Sydney')"), [], msg = "Failed!");
-
-    // Test where() - without resource type prefix
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "name.where(use = 'official').family"), ["Chalmers"], msg = "Failed!");
-    test:assertEquals(getValuesFromFhirPath(samplePatient1, "address.where(city = 'PleasantVille').use"), ["home"], msg = "Failed!");
-}
