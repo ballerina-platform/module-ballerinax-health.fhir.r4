@@ -11,12 +11,16 @@ public function printAst(Expr expr) returns string {
     } else if expr is IdentifierExpr {
         return expr.name;
     } else if expr is FunctionExpr {
-        string result = "(" + expr.name;
-        foreach Expr param in expr.params {
-            result += " " + printAst(param);
+        // Build list of expressions: target (if exists) + params
+        Expr[] exprs = [];
+        Expr? target = expr.target;
+        if target is Expr {
+            exprs.push(target);
         }
-        result += ")";
-        return result;
+        foreach Expr param in expr.params {
+            exprs.push(param);
+        }
+        return parenthesize(expr.name, ...exprs);
     } else if expr is MemberAccessExpr {
         return parenthesize(".", expr.target, createIdentifierExpr(expr.member));
     } else {

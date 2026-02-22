@@ -15,73 +15,115 @@ public function main(string... args) returns error? {
     }
 }
 
-function runFile(string path) returns error? {
+function runFile(string path) returns FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError|io:Error? {
     string sourceCode = check io:fileReadString(path);
-    run(sourceCode);
-
-    // Indicate an error in the exit code
-    if hadError {
-        error err = error("Compilation error");
-        return err;
-    }
+    FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError? err = run(sourceCode);
+    return err;
 }
 
-function runPrompt() returns error? {
+function runPrompt() returns io:Error? {
     while true {
         io:print("> ");
         string line = io:readln();
         if line.trim() == "" {
             continue;
         }
-        run(line);
-        hadError = false;
+        FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError? err = run(line);
+        if err is FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError {
+            io:println("Error: ", err.message());
+        }
     }
     // run("Patient.name[0]");
 }
 
-function run(string sourceCode) {
+function run(string sourceCode) returns FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError? {
     // Scan the source code
-    FhirPathToken[] tokens = scanTokens(sourceCode);
+    FhirpathScannerError|FhirPathToken[] scanResult = scanTokens(sourceCode);
+    if scanResult is FhirpathScannerError {
+        return scanResult;
+    }
+    FhirPathToken[] tokens = scanResult;
 
     // Parse the tokens
-    Expr? expression = parse(tokens);
-
-    // Stop if there was a syntax error
-    if hadError {
-        return;
+    FhirpathParserError|Expr? parseResult = parse(tokens);
+    if parseResult is FhirpathParserError {
+        return parseResult;
     }
+    Expr? expression = parseResult;
 
     // Example FHIR Patient resource for testing
     json patientResource = {
         "resourceType": "Patient",
-        "id": "example",
+        "id": "1",
+        "meta": {
+            "profile": [
+                "http://hl7.org/fhir/StructureDefinition/Patient"
+            ]
+        },
+        "active": true,
         "name": [
             {
                 "use": "official",
                 "family": "Chalmers",
-                "given": ["Peter", "James"]
+                "given": [
+                    "Peter",
+                    "James"
+                ]
             },
             {
                 "use": "usual",
-                "given": ["Jim"]
+                "given": [
+                    "Jim"
+                ]
             }
         ],
         "gender": "male",
-        "birthDate": "1974-12-25"
+        "birthDate": "1974-12-25",
+        "managingOrganization": {
+            "reference": "Organization/1",
+            "display": "Burgers University Medical Center"
+        },
+        "address": [
+            {
+                "use": "home",
+                "line": [
+                    "534 Erewhon St",
+                    "sqw"
+                ],
+                "city": "PleasantVille",
+                "district": "Rainbow",
+                "state": "Vic",
+                "postalCode": "3999",
+                "country": "Australia"
+            },
+            {
+                "use": "work",
+                "line": [
+                    "33[0] 6th St"
+                ],
+                "city": "Melbourne",
+                "district": "Rainbow",
+                "state": "Vic",
+                "postalCode": "3000",
+                "country": "Australia"
+            }
+        ]
     };
 
     // Interpret the expression with the patient resource
     if expression is Expr {
+        io:println("Tokens: ", tokens.'map(t => t.tokenType.toString() + "('" + t.lexeme + "')"));
         io:println("AST: " + printAst(expression));
 
-        RuntimeError|json[] result = interpret(expression, patientResource);
+        FhirpathInterpreterError|json[] result = interpret(expression, patientResource);
 
-        if result is RuntimeError {
-            io:println("Runtime Error: " + result.message);
+        if result is FhirpathInterpreterError {
+            return result;
         } else {
             io:println("Result: ", result);
         }
     }
+    return ();
 }
 
 public function reportError(int line, string message) {
@@ -90,5 +132,4 @@ public function reportError(int line, string message) {
 
 function reportErrorAt(int line, string location, string message) {
     io:println(string `[line ${line}] Error${location}: ${message}`);
-    hadError = true;
 }
