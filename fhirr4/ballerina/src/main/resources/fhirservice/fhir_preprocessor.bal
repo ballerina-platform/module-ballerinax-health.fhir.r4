@@ -15,8 +15,8 @@ import ballerina/jwt;
 import ballerina/lang.regexp;
 import ballerina/log;
 import ballerinax/health.fhir.r4;
-import ballerinax/health.fhir.r4.ips;
 import ballerinax/health.fhir.r4.international401;
+import ballerinax/health.fhir.r4.ips;
 import ballerinax/health.fhir.r4.parser;
 
 const SPACE_CHARACTER = " ";
@@ -36,6 +36,8 @@ public isolated class FHIRPreprocessor {
     private final readonly & map<r4:SearchParamConfig> searchParamConfigMap;
     // All the operations (base + API config defined)
     private final readonly & map<r4:OperationConfig> operationConfigMap;
+
+    final DefaultConsentEnforcer consentEnforcer;
 
     # Initialize the FHIR pre-processor
     #
@@ -96,7 +98,10 @@ public isolated class FHIRPreprocessor {
                 log:printError("Error occurred while registering resource operation to FHIR registry", regOpStatus);
             }
         }
-        self.operationConfigMap = operationConfigs.cloneReadOnly();       
+        self.operationConfigMap = operationConfigs.cloneReadOnly();
+
+        // Initialize the consent enforcer which will create the OpenFGC client
+        self.consentEnforcer = new DefaultConsentEnforcer();
     }
 
     # Process the FHIR Read interaction.
@@ -588,6 +593,8 @@ public isolated class FHIRPreprocessor {
         // Create FHIR context
         r4:FHIRContext fhirCtx = new (fhirRequest, request, fhirSecurity);
 
+        check addConsentContextToFHIRContext(fhirResourceType, httpRequest, fhirCtx, self.consentEnforcer);
+
         // Set FHIR context inside HTTP context
         setFHIRContext(fhirCtx, httpCtx);
     }
@@ -607,8 +614,8 @@ public isolated class FHIRPreprocessor {
     # + httpRequest - The HTTP request
     # + httpCtx - The HTTP context
     # + return - A `r4:FHIRError` if an error occurs during the processing, or a `r4:Bundle` containing the generated IPS
-    #            or `()` if the operation is not supported.
-    public isolated function processIPSGenerateOperation(string patientId, json|xml? payload, 
+    # or `()` if the operation is not supported.
+    public isolated function processIPSGenerateOperation(string patientId, json|xml? payload,
             r4:FHIRInteractionLevel operationRequestScope, string baseResourcePath, r4:OperationConfig[] patientOperationConfigs,
             http:Request httpRequest, http:RequestContext httpCtx) returns r4:FHIRError|r4:Bundle {
         log:printDebug("Pre-processing FHIR IPS generation operation");
@@ -627,7 +634,7 @@ public isolated class FHIRPreprocessor {
 
             // Get operation definition and config
             r4:FHIROperationDefinition resourceOperationDefinition = resourceOperationDefinitions.get(SUMMARY_OPERATION);
-            
+
             if self.operationConfigMap.hasKey(SUMMARY_OPERATION) {
                 r4:OperationConfig? resourceOperationConfig = self.operationConfigMap.get(SUMMARY_OPERATION);
                 // Process the operation
@@ -946,25 +953,36 @@ isolated function preProcessOperation(string fhirResourceType, string fhirOperat
             return;
         }
 
-        // If there is a payload, it should be a valid Parameters resource
+        // If there is a payload, it should be a valid Parameters or Bundle resource
         // Validate and parse payload
         anydata|r4:FHIRParseError parsedResource = parser:parse(payload);
-        international401:Parameters|error parsedParametersPayload = parsedResource.ensureType();
 
-        if parsedResource is r4:FHIRParseError || parsedParametersPayload is error {
+        if parsedResource is r4:FHIRParseError {
             string message = "Invalid operation payload";
             string diagnostic = "Payload for operation \"$" + fhirOperation + "\" is not a valid \"Parameters\" "
-                        + "resource. Please provide a valid \"Parameters\" resource as the payload.";
+                        + "or \"Bundle\" resource. Please provide a valid resource as the payload.";
             return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
                     httpStatusCode = http:STATUS_BAD_REQUEST);
         }
 
-        // Process operation params of the payload
-        map<international401:ParametersParameter[]> processedParams = check processOperationPayloadParams(fhirOperation,
-                operationRequestScope, operationParameterDefinitions, operationParameterConfigs, parsedParametersPayload);
+        international401:Parameters|r4:Bundle|error parsedParametersPayload = parsedResource.ensureType();
 
-        // Validate operation parameter cardinality
-        check validateOperationParamCardinality(fhirOperation, operationParameterConfigs, processedParams);
+        if parsedParametersPayload is error {
+            string message = "Invalid Resource Type in operation payload";
+            string diagnostic = "ResourceType for operation \"$" + fhirOperation + "\" is not a valid \"Parameters\" "
+                        + "or \"Bundle\" resource. Please provide a valid resource as the payload.";
+            return r4:createFHIRError(message, r4:ERROR, r4:PROCESSING, diagnostic = diagnostic,
+                    httpStatusCode = http:STATUS_BAD_REQUEST);
+        }
+
+        // Process operation params of the payload only if it's a Parameters resource
+        if parsedParametersPayload is international401:Parameters {
+            map<international401:ParametersParameter[]> processedParams = check processOperationPayloadParams(fhirOperation,
+                    operationRequestScope, operationParameterDefinitions, operationParameterConfigs, parsedParametersPayload);
+
+            // Validate operation parameter cardinality
+            check validateOperationParamCardinality(fhirOperation, operationParameterConfigs, processedParams);
+        }
 
         return new r4:FHIRResourceEntity(parsedResource);
     } else {

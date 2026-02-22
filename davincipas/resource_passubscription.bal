@@ -331,9 +331,9 @@ public enum PASSubscriptionChannelType {
 
 # PASSubscriptionChannelPayload enum
 public enum PASSubscriptionChannelPayload {
-    CODE_PAYLOAD_EXTENSION = "extension",
-    CODE_PAYLOAD_ID = "id",
-    CODE_PAYLOAD_VALUE = "value"
+    CODE_PAYLOAD_FHIR_XML = "application/fhir+xml",
+    CODE_PAYLOAD_FHIR_JSON = "application/fhir+json",
+    CODE_PAYLOAD_TEXT = "text/plain"
 }
 
 # PASSubscriptionStatus enum
