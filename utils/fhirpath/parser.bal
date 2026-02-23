@@ -81,7 +81,16 @@ isolated function createParserState(FhirPathToken[] tokens) returns ParserState 
 public isolated function parse(FhirPathToken[] tokens) returns FhirpathParserError|Expr? {
     ParserState state = createParserState(tokens);
     ParseResult result = check Expression(state);
-    return result[0];
+    Expr? expr = result[0];
+    ParserState endState = result[1];
+    if expr is () {
+        return ();
+    }
+    if !isparseAtEnd(endState) {
+        FhirPathToken token = peekparse(endState);
+        return error FhirpathParserError("Unexpected tokens after expression.", token = token);
+    }
+    return expr;
 }
 
 // ========================================
