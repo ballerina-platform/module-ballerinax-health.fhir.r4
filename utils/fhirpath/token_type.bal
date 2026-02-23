@@ -40,7 +40,6 @@ public enum TokenType {
     AND,
     TRUE,
     FALSE,
-    NIL,
 
     EOF
 }

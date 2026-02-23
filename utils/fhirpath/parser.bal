@@ -381,10 +381,6 @@ isolated function parsePrimary(ParserState state) returns FhirpathParserError|Pa
     if matchResult[0] {
         return [createLiteralExpr(true), matchResult[1]];
     }
-    matchResult = matchToken(state, NIL);
-    if matchResult[0] {
-        return [createLiteralExpr(()), matchResult[1]];
-    }
 
     matchResult = matchToken(state, NUMBER);
     if matchResult[0] {
