@@ -135,7 +135,7 @@ isolated service class AnalyticsResponseInterceptor {
 # + req - The HTTP request
 # + res - The HTTP response
 # + return - The constructed analytics data record or an error if construction fails
-public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, http:Request req, http:Response res) returns AnalyticsDataRecord|http:NextService|error? {
+isolated function constructAnalyticsDataRecord(http:RequestContext ctx, http:Request req, http:Response res) returns AnalyticsDataRecord|http:NextService|error? {
 
     map<string> & readonly requestHeaders = getRequestHeaders(req, true);
     map<string> & readonly responseHeaders = getResponseHeaders(res);
@@ -206,7 +206,7 @@ public isolated function constructAnalyticsDataRecord(http:RequestContext ctx, h
 # 
 # + analyticsDataRecord - The analytics data record to write
 # + return - An error if writing fails
-public isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsDataRecord) returns error? {
+isolated function writeAnalyticsDataToFile(AnalyticsDataRecord analyticsDataRecord) returns error? {
 
     lock {
         string jwt = analyticsDataRecord.requestHeaders.get(X_JWT_HEADER);
