@@ -64,3 +64,7 @@ password = ""
 	- password for the basic authentication of the server
     
 Check ```enrich_analytics_payload_api.yaml``` in ```module-ballerinax-health.fhir.r4/fhirr4/ballerina/src/main/resources/fhirservice/resources``` for a sample open-api swagger.
+
+## How to implement analytics publishing
+
+A custom Fluent Bit configuration can be used to monitor the log file which the analytics data are written using the `AnalyticsResponseInterceptor`. You can find sample Fluent Bit configurations for Moesif and Microsoft Fabric analytics platforms by referring to [analytics_README.md](https://github.com/wso2/reference-implementation-cms0057f/blob/main/fhir-service/resources/analytics_README.md).
