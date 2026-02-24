@@ -49,9 +49,11 @@ public function testEvaluateFhirPath() returns error? {
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.mother[a]"), [], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "Patient.name[0].given[a]"), [], msg = "Failed!");
 
-    json|error testThree = getValuesFromFhirPath(invalidFhirResource, "Patient.id");
+    json|error testThree = getValuesFromFhirPath(invalidFhirResource, "Patient.id", true);
     if testThree is error {
         test:assertEquals(testThree.message(), "Invalid FHIR resource", msg = "Failed!");
+    } else {
+        test:assertFail(msg = "Expected error for invalid FHIR resource, but got success");
     }
 }
 
@@ -83,8 +85,10 @@ public function testEvaluateFhirPathWithoutResourceType() returns error? {
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "mother[a]"), [], msg = "Failed!");
     test:assertEquals(getValuesFromFhirPath(samplePatient1, "name[0].given[a]"), [], msg = "Failed!");
 
-    json|error test3 = getValuesFromFhirPath(invalidFhirResource, "id");
+    json|error test3 = getValuesFromFhirPath(invalidFhirResource, "id", true);
     if test3 is error {
         test:assertEquals(test3.message(), "Invalid FHIR resource", msg = "Failed!");
+    } else {
+        test:assertFail(msg = "Expected error for invalid FHIR resource, but got success");
     }
 }
