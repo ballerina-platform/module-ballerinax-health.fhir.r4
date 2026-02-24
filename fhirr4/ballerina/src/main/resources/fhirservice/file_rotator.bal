@@ -31,8 +31,8 @@ class AnalyticsFileRotationJob {
     }
 }
 
-// Initialize log rotator to run daily at 12 AM
-public isolated function initFileRotator() {
+# Initialize log rotator to run daily at 12 AM
+isolated function initFileRotator() {
     
     // Check if task is already started
     lock {
@@ -70,7 +70,7 @@ public isolated function initFileRotator() {
     }
 }
 
-// Rotate analytics log file by renaming with current date and creating a new file
+# Rotate analytics log file by renaming with current date and creating a new file
 isolated function rotateAnalyticsDataFile() {
 
     // Get the date for the previous day
