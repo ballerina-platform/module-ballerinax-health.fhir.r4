@@ -13,12 +13,6 @@ observabilityIncluded = true
 [platform.java11]
 graalvmCompatible = true
 
-# Todo: Remove this after the issue https://github.com/wso2-enterprise/wso2-integration-internal/issues/4657 is fixed.
-[[dependency]]
-name="data.csv"
-org="ballerina"
-version="0.8.1"
-
 [[platform.java11.dependency]]
 groupId = "io.ballerinax"
 artifactId = "fhirr4-native"
