@@ -158,6 +158,136 @@ isolated function handleConditionalHeader(string conditionalUrl, string resource
     }
 }
 
+# Execute a search request to find matching resources for conditional operations.
+# This function is used for conditional update and conditional delete operations to find existing resources based on search criteria provided in the request header.
+# Resource server should support get requests with search parameters. 
+# + resourcePath - The resource path (e.g., "/Patient")
+# + searchParams - The search query string (e.g., "?identifier=12345")
+# + return - A Bundle with search results or FHIRError on failure
+isolated function HandleSearchForConditionalInteractions(string resourcePath, string searchParams)
+        returns r4:Bundle|r4:FHIRError {
+
+    log:printDebug(string `Executing conditional search: ${resourcePath}${searchParams}`);
+
+    // Check if conditional invocation client is initialized
+    http:Client? httpClient;
+    lock {
+        httpClient = conditionalInvokationClient;
+    }
+
+    if httpClient is () {
+        log:printError("Conditional invocation client is not initialized");
+        return r4:createFHIRError(
+            "Internal server error: HTTP client not initialized",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    // Construct full URL for search
+    string searchUrl = resourcePath + searchParams;
+
+    // Execute HTTP GET request using the conditional invocation client
+    http:Response|http:ClientError response = httpClient->get(searchUrl);
+
+    if response is http:ClientError {
+        log:printError("Error executing conditional search", response);
+        return r4:createFHIRError(
+            string `Failed to execute search for conditional update: ${response.message()}`,
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    int statusCode = response.statusCode;
+
+    if statusCode == http:STATUS_NOT_FOUND {
+        // No resources found - return empty bundle
+        r4:Bundle emptyBundle = {
+            resourceType: "Bundle",
+            'type: r4:BUNDLE_TYPE_SEARCHSET,
+            total: 0,
+            entry: []
+        };
+        return emptyBundle;
+    }
+
+    if statusCode != http:STATUS_OK {
+        log:printError(string `Unexpected status code from search: ${statusCode}`);
+        return r4:createFHIRError(
+            string `Search returned unexpected status code: ${statusCode}`,
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    // Parse response as Bundle
+    json|http:ClientError jsonPayload = response.getJsonPayload();
+    if jsonPayload is http:ClientError {
+        log:printError("Error parsing search response", jsonPayload);
+        return r4:createFHIRError(
+            "Failed to parse search response as JSON",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    // Validate it's a Bundle
+    json|error resourceTypeJson = jsonPayload.resourceType;
+    if resourceTypeJson is error {
+        return r4:createFHIRError(
+            "Search response has no resourceType field",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    string resourceType = resourceTypeJson.toString();
+    if resourceType != "Bundle" {
+        return r4:createFHIRError(
+            "Search response is not a FHIR Bundle",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    // Convert to Bundle type
+    r4:Bundle|error bundle = jsonPayload.cloneWithType(r4:Bundle);
+    if bundle is error {
+        log:printError("Error converting to Bundle type", bundle);
+        return r4:createFHIRError(
+            "Failed to convert search response to Bundle",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    log:printDebug(string `Search returned ${bundle.total ?: 0} matches`);
+    return bundle;
+}
+
+# Construct query string from search parameters map.
+#
+# + params - Map of search parameters
+# + return - Query string (e.g., "?identifier=123&name=John")
+isolated function constructSearchQueryString(map<r4:RequestSearchParameter[]> params) returns string {
+    if params.length() == 0 {
+        return "";
+    }
+
+    string[] queryParts = [];
+
+    foreach r4:RequestSearchParameter[] paramArray in params {
+        foreach r4:RequestSearchParameter param in paramArray {
+            // Format: name=value
+            string paramString = param.name + "=" + param.value;
+            queryParts.push(paramString);
+        }
+    }
+
+    return "?" + string:'join("&", ...queryParts);
+}
+
 isolated function handleIpsGeneration(string patientId, r4:FHIRServiceInfo patientServiceInfo, map<string> serviceResourceMap, r4:OperationConfig[] patientOperationConfigs) returns r4:Bundle|error {
     log:printDebug("Handling IPS generation for Patient resource with ID: " + patientId);
 

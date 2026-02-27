@@ -85,7 +85,7 @@ public class HTTPToFHIRAdaptor {
                                                  BObject fhirCtx, BObject service, ResourceMethodType resourceMethod) {
         ServiceType serviceType = (ServiceType) service.getType();
         return environment.getRuntime().callMethod(service, resourceMethod.getName(), new StrandMetadata(
-                serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName()), ModuleUtils.getProperties("executeWithIDAndPayload")), id, fhirCtx, patchPayload);
+                serviceType.isIsolated() && serviceType.isIsolated(resourceMethod.getName()), ModuleUtils.getProperties("executeWithIDAndPayload")), fhirCtx, patchPayload);
     }
 
     public static Object getResourceMethod(BObject service, BArray servicePath, BArray path, BString accessor) {

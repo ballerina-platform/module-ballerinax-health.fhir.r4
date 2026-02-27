@@ -288,19 +288,82 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
         }
 
         isolated resource function put [string... path](http:Request req, http:RequestContext ctx) returns any|error {
-            // update
+            // update or conditional update
             string[] paths = getRequestPaths(req.rawPath);
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_PUT);
             json|http:ClientError payload = req.getJsonPayload();
+            
             if payload is json {
-                if resourceMethod is handle {
-                    string fhirResource = apiConfig.resourceType;
-                    string id = paths[paths.length() - 1];
+                string fhirResource = apiConfig.resourceType;
+                
+                // Check if this is a conditional update (PUT with search parameters)
+                // e.g., PUT /Patient?identifier=12345
+                // Use getQueryParams() for consistent query parameter detection (same as GET search)
+                map<string[]> queryParams = req.getQueryParams();
+                boolean isConditionalUpdate = queryParams.length() > 0;
+                
+                handle resourceMethod;
+                string id = "";
+                
+                if isConditionalUpdate {
+                    // Query-based conditional update: PUT [base]/[type]?[search parameters]
+                    // Add a placeholder ID to paths to find the correct resource method
+                    string[] pathsWithId = [...paths, "_conditional"];
+                    handle? methodResult = getResourceMethod(fhirService, servicePath, pathsWithId, http:HTTP_PUT);
+                    
+                    if methodResult is () {
+                        // Fallback: try without the placeholder (in case service has a type-level PUT)
+                        methodResult = getResourceMethod(fhirService, servicePath, paths, http:HTTP_PUT);
+                    }
+                    
+                    if methodResult is handle {
+                        resourceMethod = methodResult;
+
+                        // Preprocessor validates conditional update and may add matched ID to payload
+                        r4:FHIRError? conditionalResult = self.preprocessor.processConditionalUpdate(fhirResource, payload, req, ctx);
+                        if conditionalResult is r4:FHIRError {
+                            // Validation failed (multiple matches, ID mismatch, etc.)
+                            return conditionalResult;
+                        }
+
+                        // Validation passed - extract ID from payload (may have been added by preprocessor)
+                        json|error payloadId = payload.id;
+                        id = payloadId is string ? payloadId : "";
+
+                        r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
+                        // Check if the resolved method has a path param to call the correct executor.
+                        // The fallback may have found a type-level method (no path param).
+                        boolean hasPathParam = isHavingPathParam(resourceMethod);
+                        any|error executeResourceResult;
+                        if hasPathParam {
+                            executeResourceResult = executeWithIDAndPayload(id, payload, fhirContext, fhirService, resourceMethod);
+                        } else {
+                            executeResourceResult = executeWithPayload(payload, fhirContext, fhirService, resourceMethod);
+                        }
+                        if (executeResourceResult is error) {
+                            fhirContext.setInErrorState(true);
+                            fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                            return r4:handleErrorResponse(executeResourceResult);
+                        }
+                        return executeResourceResult;
+                    } else {
+                        return r4:createFHIRError("Conditional update not supported - no PUT method found", 
+                            r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+                    }
+                } else {
+                    // Standard update with resource ID in path: PUT [base]/[type]/[id]
+                    handle? updateMethodResult = getResourceMethod(fhirService, servicePath, paths, http:HTTP_PUT);
+                    if updateMethodResult is () {
+                        return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
+                    }
+                    resourceMethod = updateMethodResult;
+                    
+                    id = paths[paths.length() - 1];
                     r4:FHIRError? processUpdate = self.preprocessor.processUpdate(fhirResource, id, payload, req, ctx);
                     if processUpdate is r4:FHIRError {
                         return processUpdate;
                     }
+                    
                     r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
                     any|error executeResourceResult = executeWithIDAndPayload(id, payload, fhirContext, fhirService, resourceMethod);
                     if (executeResourceResult is error) {
@@ -309,8 +372,6 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                         return r4:handleErrorResponse(executeResourceResult);
                     }
                     return executeResourceResult;
-                } else {
-                    return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
                 }
             } else {
                 return r4:createFHIRError(string `Invalid payload`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_BAD_REQUEST);
@@ -346,18 +407,84 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
             }
         }
         isolated resource function delete [string... path](http:Request req, http:RequestContext ctx) returns any|error {
-            // delete
+            // delete or conditional delete
             string[] paths = getRequestPaths(req.rawPath);
             Service fhirService = self.holder.getFhirServiceFromHolder();
-            handle? resourceMethod = getResourceMethod(fhirService, servicePath, paths, http:HTTP_DELETE);
+            string fhirResource = apiConfig.resourceType;
+            
+            // Check if this is a conditional delete (DELETE with search parameters)
+            // e.g., DELETE /Patient?identifier=12345
+            map<string[]> queryParams = req.getQueryParams();
+            boolean isConditionalDelete = queryParams.length() > 0;
+            
+            handle resourceMethod;
+            string id = "";
+            
+            if isConditionalDelete {
+                // Query-based conditional delete: DELETE [base]/[type]?[search parameters]
+                // Add a placeholder ID to paths to find the correct resource method
+                string[] pathsWithId = [...paths, "_conditional"];
+                handle? methodResult = getResourceMethod(fhirService, servicePath, pathsWithId, http:HTTP_DELETE);
+                
+                if methodResult is () {
+                    // Fallback: try without the placeholder (in case service has a type-level DELETE)
+                    methodResult = getResourceMethod(fhirService, servicePath, paths, http:HTTP_DELETE);
+                }
+                
+                if methodResult is handle {
+                    resourceMethod = methodResult;
+                    
+                    // Preprocessor validates conditional delete and returns matched ID
+                    string|r4:FHIRError conditionalResult = self.preprocessor.processConditionalDelete(fhirResource, req, ctx);
+                    if conditionalResult is r4:FHIRError {
+                        // Validation failed (multiple matches, etc.)
+                        return conditionalResult;
+                    }
+                    
+                    // Validation passed - use the matched resource ID
+                    id = conditionalResult;
+                    
+                    r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
+                    // Check if the resolved method has a path param to call the correct executor.
+                    // The fallback may have found a type-level method (no path param).
+                    boolean hasPathParam = isHavingPathParam(resourceMethod);
+                    any|error executeResourceResult;
+                    if hasPathParam {
+                        executeResourceResult = executeWithID(id, fhirContext, fhirService, resourceMethod);
+                    } else {
+                        executeResourceResult = executeWithNoParam(fhirContext, fhirService, resourceMethod);
+                    }
+                    if (executeResourceResult is error) {
+                        fhirContext.setInErrorState(true);
+                        fhirContext.setErrorCode(r4:getErrorCode(executeResourceResult));
+                        return r4:handleErrorResponse(executeResourceResult);
+                    }
+                    return executeResourceResult;
+                } else {
+                    return r4:createFHIRError("Conditional delete not supported - no DELETE method found", 
+                        r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_IMPLEMENTED);
+                }
+            } else {
+                // Standard delete with resource ID in path: DELETE [base]/[type]/[id]
+                handle? deleteMethodResult = getResourceMethod(fhirService, servicePath, paths, http:HTTP_DELETE);
+                if deleteMethodResult is () {
+                    return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
+                }
+                resourceMethod = deleteMethodResult;
 
-            if resourceMethod is handle {
-                string fhirResource = apiConfig.resourceType;
-                string id = paths[paths.length() - 1];
+                // Verify the resolved method expects a path parameter (i.e., an ID).
+                // DELETE /[type] without an ID or search params is not a valid FHIR operation.
+                if !isHavingPathParam(resourceMethod) {
+                    return r4:createFHIRError("Resource ID is required for DELETE operation",
+                        r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_BAD_REQUEST);
+                }
+
+                id = paths[paths.length() - 1];
                 r4:FHIRError? processDelete = self.preprocessor.processDelete(fhirResource, id, req, ctx);
                 if processDelete is r4:FHIRError {
                     return processDelete;
                 }
+
                 r4:FHIRContext fhirContext = check r4:getFHIRContext(ctx);
                 any|error executeResourceResult = executeWithID(id, fhirContext, fhirService, resourceMethod);
                 if (executeResourceResult is error) {
@@ -366,8 +493,6 @@ isolated function getHttpService(Holder h, r4:ResourceAPIConfig apiConfig, strin
                     return r4:handleErrorResponse(executeResourceResult);
                 }
                 return executeResourceResult;
-            } else {
-                return r4:createFHIRError(string `Path not found: ${req.extraPathInfo}`, r4:CODE_SEVERITY_ERROR, r4:TRANSIENT, httpStatusCode = http:STATUS_NOT_FOUND);
             }
         }
     };

@@ -1,8 +1,8 @@
 [package]
 org = "ballerinax"
 name = "health.fhirr4"
-version = "${project.version}"
-distribution = "${ballerina.version}"
+version = "3.0.2"
+distribution = "3.0.2"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "service"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
@@ -16,5 +16,5 @@ graalvmCompatible = true
 [[platform.java11.dependency]]
 groupId = "io.ballerinax"
 artifactId = "fhirr4-native"
-version = "${project.version}"
-path = "./fhirr4-native-${project.version}.jar"
+version = "3.0.2"
+path = "C:\\Users\\Savinu Anusara\\Project\\module-ballerinax-health.fhir.r4\\fhirr4\\ballerina\\target\\classes\\fhirservice\\fhirr4-native-3.0.2.jar"

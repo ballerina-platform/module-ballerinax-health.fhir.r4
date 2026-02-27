@@ -114,8 +114,10 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>bal</executable>
+                            <executable>cmd</executable>
                             <arguments>
+                                <argument>/c</argument>
+                                <argument>bal</argument>
                                 <argument>pack</argument>
                                 <argument>${project.build.outputDirectory}/fhirservice</argument>
                             </arguments>
@@ -145,8 +147,10 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>bal</executable>
+                                    <executable>cmd</executable>
                                     <arguments>
+                                        <argument>/c</argument>
+                                        <argument>bal</argument>
                                         <argument>test</argument>
                                         <!--                                        <argument>&#45;&#45;test-report</argument>-->
                                         <!--                                        <argument>&#45;&#45;code-coverage</argument>-->
@@ -177,8 +181,10 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>bal</executable>
+                                    <executable>cmd</executable>
                                     <arguments>
+                                        <argument>/c</argument>
+                                        <argument>bal</argument>
                                         <argument>test</argument>
                                         <argument>--graalvm</argument>
                                         <argument>--graalvm-build-options="-J-Xmx7G"</argument>
