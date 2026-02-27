@@ -118,7 +118,6 @@
                             <arguments>
                                 <argument>pack</argument>
                                 <!-- Todo: Remove this after the issue https://github.com/wso2-enterprise/wso2-integration-internal/issues/4657 is fixed. -->
-                                <argument>--sticky</argument>
                                 <argument>${project.build.outputDirectory}/fhirservice</argument>
                             </arguments>
                         </configuration>
