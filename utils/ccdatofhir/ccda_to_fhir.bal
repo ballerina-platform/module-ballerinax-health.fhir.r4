@@ -104,7 +104,7 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                         }
                     }
                 }
-                
+
                 match codeVal {
                     CCDA_ALLERGY_CODE => {
                         CcdaToAllergyIntolerance ccdaToAllergyIntolerance = mapper.ccdaToAllergyIntolerance;
@@ -182,6 +182,117 @@ isolated function transformToFhir(xml xmlDocument, CcdaToFhirMapper? customMappe
                             }
                         }
 
+                    }
+                    CCDA_OBSERVATION_CODE => {
+                        // Check if entry contains an organizer (vital signs organizer)
+                        if isXMLElementNotNull(organizerElement) {
+                            // Process vital signs organizer - group BP observations into panel
+                            xml organizerComponents = organizerElement/<v3:component|component>;
+
+                            // Collect observations for special handling
+                            uscore501:USCoreVitalSignsProfile? systolicObs = ();
+                            uscore501:USCoreVitalSignsProfile? diastolicObs = ();
+                            uscore501:USCoreVitalSignsProfile? oxygenSaturationObs = ();
+                            uscore501:USCoreVitalSignsProfile? inhaledO2ConcObs = ();
+                            uscore501:USCoreVitalSignsProfile? inhaledO2FlowObs = ();
+                            uscore501:USCoreVitalSignsProfile[] otherObservations = [];
+
+                            foreach xml organizerComponent in organizerComponents {
+                                xml observationElement = organizerComponent/<v3:observation|observation>;
+                                if isXMLElementNotNull(observationElement) {
+                                    xml obsCodeElement = observationElement/<v3:code|code>;
+                                    string|error? codeValue = obsCodeElement.code;
+
+                                    uscore501:USCoreVitalSignsProfile? vitalSignObs = ccdaVitalSignObservationToFhirObservation(observationElement, xmlDocument);
+
+                                    if vitalSignObs is uscore501:USCoreVitalSignsProfile {
+                                        // Categorize observations for special handling
+                                        if codeValue is string {
+                                            if codeValue == "8480-6" {
+                                                systolicObs = vitalSignObs;
+                                            } else if codeValue == "8462-4" {
+                                                diastolicObs = vitalSignObs;
+                                            } else if codeValue == "59408-5" || codeValue == "2708-6" {
+                                                oxygenSaturationObs = vitalSignObs;
+                                            } else if codeValue == "3150-0" {
+                                                inhaledO2ConcObs = vitalSignObs;
+                                            } else if codeValue == "3151-8" {
+                                                inhaledO2FlowObs = vitalSignObs;
+                                            } else {
+                                                // Other vital signs
+                                                otherObservations.push(vitalSignObs);
+                                            }
+                                        } else {
+                                            otherObservations.push(vitalSignObs);
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Create Blood Pressure Panel if both systolic and diastolic are present
+                            if systolicObs is uscore501:USCoreVitalSignsProfile && diastolicObs is uscore501:USCoreVitalSignsProfile {
+                                uscore501:USCoreVitalSignsProfile bpPanel = createBloodPressurePanel(systolicObs, diastolicObs, organizerElement);
+                                if patientId != "" {
+                                    bpPanel.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                }
+                                entries.push({'resource: bpPanel});
+                            } else {
+                                // If only one BP observation is present, add them individually
+                                if systolicObs is uscore501:USCoreVitalSignsProfile {
+                                    if patientId != "" {
+                                        systolicObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                    }
+                                    entries.push({'resource: systolicObs});
+                                }
+                                if diastolicObs is uscore501:USCoreVitalSignsProfile {
+                                    if patientId != "" {
+                                        diastolicObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                    }
+                                    entries.push({'resource: diastolicObs});
+                                }
+                            }
+
+                            // Create Pulse Oximetry observation if oxygen saturation is present
+                            if oxygenSaturationObs is uscore501:USCoreVitalSignsProfile {
+                                uscore501:USCoreVitalSignsProfile pulseOxObs = createPulseOximetryObservation(oxygenSaturationObs, inhaledO2ConcObs, inhaledO2FlowObs);
+                                if patientId != "" {
+                                    pulseOxObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                }
+                                entries.push({'resource: pulseOxObs});
+                            } else {
+                                // If no O2 saturation but have inhaled oxygen observations, add them individually
+                                if inhaledO2ConcObs is uscore501:USCoreVitalSignsProfile {
+                                    if patientId != "" {
+                                        inhaledO2ConcObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                    }
+                                    entries.push({'resource: inhaledO2ConcObs});
+                                }
+                                if inhaledO2FlowObs is uscore501:USCoreVitalSignsProfile {
+                                    if patientId != "" {
+                                        inhaledO2FlowObs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                    }
+                                    entries.push({'resource: inhaledO2FlowObs});
+                                }
+                            }
+
+                            // Add other vital sign observations
+                            foreach var obs in otherObservations {
+                                if patientId != "" {
+                                    obs.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                }
+                                entries.push({'resource: obs});
+                            }
+                        } else {
+                            // Process as individual observation
+                            CcdaToObservation ccdaToObservation = mapper.ccdaToObservation;
+                            mapCCDAToFHIRResult = ccdaToObservation(entryElement, xmlDocument);
+                            if mapCCDAToFHIRResult is uscore501:USCoreVitalSignsProfile {
+                                if patientId != "" {
+                                    mapCCDAToFHIRResult.subject = {reference: PATIENT_REFERENCE_PREFIX + patientId};
+                                }
+                                entries.push({'resource: mapCCDAToFHIRResult});
+                            }
+                        }
                     }
                 }
             }

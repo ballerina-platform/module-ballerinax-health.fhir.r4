@@ -50,6 +50,9 @@ public type CcdaToPractitioner isolated function (xml document, xml parentDocume
 # Mapping function type for C-CDA Document Reference Activity to USCore DocumentReference FHIR resource.
 public type CcdaToDocumentReference isolated function (xml document, xml parentDocument) returns uscore501:USCoreDocumentReferenceProfile?;
 
+# Mapping function type for C-CDA Observation Activity to USCore Observation FHIR resource.
+public type CcdaToObservation isolated function (xml document, xml parentDocument) returns uscore501:USCoreVitalSignsProfile?;
+
 # CcdaToFhir Mapper function implementation holder record.
 #
 # + ccdaToAllergyIntolerance - C-CDA Allergy Intolerance Activity to USCore Allergy Intolerance function.
@@ -73,6 +76,7 @@ public type CcdaToFhirMapper record {
     CcdaToPractitioner ccdaToPractitioner;
     CcdaToEncounter ccdaToEncounter;
     CcdaToDocumentReference ccdaToDocumentReference;
+    CcdaToObservation ccdaToObservation;
 };
 
 // Record initialized with the default mapping functions.
@@ -86,6 +90,7 @@ final readonly & CcdaToFhirMapper defaultMapper = {
     ccdaToDiagnosticReport,
     ccdaToPractitioner,
     ccdaToEncounter,
-    ccdaToDocumentReference
+    ccdaToDocumentReference,
+    ccdaToObservation
 };
 
