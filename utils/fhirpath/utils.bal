@@ -25,7 +25,7 @@ const INVALID_CHARACTER_MSG = "The given FhirPath expression is incorrect as it 
 "character instead of a number for array access";
 
 # Union type for all FHIRPath-related errors
-public type FHIRPathErrors FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError|FHIRPathError;
+public type FhirpathError FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError|FhirpathResourceValidationError;
 
 # Basic token type.
 #
@@ -67,7 +67,7 @@ isolated function validateFhirPath(string fhirPathExpression) returns boolean {
 #
 # + fhirResource - The FHIR resource to validate
 # + return - True if the resource is valid, false otherwise
-isolated function validateFhirResource(json fhirResource) returns FHIRPathError? {
+isolated function validateFhirResource(json fhirResource) returns FhirpathResourceValidationError? {
     r4:FHIRValidationError? validateFHIRResourceJson = validator:validate(fhirResource);
 
     if validateFHIRResourceJson is r4:FHIRValidationError {
@@ -110,15 +110,15 @@ isolated function getTokens(json fhirResource, string fhirPathExpression) return
 }
 
 # FHIRPathError is the error object that is returned when an error occurs during the evaluation of a FHIRPath expression.
-public type FHIRPathError distinct error;
+public type FhirpathResourceValidationError distinct error;
 
 # Method to create a FHIRPathError
 #
 # + errorMsg - the reason for the occurence of error
 # + fhirPath - the fhirpath expression that is being evaluated
 # + return - the error object
-isolated function createFhirPathError(string errorMsg, string? fhirPath) returns FHIRPathError {
-    FHIRPathError fhirPathError = error(errorMsg, fhirPath = fhirPath);
+isolated function createFhirPathError(string errorMsg, string? fhirPath) returns FhirpathResourceValidationError {
+    FhirpathResourceValidationError fhirPathError = error(errorMsg, fhirPath = fhirPath);
     return fhirPathError;
 }
 

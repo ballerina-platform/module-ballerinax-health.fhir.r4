@@ -77,7 +77,7 @@ function testModificationFunctionOnSimpleStringField() {
         "gender": "male"
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.gender", toUpperCaseFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.gender", toUpperCaseFunction);
     test:assertTrue(result is json, "Should successfully apply modification function to gender field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -97,7 +97,7 @@ function testModificationFunctionOnNestedStringField() {
         }
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.managingOrganization.display", toLowerCaseFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.managingOrganization.display", toLowerCaseFunction);
     test:assertTrue(result is json, "Should successfully apply modification function to nested field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -122,7 +122,7 @@ function testModificationFunctionOnArrayElementField() {
         ]
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.name[0].family", addPrefixFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.name[0].family", addPrefixFunction);
     test:assertTrue(result is json, "Should successfully apply modification function to array element field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -152,7 +152,7 @@ function testModificationFunctionOnMultipleArrayElements() {
         ]
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.address.city", toUpperCaseFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.address.city", toUpperCaseFunction);
     test:assertTrue(result is json, "Should successfully apply modification function to multiple array elements");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -177,7 +177,7 @@ function testModificationFunctionWithHashFunction() {
         "gender": "female"
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.gender", hashFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.gender", hashFunction);
     test:assertTrue(result is json, "Should successfully apply hash function");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -193,7 +193,7 @@ function testModificationFunctionWithEmptyStringResult() {
         "gender": "male"
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.gender", emptyStringFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.gender", emptyStringFunction);
     test:assertTrue(result is json, "Should successfully apply function that returns empty string");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -213,7 +213,7 @@ function testModificationFunctionWithReverseString() {
         ]
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.name[0].family", reverseStringFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.name[0].family", reverseStringFunction);
     test:assertTrue(result is json, "Should successfully apply reverse string function");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -233,9 +233,9 @@ function testModificationFunctionError() {
         "gender": "male"
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.gender", errorFunction);
-    test:assertTrue(result is FHIRPathErrors, "Should return error when modification function fails");
-    if result is FHIRPathErrors {
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.gender", errorFunction);
+    test:assertTrue(result is FhirpathError, "Should return error when modification function fails");
+    if result is FhirpathError {
         test:assertTrue(result.message().includes("Intentional error"), "Error message should contain modification function error");
     }
 }
@@ -249,9 +249,9 @@ function testModificationFunctionOnNonStringValue() {
     };
 
     // Modification function should not be applied to non-string values
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.active", toUpperCaseFunction);
-    test:assertTrue(result is FHIRPathErrors, "Should return error for non-string value");
-    if result is FHIRPathErrors {
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.active", toUpperCaseFunction);
+    test:assertTrue(result is FhirpathError, "Should return error for non-string value");
+    if result is FhirpathError {
         test:assertTrue(result.message().includes("Non-string input provided for toUpperCaseFunction."), "Error message should indicate modification function cannot be applied");
     }
 }
@@ -264,7 +264,7 @@ function testModificationFunctionOnMissingField() {
     };
 
     // Should return error when trying to modify non-existent field
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.gender", toUpperCaseFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.gender", toUpperCaseFunction);
     test:assertTrue(result is FhirpathInterpreterError, "Should return error for non-existent path");
     if result is error {
         test:assertTrue(result.message().includes("does not exist"), "Error message should indicate path doesn't exist");
@@ -286,7 +286,7 @@ function testModificationFunctionOnDeeplyNestedField() {
         ]
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.contact[0].name.family", addPrefixFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.contact[0].name.family", addPrefixFunction);
     test:assertTrue(result is json, "Should successfully apply modification function to deeply nested field");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -318,7 +318,7 @@ function testModificationFunctionOnComplexArrayStructure() {
         ]
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.identifier.value", hashFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.identifier.value", hashFunction);
     test:assertTrue(result is json, "Should successfully apply modification function to all identifier values");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -352,7 +352,7 @@ function testModificationFunctionOnSpecificArrayIndex() {
         ]
     };
 
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.telecom[1].value", toUpperCaseFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.telecom[1].value", toUpperCaseFunction);
     test:assertTrue(result is json, "Should successfully apply modification function to specific array index");
     if result is json {
         map<json> resultMap = <map<json>>result;
@@ -382,12 +382,12 @@ function testModificationFunctionChaining() {
     };
 
     // First apply uppercase
-    json|FHIRPathErrors result1 = setValuesToFhirPath(testResource, "Patient.name[0].family", toUpperCaseFunction);
+    json|FhirpathError result1 = setValuesToFhirPath(testResource, "Patient.name[0].family", toUpperCaseFunction);
     test:assertTrue(result1 is json, "First modification should succeed");
 
     if result1 is json {
         // Then apply prefix to the result
-        json|FHIRPathErrors result2 = setValuesToFhirPath(result1, "Patient.name[0].family", addPrefixFunction);
+        json|FhirpathError result2 = setValuesToFhirPath(result1, "Patient.name[0].family", addPrefixFunction);
         test:assertTrue(result2 is json, "Second modification should succeed");
 
         if result2 is json {
@@ -410,7 +410,7 @@ function testModificationFunctionWithEmptyArray() {
     };
 
     // With empty array, the path evaluates to empty collection, resulting in error
-    json|FHIRPathErrors result = setValuesToFhirPath(testResource, "Patient.name.family", toUpperCaseFunction);
+    json|FhirpathError result = setValuesToFhirPath(testResource, "Patient.name.family", toUpperCaseFunction);
     test:assertTrue(result is FhirpathInterpreterError, "Should return error when path evaluates to empty");
     if result is error {
         test:assertTrue(result.message().includes("does not exist"), "Error message should indicate path doesn't exist");

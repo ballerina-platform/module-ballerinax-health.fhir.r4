@@ -33,7 +33,7 @@ configurable boolean createMissingPaths = false;
 # + fhirPathExpression - fhirpath expression to get values from
 # + validateInputFHIRResource - whether to validate the input FHIR resource (default = false)
 # + return - list of results of the fhirpath expression or FhirpathScannerError or FhirpathParserError or FhirpathInterpreterError or FHIRPathError
-public function getValuesFromFhirPath(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation) returns json[]|FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError|FHIRPathError {
+public function getValuesFromFhirPath(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation) returns json[]|FhirpathError {
     // Validate input FHIR resource and throw error if invalid
     if validateInputFHIRResource {
         check validateFhirResource(fhirResource);
@@ -79,7 +79,7 @@ public function getValuesFromFhirPath(json fhirResource, string fhirPathExpressi
 # + validateOutputFHIRResource - whether to validate the output FHIR resource (default = false)
 # + return - Updated FHIR resource or FHIRPathError
 public isolated function setValuesToFhirPath(json fhirResource, string fhirPathExpression, json|ModificationFunction value,
-        boolean validateInputFHIRResource = inputFHIRResourceValidation, boolean validateOutputFHIRResource = outputFHIRResourceValidation) returns json|FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError|FHIRPathError {
+        boolean validateInputFHIRResource = inputFHIRResourceValidation, boolean validateOutputFHIRResource = outputFHIRResourceValidation) returns json|FhirpathError {
 
     json newValue = value is json ? value : ();
     ModificationFunction? modificationFunction = value is ModificationFunction ? value : ();
@@ -122,8 +122,8 @@ public isolated function setValuesToFhirPath(json fhirResource, string fhirPathE
 
     // Validate FHIR resource and throw error if invalid
     if validateOutputFHIRResource {
-        FHIRPathError? validateFhirResourceResult = validateFhirResource(outcome);
-        if validateFhirResourceResult is FHIRPathError {
+        FhirpathResourceValidationError? validateFhirResourceResult = validateFhirResource(outcome);
+        if validateFhirResourceResult is FhirpathResourceValidationError {
             return createFhirPathError("Created resource is not FHIR compliant", fhirPathExpression);
         }
     }
