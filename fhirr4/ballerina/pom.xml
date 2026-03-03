@@ -49,9 +49,21 @@
                         </goals>
                         <configuration>
                             <resources>
+                                <!-- Text source files: apply Maven property substitution -->
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <filtering>true</filtering>
+                                    <excludes>
+                                        <exclude>**/target/**</exclude>
+                                    </excludes>
+                                </resource>
+                                <!-- Binary build artifacts: copy as-is, no filtering -->
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>**/target/**</include>
+                                    </includes>
                                 </resource>
                             </resources>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>

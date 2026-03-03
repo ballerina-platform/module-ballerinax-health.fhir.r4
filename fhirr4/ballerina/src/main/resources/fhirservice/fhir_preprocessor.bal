@@ -224,7 +224,12 @@ public isolated class FHIRPreprocessor {
             // Implemented according to the https://hl7.org/fhir/R4/http.html#ccreate FHIR specification
             log:printDebug("Conditional create interaction.");
             log:printDebug(string `Conditional header (If-None-Exist): ${isNoneExistHeader}`);
-            _ = check handleConditionalHeader(isNoneExistHeader, httpRequest.rawPath);
+            string conditionalCreateAuthHeader = "";
+            string|http:HeaderNotFoundError createAuthVal = httpRequest.getHeader("Authorization");
+            if createAuthVal is string {
+                conditionalCreateAuthHeader = createAuthVal;
+            }
+            _ = check handleConditionalHeader(isNoneExistHeader, httpRequest.rawPath, conditionalCreateAuthHeader);
         }
 
         // Set FHIR context inside HTTP context
@@ -514,7 +519,12 @@ public isolated class FHIRPreprocessor {
         }
 
         log:printDebug(string `Executing conditional search: ${resourcePath}${searchQueryString}`);
-        r4:Bundle|r4:FHIRError searchResult = HandleSearchForConditionalInteractions(resourcePath, searchQueryString);
+        string conditionalUpdateAuthHeader = "";
+        string|http:HeaderNotFoundError updateAuthVal = httpRequest.getHeader("Authorization");
+        if updateAuthVal is string {
+            conditionalUpdateAuthHeader = updateAuthVal;
+        }
+        r4:Bundle|r4:FHIRError searchResult = HandleSearchForConditionalInteractions(resourcePath, searchQueryString, conditionalUpdateAuthHeader);
 
         if searchResult is r4:FHIRError {
             return searchResult;
@@ -802,7 +812,12 @@ public isolated class FHIRPreprocessor {
         }
 
         log:printDebug(string `Executing conditional search for delete: ${resourcePath}${searchQueryString}`);
-        r4:Bundle|r4:FHIRError searchResult = HandleSearchForConditionalInteractions(resourcePath, searchQueryString);
+        string conditionalDeleteAuthHeader = "";
+        string|http:HeaderNotFoundError deleteAuthVal = httpRequest.getHeader("Authorization");
+        if deleteAuthVal is string {
+            conditionalDeleteAuthHeader = deleteAuthVal;
+        }
+        r4:Bundle|r4:FHIRError searchResult = HandleSearchForConditionalInteractions(resourcePath, searchQueryString, conditionalDeleteAuthHeader);
 
         if searchResult is r4:FHIRError {
             return searchResult;
