@@ -24,6 +24,9 @@ const DOT_SEPARATOR = ".";
 const INVALID_CHARACTER_MSG = "The given FhirPath expression is incorrect as it contains invalid " +
 "character instead of a number for array access";
 
+# Union type for all FHIRPath-related errors
+public type FHIRPathErrors FhirpathScannerError|FhirpathParserError|FhirpathInterpreterError|FHIRPathError;
+
 # Basic token type.
 #
 # + value - value of the token
