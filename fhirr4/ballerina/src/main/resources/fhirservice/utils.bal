@@ -101,35 +101,38 @@ isolated function handleBundleInfo(r4:Bundle bundle, r4:FHIRContext fhirCtx, str
     return bundle;
 }
 
-isolated function handleConditionalHeader(string conditionalUrl, string resourcePath) returns r4:FHIRError? {
+isolated function handleConditionalHeader(string conditionalUrl, string resourcePath, string authHeader = "") returns r4:FHIRError? {
     int? indexOfSearchParams = conditionalUrl.indexOf("?");
     string searchParams = indexOfSearchParams is int ? conditionalUrl.substring(indexOfSearchParams) : "";
 
     do {
         r4:Bundle bundle;
-        http:Response? response = ();
 
+        // Obtain client reference inside lock (isolated module-level var requires lock access)
+        http:Client? clientRef;
         lock {
-            if conditionalInvokationClient is () {
-                return;
-            }
-
-            // send a http request to the resourcePath
-            response = check (<http:Client>conditionalInvokationClient)->get(resourcePath + searchParams);
+            clientRef = conditionalInvokationClient;
         }
 
-        if response is http:Response {
-            if response.statusCode == http:STATUS_NOT_FOUND {
-                // allow to create a new resource if no entries are found
-                log:printDebug("No existing resource found for the given search criteria, allowing creation of a new resource");
-                return;
-            }
-
-            // Extract the entity and decode to r4:Bundle
-            bundle = check parser:parse(check response.getJsonPayload()).ensureType();
-        } else {
-            return r4:createFHIRError("Failed to get a valid HTTP response", r4:ERROR, r4:INVALID);
+        if clientRef is () {
+            return;
         }
+
+        // Build headers and make HTTP call outside lock (mutable map not allowed inside lock)
+        map<string|string[]> reqHeaders = {};
+        if authHeader != "" {
+            reqHeaders["Authorization"] = authHeader;
+        }
+        http:Response response = check clientRef->get(resourcePath + searchParams, reqHeaders);
+
+        if response.statusCode == http:STATUS_NOT_FOUND {
+            // allow to create a new resource if no entries are found
+            log:printDebug("No existing resource found for the given search criteria, allowing creation of a new resource");
+            return;
+        }
+
+        // Extract the entity and decode to r4:Bundle
+        bundle = check parser:parse(check response.getJsonPayload()).ensureType();
 
         r4:BundleEntry[]? entries = bundle.entry;
         if entries is r4:BundleEntry[] {
@@ -162,6 +165,141 @@ isolated function handleConditionalHeader(string conditionalUrl, string resource
         // log the error and return a FHIR error
         return r4:createFHIRError("Error while handling conditional search: " + e.message(), r4:ERROR, r4:INVALID);
     }
+}
+
+# Execute a search request to find matching resources for conditional operations.
+# This function is used for conditional update and conditional delete operations to find existing resources based on search criteria provided in the request header.
+# Resource server should support get requests with search parameters. 
+# + resourcePath - The resource path (e.g., "/Patient")
+# + searchParams - The search query string (e.g., "?identifier=12345")
+# + authHeader - The authorization header for authentication (optional, defaults to empty string)
+# + return - A Bundle with search results or FHIRError on failure
+isolated function HandleSearchForConditionalInteractions(string resourcePath, string searchParams, string authHeader = "")
+        returns r4:Bundle|r4:FHIRError {
+
+    log:printDebug(string `Executing conditional search: ${resourcePath}${searchParams}`);
+
+    // Check if conditional invocation client is initialized
+    http:Client? httpClient;
+    lock {
+        httpClient = conditionalInvokationClient;
+    }
+
+    if httpClient is () {
+        log:printError("Conditional invocation client is not initialized");
+        return r4:createFHIRError(
+            "Internal server error: HTTP client not initialized",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    // Construct full URL for search
+    string searchUrl = resourcePath + searchParams;
+
+    // Execute HTTP GET request, forwarding the Authorization header if present
+    map<string|string[]> reqHeaders = {};
+    if authHeader != "" {
+        reqHeaders["Authorization"] = authHeader;
+    }
+    http:Response|http:ClientError response = httpClient->get(searchUrl, reqHeaders);
+
+    if response is http:ClientError {
+        log:printError("Error executing conditional search", response);
+        return r4:createFHIRError(
+            string `Failed to execute search for conditional update: ${response.message()}`,
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    int statusCode = response.statusCode;
+
+    if statusCode == http:STATUS_NOT_FOUND {
+        // No resources found - return empty bundle
+        r4:Bundle emptyBundle = {
+            resourceType: "Bundle",
+            'type: r4:BUNDLE_TYPE_SEARCHSET,
+            total: 0,
+            entry: []
+        };
+        return emptyBundle;
+    }
+
+    if statusCode != http:STATUS_OK {
+        log:printError(string `Unexpected status code from search: ${statusCode}`);
+        return r4:createFHIRError(
+            string `Search returned unexpected status code: ${statusCode}`,
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    // Parse response as Bundle
+    json|http:ClientError jsonPayload = response.getJsonPayload();
+    if jsonPayload is http:ClientError {
+        log:printError("Error parsing search response", jsonPayload);
+        return r4:createFHIRError(
+            "Failed to parse search response as JSON",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    // Validate it's a Bundle
+    json|error resourceTypeJson = jsonPayload.resourceType;
+    if resourceTypeJson is error {
+        return r4:createFHIRError(
+            "Search response has no resourceType field",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    string resourceType = resourceTypeJson.toString();
+    if resourceType != "Bundle" {
+        return r4:createFHIRError(
+            "Search response is not a FHIR Bundle",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    // Convert to Bundle type
+    r4:Bundle|error bundle = jsonPayload.cloneWithType(r4:Bundle);
+    if bundle is error {
+        log:printError("Error converting to Bundle type", bundle);
+        return r4:createFHIRError(
+            "Failed to convert search response to Bundle",
+            r4:ERROR, r4:PROCESSING,
+            httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    log:printDebug(string `Search returned ${bundle.total ?: 0} matches`);
+    return bundle;
+}
+
+# Construct query string from search parameters map.
+#
+# + params - Map of search parameters
+# + return - Query string (e.g., "?identifier=123&name=John")
+isolated function constructSearchQueryString(map<r4:RequestSearchParameter[]> params) returns string {
+    if params.length() == 0 {
+        return "";
+    }
+
+    string[] queryParts = [];
+
+    foreach r4:RequestSearchParameter[] paramArray in params {
+        foreach r4:RequestSearchParameter param in paramArray {
+            // Format: name=value
+            string paramString = param.name + "=" + param.value;
+            queryParts.push(paramString);
+        }
+    }
+
+    return "?" + string:'join("&", ...queryParts);
 }
 
 isolated function handleIpsGeneration(string patientId, r4:FHIRServiceInfo patientServiceInfo, map<string> serviceResourceMap, r4:OperationConfig[] patientOperationConfigs) returns r4:Bundle|error {
