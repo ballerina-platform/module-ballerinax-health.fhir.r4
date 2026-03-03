@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/io;
 import ballerina/test;
 
 @test:Config {}
@@ -252,15 +251,6 @@ function testBulkUpdateNestedArrayElementsWithoutResourceType() {
         map<json> secondAddress = <map<json>>addressArray[1];
         string secondLine = <string>secondAddress["line"];
         test:assertEquals(secondLine, "***", "Second address line should be updated");
-    }
-}
-
-function addToConfigFile(string value) returns error? {
-
-    // Write the Config.toml file in the tests directory
-    io:Error? writeResult = io:fileWriteString("tests/Config.toml", value, option = io:OVERWRITE);
-    if writeResult is io:Error {
-        return writeResult;
     }
 }
 
