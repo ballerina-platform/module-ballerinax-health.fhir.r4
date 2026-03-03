@@ -118,7 +118,7 @@ function call_cds_service_payload_with_prefetch_data_attached() returns error? {
 function call_cds_service_with_proper_payload() returns error? {
     json payload = {
         "hookInstance": "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
-        "fhirServer": "http://hapi.fhir.org/baseR4",
+        "fhirServer": "http://localhost:9092/fhir/r4",
         "hook": "patient-view",
         "fhirAuthorization": {
             "access_token": "some-opaque-fhir-access-token",
@@ -265,7 +265,7 @@ function call_cds_service_payload_with_no_prefetch_data_and_fhirAuthorization() 
 function call_cds_service_wrong_prefetch_template_data() returns error? {
     json payload = {
         "hookInstance": "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
-        "fhirServer": "http://hapi.fhir.org/baseR4",
+        "fhirServer": "http://localhost:9092/fhir/r4",
         "hook": "patient-view",
         "fhirAuthorization": {
             "access_token": "some-opaque-fhir-access-token",
@@ -296,7 +296,7 @@ function call_cds_service_wrong_prefetch_template_data() returns error? {
         CdsRequest|CdsError result = validateAndProcessPrefetch(cdsRequest, cdsService);
 
         if (result is CdsError) {
-            test:assertEquals(result.message(), "FHIR data retrieved for : http://hapi.fhir.org/baseR4/Patient/wrong-id is not valid");
+            test:assertEquals(result.message(), "FHIR data retrieved for : http://localhost:9092/fhir/r4/Patient/wrong-id is not valid");
             test:assertEquals(result.detail().code, 412);
         } else {
             test:assertFail("It should return the CDS error");
@@ -308,7 +308,7 @@ function call_cds_service_wrong_prefetch_template_data() returns error? {
 function call_cds_serive_wrong_fhir_server_url() returns error? {
     json payload = {
         "hookInstance": "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
-        "fhirServer": "http://hapi.fhir.org/baseR4sd",
+        "fhirServer": "http://localhost:9092/baseR4sd",
         "hook": "patient-view",
         "fhirAuthorization": {
             "access_token": "some-opaque-fhir-access-token",
@@ -339,7 +339,7 @@ function call_cds_serive_wrong_fhir_server_url() returns error? {
         CdsRequest|CdsError result = validateAndProcessPrefetch(cdsRequest, cdsService);
 
         if (result is CdsError) {
-            test:assertEquals(result.message(), "FHIR data retrieved for : http://hapi.fhir.org/baseR4sd/Patient/wrong-id is not JSON");
+            test:assertEquals(result.message(), "FHIR data retrieved for : http://localhost:9092/baseR4sd/Patient/wrong-id is not JSON");
             test:assertEquals(result.detail().code, 412);
         } else {
             test:assertFail("It should return the CDS error");

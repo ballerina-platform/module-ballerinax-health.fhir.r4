@@ -18,6 +18,9 @@ function init() {
     international401:initialize();
 }
 
+# Configurable to enable/disable profile validation
+configurable boolean validateAgainstProfile = true;
+
 # Function to validate against API Config and parse FHIR resource payload.
 #
 # + payload - FHIR resource payload  
@@ -107,7 +110,7 @@ returns anydata|r4:FHIRParseError {
         }
     } else {
         string[]? payloadProfiles = extractProfiles(_payload);
-        if payloadProfiles != () && payloadProfiles.length() > 0 {
+        if validateAgainstProfile && payloadProfiles != () && payloadProfiles.length() > 0 {
             (r4:Profile & readonly)? profile = r4:fhirRegistry.findProfile(payloadProfiles[0]).clone();
             if profile is (r4:Profile & readonly) {
                 resourceProfile = profile.clone();
@@ -146,31 +149,33 @@ isolated function validateAndExtractProfile(json|xml payload, r4:ResourceAPIConf
                 errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
     }
 
-    string[]? profiles = extractProfiles(payload);
-    if profiles != () && profiles.length() > 0 {
-        map<r4:Profile & readonly> & readonly resourceProfiles = r4:fhirRegistry.getResourceProfiles(resourceType);
-        // validate profiles
-        foreach string profile in profiles {
-            // check whether the profile is a valid profile
-            if !resourceProfiles.hasKey(profile) {
-                string diag = string `Unknown profile : ${profile}`;
-                return <r4:FHIRValidationError>r4:createFHIRError("Invalid FHIR profile", r4:ERROR, r4:INVALID,
-                        diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+    if validateAgainstProfile {
+        string[]? profiles = extractProfiles(payload);
+        if profiles != () && profiles.length() > 0 {
+            map<r4:Profile & readonly> & readonly resourceProfiles = r4:fhirRegistry.getResourceProfiles(resourceType);
+            // validate profiles
+            foreach string profile in profiles {
+                // check whether the profile is a valid profile
+                if !resourceProfiles.hasKey(profile) {
+                    string diag = string `Unknown profile : ${profile}`;
+                    return <r4:FHIRValidationError>r4:createFHIRError("Invalid FHIR profile", r4:ERROR, r4:INVALID,
+                            diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                }
+
+                // check whether the profile is supported according to API config
+                if apiConfig.profiles.indexOf(profile) is () {
+                    string diag = string `FHIR server does not support this FHIR profile : ${profile}`;
+                    return <r4:FHIRValidationError>r4:createFHIRError("Unsupported FHIR profile", r4:ERROR, r4:INVALID,
+                            diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+                }
             }
 
-            // check whether the profile is supported according to API config
-            if apiConfig.profiles.indexOf(profile) is () {
-                string diag = string `FHIR server does not support this FHIR profile : ${profile}`;
-                return <r4:FHIRValidationError>r4:createFHIRError("Unsupported FHIR profile", r4:ERROR, r4:INVALID,
-                        diagnostic = diag, errorType = r4:VALIDATION_ERROR, httpStatusCode = http:STATUS_BAD_REQUEST);
+            // If there are multiple profiles, we select the matching default profile if configured
+            // otherwise, default profile will be the base profile.
+            string profile = profiles.length() == 1 ? profiles[0] : apiConfig.defaultProfile ?: "";
+            if resourceProfiles.hasKey(profile) {
+                return resourceProfiles.get(profile);
             }
-        }
-
-        // If there are multiple profiles, we select the matching default profile if configured
-        // otherwise, default profile will be the base profile.
-        string profile = profiles.length() == 1 ? profiles[0] : apiConfig.defaultProfile ?: "";
-        if resourceProfiles.hasKey(profile) {
-            return resourceProfiles.get(profile);
         }
     }
     // get base IG profile (we reach here if profile is not mentioned in the request or if the request contains multiple
