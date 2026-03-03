@@ -490,3 +490,438 @@ isolated function applyWhereFunction(json[] collection, Expr[] params, json orig
 
     return results;
 }
+
+// ========================================
+// SET INTERPRETER FOR FHIRPATH EXPRESSIONS
+// ========================================
+// This section implements the interpreter for setting values at FHIRPath locations.
+// It traverses the AST and modifies the JSON context object at the specified path.
+
+# Interprets a FHIRPath expression to SET a value at the specified path in a JSON context object.
+# This is the main entry point for set expression evaluation.
+#
+# + expression - The parsed FHIRPath expression (AST)
+# + context - The JSON context object (typically a FHIR resource, must be a map<json>)
+# + newValue - The new value to set at the path
+# + shouldRemove - Whether to remove the value instead of setting it
+# + modificationFunction - Optional function to transform the existing value
+# + return - The modified JSON context, or a FhirpathInterpreterError if evaluation fails
+isolated function interpretSet(Expr expression, json context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FhirpathInterpreterError|json {
+    if context !is map<json> {
+        return error FhirpathInterpreterError("Context must be a JSON object for set operations",
+            token = {tokenType: EOF, lexeme: "", literal: (), position: 0});
+    }
+
+    map<json> contextClone = context.clone();
+    FhirpathInterpreterError|map<json> result = evaluateSet(expression, contextClone, newValue, shouldRemove, modificationFunction);
+    return result;
+}
+
+# Evaluates a FHIRPath expression node for setting a value.
+# Dispatches to the appropriate visitor function based on expression type.
+#
+# + expr - The expression node to evaluate
+# + context - The current evaluation context (JSON object)
+# + newValue - The new value to set
+# + shouldRemove - Whether to remove the value instead of setting it
+# + modificationFunction - Optional function to transform the existing value
+# + return - The modified JSON object, or a FhirpathInterpreterError if evaluation fails
+isolated function evaluateSet(Expr expr, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FhirpathInterpreterError|map<json> {
+    match expr.kind {
+        "Identifier" => {
+            return visitIdentifierExprSet(<IdentifierExpr>expr, context, newValue, shouldRemove, modificationFunction);
+        }
+        "MemberAccess" => {
+            return visitMemberAccessExprSet(<MemberAccessExpr>expr, context, newValue, shouldRemove, modificationFunction);
+        }
+        "Indexer" => {
+            return visitIndexerExprSet(<IndexerExpr>expr, context, newValue, shouldRemove, modificationFunction);
+        }
+        _ => {
+            return error FhirpathInterpreterError("Unsupported expression type for set operation",
+                token = {tokenType: EOF, lexeme: "", literal: (), position: 0});
+        }
+    }
+}
+
+# Sets a value at an identifier path (e.g., resourceType, name).
+# This handles terminal single-level paths.
+#
+# + expr - The identifier expression node
+# + context - The current evaluation context (JSON object)
+# + newValue - The new value to set
+# + shouldRemove - Whether to remove the value instead of setting it
+# + modificationFunction - Optional function to transform the existing value
+# + return - The modified JSON object, or an error
+isolated function visitIdentifierExprSet(IdentifierExpr expr, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FhirpathInterpreterError|map<json> {
+    string fieldName = expr.name;
+
+    // Check if identifier matches the resource type
+    json|error resourceTypeValue = context.resourceType;
+    if resourceTypeValue !is error && resourceTypeValue is string {
+        if fieldName == resourceTypeValue {
+            // Identifier is the resource type itself - return context as is
+            // We need to set the value at a deeper path, not replace the whole resource
+            return context;
+        }
+    }
+
+    // Handle regular field access
+    if shouldRemove {
+        if context.hasKey(fieldName) {
+            _ = context.remove(fieldName);
+        }
+        return context;
+    }
+
+    // Handle setting field - error if field doesn't exist
+    if !context.hasKey(fieldName) {
+        return error FhirpathInterpreterError(string `Path '${fieldName}' does not exist in the resource`,
+            token = {tokenType: IDENTIFIER, lexeme: fieldName, literal: (), position: 0});
+    }
+
+    json|error modifiedValue = getModifiedValueInternal(context[fieldName], modificationFunction, newValue);
+    if modifiedValue is error {
+        return error FhirpathInterpreterError(modifiedValue.message(),
+            token = {tokenType: IDENTIFIER, lexeme: fieldName, literal: (), position: 0});
+    }
+    context[fieldName] = modifiedValue;
+
+    return context;
+}
+
+# Sets a value at a member access path (e.g., Patient.name, name.given).
+# Traverses through the path and sets the value at the terminal member.
+#
+# + expr - The member access expression node
+# + context - The current evaluation context (JSON object)
+# + newValue - The new value to set
+# + shouldRemove - Whether to remove the value instead of setting it
+# + modificationFunction - Optional function to transform the existing value
+# + return - The modified JSON object, or an error
+isolated function visitMemberAccessExprSet(MemberAccessExpr expr, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FhirpathInterpreterError|map<json> {
+    // First, navigate to the target
+    Expr targetExpr = expr.target;
+    string memberName = expr.member;
+
+    // Evaluate the target to get intermediate contexts
+    json[] targetResults = check evaluate(targetExpr, context);
+
+    // If we have intermediate results, set value on each of them
+    if targetResults.length() > 0 {
+        foreach json targetItem in targetResults {
+            if targetItem is map<json> {
+                if shouldRemove {
+                    if targetItem.hasKey(memberName) {
+                        _ = targetItem.remove(memberName);
+                    }
+                } else {
+                    // Check if member exists - error if it doesn't
+                    if !targetItem.hasKey(memberName) {
+                        return error FhirpathInterpreterError(string `Path '${memberName}' does not exist in the resource`,
+                            token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+                    }
+                    json currentValue = targetItem[memberName];
+                    json|error modifiedValue = getModifiedValueInternal(currentValue, modificationFunction, newValue);
+                    if modifiedValue is error {
+                        return error FhirpathInterpreterError(modifiedValue.message(),
+                            token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+                    }
+                    targetItem[memberName] = modifiedValue;
+                }
+            } else if targetItem is json[] {
+                // Handle array of objects - set member on each element
+                foreach json element in targetItem {
+                    if element is map<json> {
+                        if shouldRemove {
+                            if element.hasKey(memberName) {
+                                _ = element.remove(memberName);
+                            }
+                        } else {
+                            // Check if member exists - error if it doesn't
+                            if !element.hasKey(memberName) {
+                                return error FhirpathInterpreterError(string `Path '${memberName}' does not exist in the resource`,
+                                    token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+                            }
+                            json currentValue = element[memberName];
+                            json|error modifiedValue = getModifiedValueInternal(currentValue, modificationFunction, newValue);
+                            if modifiedValue is error {
+                                return error FhirpathInterpreterError(modifiedValue.message(),
+                                    token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+                            }
+                            element[memberName] = modifiedValue;
+                        }
+                    }
+                }
+            }
+        }
+        return context;
+    }
+
+    // No existing path - return error for set, silently succeed for remove
+    if shouldRemove {
+        return context;
+    }
+    return error FhirpathInterpreterError(string `Path '${memberName}' does not exist in the resource`,
+        token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+}
+
+# Sets a value at an indexed path (e.g., name[0], telecom[1]).
+# Navigates to the indexed element and sets the value.
+#
+# + expr - The indexer expression node
+# + context - The current evaluation context (JSON object)
+# + newValue - The new value to set
+# + shouldRemove - Whether to remove the value instead of setting it
+# + modificationFunction - Optional function to transform the existing value
+# + return - The modified JSON object, or an error
+isolated function visitIndexerExprSet(IndexerExpr expr, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FhirpathInterpreterError|map<json> {
+    // Get the index value
+    json[] indexResults = check evaluate(expr.index, context);
+    if indexResults.length() != 1 {
+        return error FhirpathInterpreterError("Index must be a single value",
+            token = {tokenType: EOF, lexeme: "", literal: (), position: 0});
+    }
+
+    int index;
+    json indexValue = indexResults[0];
+    if indexValue is int {
+        index = indexValue;
+    } else if indexValue is float {
+        if indexValue % 1.0 != 0.0 {
+            return error FhirpathInterpreterError("Index must be a whole number",
+                token = {tokenType: EOF, lexeme: "", literal: (), position: 0});
+        }
+        index = <int>indexValue;
+    } else {
+        return error FhirpathInterpreterError("Index must be numeric",
+            token = {tokenType: EOF, lexeme: "", literal: (), position: 0});
+    }
+
+    // Handle the target expression to get the array
+    Expr targetExpr = expr.target;
+
+    // Different handling based on target type
+    if targetExpr is IdentifierExpr {
+        return setValueAtIndexedIdentifier(targetExpr, index, context, newValue, shouldRemove, modificationFunction);
+    } else if targetExpr is MemberAccessExpr {
+        return setValueAtIndexedMemberAccess(targetExpr, index, context, newValue, shouldRemove, modificationFunction);
+    } else if targetExpr is IndexerExpr {
+        // Nested indexer e.g., name[0][1] - evaluate target to get array element then index again
+        return setValueAtNestedIndexer(targetExpr, index, context, newValue, shouldRemove, modificationFunction);
+    }
+
+    return context;
+}
+
+# Sets value at an indexed identifier (e.g., name[0]).
+#
+# + expr - The identifier expression for the array field
+# + index - The index to access
+# + context - The current JSON context
+# + newValue - The new value to set
+# + shouldRemove - Whether to remove instead of set
+# + modificationFunction - Optional modification function
+# + return - The modified context or error
+isolated function setValueAtIndexedIdentifier(IdentifierExpr expr, int index, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FhirpathInterpreterError|map<json> {
+    string fieldName = expr.name;
+
+    // Check if field exists
+    if !context.hasKey(fieldName) {
+        if shouldRemove {
+            return context;
+        }
+        return error FhirpathInterpreterError(string `Path '${fieldName}' does not exist in the resource`,
+            token = {tokenType: IDENTIFIER, lexeme: fieldName, literal: (), position: 0});
+    }
+
+    json fieldValue = context[fieldName];
+    if fieldValue !is json[] {
+        if shouldRemove {
+            return context;
+        }
+        return error FhirpathInterpreterError(string `Path '${fieldName}' is not an array`,
+            token = {tokenType: IDENTIFIER, lexeme: fieldName, literal: (), position: 0});
+    }
+
+    json[] arr = <json[]>fieldValue;
+
+    if shouldRemove {
+        // Remove the element at index
+        if index >= 0 && index < arr.length() {
+            json[] newArr = [];
+            foreach int i in 0 ..< arr.length() {
+                if i != index {
+                    newArr.push(arr[i]);
+                }
+            }
+            context[fieldName] = newArr;
+        }
+        return context;
+    }
+
+    // Check if index exists
+    if index >= arr.length() {
+        return error FhirpathInterpreterError(string `Index ${index} is out of bounds for array '${fieldName}' with length ${arr.length()}`,
+            token = {tokenType: IDENTIFIER, lexeme: fieldName, literal: (), position: 0});
+    }
+
+    // Set the value at index
+    json|error modifiedValue = getModifiedValueInternal(arr[index], modificationFunction, newValue);
+    if modifiedValue is error {
+        return error FhirpathInterpreterError(modifiedValue.message(),
+            token = {tokenType: IDENTIFIER, lexeme: fieldName, literal: (), position: 0});
+    }
+    arr[index] = modifiedValue;
+
+    return context;
+}
+
+# Sets value at an indexed member access (e.g., Patient.name[0]).
+#
+# + expr - The member access expression
+# + index - The index to access
+# + context - The current JSON context
+# + newValue - The new value to set
+# + shouldRemove - Whether to remove instead of set
+# + modificationFunction - Optional modification function
+# + return - The modified context or error
+isolated function setValueAtIndexedMemberAccess(MemberAccessExpr expr, int index, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FhirpathInterpreterError|map<json> {
+    // Evaluate target to get the parent object(s)
+    json[] targetResults = check evaluate(expr.target, context);
+    string memberName = expr.member;
+
+    if targetResults.length() == 0 {
+        if shouldRemove {
+            return context;
+        }
+        return error FhirpathInterpreterError(string `Path to '${memberName}' does not exist in the resource`,
+            token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+    }
+
+    // Process each target result
+    foreach json targetItem in targetResults {
+        if targetItem is map<json> {
+            // Check if array field exists
+            if !targetItem.hasKey(memberName) {
+                if shouldRemove {
+                    continue;
+                }
+                return error FhirpathInterpreterError(string `Path '${memberName}' does not exist`,
+                    token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+            }
+
+            json fieldValue = targetItem[memberName];
+            if fieldValue !is json[] {
+                if shouldRemove {
+                    continue;
+                }
+                return error FhirpathInterpreterError(string `Path '${memberName}' is not an array`,
+                    token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+            }
+
+            json[] arr = <json[]>fieldValue;
+
+            if shouldRemove {
+                if index >= 0 && index < arr.length() {
+                    json[] newArr = [];
+                    foreach int i in 0 ..< arr.length() {
+                        if i != index {
+                            newArr.push(arr[i]);
+                        }
+                    }
+                    targetItem[memberName] = newArr;
+                }
+                continue;
+            }
+
+            // Check if index exists
+            if index >= arr.length() {
+                return error FhirpathInterpreterError(string `Index ${index} is out of bounds for array '${memberName}' with length ${arr.length()}`,
+                    token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+            }
+
+            // Set the value
+            json|error modifiedValue = getModifiedValueInternal(arr[index], modificationFunction, newValue);
+            if modifiedValue is error {
+                return error FhirpathInterpreterError(modifiedValue.message(),
+                    token = {tokenType: IDENTIFIER, lexeme: memberName, literal: (), position: 0});
+            }
+            arr[index] = modifiedValue;
+        }
+    }
+
+    return context;
+}
+
+# Sets value at a nested indexer (e.g., name[0][1]).
+#
+# + expr - The inner indexer expression
+# + outerIndex - The outer index
+# + context - The current JSON context
+# + newValue - The new value to set
+# + shouldRemove - Whether to remove instead of set
+# + modificationFunction - Optional modification function
+# + return - The modified context or error
+isolated function setValueAtNestedIndexer(IndexerExpr expr, int outerIndex, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FhirpathInterpreterError|map<json> {
+    // Evaluate the inner indexer to get the array
+    json[] innerResults = check evaluate(expr, context);
+
+    if innerResults.length() == 0 {
+        if shouldRemove {
+            return context;
+        }
+        return error FhirpathInterpreterError("Path does not exist in the resource",
+            token = {tokenType: EOF, lexeme: "", literal: (), position: 0});
+    }
+
+    foreach json innerItem in innerResults {
+        if innerItem is json[] {
+            json[] arr = <json[]>innerItem;
+
+            if shouldRemove {
+                if outerIndex >= 0 && outerIndex < arr.length() {
+                    json[] newArr = [];
+                    foreach int i in 0 ..< arr.length() {
+                        if i != outerIndex {
+                            newArr.push(arr[i]);
+                        }
+                    }
+                    // Note: This modifies the nested array in place
+                }
+                continue;
+            }
+
+            if outerIndex < 0 || outerIndex >= arr.length() {
+                return error FhirpathInterpreterError(string `Index ${outerIndex} is out of bounds for array with length ${arr.length()}`,
+                    token = {tokenType: EOF, lexeme: "", literal: (), position: 0});
+            }
+
+            json|error modifiedValue = getModifiedValueInternal(arr[outerIndex], modificationFunction, newValue);
+            if modifiedValue is error {
+                return error FhirpathInterpreterError(modifiedValue.message(),
+                    token = {tokenType: EOF, lexeme: "", literal: (), position: 0});
+            }
+            arr[outerIndex] = modifiedValue;
+        }
+    }
+
+    return context;
+}
+
+# Get the modified value by applying either a modification function or setting a new value.
+# Internal version for use within the interpreter.
+#
+# + currentValue - The current value at the FHIRPath location
+# + modificationFunction - Optional function to transform the current value
+# + newValue - Optional new value to set directly
+# + return - The modified value or an error if modification function fails
+isolated function getModifiedValueInternal(json currentValue, ModificationFunction? modificationFunction, json? newValue) returns json|error {
+    if currentValue !is () && modificationFunction !is () {
+        return modificationFunction(currentValue);
+    }
+    if newValue !is () {
+        return newValue;
+    }
+    return currentValue;
+}
