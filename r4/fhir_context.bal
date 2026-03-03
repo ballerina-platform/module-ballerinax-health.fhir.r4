@@ -26,6 +26,7 @@ public isolated class FHIRContext {
     private string rawPath = "";
     private map<anydata> properties = {};
     private PaginationContext? paginationContext = ();
+    private ConsentContext? consentContext = ();
 
     public isolated function init(FHIRRequest request, readonly & HTTPRequest httpRequest, readonly & FHIRSecurity security) {
         self.fhirRequest = request;
@@ -230,6 +231,24 @@ public isolated class FHIRContext {
     public isolated function getPaginationContext() returns PaginationContext? {
         lock {
             return self.paginationContext;
+        }
+    }
+
+    # Set consent context to fhir context.
+    #
+    # + consentContext - Consent context record with consented resource types
+    public isolated function setConsentContext(ConsentContext consentContext) {
+        lock {
+            self.consentContext = consentContext.cloneReadOnly();
+        }
+    }
+
+    # Get consent context from fhir context.
+    #
+    # + return - Consent context
+    public isolated function getConsentContext() returns ConsentContext? {
+        lock {
+            return self.consentContext;
         }
     }
 

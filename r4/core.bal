@@ -535,6 +535,15 @@ public type PaginationContext record {|
     readonly int pageSize;
 |};
 
+# Record to hold consent context information.
+#
+# + patientID - Unique identifier of the patient for which the consent is given.
+# + consentedResourceTypes - List of resource types that the user has consented to access
+public type ConsentContext record {|
+    readonly string patientID;
+    readonly string[] consentedResourceTypes;
+|};
+
 # Record to hold FHIR service information.
 #
 # + name - The name of the service  

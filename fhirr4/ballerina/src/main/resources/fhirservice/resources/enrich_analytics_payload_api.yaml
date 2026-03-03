@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
-  title: More Info API
+  title: Enrich Analytics Payload API
   version: 1.0.0
-  description: 'More Info API to get more information to publish for analytics.'
+  description: 'API to enrich analytics payload with additional information before publishing.'
 paths:
-  /more_info:
+  /enrich-analytics-payload:
     post:
       summary: Accepts and returns a JSON object with arbitrary string fields.
       requestBody:
