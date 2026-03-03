@@ -909,6 +909,9 @@ isolated function setValueAtNestedIndexer(IndexerExpr expr, int outerIndex, map<
     return context;
 }
 
+# Function to modify the value at the path
+public type ModificationFunction isolated function (json param) returns json|error;
+
 # Get the modified value by applying either a modification function or setting a new value.
 # Internal version for use within the interpreter.
 #
