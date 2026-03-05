@@ -50,7 +50,7 @@ isolated function errorFunction(json input) returns json|error {
     return error("Intentional error for testing", value = input.toString());
 }
 
-isolated function emptyString(json input) returns json|error {
+isolated function emptyStringFunction(json input) returns json|error {
     return "";
 }
 
