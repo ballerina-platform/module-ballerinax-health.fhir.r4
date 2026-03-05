@@ -32,3 +32,113 @@ final readonly & map<r4:FHIRSearchParameterDefinition[]> DAVINCIPRIORAUTHORIZATI
 
 public json[] FHIR_VALUE_SETS = [];
 public json[] FHIR_CODE_SYSTEMS = [];
+
+// Operations in Da Vinci HREX IG (key = operation name)
+final readonly & map<r4:FHIROperationDefinition[]> DAVINCICLINICALDATAEXCHANGE_IG_OPERATIONS = {
+    "submit-attachment": [
+        {
+            name: "submit-attachment",
+            instanceLevel: false,
+            typeLevel: true,
+            systemLevel: false,
+            affectsState: true,
+            'resource: [
+                "Claim"
+            ],
+            'parameter: [
+                {
+                    name: "TrackingId",
+                    use: r4:INPUT,
+                    min: 1,
+                    max: "1",
+                    'type: "Identifier"
+                },
+                {
+                    name: "AdminRefNumber",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Identifier"
+                },
+                {
+                    name: "AttachTo",
+                    use: r4:INPUT,
+                    min: 1,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "PayerId",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Identifier"
+                },
+                {
+                    name: "OrganizationId",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Identifier"
+                },
+                {
+                     name: "ProviderId",
+                     use: r4:INPUT,
+                     min: 0,
+                     max: "1",
+                     'type: "Identifier"
+                },
+                {
+                     name: "MemberId",
+                     use: r4:INPUT,
+                     min: 1,
+                     max: "1",
+                     'type: "Identifier"
+                },
+                {
+                     name: "ServiceDate",
+                     use: r4:INPUT,
+                     min: 0,
+                     max: "1",
+                     'type: "dateTime"
+                },
+                {
+                     name: "Attachment",
+                     use: r4:INPUT,
+                     min: 1,
+                     max: "*",
+                     "part": [
+                        {
+                            name: "LineItem",
+                            use: r4:INPUT,
+                            min: 0,
+                            max: "*",
+                            'type: "string"
+                        },
+                        {
+                            name: "Code",
+                            use: r4:INPUT,
+                            min: 0,
+                            max: "1",
+                            'type: "CodeableConcept"
+                        },
+                        {
+                            name: "Content",
+                            use: r4:INPUT,
+                            min: 1,
+                            max: "1",
+                            'type: "Resource"
+                        }
+                    ]
+                },
+                {
+                    name: "Final",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                }
+            ]
+        }
+    ]
+};

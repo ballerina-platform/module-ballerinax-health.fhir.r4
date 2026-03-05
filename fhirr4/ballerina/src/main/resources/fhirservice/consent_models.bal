@@ -122,8 +122,14 @@ public type ConsentResponse record {|
 # This is returned by the /api/v1/consents/validate endpoint.
 #
 # + isValid - Indicates whether the consent is valid
+# + errorCode - Error code returned when validation fails
+# + errorMessage - Error message returned when validation fails
+# + errorDescription - Detailed description of the validation error
 # + consentInformation - Detailed information about the validated consent
 public type ConsentValidationResponse record {|
     boolean isValid?;
+    int|string errorCode?;
+    string errorMessage?;
+    string errorDescription?;
     Consent consentInformation?;
 |};

@@ -160,7 +160,8 @@ function init() returns r4:FHIRError? {
                 modelType: PASClaimBase
             }
         },
-        searchParameters: [DAVINCIPRIORAUTHORIZATIONSUPPORT_IG_SEARCH_PARAMS_1]
+        searchParameters: [DAVINCIPRIORAUTHORIZATIONSUPPORT_IG_SEARCH_PARAMS_1],
+        operations: DAVINCICLINICALDATAEXCHANGE_IG_OPERATIONS.cloneReadOnly()
     };
     r4:FHIRImplementationGuide baseImplementationGuide = new(baseIgRecord);
     check fhirRegistry.addImplementationGuide(baseImplementationGuide);
