@@ -138,9 +138,6 @@ dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.value"}
 ]
-modules = [
-	{org = "ballerina", packageName = "io", moduleName = "io"}
-]
 
 [[package]]
 org = "ballerina"
@@ -461,7 +458,6 @@ org = "ballerinax"
 name = "health.fhir.r4utils.fhirpath"
 version = "4.0.1"
 dependencies = [
-	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "test"},
 	{org = "ballerinax", name = "health.fhir.r4"},

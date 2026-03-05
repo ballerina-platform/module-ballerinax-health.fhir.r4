@@ -18,14 +18,49 @@ Refer to the [API Documentation](https://central.ballerina.io/ballerinax/health.
 - **Query FHIR Resources**: Extract one or more values for a matching FHIRPath expression from FHIR resources
 - **Update FHIR Resources**: Set values in FHIR resources at specified paths
 - **Remove FHIR Resource Elements**: Remove elements from FHIR resources
-- **Adding FHIR Resource Elements**: Support for creating new FHIR paths and adding elements to FHIR resources
 - **Function-based Value Modification**: Apply custom functions to transform values during updates (useful for data masking, hashing, etc.)
 - **Unified API**: Single function handles both direct value setting and function-based transformations
-- **Validate FHIRPath Expressions**: Ensure that FHIRPath expressions are valid before evaluation
 - **Validate FHIR Resources**: Ensure that FHIR resources provided and returned conform to the expected structure and types. (For more info visit https://central.ballerina.io/ballerinax/health.fhir.r4.validator/latest)
 - **Error Handling**: Comprehensive error reporting for invalid paths or operations
 - **Type Safety**: Strong typing support for Ballerina applications
 
+
+## Architecture & How It Works
+
+This library implements a classic interpreter pipeline to evaluate FHIRPath expressions against FHIR JSON resources. The processing flows through three stages:
+
+```
+FHIRPath string → Scanner → Tokens → Parser → AST → Interpreter → Result
+```
+
+### Pipeline Stages
+
+1. **Scanning / Lexical Analysis** ([scanner.bal](scanner.bal), [token.bal](token.bal), [token_type.bal](token_type.bal))
+   The scanner (lexer) takes a raw FHIRPath expression string and breaks it into a sequence of tokens. Each token has a type (e.g., `IDENTIFIER`, `NUMBER`, `STRING`, `DOT`, `LPAREN`, etc.) and the corresponding lexeme text.
+
+2. **Parsing** ([parser.bal](parser.bal), [expr.bal](expr.bal))
+   A hand-written **recursive-descent (top-down) parser** consumes the token stream and builds an Abstract Syntax Tree (AST). The AST node types are defined in [expr.bal](expr.bal) and include `BinaryExpr`, `LiteralExpr`, `IdentifierExpr`, `FunctionExpr`, `MemberAccessExpr`, and `IndexerExpr`. The parser functions in [parser.bal](parser.bal) directly correspond to the grammar rules and are organized by operator precedence (or → and → equality → indexer → invocation → term).
+
+3. **Interpretation** ([interpreter.bal](interpreter.bal))
+   A tree-walking interpreter traverses the AST and evaluates it against the provided FHIR JSON resource. It supports both **getting** values (collecting matching nodes) and **setting/removing** values (producing a modified copy of the resource). The interpreter handles member access, array indexing, function calls (e.g., `where()`), and binary operators (`=`, `!=`, `and`, `or`, `xor`).
+
+4. **Public API** ([fhir_path_processor.bal](fhir_path_processor.bal))
+   The top-level functions `getValuesFromFhirPath` and `setValuesToFhirPath` orchestrate the full pipeline — scan, parse, interpret — and optionally validate the FHIR resource before and/or after the operation.
+
+### Grammar Reference
+
+The file [grammar.g4](grammar.g4) contains the **ANTLR grammar extracted from the official FHIRPath specification** ([HL7 FHIRPath Grammar](https://build.fhir.org/ig/HL7/FHIRPath/grammar.html/). It serves as the authoritative reference for the subset of FHIRPath syntax that this library supports. The ANTLR grammar (which is a bottom-up / left-recursive notation) has been manually converted into the **top-down recursive-descent parser** implemented in [parser.bal](parser.bal). When comparing the two, each labeled alternative in the `.g4` file (e.g., `#invocationExpression`, `#indexerExpression`, `#equalityExpression`) maps to a corresponding parse function in [parser.bal](parser.bal).
+
+### Updating & Extending the Library
+
+If additional FHIRPath features need to be supported in the future, follow these steps:
+
+1. **Update the grammar** — Add or modify the relevant production rules in [grammar.g4](grammar.g4) to reflect the new syntax from the official FHIRPath specification.
+2. **Add token types** — If new operators or keywords are needed, add entries to the `TokenType` enum in [token_type.bal](token_type.bal) and update the scanner in [scanner.bal](scanner.bal) to recognize them.
+3. **Extend the parser** — Add new parse functions or update existing ones in [parser.bal](parser.bal) to match the updated grammar rules. Ensure operator precedence is handled correctly in the recursive-descent structure.
+4. **Add AST node types** — If the new syntax requires a new kind of expression, define a new record type in [expr.bal](expr.bal) and add it to the `Expr` union type.
+5. **Update the interpreter** — Implement evaluation logic for the new AST nodes in [interpreter.bal](interpreter.bal), for both get and set operations.
+6. **Add tests** — Write test cases in the [tests/](tests/) directory covering the new functionality.
 
 ## Usage Examples
 
@@ -70,18 +105,23 @@ json patient = {
 
 public function main() {
     // Get single value using FHIRPath
-    json|error result = fhirpath:getValuesFromFhirPath(patient, "Patient.name[0].given[0]");
-    if result is json {
+    json[]|fhirpath:FhirpathError result = fhirpath:getValuesFromFhirPath(patient, "Patient.name[0].given[0]");
+    if result is json[] {
         io:println("First given name: ", result);
     }
-    // Get all given names from all name records
-    json|error allGivenResult = fhirpath:getValuesFromFhirPath(patient, "Patient.name.given[0]");
-    if allGivenResult is json {
-        io:println("All first given names: ", allGivenResult);
+    // Use where() to filter and extract values
+    json[]|fhirpath:FhirpathError officialFamily = fhirpath:getValuesFromFhirPath(patient, "Patient.name.where(use = 'official').family");
+    if officialFamily is json[] {
+        io:println("Official family name: ", officialFamily);
     }
-    // Handle errors
-    json|error errorResult = fhirpath:getValuesFromFhirPath(patient, "Patient.invalidPath");
-    if errorResult is error {
+    // Handle non-existent paths (returns empty array)
+    json[]|fhirpath:FhirpathError emptyResult = fhirpath:getValuesFromFhirPath(patient, "Patient.nonExistentPath");
+    if emptyResult is json[] {
+        io:println("Result for non-existent path: ", emptyResult);
+    }
+    // Handle errors (e.g., malformed expression)
+    json[]|fhirpath:FhirpathError errorResult = fhirpath:getValuesFromFhirPath(patient, "Patient.name[");
+    if errorResult is fhirpath:FhirpathError {
         io:println("Error: ", errorResult.message());
     }
 }
@@ -117,22 +157,21 @@ public function main() {
     };
 
     // Update a value in the FHIR resource
-    json|error updateResult = fhirpath:setValuesToFhirPath(patient, "Patient.active", false);
+    json|fhirpath:FhirpathError updateResult = fhirpath:setValuesToFhirPath(patient, "Patient.active", false);
     if updateResult is json {
         io:println("Updated patient after active status change: ", updateResult);
     }
 
     // Update multiple values in the FHIR resource
-    json|error updatedAddresses = fhirpath:setValuesToFhirPath(patient, "Patient.address.line", "***", validateFHIRResource = false);
+    json|fhirpath:FhirpathError updatedAddresses = fhirpath:setValuesToFhirPath(patient, "Patient.address.line", "***", validateInputFHIRResource = false);
     if updatedAddresses is json {
         io:println("Updated patient after address line masking: ", updatedAddresses);
     }
 
-    // Add a new value to the FHIR resource
-    json|error newlyAdded = fhirpath:setValuesToFhirPath(patient, "Patient.gender", "male", validateFHIRResource = false);
-
-    if newlyAdded is json {
-        io:println("Updated patient after gender addition: ", newlyAdded);
+    // Update a nested value in the FHIR resource
+    json|fhirpath:FhirpathError updatedCity = fhirpath:setValuesToFhirPath(patient, "Patient.address[0].city", "NewTown", validateInputFHIRResource = false);
+    if updatedCity is json {
+        io:println("Updated patient after city change: ", updatedCity);
     }
 }
 
@@ -170,21 +209,15 @@ public function main() {
     };
 
     // Remove a simple field
-    json|error result = fhirpath:setValuesToFhirPath(patient, "Patient.gender", ());
+    json|fhirpath:FhirpathError result = fhirpath:setValuesToFhirPath(patient, "Patient.gender", ());
     if result is json {
         io:println("Patient after removing gender: ", result);
     }
 
     // Remove multiple elements
-    json|error multipleResult = fhirpath:setValuesToFhirPath(patient, "Patient.name.given", ());
+    json|fhirpath:FhirpathError multipleResult = fhirpath:setValuesToFhirPath(patient, "Patient.name.given", ());
     if multipleResult is json {
         io:println("Patient after removing all given names: ", multipleResult);
-    }
-
-    // Using low-level function for removal
-    json|error directResult = fhirpath:setValuesToFhirPath(patient, "Patient.active", ());
-    if directResult is json {
-        io:println("Updated patient resource: ", directResult);
     }
 }
 ```
@@ -196,16 +229,16 @@ import ballerina/io;
 import ballerinax/health.fhir.r4utils.fhirpath;
 
 // Define a custom modification function for data masking
-isolated function maskOperation(json input) returns json|fhirpath:error {
+isolated function maskOperation(json input) returns json|error {
     return "***MASKED***";
 }
 
 // Define a function to hash sensitive data
-isolated function hashOperation(json input) returns json|fhirpath:error {
+isolated function hashOperation(json input) returns json|error {
     if input is string {
         return "HASH_" + input.length().toString(); // Simple hash for example
     }
-    return error("Expected string input for hashing", fhirPathValue = input.toString());
+    return error("Expected string input for hashing", value = input.toString());
 }
 
 public function main() {
@@ -232,21 +265,15 @@ public function main() {
     };
 
     // Mask all phone numbers
-    json|error maskedPhone = fhirpath:setValuesToFhirPath(patient, "Patient.telecom[0].value", maskOperation);
+    json|fhirpath:FhirpathError maskedPhone = fhirpath:setValuesToFhirPath(patient, "Patient.telecom[0].value", maskOperation);
     if maskedPhone is json {
         io:println("Patient with masked phone: ", maskedPhone);
     }
 
-    // Hash email addresses
-    json|error hashedId = fhirpath:setValuesToFhirPath(patient, "Patient.id", hashOperation);
+    // Hash id
+    json|fhirpath:FhirpathError hashedId = fhirpath:setValuesToFhirPath(patient, "Patient.id", hashOperation);
     if hashedId is json {
         io:println("Patient with hashed id: ", hashedId);
-    }
-
-    // Apply function to multiple values
-    json|error maskedNames = fhirpath:setValuesToFhirPath(patient, "Patient.name.given", maskOperation, validateFHIRResource = false);
-    if maskedNames is json {
-        io:println("Patient with masked given names: ", maskedNames);
     }
 }
 ```
