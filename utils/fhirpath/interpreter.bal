@@ -370,38 +370,59 @@ isolated function applyEqualityOperator(json[] left, json[] right, boolean check
     return [!checkEqual];
 }
 
-# Applies the logical AND operator to two collections.
+# Applies the logical AND operator to two collections using FHIRPath three-valued logic.
 #
 # + left - The left operand collection
 # + right - The right operand collection
-# + return - A single-element collection with the boolean result of AND operation
+# + return - A single-element collection with the boolean result, or empty for propagated emptiness
 isolated function applyAndOperator(json[] left, json[] right) returns json[] {
-    boolean leftTruthy = isTruthy(left);
-    boolean rightTruthy = isTruthy(right);
-    return [leftTruthy && rightTruthy];
+    boolean leftEmpty = left.length() == 0;
+    boolean rightEmpty = right.length() == 0;
+
+    // If either operand is non-empty and falsy, result is false
+    if (!leftEmpty && !isTruthy(left)) || (!rightEmpty && !isTruthy(right)) {
+        return [false];
+    }
+    // If either operand is empty (and neither is falsy), propagate empty
+    if leftEmpty || rightEmpty {
+        return [];
+    }
+    return [true];
 }
 
-# Applies the logical OR operator to two collections.
+# Applies the logical OR operator to two collections using FHIRPath three-valued logic.
 #
 # + left - The left operand collection
 # + right - The right operand collection
-# + return - A single-element collection with the boolean result of OR operation
+# + return - A single-element collection with the boolean result, or empty for propagated emptiness
 isolated function applyOrOperator(json[] left, json[] right) returns json[] {
-    boolean leftTruthy = isTruthy(left);
-    boolean rightTruthy = isTruthy(right);
-    return [leftTruthy || rightTruthy];
+    boolean leftEmpty = left.length() == 0;
+    boolean rightEmpty = right.length() == 0;
+
+    // If either operand is non-empty and truthy, result is true
+    if (!leftEmpty && isTruthy(left)) || (!rightEmpty && isTruthy(right)) {
+        return [true];
+    }
+    // If either operand is empty (and neither is truthy), propagate empty
+    if leftEmpty || rightEmpty {
+        return [];
+    }
+    return [false];
 }
 
-# Applies the logical XOR (exclusive OR) operator to two collections.
+# Applies the logical XOR (exclusive OR) operator to two collections using FHIRPath three-valued logic.
 #
 # + left - The left operand collection
 # + right - The right operand collection
-# + return - A single-element collection with the boolean result of XOR operation
+# + return - A single-element collection with the boolean result, or empty if either operand is empty
 isolated function applyXorOperator(json[] left, json[] right) returns json[] {
+    // If either operand is empty, propagate empty
+    if left.length() == 0 || right.length() == 0 {
+        return [];
+    }
     boolean leftTruthy = isTruthy(left);
     boolean rightTruthy = isTruthy(right);
-    // XOR is true if exactly one operand is true
-    return [(leftTruthy && !rightTruthy) || (!leftTruthy && rightTruthy)];
+    return [leftTruthy != rightTruthy];
 }
 
 # Checks if a FHIRPath result collection is truthy.
@@ -468,7 +489,9 @@ isolated function wrapInCollection(json value) returns json[] {
 isolated function applyWhereFunction(json[] collection, Expr[] params, json originalContext) returns FhirpathInterpreterError|json[] {
     // where() requires exactly one parameter (the condition expression)
     if params.length() != 1 {
-        return [];
+        return error FhirpathInterpreterError(
+            string `where() requires exactly 1 parameter, got ${params.length()}`,
+            token = {tokenType: IDENTIFIER, lexeme: "where", literal: (), position: 0});
     }
 
     Expr conditionExpr = params[0];
