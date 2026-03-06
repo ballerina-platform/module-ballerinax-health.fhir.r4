@@ -884,7 +884,14 @@ isolated function setValueAtNestedIndexer(IndexerExpr expr, int outerIndex, map<
                             newArr.push(arr[i]);
                         }
                     }
-                    // Note: This modifies the nested array in place
+                    // Persist removal: clear the original array and copy filtered elements back
+                    // This mirrors setValueAtIndexedIdentifier's approach of writing newArr back
+                    while arr.length() > 0 {
+                        _ = arr.pop();
+                    }
+                    foreach json item in newArr {
+                        arr.push(item);
+                    }
                 }
                 continue;
             }
