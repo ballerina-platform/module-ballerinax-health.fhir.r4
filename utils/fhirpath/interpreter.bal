@@ -287,7 +287,8 @@ isolated function visitFunctionExpr(FunctionExpr expr, json context) returns Fhi
         }
         _ => {
             // Unknown function
-            return [];
+            return error FhirpathInterpreterError(string `Unknown function '${expr.name}'`,
+            token = {tokenType: IDENTIFIER, lexeme: expr.name, literal: (), position: 0});
         }
     }
 }
@@ -338,13 +339,9 @@ isolated function visitBinaryExpr(BinaryExpr expr, json context) returns Fhirpat
 # + checkEqual - True for '=' operator, false for '!=' operator
 # + return - A single-element collection with the boolean result
 isolated function applyEqualityOperator(json[] left, json[] right, boolean checkEqual) returns json[] {
-    // Empty collections
-    if left.length() == 0 && right.length() == 0 {
-        return [checkEqual]; // Empty = Empty is true, Empty != Empty is false
-    }
-
     if left.length() == 0 || right.length() == 0 {
-        return [!checkEqual]; // One empty is not equal (or equal if !=)
+        // Per FHIRPath spec: if either operand is empty, result is empty
+        return [];
     }
 
     // Compare collections
