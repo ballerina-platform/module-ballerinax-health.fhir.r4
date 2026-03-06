@@ -13,8 +13,7 @@ term
         ;
 
 literal
-        : NIL                                              #nullLiteral
-        | ('true' | 'false')                                    #booleanLiteral
+        : ('true' | 'false')                                    #booleanLiteral
         | STRING                                                #stringLiteral
         | NUMBER                                                #numberLiteral
         ;
@@ -25,15 +24,17 @@ invocation                          // Terms that can be used after the function
         ;
 
 function
-        | identifier '(' paramList? ')'
+        : identifier '(' paramList? ')'
         ;
 
 paramList
         : expression (',' expression)*
+        ;
 
 identifier
         : IDENTIFIER
 	| DELIMITEDIDENTIFIER
+        ;
 
 IDENTIFIER
         : ([A-Za-z] | '_')([A-Za-z0-9] | '_')*            // Added _ to support CQL (FHIR could constrain it out)

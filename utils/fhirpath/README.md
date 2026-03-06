@@ -49,7 +49,7 @@ FHIRPath string → Scanner → Tokens → Parser → AST → Interpreter → Re
 
 ### Grammar Reference
 
-The file [grammar.g4](grammar.g4) contains the **ANTLR grammar extracted from the official FHIRPath specification** ([HL7 FHIRPath Grammar](https://build.fhir.org/ig/HL7/FHIRPath/grammar.html/). It serves as the authoritative reference for the subset of FHIRPath syntax that this library supports. The ANTLR grammar (which is a bottom-up / left-recursive notation) has been manually converted into the **top-down recursive-descent parser** implemented in [parser.bal](parser.bal). When comparing the two, each labeled alternative in the `.g4` file (e.g., `#invocationExpression`, `#indexerExpression`, `#equalityExpression`) maps to a corresponding parse function in [parser.bal](parser.bal).
+The file [grammar.g4](grammar.g4) contains the **ANTLR grammar extracted from the official FHIRPath specification** ([HL7 FHIRPath Grammar](https://build.fhir.org/ig/HL7/FHIRPath/grammar.html/)). It serves as the authoritative reference for the subset of FHIRPath syntax that this library supports. The ANTLR grammar (which is a bottom-up / left-recursive notation) has been manually converted into the **top-down recursive-descent parser** implemented in [parser.bal](parser.bal). When comparing the two, each labeled alternative in the `.g4` file (e.g., `#invocationExpression`, `#indexerExpression`, `#equalityExpression`) maps to a corresponding parse function in [parser.bal](parser.bal).
 
 ### Updating & Extending the Library
 
