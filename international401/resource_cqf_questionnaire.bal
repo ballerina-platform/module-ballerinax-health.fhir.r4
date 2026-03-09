@@ -62,7 +62,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
     baseType: r4:DomainResource,
     profile: "http://hl7.org/fhir/StructureDefinition/cqf-questionnaire",
     elements: {
-        "date" : {
+        "date": {
             name: "date",
             dataType: r4:dateTime,
             min: 0,
@@ -70,7 +70,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.date"
         },
-        "copyright" : {
+        "copyright": {
             name: "copyright",
             dataType: r4:markdown,
             min: 0,
@@ -78,7 +78,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.copyright"
         },
-        "extension" : {
+        "extension": {
             name: "extension",
             dataType: r4:Extension,
             min: 0,
@@ -86,7 +86,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: true,
             path: "Questionnaire.extension"
         },
-        "approvalDate" : {
+        "approvalDate": {
             name: "approvalDate",
             dataType: r4:date,
             min: 0,
@@ -94,7 +94,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.approvalDate"
         },
-        "code" : {
+        "code": {
             name: "code",
             dataType: r4:Coding,
             min: 0,
@@ -103,7 +103,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             path: "Questionnaire.code",
             valueSet: "http://hl7.org/fhir/ValueSet/questionnaire-questions"
         },
-        "purpose" : {
+        "purpose": {
             name: "purpose",
             dataType: r4:markdown,
             min: 0,
@@ -111,7 +111,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.purpose"
         },
-        "jurisdiction" : {
+        "jurisdiction": {
             name: "jurisdiction",
             dataType: r4:CodeableConcept,
             min: 0,
@@ -120,7 +120,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             path: "Questionnaire.jurisdiction",
             valueSet: "http://hl7.org/fhir/ValueSet/jurisdiction"
         },
-        "modifierExtension" : {
+        "modifierExtension": {
             name: "modifierExtension",
             dataType: r4:Extension,
             min: 0,
@@ -128,7 +128,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: true,
             path: "Questionnaire.modifierExtension"
         },
-        "description" : {
+        "description": {
             name: "description",
             dataType: r4:markdown,
             min: 0,
@@ -136,7 +136,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.description"
         },
-        "experimental" : {
+        "experimental": {
             name: "experimental",
             dataType: boolean,
             min: 0,
@@ -144,7 +144,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.experimental"
         },
-        "language" : {
+        "language": {
             name: "language",
             dataType: r4:code,
             min: 0,
@@ -153,7 +153,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             path: "Questionnaire.language",
             valueSet: "http://hl7.org/fhir/ValueSet/languages"
         },
-        "title" : {
+        "title": {
             name: "title",
             dataType: string,
             min: 0,
@@ -161,7 +161,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.title"
         },
-        "subjectType" : {
+        "subjectType": {
             name: "subjectType",
             dataType: r4:code,
             min: 0,
@@ -170,7 +170,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             path: "Questionnaire.subjectType",
             valueSet: "http://hl7.org/fhir/ValueSet/resource-types|4.0.1"
         },
-        "contact" : {
+        "contact": {
             name: "contact",
             dataType: r4:ContactDetail,
             min: 0,
@@ -178,7 +178,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: true,
             path: "Questionnaire.contact"
         },
-        "derivedFrom" : {
+        "derivedFrom": {
             name: "derivedFrom",
             dataType: r4:canonical,
             min: 0,
@@ -186,7 +186,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: true,
             path: "Questionnaire.derivedFrom"
         },
-        "id" : {
+        "id": {
             name: "id",
             dataType: string,
             min: 0,
@@ -194,7 +194,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.id"
         },
-        "text" : {
+        "text": {
             name: "text",
             dataType: r4:Narrative,
             min: 0,
@@ -202,7 +202,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.text"
         },
-        "identifier" : {
+        "identifier": {
             name: "identifier",
             dataType: r4:Identifier,
             min: 0,
@@ -210,7 +210,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: true,
             path: "Questionnaire.identifier"
         },
-        "item" : {
+        "item": {
             name: "item",
             dataType: CQF_QuestionnaireItem,
             min: 0,
@@ -218,7 +218,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: true,
             path: "Questionnaire.item"
         },
-        "effectivePeriod" : {
+        "effectivePeriod": {
             name: "effectivePeriod",
             dataType: r4:Period,
             min: 0,
@@ -226,7 +226,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.effectivePeriod"
         },
-        "version" : {
+        "version": {
             name: "version",
             dataType: string,
             min: 0,
@@ -234,7 +234,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.version"
         },
-        "url" : {
+        "url": {
             name: "url",
             dataType: r4:uri,
             min: 0,
@@ -242,7 +242,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.url"
         },
-        "contained" : {
+        "contained": {
             name: "contained",
             dataType: r4:Resource,
             min: 0,
@@ -250,7 +250,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: true,
             path: "Questionnaire.contained"
         },
-        "lastReviewDate" : {
+        "lastReviewDate": {
             name: "lastReviewDate",
             dataType: r4:date,
             min: 0,
@@ -258,7 +258,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.lastReviewDate"
         },
-        "meta" : {
+        "meta": {
             name: "meta",
             dataType: r4:Meta,
             min: 0,
@@ -266,7 +266,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.meta"
         },
-        "name" : {
+        "name": {
             name: "name",
             dataType: string,
             min: 0,
@@ -274,7 +274,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.name"
         },
-        "implicitRules" : {
+        "implicitRules": {
             name: "implicitRules",
             dataType: r4:uri,
             min: 0,
@@ -282,7 +282,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.implicitRules"
         },
-        "publisher" : {
+        "publisher": {
             name: "publisher",
             dataType: string,
             min: 0,
@@ -290,7 +290,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: false,
             path: "Questionnaire.publisher"
         },
-        "useContext" : {
+        "useContext": {
             name: "useContext",
             dataType: r4:UsageContext,
             min: 0,
@@ -298,7 +298,7 @@ public type CQF_QuestionnaireExtensions (CqfTargetInvariant|DesignNote|r4:Extens
             isArray: true,
             path: "Questionnaire.useContext"
         },
-        "status" : {
+        "status": {
             name: "status",
             dataType: CQF_QuestionnaireStatus,
             min: 1,
@@ -348,15 +348,15 @@ public type CQF_Questionnaire record {|
     string publisher?;
     r4:UsageContext[] useContext?;
     CQF_QuestionnaireStatus status;
-    r4:Element ...;
+    r4:Element...;
 |};
 
 # CQF_QuestionnaireStatus enum
 public enum CQF_QuestionnaireStatus {
-   CODE_STATUS_DRAFT = "draft",
-   CODE_STATUS_ACTIVE = "active",
-   CODE_STATUS_RETIRED = "retired",
-   CODE_STATUS_UNKNOWN = "unknown"
+    CODE_STATUS_DRAFT = "draft",
+    CODE_STATUS_ACTIVE = "active",
+    CODE_STATUS_RETIRED = "retired",
+    CODE_STATUS_UNKNOWN = "unknown"
 }
 
 # FHIR CQF_QuestionnaireItemAnswerOption datatype record.
@@ -496,8 +496,8 @@ public type CQF_QuestionnaireItemAnswerOption record {|
 
 # CQF_QuestionnaireItemEnableBehavior enum
 public enum CQF_QuestionnaireItemEnableBehavior {
-   CODE_ENABLEBEHAVIOR_ALL = "all",
-   CODE_ENABLEBEHAVIOR_ANY = "any"
+    CODE_ENABLEBEHAVIOR_ALL = "all",
+    CODE_ENABLEBEHAVIOR_ANY = "any"
 }
 
 # FHIR CQF_QuestionnaireItem datatype record.
@@ -730,13 +730,13 @@ public type CQF_QuestionnaireItem record {|
 
 # CQF_QuestionnaireItemEnableWhenOperator enum
 public enum CQF_QuestionnaireItemEnableWhenOperator {
-   CODE_OPERATOR_LESS_THAN_OR_EQUAL = "<=",
-   CODE_OPERATOR_EXISTS = "exists",
-   CODE_OPERATOR_NOT_EQUAL = "!=",
-   CODE_OPERATOR_LESS_THAN = "<",
-   CODE_OPERATOR_EQUAL = "=",
-   CODE_OPERATOR_GREATER_THAN = ">",
-   CODE_OPERATOR_GREATER_THAN_OR_EQUAL = ">="
+    CODE_OPERATOR_LESS_THAN_OR_EQUAL = "<=",
+    CODE_OPERATOR_EXISTS = "exists",
+    CODE_OPERATOR_NOT_EQUAL = "!=",
+    CODE_OPERATOR_LESS_THAN = "<",
+    CODE_OPERATOR_EQUAL = "=",
+    CODE_OPERATOR_GREATER_THAN = ">",
+    CODE_OPERATOR_GREATER_THAN_OR_EQUAL = ">="
 }
 
 # FHIR CQF_QuestionnaireItemEnableWhen datatype record.
@@ -936,13 +936,23 @@ public type CQF_QuestionnaireItemEnableWhen record {|
 
 # CQF_QuestionnaireItemType enum
 public enum CQF_QuestionnaireItemType {
-   CODE_TYPE_DATE = "date",
-   CODE_TYPE_DATETIME = "dateTime",
-   CODE_TYPE_BOOLEAN = "boolean",
-   CODE_TYPE_DISPLAY = "display",
-   CODE_TYPE_INTEGER = "integer",
-   CODE_TYPE_DECIMAL = "decimal",
-   CODE_TYPE_GROUP = "group"
+    CODE_TYPE_DATE = "date",
+    CODE_TYPE_DATETIME = "dateTime",
+    CODE_TYPE_BOOLEAN = "boolean",
+    CODE_TYPE_DISPLAY = "display",
+    CODE_TYPE_INTEGER = "integer",
+    CODE_TYPE_DECIMAL = "decimal",
+    CODE_TYPE_GROUP = "group",
+    CODE_TYPE_TIME = "time",
+    CODE_TYPE_STRING = "string",
+    CODE_TYPE_TEXT = "text",
+    CODE_TYPE_URL = "url",
+    CODE_TYPE_CHOICE = "choice",
+    CODE_TYPE_OPEN_CHOICE = "open-choice",
+    CODE_TYPE_ATTACHMENT = "attachment",
+    CODE_TYPE_REFERENCE = "reference",
+    CODE_TYPE_QUANTITY = "quantity",
+    CODE_TYPE_QUESTION = "question"
 }
 
 # FHIR CQF_QuestionnaireItemInitial datatype record.
