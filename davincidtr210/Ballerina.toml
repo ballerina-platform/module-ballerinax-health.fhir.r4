@@ -5,4 +5,5 @@ version = "1.0.1"
 distribution = "2201.12.3"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "davincidtr210", "Vendor/Other", "Area/Healthcare", "Type/Library"]
+icon = "icon.png"
 

@@ -5,4 +5,5 @@ keywords = ["Healthcare", "FHIR", "R4", "health_fhir_r4_davinciplannet120", "Ven
 name = "health.fhir.r4.davinciplannet120"
 org = "ballerinax"
 version = "2.0.1"
+icon = "icon.png"
 
