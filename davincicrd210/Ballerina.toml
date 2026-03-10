@@ -4,4 +4,4 @@ name = "health.fhir.r4.davincicrd210"
 version = "2.0.1"
 distribution = "2201.12.3"
 authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "R4", "davincicrd210"]
+keywords = ["Healthcare", "FHIR", "R4", "davincicrd210", "Vendor/Other", "Area/Healthcare", "Type/Library"]

@@ -4,5 +4,5 @@ name = "health.fhir.r4utils.deidentify"
 version = "2.0.1"
 distribution = "2201.12.2"
 authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "R4", "Utils", "deidentify"]
+keywords = ["Healthcare", "FHIR", "R4", "Utils", "deidentify", "Vendor/Other", "Area/Healthcare", "Type/Library"]
 

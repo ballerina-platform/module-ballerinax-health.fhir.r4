@@ -4,7 +4,7 @@ name = "health.fhir.r4.uscore610"
 version = "3.0.1"
 distribution = "2201.12.8"
 authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "R4", "uscore610"]
+keywords = ["Healthcare", "FHIR", "R4", "uscore610", "Vendor/Other", "Area/Healthcare", "Type/Library"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
 
 

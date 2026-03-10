@@ -4,4 +4,4 @@ name = "health.fhir.r4.aucore040"
 version = "3.0.1"
 distribution = "2201.12.2"
 authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "R4", "aucore040"]
+keywords = ["Healthcare", "FHIR", "R4", "aucore040", "Vendor/Other", "Area/Healthcare", "Type/Library"]
