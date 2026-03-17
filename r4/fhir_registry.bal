@@ -96,6 +96,22 @@ public isolated class FHIRRegistry {
     public function init() {
     }
 
+    # Add a profile to the resource type to profiles mapping
+    #
+    # + profile - The profile to be added
+    public isolated function addProfileToResourceType(readonly & Profile profile) {
+        lock {
+            map<Profile> profiles;
+            if self.resourceTypeProfiles.hasKey(profile.resourceType) {
+                profiles = self.resourceTypeProfiles.get(profile.resourceType);
+            } else {
+                profiles = {};
+                self.resourceTypeProfiles[profile.resourceType] = profiles;
+            }
+            profiles[profile.url] = profile;
+        }
+    }
+
     # Add an implementation guide to the registry
     #
     # + ig - The implementation guide to be added
@@ -112,15 +128,7 @@ public isolated class FHIRRegistry {
                 self.profileMap[profileClone.url] = profileClone;
 
                 // Add to resource type bound profile mapping
-                //ResourceDefinitionRecord resourceDefinition = check getResourceDefinition(profileClone.modelType);
-                map<Profile> profiles;
-                if self.resourceTypeProfiles.hasKey(profileClone.resourceType) {
-                    profiles = self.resourceTypeProfiles.get(profileClone.resourceType);
-                } else {
-                    profiles = {};
-                    self.resourceTypeProfiles[profileClone.resourceType] = profiles;
-                }
-                profiles[profileClone.url] = profileClone;
+                self.addProfileToResourceType(profileClone);
 
                 // If the processed IG is FHIR base IG, we need to add it to FHIR base profile map
                 if ig.getName() == FHIR_BASE_IG {
