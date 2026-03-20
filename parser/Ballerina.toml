@@ -6,5 +6,6 @@ distribution = "2201.12.3"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Parser", "Vendor/Other", "Area/Healthcare", "Type/Library"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+icon = "icon.png"
 
 
