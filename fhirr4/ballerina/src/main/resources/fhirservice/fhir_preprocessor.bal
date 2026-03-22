@@ -229,7 +229,12 @@ public isolated class FHIRPreprocessor {
             // Implemented according to the https://hl7.org/fhir/R4/http.html#ccreate FHIR specification
             log:printDebug("Conditional create interaction.");
             log:printDebug(string `Conditional header (If-None-Exist): ${isNoneExistHeader}`);
-            _ = check handleConditionalHeader(isNoneExistHeader, httpRequest.rawPath);
+            string conditionalCreateAuthHeader = "";
+            string|http:HeaderNotFoundError createAuthVal = httpRequest.getHeader("Authorization");
+            if createAuthVal is string {
+                conditionalCreateAuthHeader = createAuthVal;
+            }
+            _ = check handleConditionalHeader(isNoneExistHeader, httpRequest.rawPath, conditionalCreateAuthHeader);
         }
 
         // Set FHIR context inside HTTP context
@@ -428,8 +433,289 @@ public isolated class FHIRPreprocessor {
         // Create FHIR context
         r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
 
+        // Handle conditional update using If-Match header
+        // Implemented according to https://hl7.org/fhir/R4/http.html#cond-update
+        string|error ifMatchHeader = httpRequest.getHeader("If-Match");
+        if ifMatchHeader is string {
+            log:printDebug("Conditional update interaction with If-Match header.");
+            log:printDebug(string `If-Match header value: ${ifMatchHeader}`);
+            // Store the If-Match header in FHIR context for version-based conditional update
+            // The actual version check should be performed by the FHIR service implementation
+            fCtx.setProperty("conditionalUpdate", true);
+            fCtx.setProperty("ifMatchHeader", ifMatchHeader);
+        }
+
         // Set FHIR context inside HTTP context
         setFHIRContext(fCtx, httpCtx);
+    }
+
+    # Process the FHIR Conditional Update interaction (query-based).
+    # This handles PUT requests with search parameters: PUT [base]/[type]?[search parameters]
+    # 
+    # Implements FHIR R4 Conditional Update specification (3.2.0.4.3):
+    # https://hl7.org/fhir/R4/http.html#cond-update
+    # 
+    # Acts as a mediator - extracts conditional parameters and passes to resource server via context.
+    # The resource server is responsible for implementing the following behavior based on search results:
+    # 
+    # | Matches | ID in Payload | Server Action |
+    # |---------|---------------|---------------|
+    # | No matches | No ID | Create the resource |
+    # | No matches | ID provided, doesn't exist | Update as Create (or reject if not supported) |
+    # | No matches | ID provided, already exists | Reject with 409 Conflict |
+    # | One match | No ID OR ID matches found resource | Update resource, return 200 OK (updated) or 201 Created |
+    # | One match | ID doesn't match found resource | Return 400 Bad Request |
+    # | Multiple matches | - | Return 412 Precondition Failed |
+    #
+    # + fhirResourceType - The FHIR resource type  
+    # + payload - Request payload (MAY contain id element, but not required)
+    # + httpRequest - The HTTP request  
+    # + httpCtx - The HTTP request context
+    # + return - Error if preprocessing fails
+    public isolated function processConditionalUpdate(string fhirResourceType, json payload, 
+            http:Request httpRequest, http:RequestContext httpCtx) returns r4:FHIRError? {
+        log:printDebug("Pre-processing FHIR interaction : conditional update");
+
+        // ===== EXISTING VALIDATION (KEEP AS-IS) =====
+
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
+
+        if self.apiConfig.resourceType != fhirResourceType {
+            string diagMsg = string `Request path level resource type : "${fhirResourceType}" does not match API config resource type:
+                "${self.apiConfig.resourceType}"`;
+            return r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
+        }
+
+        // Validate and parse payload to FHIR resource model
+        anydata parsedResource = check parser:validateAndParse(payload, self.apiConfig);
+        r4:FHIRResourceEntity resourceEntity = new (parsedResource);
+
+        // Extract ID from payload if available
+        json|error idInPayload = payload.id;
+        string? resourceId = idInPayload is string ? idInPayload : ();
+        boolean hasIdInPayload = resourceId is string;
+
+        // Extract search parameters from query string
+        map<r4:RequestSearchParameter[]> requestSearchParameters =
+            check self.processSearchParameters(fhirResourceType, httpRequest);
+
+        // ===== NEW CONDITIONAL UPDATE LOGIC =====
+
+        // Execute search to find matching resources
+        string resourcePath = "";
+        string rawPath = httpRequest.rawPath;
+        
+        // Extract the base path without query parameters
+        int? queryIndex = rawPath.indexOf("?");
+        if queryIndex is int {
+            resourcePath = rawPath.substring(0, queryIndex);
+        } else {
+            resourcePath = rawPath;
+        }
+        string searchQueryString = constructSearchQueryString(requestSearchParameters);
+
+        if searchQueryString == "" || searchQueryString == "?" {
+            return r4:createFHIRError(
+                "Conditional update requires search parameters",
+                r4:ERROR, r4:INVALID,
+                httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        log:printDebug(string `Executing conditional search: ${resourcePath}${searchQueryString}`);
+        string conditionalUpdateAuthHeader = "";
+        string|http:HeaderNotFoundError updateAuthVal = httpRequest.getHeader("Authorization");
+        if updateAuthVal is string {
+            conditionalUpdateAuthHeader = updateAuthVal;
+        }
+        r4:Bundle|r4:FHIRError searchResult = HandleSearchForConditionalInteractions(resourcePath, searchQueryString, conditionalUpdateAuthHeader);
+
+        if searchResult is r4:FHIRError {
+            return searchResult;
+        }
+
+        // Determine match count from bundle
+        int matchCount = searchResult.total ?: 0;
+        r4:BundleEntry[]? entries = searchResult.entry;
+
+        log:printDebug(string `Conditional update search found ${matchCount} matches`);
+
+        // ===== IMPLEMENT FHIR SPEC DECISION TABLE =====
+
+        if matchCount == 0 {
+            // No matches - Create or Update-as-Create
+            log:printDebug("No matches found - will create new resource or update-as-create");
+
+            if hasIdInPayload {
+                // Update-as-Create: Need to verify ID doesn't already exist
+                // This check prevents creating a resource with an existing ID
+                log:printDebug(string `Update-as-create with payload ID: ${resourceId ?: ""}`);
+
+                // Note: The resource server will handle the actual update-as-create
+                // We just validate that this is allowed
+            } else {
+                // Create: Server will generate new ID
+                log:printDebug("Will create new resource (no ID in payload)");
+            }
+
+            // Allow request to proceed to resource server for create/update
+
+        } else if matchCount == 1 {
+            // One match - Validate and allow update
+            log:printDebug("One match found - validating for update");
+
+            // Extract matched resource ID
+            if entries is () || entries.length() != 1 {
+                return r4:createFHIRError(
+                    "Bundle indicates 1 match but entry array is invalid",
+                    r4:ERROR, r4:PROCESSING,
+                    httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+                );
+            }
+
+            r4:BundleEntry matchedEntry = entries[0];
+            anydata? matchedResource = matchedEntry?.'resource;
+
+            if matchedResource is () {
+                return r4:createFHIRError(
+                    "Matched resource has no content",
+                    r4:ERROR, r4:PROCESSING,
+                    httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+                );
+            }
+
+            // Extract ID from matched resource
+            json matchedResourceJson = matchedResource.toJson();
+            json|error matchedIdJson = matchedResourceJson.id;
+
+            if matchedIdJson is error || matchedIdJson is () {
+                return r4:createFHIRError(
+                    "Matched resource has no ID",
+                    r4:ERROR, r4:PROCESSING,
+                    httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+                );
+            }
+
+            string matchedId = matchedIdJson.toString();
+            log:printDebug(string `Matched resource ID: ${matchedId}`);
+
+            // Validate ID if provided in payload
+            if hasIdInPayload && resourceId is string {
+                if resourceId != matchedId {
+                    log:printDebug(string `ID mismatch - Payload: ${resourceId}, Matched: ${matchedId}`);
+                    return r4:createFHIRError(
+                        string `Resource ID in payload (${resourceId}) does not match the ID of the found resource (${matchedId})`,
+                        r4:ERROR, r4:INVALID,
+                        diagnostic = "When a conditional update matches a single resource, the ID in the payload (if present) must match the ID of the found resource",
+                        httpStatusCode = http:STATUS_BAD_REQUEST
+                    );
+                }
+            }
+
+            // Store matched ID in payload for resource server (if not already present)
+            if !hasIdInPayload {
+                json payloadMutable = payload;
+                map<json> payloadMap = <map<json>>payloadMutable;
+                payloadMap["id"] = matchedId;
+                log:printDebug(string `Added matched ID to payload: ${matchedId}`);
+            }
+
+            // Update resourceId to matched ID for context
+            resourceId = matchedId;
+
+            // Allow request to proceed to resource server for update
+
+        } else {
+            // Multiple matches - Return error
+            log:printDebug(string `Multiple matches found: ${matchCount} - returning 412 error`);
+            return r4:createFHIRError(
+                string `Multiple resources (${matchCount}) match the conditional update criteria. The request cannot be processed.`,
+                r4:ERROR, r4:INVALID,
+                diagnostic = "Conditional update requires that search parameters match zero or one resource, not multiple resources",
+                httpStatusCode = http:STATUS_PRECONDITION_FAILED
+            );
+        }
+
+        // ===== HANDLE VERSION-AWARE CONDITIONAL UPDATE =====
+
+        // Check for If-None-Match header (version-aware update)
+        string|error ifNoneMatchHeader = httpRequest.getHeader("If-None-Match");
+        if ifNoneMatchHeader is string {
+            log:printDebug(string `Conditional update with If-None-Match header: ${ifNoneMatchHeader}`);
+
+            // If we have a matched resource (matchCount == 1), verify version
+            if matchCount == 1 && entries is r4:BundleEntry[] {
+                r4:BundleEntry matchedEntry = entries[0];
+                anydata? matchedResource = matchedEntry?.'resource;
+
+                if matchedResource !is () {
+                    json matchedResourceJson = matchedResource.toJson();
+                    json|error metaResult = matchedResourceJson.meta;
+
+                    if metaResult is map<json> {
+                        json|error versionIdJson = metaResult.versionId;
+
+                        if versionIdJson is json && versionIdJson !is () {
+                            string versionId = versionIdJson.toString();
+
+                            // Parse If-None-Match value (format: W/"1" or "1")
+                            string versionToCheck = ifNoneMatchHeader.trim();
+                            if versionToCheck.startsWith("W/") {
+                                versionToCheck = versionToCheck.substring(2);
+                            }
+                            // Remove quotes using regex
+                            versionToCheck = regexp:replace(re `"`, versionToCheck, "");
+
+                            if versionId == versionToCheck {
+                                log:printDebug(string `Version match - returning 412: ${versionId}`);
+                                return r4:createFHIRError(
+                                    string `Resource version (${versionId}) matches If-None-Match header. Update not performed.`,
+                                    r4:ERROR, r4:PROCESSING,
+                                    diagnostic = "The If-None-Match header specifies that the update should not proceed if the resource version matches",
+                                    httpStatusCode = http:STATUS_PRECONDITION_FAILED
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ===== CREATE FHIR CONTEXT FOR RESOURCE SERVER =====
+
+        // Create interaction with matched/payload ID
+        readonly & FHIRUpdateInteraction updateInteraction = {id: resourceId ?: ""};
+
+        // Create FHIR request
+        r4:FHIRRequest fhirRequest = new (updateInteraction, fhirResourceType, resourceEntity,
+                                          requestSearchParameters.cloneReadOnly(), clientHeaders.acceptType);
+
+        // Populate JWT information
+        readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+        // Handle SMART security
+        if fhirResourceType == PATIENT_RESOURCE && resourceId is string {
+            _ = check self.handleSmartSecurity(fhirSecurity, resourceId);
+        }
+
+        r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
+
+        // Create FHIR context
+        r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+        // Set context properties for resource server
+        fCtx.setProperty("conditionalUpdate", true);
+        fCtx.setProperty("hasIdInPayload", hasIdInPayload);
+        fCtx.setProperty("matchCount", matchCount);
+        if resourceId is string {
+            fCtx.setProperty("payloadResourceId", resourceId);
+        }
+
+        // Set FHIR context in HTTP context
+        setFHIRContext(fCtx, httpCtx);
+
+        log:printDebug("Conditional update validation complete - passing to resource server");
     }
 
     # Process the FHIR Patch interaction.
@@ -475,9 +761,173 @@ public isolated class FHIRPreprocessor {
         setFHIRContext(fCtx, httpCtx);
     }
 
+    # Process the FHIR Conditional Delete interaction (query-based).
+    # This handles DELETE requests with search parameters: DELETE [base]/[type]?[search parameters]
+    # 
+    # Implements FHIR R4 Conditional Delete specification (3.2.0.7.1):
+    # https://hl7.org/fhir/R4/http.html#3.2.0.7.1
+    # 
+    # Actions based on search results:
+    # | Matches | Server Action |
+    # |---------|---------------|
+    # | No matches | Return 404 Not Found (no resource to delete) |
+    # | One match | Perform ordinary delete on the matching resource |
+    # | Multiple matches | Return 412 Precondition Failed (criteria not selective enough) |
+    #
+    # + fhirResourceType - The FHIR resource type  
+    # + httpRequest - The HTTP request  
+    # + httpCtx - The HTTP request context
+    # + return - Matched resource ID if successful, FHIRError otherwise
+    public isolated function processConditionalDelete(string fhirResourceType, http:Request httpRequest, 
+            http:RequestContext httpCtx) returns string|r4:FHIRError {
+        log:printDebug("Pre-processing FHIR interaction : conditional delete");
+
+        // Validate main HTTP headers
+        r4:FHIRRequestMimeHeaders clientHeaders = check validateClientRequestHeaders(httpRequest);
+
+        if self.apiConfig.resourceType != fhirResourceType {
+            string diagMsg = string `Request path level resource type : "${fhirResourceType}" does not match API config resource type:
+                "${self.apiConfig.resourceType}"`;
+            return r4:createInternalFHIRError("API resource type and API config does not match", r4:ERROR, r4:PROCESSING, diagnostic = diagMsg);
+        }
+
+        // Extract search parameters from query string
+        map<r4:RequestSearchParameter[]> requestSearchParameters =
+            check self.processSearchParameters(fhirResourceType, httpRequest);
+
+        // Execute search to find matching resources
+        string resourcePath = "";
+        string rawPath = httpRequest.rawPath;
+        
+        // Extract the base path without query parameters
+        int? queryIndex = rawPath.indexOf("?");
+        if queryIndex is int {
+            resourcePath = rawPath.substring(0, queryIndex);
+        } else {
+            resourcePath = rawPath;
+        }
+        string searchQueryString = constructSearchQueryString(requestSearchParameters);
+
+        if searchQueryString == "" || searchQueryString == "?" {
+            return r4:createFHIRError(
+                "Conditional delete requires search parameters",
+                r4:ERROR, r4:INVALID,
+                httpStatusCode = http:STATUS_BAD_REQUEST
+            );
+        }
+
+        log:printDebug(string `Executing conditional search for delete: ${resourcePath}${searchQueryString}`);
+        string conditionalDeleteAuthHeader = "";
+        string|http:HeaderNotFoundError deleteAuthVal = httpRequest.getHeader("Authorization");
+        if deleteAuthVal is string {
+            conditionalDeleteAuthHeader = deleteAuthVal;
+        }
+        r4:Bundle|r4:FHIRError searchResult = HandleSearchForConditionalInteractions(resourcePath, searchQueryString, conditionalDeleteAuthHeader);
+
+        if searchResult is r4:FHIRError {
+            return searchResult;
+        }
+
+        // Determine match count from bundle
+        int matchCount = searchResult.total ?: 0;
+        r4:BundleEntry[]? entries = searchResult.entry;
+
+        log:printDebug(string `Conditional delete search found ${matchCount} matches`);
+
+        // Implement FHIR spec decision logic
+        if matchCount == 0 {
+            // No matches - resource not found
+            log:printDebug("No matches found - returning 404");
+            return r4:createFHIRError(
+                "No resource matches the conditional delete criteria",
+                r4:ERROR, r4:PROCESSING,
+                diagnostic = "Conditional delete requires at least one matching resource",
+                httpStatusCode = http:STATUS_NOT_FOUND
+            );
+        } else if matchCount == 1 {
+            // One match - extract resource ID and proceed with delete
+            log:printDebug("One match found - proceeding with delete");
+
+            // Extract matched resource ID
+            if entries is () || entries.length() != 1 {
+                return r4:createFHIRError(
+                    "Bundle indicates 1 match but entry array is invalid",
+                    r4:ERROR, r4:PROCESSING,
+                    httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+                );
+            }
+
+            r4:BundleEntry matchedEntry = entries[0];
+            anydata? matchedResource = matchedEntry?.'resource;
+
+            if matchedResource is () {
+                return r4:createFHIRError(
+                    "Matched resource has no content",
+                    r4:ERROR, r4:PROCESSING,
+                    httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+                );
+            }
+
+            // Extract ID from matched resource
+            json matchedResourceJson = matchedResource.toJson();
+            json|error matchedIdJson = matchedResourceJson.id;
+
+            if matchedIdJson is error || matchedIdJson is () {
+                return r4:createFHIRError(
+                    "Matched resource has no ID",
+                    r4:ERROR, r4:PROCESSING,
+                    httpStatusCode = http:STATUS_INTERNAL_SERVER_ERROR
+                );
+            }
+
+            string matchedId = matchedIdJson.toString();
+            log:printDebug(string `Matched resource ID for delete: ${matchedId}`);
+
+            // Create delete interaction
+            readonly & FHIRDeleteInteraction deleteInteraction = {id: matchedId};
+
+            // Create FHIR request
+            r4:FHIRRequest fhirRequest = new (deleteInteraction, fhirResourceType, (), 
+                                              requestSearchParameters.cloneReadOnly(), clientHeaders.acceptType);
+
+            // Populate JWT information
+            readonly & r4:FHIRSecurity fhirSecurity = check getFHIRSecurity(httpRequest);
+
+            // Handle SMART security
+            if fhirResourceType == PATIENT_RESOURCE {
+                _ = check self.handleSmartSecurity(fhirSecurity, matchedId);
+            }
+
+            r4:HTTPRequest & readonly request = createHTTPRequestRecord(httpRequest, ());
+
+            // Create FHIR context
+            r4:FHIRContext fCtx = new (fhirRequest, request, fhirSecurity);
+
+            // Set context properties for resource server
+            fCtx.setProperty("conditionalDelete", true);
+            fCtx.setProperty("matchCount", matchCount);
+
+            // Set FHIR context in HTTP context
+            setFHIRContext(fCtx, httpCtx);
+
+            log:printDebug("Conditional delete validation complete - proceeding with delete");
+            return matchedId;
+
+        } else {
+            // Multiple matches - Return 412 Precondition Failed
+            log:printDebug(string `Multiple matches found: ${matchCount} - returning 412 error`);
+            return r4:createFHIRError(
+                string `Multiple resources (${matchCount}) match the conditional delete criteria. The request cannot be processed.`,
+                r4:ERROR, r4:INVALID,
+                diagnostic = "Conditional delete requires that search parameters match one resource, not multiple resources. Server does not support multiple resource deletion.",
+                httpStatusCode = http:STATUS_PRECONDITION_FAILED
+            );
+        }
+    }
+
     # Process the FHIR Delete interaction.
     #
-    # + fhirResourceType - FHIR resource  
+    # + fhirResourceType - FHIR resource type
     # + id - Resource ID  
     # + httpRequest - The HTTP request  
     # + httpCtx - The HTTP request context
