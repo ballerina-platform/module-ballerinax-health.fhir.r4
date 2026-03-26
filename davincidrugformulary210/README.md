@@ -1,3 +1,15 @@
+
+## Overview
+
+Da Vinci Drug Formulary (2.1.0) FHIR R4 model package for formulary and payer coverage exchange. It includes typed resources for formulary items, plans, and graph definitions.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Ballerina records aligned to Da Vinci Drug Formulary profiles
+- Models for formulary, formulary drugs/items, and insurance plan structures
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/davinci-drug-formulary/ implementation guide.
 

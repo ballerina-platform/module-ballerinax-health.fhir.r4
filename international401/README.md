@@ -1,3 +1,17 @@
+## Overview
+
+FHIR International R4 (4.0.1) model package containing base international profile records. It enables type-safe handling of standard FHIR R4 resources across global interoperability use cases.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Comprehensive typed records for international FHIR R4 resources
+- StructureDefinition-linked models for standard resource exchange
+- Useful baseline package for profile-specific extension packages
+- Supports construction and parsing of standards-aligned payloads
+- JSON payload support for FHIR R4 workflows
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/R4/ implementation guide.
 

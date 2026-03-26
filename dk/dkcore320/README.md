@@ -1,3 +1,15 @@
+## Overview
+
+DK Core (3.2.0) FHIR R4 model package for Danish core interoperability. It provides profile-specific records for common Danish patient and clinical data exchange.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Ballerina records mapped to DK Core StructureDefinitions
+- Models for patient, observation, condition, practitioner, and organization
+- Supports type-safe authoring of DK Core compliant payloads
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.dk/fhir/core/ implementation guide.
 

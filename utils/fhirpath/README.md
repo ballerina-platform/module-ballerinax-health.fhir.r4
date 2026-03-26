@@ -1,3 +1,16 @@
+## Overview
+
+FHIRPath utility package for querying and modifying FHIR R4 resources using FHIRPath expressions in Ballerina. It supports extraction, updates, additions, removals, and expression validation.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Evaluate FHIRPath expressions to extract values from resources
+- Update, add, and remove elements using path-based operations
+- Function-based value transformation support during updates
+- Validation support for FHIRPath expressions and resource structures
+
 # FHIR R4 Utils - FHIRPath Package
 
 This package provides utilities for working with FHIR resources using FHIRPath expressions. It allows you to query, update, and manipulate FHIR resources in a type-safe manner using Ballerina.

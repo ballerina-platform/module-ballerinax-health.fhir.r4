@@ -1,3 +1,16 @@
+## Overview
+
+FHIR to C-CDA transformation package for converting FHIR resources into C-CDA (CCD) document structures. It provides the reverse mapping direction for bidirectional C-CDA and FHIR interoperability.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Transforms FHIR content into C-CDA document structures
+- Implements mapper interfaces for multiple FHIR-to-C-CDA resource mappings
+- Supports core mappings such as patient, allergy, condition, and medication
+- Extensible architecture for adding additional mapping implementations
+
 # FHIR to C-CDA Mappings
 
 This module provides functionality to transform FHIR resources to C-CDA (Consolidated Clinical Document Architecture) format using the Continuity of Care Document (CCD) template.

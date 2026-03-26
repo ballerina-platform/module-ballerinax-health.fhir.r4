@@ -1,3 +1,17 @@
+## Overview
+
+FHIR R4 validator package for checking resource payloads against FHIR structure and profile constraints. It validates syntax, cardinality, value domains, and profile rules to produce actionable validation errors.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Validate payloads against base FHIR resource models
+- Validate against specific profile-constrained resource types
+- Checks structure, cardinality, and value-domain constraints
+- Detailed error reporting via FHIR validation error types
+- Ability to enable terminology validation through configuration
+
 # FHIR Validator Package
 
 A FHIR validator is a package designed to check the adherence of FHIR resources to the FHIR specification. Validator ensures that FHIR resources follow the defined rules, constraints, and guidelines specified in the FHIR standard.

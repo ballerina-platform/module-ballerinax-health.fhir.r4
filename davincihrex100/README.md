@@ -1,3 +1,15 @@
+## Overview
+
+Da Vinci HRex (1.0.0) FHIR R4 profile model package for health record exchange and payer-provider interoperability scenarios. It includes typed resources for member matching, consent, and data request exchanges.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Typed models for HRex-specific request and response resources
+- Support for member match and patient demographic exchange patterns
+- Profiles for consent, coverage, task data request, and related artifacts
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/davinci-hrex/ implementation guide.
 

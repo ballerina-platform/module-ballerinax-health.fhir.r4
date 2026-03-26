@@ -1,3 +1,17 @@
+## Overview
+
+FHIR terminology utilities package for interacting with terminology services and terminology resources such as CodeSystem, ValueSet, and ConceptMap. It supports common terminology operations required in clinical interoperability.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Search and read interactions for CodeSystem and ValueSet resources
+- Terminology operations including lookup, expand, validate-code, and subsumes
+- ConceptMap-based translate support for cross-value-set mappings
+- Utilities for integrating external terminology services
+- Designed for standards-compliant terminology workflows in FHIR R4
+
 # FHIR Terminology Package
 
 A package containing utilities to perform search, read interactions on FHIR terminologies, including code systems and value sets.
