@@ -5,6 +5,7 @@ version = "${project.version}"
 distribution = "${ballerina.version}"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "service"]
+readme = "README.md"
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
 
 [build-options]

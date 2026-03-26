@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Ballerina Debug",
+            "type": "ballerina",
+            "request": "launch",
+            "programArgs": [],
+            "commandOptions": [],
+            "env": {}
+        },
+        {
+            "name": "Ballerina Test",
+            "type": "ballerina",
+            "request": "launch",
+            "debugTests": true,
+            "programArgs": [],
+            "commandOptions": [],
+            "env": {}
+        },
+        {
+            "name": "Ballerina Remote",
+            "type": "ballerina",
+            "request": "attach",
+            "debuggeeHost": "127.0.0.1",
+            "debuggeePort": "5005"
+        }
+    ]
+}

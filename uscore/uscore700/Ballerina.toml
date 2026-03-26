@@ -1,0 +1,10 @@
+[package]
+org = "ballerinax"
+name = "health.fhir.r4.uscore700"
+version = "3.0.1"
+distribution = "2201.12.8"
+authors = ["Ballerina"]
+keywords = ["Healthcare", "FHIR", "R4", "uscore700", "Vendor/Other", "Area/Healthcare", "Type/Library"]
+readme = "README.md"
+repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+
