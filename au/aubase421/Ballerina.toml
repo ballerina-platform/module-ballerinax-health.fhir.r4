@@ -4,6 +4,6 @@ name = "health.fhir.r4.aubase421"
 version = "3.0.1"
 distribution = "2201.12.2"
 authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "R4", "Name/AU Base (4.2.1)", "aubase421", "Vendor/Other", "Area/Healthcare", "Type/Library"]
+keywords = ["Healthcare", "FHIR", "R4", "Name/FHIR AU Base (4.2.1)", "aubase421", "Vendor/Other", "Area/Healthcare", "Type/Library"]
 icon = "icon.png"
 readme = "README.md"

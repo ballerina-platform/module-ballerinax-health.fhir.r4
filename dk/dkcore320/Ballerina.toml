@@ -4,5 +4,5 @@ name = "health.fhir.r4.dkcore320"
 version = "1.0.0"
 distribution = "2201.12.3"
 authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "R4", "Name/DK Core (3.2.0)", "dkcore320"]
+keywords = ["Healthcare", "FHIR", "R4", "Name/FHIR DK Core (3.2.0)", "dkcore320"]
 
