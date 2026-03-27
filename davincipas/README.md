@@ -1,3 +1,16 @@
+## Overview
+
+Da Vinci PAS FHIR R4 profile package for prior authorization support. It provides typed records for claim, claim response, inquiry, task, and communication-based PAS workflows.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Profile-aligned Ballerina types for PAS exchange patterns
+- Covers claim submission, inquiry, and response resource models
+- Includes task and communication resources used in PAS processes
+- Enables type-safe prior authorization payload construction
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/davinci-pas/ implementation guide.
 

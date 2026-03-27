@@ -1,3 +1,16 @@
+## Overview
+
+Patient Corrections (1.0.0) FHIR R4 model package for patient-initiated correction workflows. It provides typed resources for correction tasks, communication threads, and correction bundles.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Typed records aligned to patient-corrections IG profiles
+- Models for correction task lifecycle and messaging
+- Bundle profile support for correction exchange packaging
+- Helps implement correction workflows with type safety
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/uv/patient-corrections/ implementation guide.
 

@@ -1,3 +1,15 @@
+## Overview
+
+FHIR R4 parser package for converting raw FHIR JSON payloads into typed Ballerina records. It supports parsing against base resource types and specific profile types, with optional validation flows.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Parse JSON payloads into FHIR base or profile-specific record types
+- Profile-targeted parsing via explicit expected resource type
+- `parseWithValidation` flow to combine parsing and validation
+
 # FHIR R4 Parser Module
 
 ### Sample Usage

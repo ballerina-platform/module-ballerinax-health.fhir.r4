@@ -1,3 +1,17 @@
+## Overview
+
+CARIN Blue Button (2.0.0) FHIR R4 profile model package for payer-to-consumer data exchange. It provides typed records for claims, coverage, and explanation-of-benefit workflows.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Profile-based records for CARIN BB resources
+- Coverage and EOB variants represented as dedicated Ballerina types
+- Typed models for beneficiary, organization, and practitioner contexts
+- Helps produce CARIN BB compatible JSON payloads
+- Works with parser/validator packages for end-to-end processing
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/carin-bb/ implementation guide.
 

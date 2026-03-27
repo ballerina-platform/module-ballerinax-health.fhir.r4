@@ -1,3 +1,17 @@
+## Overview
+
+FHIR R4 service type package for building FHIR APIs in Ballerina. It provides a listener and runtime capabilities to validate requests, process search parameters, and handle API-level FHIR concerns.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- FHIR listener and service type abstractions for rapid API development
+- Built-in validation for search parameters and request payloads
+- Validation for content-related HTTP headers
+- Hooks for pluggable post-processing logic
+- Consistent FHIR error handling with OperationOutcome responses
+
 Package containing the FHIR R4 service type that can be used for creating FHIR APIs
 
 # FHIR Service Type

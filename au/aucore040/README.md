@@ -1,3 +1,17 @@
+## Overview
+
+AU Core (0.4.0) FHIR R4 model package for Australian core clinical interoperability. It provides profile-specific records for exchanging AU Core conformant resources.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Ballerina records mapped to AU Core profile definitions
+- Models for key AU Core domains such as patient, encounter, medication, and immunization
+- Type-safe construction of AU Core compliant payloads
+- Interoperable with the base `r4` package and validation tooling
+- JSON payload oriented resource modeling
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org.au/fhir/core/ implementation guide.
 

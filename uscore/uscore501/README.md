@@ -1,3 +1,14 @@
+## Overview
+
+US Core (5.0.1) FHIR R4 model package for representing US Core profile-constrained resources in Ballerina. It helps implement US interoperability scenarios with strongly typed records.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Typed models mapped to US Core 5.0.1 StructureDefinitions
+- Supports broad US Core resource coverage across clinical domains
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/core/ implementation guide.
 

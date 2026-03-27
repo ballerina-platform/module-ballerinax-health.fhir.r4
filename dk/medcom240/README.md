@@ -1,3 +1,15 @@
+## Overview
+
+MedCom Core (2.4.0) FHIR R4 model package for Danish MedCom interoperability workflows. It offers profile-based records for patient, encounter, observation, and care-team related exchanges.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Typed models aligned with MedCom core profiles
+- Includes key clinical and administrative resource profile records
+- Supports safer payload construction for MedCom integrations
+
 Ballerina package containing FHIR resource data models
 compliant with http://medcomfhir.dk/ig/core/ implementation guide.
 

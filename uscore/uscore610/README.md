@@ -1,3 +1,14 @@
+## Overview
+
+US Core (6.1.0) FHIR R4 profile package for US interoperability workflows. It provides updated typed resource models for US Core constrained exchange patterns.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Ballerina records aligned to US Core 6.1.0 definitions
+- Includes models for observations, diagnostics, requests, and practitioner roles
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/core/ implementation guide.
 

@@ -1,3 +1,16 @@
+## Overview
+
+FHIR R4 de-identification utility package that applies configurable FHIRPath-driven rules to redact, mask, hash, or encrypt sensitive data in FHIR resources and bundles.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- FHIRPath-based rule engine for de-identifying FHIR resources
+- Built-in operations: redact, mask, hash, and encrypt
+- Support for custom de-identification functions
+- Optional validation for input and output FHIR resources
+
 # FHIR R4 Utils - De-Identification Package
 
 A highly extensible Ballerina package for de-identifying FHIR resources using FHIRPath expressions. This utility provides built-in de-identification operations and also allows developers to implement custom de-identification functions while maintaining FHIR compliance.

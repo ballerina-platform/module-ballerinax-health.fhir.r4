@@ -1,3 +1,16 @@
+## Overview
+
+JSON merge utility package for deep and strategy-driven merging of JSON objects, including FHIR-aware merge helpers. It is designed for flexible merge workflows such as resource reconciliation and configuration overlays.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Deep recursive merge support for nested JSON structures
+- Configurable array merge modes
+- FHIR-oriented merge helpers for resources and bundles
+- Merge flow with type mismatch handling
+
 # JSON Merge Utility
 
 This module provides a robust utility for merging two JSON objects using Ballerina, supporting advanced strategies such as key-based array merging, composite keys, and deep recursive merging. It is designed for use cases like FHIR resource merging, configuration overlays, and general-purpose JSON manipulation.

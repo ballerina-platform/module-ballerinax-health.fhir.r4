@@ -1,3 +1,15 @@
+## Overview
+
+US Core (4.0.0) FHIR R4 profile package for US healthcare interoperability use cases. It contains type-safe models for profile-constrained resources defined by the US Core guide.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Profile-aligned records for US Core 4.0.0 resources
+- Covers vital signs, care plans, medications, and related resource types
+- Type-safe payload construction for US Core-compliant integrations
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/core/ implementation guide.
 

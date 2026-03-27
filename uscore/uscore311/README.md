@@ -1,3 +1,14 @@
+## Overview
+
+US Core (3.1.1) FHIR R4 model package with profile-based resource records for US interoperability requirements. It provides typed models for US Core constrained clinical data exchange.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Ballerina records aligned with US Core 3.1.1 profiles
+- Typed support for common US Core clinical and administrative resources
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/core/ implementation guide.
 

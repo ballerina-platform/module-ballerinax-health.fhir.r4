@@ -1,3 +1,16 @@
+## Overview
+
+AU Base (4.1.0) FHIR R4 data model package for Australia-specific interoperability. It provides Ballerina records aligned with AU Base profiles so applications can build and validate payloads that follow AU implementation guidance.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Strongly typed Ballerina records for AU Base profile resources
+- Ready-to-use models for patient, practitioner, medication, and diagnostic workflows
+- Designed to work with the `r4`, parser, and validator packages
+- JSON-first profile models for AU FHIR integrations
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org.au/fhir/ implementation guide.
 

@@ -1,5 +1,16 @@
-Ballerina package containing CDS data models
-compliant with https://cds-hooks.hl7.org/2.0/ implementation guide.
+## Overview
+
+CDS Hooks (2.0) package for building Clinical Decision Support integrations in Ballerina. It defines request, context, response, card, and action models used in CDS workflows defined in the CDS Hooks implementation guide(https://cds-hooks.hl7.org/2.0/).
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Typed request and response models for CDS Hooks interactions
+- Predefined context records for common hook types
+- Structured card, suggestion, action, and link representations
+- Simplifies implementation of CDS services and clients
+
 
 # CDS package
 

@@ -1,3 +1,15 @@
+## Overview
+
+Da Vinci PDEX Plan-Net (1.2.0) FHIR R4 model package for provider network directory interoperability. It contains typed records for network, organization, practitioner, location, and endpoint data.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Record models aligned to Plan-Net profile definitions
+- Supports provider directory entities and their relationships
+- Includes network, affiliation, role, and insurance plan profile types
+
 Ballerina package containing FHIR resource data models
 compliant with http://hl7.org/fhir/us/davinci-pdex-plan-net/ implementation guide.
 

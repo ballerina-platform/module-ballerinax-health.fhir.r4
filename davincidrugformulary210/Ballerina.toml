@@ -1,9 +1,9 @@
 [package]
 authors = ["Ballerina"]
 distribution = "2201.12.2"
-keywords = ["Healthcare", "FHIR", "R4", "health_fhir_r4_davincidrugformulary210", "Vendor/Other", "Area/Healthcare", "Type/Library"]
+keywords = ["Healthcare", "FHIR", "R4", "Name/FHIR Da Vinci Drug Formulary (2.1.0)", "health_fhir_r4_davincidrugformulary210", "Vendor/Other", "Area/Healthcare", "Type/Library"]
 name = "health.fhir.r4.davincidrugformulary210"
 org = "ballerinax"
 version = "2.0.1"
 icon = "icon.png"
-
+readme = "README.md"

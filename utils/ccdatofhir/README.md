@@ -1,3 +1,16 @@
+## Overview
+
+C-CDA to FHIR mapping utility package for transforming C-CDA clinical content into FHIR R4 resources. It implements predefined mappings aligned with the C-CDA on FHIR implementation guidance.
+
+> **Trademark Notice:** FHIR® and the FHIR® logo are the registered trademarks of [Health Level Seven International](https://www.hl7.org/) and their use does not constitute endorsement by HL7®.
+
+### Key Features
+
+- Prebuilt mappings from key C-CDA sections to US Core FHIR profiles
+- Transforms C-CDA payloads into FHIR R4 bundle-oriented outputs
+- Covers common domains including allergies, conditions, medications, and immunizations
+- Ability to customize the mapping to fit the specific needs of the application
+
 # C-CDA to FHIR Package
 
 Package containing C-CDA to FHIR pre-built mapping functionalities. 

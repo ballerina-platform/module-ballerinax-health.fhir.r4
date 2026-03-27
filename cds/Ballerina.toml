@@ -4,7 +4,7 @@ name = "health.fhir.cds"
 version = "2.0.4"
 distribution = "2201.12.2"
 authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "CDS", "CRD", "Vendor/Other", "Area/Healthcare", "Type/Library"]
-repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
+keywords = ["Healthcare", "FHIR", "Name/CDS Hooks (2.0)", "CDS", "CRD", "Vendor/Other", "Area/Healthcare", "Type/Library"]
 icon = "icon.png"
-
+readme = "README.md"
+repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
