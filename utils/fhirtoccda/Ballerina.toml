@@ -3,6 +3,7 @@ org = "ballerinax"
 name = "health.fhir.r4utils.fhirtoccda"
 version = "0.1.0"
 distribution = "2201.12.3"
+keywords = ["Healthcare", "FHIR", "R4", "Name/FHIR to C-CDA", "Utils", "FHIRtoCCDA", "Vendor/Other", "Area/Healthcare", "Type/Library"]
 
 [build-options]
 observabilityIncluded = true

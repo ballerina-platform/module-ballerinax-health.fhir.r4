@@ -4,7 +4,7 @@ name = "health.fhirr4"
 version = "${project.version}"
 distribution = "${ballerina.version}"
 authors = ["Ballerina"]
-keywords = ["Healthcare", "FHIR", "R4", "service"]
+keywords = ["Healthcare", "FHIR", "R4", "Name/FHIR R4 Service", "service"]
 readme = "README.md"
 repository = "https://github.com/ballerina-platform/module-ballerinax-health.fhir.r4"
 
