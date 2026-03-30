@@ -44,7 +44,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "crypto"
-version = "2.9.2"
+version = "2.10.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "time"}
@@ -52,8 +52,26 @@ dependencies = [
 
 [[package]]
 org = "ballerina"
+name = "data.csv"
+version = "0.8.2"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "log"}
+]
+
+[[package]]
+org = "ballerina"
 name = "data.jsondata"
 version = "1.1.3"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "lang.object"}
+]
+
+[[package]]
+org = "ballerina"
+name = "data.xmldata"
+version = "1.6.2"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.object"}
@@ -73,18 +91,23 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "ftp"
-version = "2.14.1"
+version = "2.16.0"
 dependencies = [
+	{org = "ballerina", name = "crypto"},
+	{org = "ballerina", name = "data.csv"},
+	{org = "ballerina", name = "data.jsondata"},
+	{org = "ballerina", name = "data.xmldata"},
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "log"},
-	{org = "ballerina", name = "task"}
+	{org = "ballerina", name = "task"},
+	{org = "ballerina", name = "time"}
 ]
 
 [[package]]
 org = "ballerina"
 name = "http"
-version = "2.14.7"
+version = "2.14.9"
 dependencies = [
 	{org = "ballerina", name = "auth"},
 	{org = "ballerina", name = "cache"},
@@ -246,7 +269,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "mime"
-version = "2.12.0"
+version = "2.12.1"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
@@ -287,7 +310,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "task"
-version = "2.11.0"
+version = "2.11.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "time"},
@@ -311,7 +334,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "time"
-version = "2.7.0"
+version = "2.8.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -319,7 +342,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "url"
-version = "2.6.0"
+version = "2.6.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -361,7 +384,7 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "health.clients.fhir"
-version = "3.0.0"
+version = "3.0.6"
 dependencies = [
 	{org = "ballerina", name = "file"},
 	{org = "ballerina", name = "ftp"},
@@ -383,7 +406,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4"
-version = "6.2.2"
+version = "6.2.4"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},
@@ -404,7 +427,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.international401"
-version = "4.0.0"
+version = "4.0.3"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "log"},
@@ -434,7 +457,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.uscore700"
-version = "3.0.0"
+version = "3.0.1"
 scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
@@ -449,7 +472,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4.validator"
-version = "6.0.1"
+version = "6.0.2"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "http"},

@@ -1,7 +1,7 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4.validator"
-version = "6.0.1"
+version = "6.0.2"
 distribution = "2201.12.8"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Name/FHIR R4 Validator", "Validator", "Vendor/Other", "Area/Healthcare", "Type/Library"]
