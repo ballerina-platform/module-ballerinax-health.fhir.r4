@@ -6,4 +6,4 @@ distribution = "2201.12.2"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Name/FHIR De-identify", "Utils", "de-identify", "Vendor/Other", "Area/Healthcare", "Type/Library"]
 icon = "icon.png"
-
+readme = "README.md"
