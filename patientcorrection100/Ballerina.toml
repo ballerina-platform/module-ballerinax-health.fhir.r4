@@ -5,4 +5,5 @@ version = "1.0.0"
 distribution = "2201.12.6"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "FHIR Patient Corrections (1.0.0)", "health_fhir_r4_patient_corrections100"]
-
+icon = "icon.png"
+readme = "README.md"
