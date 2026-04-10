@@ -732,7 +732,7 @@ public isolated class FHIRPreprocessor {
             // Decode search parameter key and seperate name and modifier
             // Refer: http://hl7.org/fhir/search.html#modifiers
             string[]? paramValues = requestQueryParams[originalParamName];
-            if paramValues is () || paramValues.length() == 0 {
+            if paramValues is () || paramValues.length() == 0 || paramValues[0] == "" {
                 return r4:createFHIRError(string `Search parameter ${originalParamName} has no value`, r4:ERROR, r4:PROCESSING,
                         httpStatusCode = http:STATUS_BAD_REQUEST);
             }
