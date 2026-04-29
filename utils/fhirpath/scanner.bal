@@ -63,8 +63,17 @@ isolated function createScannerState(string sourceCode) returns ScannerState {
             "or": OR,
             "xor": XOR,
             "and": AND,
+            "implies": IMPLIES,
             "true": TRUE,
-            "false": FALSE
+            "false": FALSE,
+            "div": DIV,
+            "mod": MOD,
+            "is": IS,
+            "as": AS,
+            "in": IN,
+            "contains": CONTAINS,
+            "asc": ASC,
+            "desc": DESC
         }
     };
 }
@@ -95,7 +104,6 @@ isolated function scanTokens(string sourceCode) returns FHIRPathScannerError|Fhi
 // ========================================
 
 # Scans a single token from the current position in the source code.
-# Identifies the token type based on the current character and advances the scanner.
 #
 # + state - The current scanner state
 # + return - Updated scanner state on success, or a FhirpathScannerError for unexpected characters
@@ -112,25 +120,86 @@ isolated function scanToken(ScannerState state) returns FHIRPathScannerError|Sca
         return addToken(newState, LEFT_BRACKET);
     } else if c == "]" {
         return addToken(newState, RIGHT_BRACKET);
+    } else if c == "{" {
+        return addToken(newState, LEFT_BRACE);
+    } else if c == "}" {
+        return addToken(newState, RIGHT_BRACE);
     } else if c == "," {
         return addToken(newState, COMMA);
     } else if c == "." {
         return addToken(newState, DOT);
+    } else if c == "+" {
+        return addToken(newState, PLUS);
+    } else if c == "-" {
+        return addToken(newState, MINUS);
+    } else if c == "*" {
+        return addToken(newState, STAR);
+    } else if c == "/" {
+        // Line comment: // ...
+        [boolean, ScannerState] slashMatch = matchChar(newState, "/");
+        if slashMatch[0] {
+            newState = slashMatch[1];
+            while peekScanner(newState) != "\n" && !isScannerAtEnd(newState) {
+                [string, ScannerState] skipResult = advanceScanner(newState);
+                newState = skipResult[1];
+            }
+            return newState;
+        }
+        // Block comment: /* ... */
+        [boolean, ScannerState] starMatch = matchChar(newState, "*");
+        if starMatch[0] {
+            newState = starMatch[1];
+            while !isScannerAtEnd(newState) {
+                [string, ScannerState] blockResult = advanceScanner(newState);
+                string blockChar = blockResult[0];
+                newState = blockResult[1];
+                if blockChar == "*" && peekScanner(newState) == "/" {
+                    [string, ScannerState] closeResult = advanceScanner(newState);
+                    newState = closeResult[1];
+                    break;
+                }
+            }
+            return newState;
+        }
+        return addToken(newState, SLASH);
+    } else if c == "&" {
+        return addToken(newState, AMPERSAND);
+    } else if c == "|" {
+        return addToken(newState, PIPE);
+    } else if c == "~" {
+        return addToken(newState, TILDE);
+    } else if c == "%" {
+        return addToken(newState, PERCENT);
     } else if c == "=" {
         return addToken(newState, EQUAL);
     } else if c == "!" {
-        [boolean, ScannerState] matchResult = matchChar(newState, "=");
-        if matchResult[0] {
-            return addToken(matchResult[1], BANG_EQUAL);
-        } else {
-            return error FHIRPathScannerError("Unexpected character '!'.",
-                position = newState.current);
+        [boolean, ScannerState] tildeMatch = matchChar(newState, "~");
+        if tildeMatch[0] {
+            return addToken(tildeMatch[1], BANG_TILDE);
         }
-    } else if c == " " || c == "\r" || c == "\t" {
-        // Ignore whitespace
-        return newState;
-    } else if c == "\n" {
-        // Ignore newline
+        [boolean, ScannerState] eqMatch = matchChar(newState, "=");
+        if eqMatch[0] {
+            return addToken(eqMatch[1], BANG_EQUAL);
+        }
+        return error FHIRPathScannerError("Unexpected character '!'. Expected '!=' or '!~'.",
+            position = newState.current);
+    } else if c == "<" {
+        [boolean, ScannerState] eqMatch = matchChar(newState, "=");
+        if eqMatch[0] {
+            return addToken(eqMatch[1], LESS_EQUAL);
+        }
+        return addToken(newState, LESS_THAN);
+    } else if c == ">" {
+        [boolean, ScannerState] eqMatch = matchChar(newState, "=");
+        if eqMatch[0] {
+            return addToken(eqMatch[1], GREATER_EQUAL);
+        }
+        return addToken(newState, GREATER_THAN);
+    } else if c == "$" {
+        return scanDollarSpecial(newState);
+    } else if c == "@" {
+        return scanDateTimeLiteral(newState);
+    } else if c == " " || c == "\r" || c == "\t" || c == "\n" {
         return newState;
     } else if c == "'" {
         return scanString(newState);
@@ -144,6 +213,90 @@ isolated function scanToken(ScannerState state) returns FHIRPathScannerError|Sca
         return error FHIRPathScannerError("Unexpected character.",
             position = newState.current);
     }
+}
+
+// ========================================
+// SPECIAL TOKEN SCANNERS
+// ========================================
+
+# Scans $this, $index, or $total special invocation tokens.
+# Called after consuming the '$' character.
+#
+# + state - The scanner state positioned after '$'
+# + return - Updated state with DOLLAR_THIS, DOLLAR_INDEX, or DOLLAR_TOTAL token, or an error
+isolated function scanDollarSpecial(ScannerState state) returns FHIRPathScannerError|ScannerState {
+    ScannerState newState = state;
+    // Collect alphanumeric chars to form the name after $
+    while isAlphaNumeric(peekScanner(newState)) {
+        [string, ScannerState] r = advanceScanner(newState);
+        newState = r[1];
+    }
+    string text = newState.sourceCode.substring(newState.startIndex, newState.current);
+    if text == "$this" {
+        return addToken(newState, DOLLAR_THIS);
+    } else if text == "$index" {
+        return addToken(newState, DOLLAR_INDEX);
+    } else if text == "$total" {
+        return addToken(newState, DOLLAR_TOTAL);
+    }
+    return error FHIRPathScannerError(string `Unknown special variable '${text}'.`,
+        position = newState.startIndex);
+}
+
+# Scans a date, datetime, or time literal that starts with '@'.
+# Called after consuming the '@' character.
+# Format: @YYYY-MM-DD, @YYYY-MM-DDTHH:MM:SS[.fff][Z|+HH:MM], @THH:MM:SS
+#
+# + state - The scanner state positioned after '@'
+# + return - Updated state with DATE, DATETIME, or TIME token, or an error
+isolated function scanDateTimeLiteral(ScannerState state) returns FHIRPathScannerError|ScannerState {
+    ScannerState newState = state;
+    // Collect all characters that can be part of date/time: digits, -, :, T, Z, +
+    // For '.', only consume when the next char is a digit (milliseconds separator);
+    // otherwise it is a member-access dot and must remain as a separate token.
+    // Use keepScanning flag instead of break to avoid nested-if break semantics issues.
+    boolean keepScanning = true;
+    while !isScannerAtEnd(newState) && keepScanning {
+        string ch = peekScanner(newState);
+        if isDigit(ch) || ch == "-" || ch == ":" || ch == "T" || ch == "Z" || ch == "+" {
+            [string, ScannerState] r = advanceScanner(newState);
+            newState = r[1];
+        } else if ch == "." && isDigit(peekScannerNext(newState)) {
+            // '.' followed by a digit: part of fractional seconds (e.g. .000)
+            [string, ScannerState] r = advanceScanner(newState);
+            newState = r[1];
+        } else {
+            // Any other character (including member-access dot): stop here
+            keepScanning = false;
+        }
+    }
+    string text = newState.sourceCode.substring(newState.startIndex, newState.current);
+    // text includes the leading '@'
+    string afterAt = text.substring(1);
+
+    TokenType tokenType;
+    if afterAt.startsWith("T") {
+        tokenType = TIME;
+    } else if afterAt.includes("T") {
+        tokenType = DATETIME;
+    } else {
+        tokenType = DATE;
+    }
+
+    if tokenType == TIME {
+        // TIME literals cannot carry timezone (Z, +offset, -offset)
+        string timeContent = afterAt.substring(1); // strip leading 'T'
+        foreach int i in 0 ..< timeContent.length() {
+            string ch = timeContent.substring(i, i + 1);
+            if ch == "Z" || ch == "+" || ch == "-" {
+                return error FHIRPathScannerError(
+                    "Invalid time literal: time literals cannot include a timezone designator.",
+                    position = newState.startIndex);
+            }
+        }
+    }
+
+    return addTokenWithLiteral(newState, tokenType, text);
 }
 
 # Scans an identifier token starting from the current position.
@@ -173,7 +326,6 @@ isolated function scanIdentifier(ScannerState state) returns ScannerState {
 isolated function scanDelimitedIdentifier(ScannerState state) returns FHIRPathScannerError|ScannerState {
     ScannerState newState = state;
     while peekScanner(newState) != "`" && !isScannerAtEnd(newState) {
-        // Handle escape sequences
         if peekScanner(newState) == "\\" {
             [string, ScannerState] escResult = advanceScanner(newState);
             newState = escResult[1];
@@ -192,17 +344,15 @@ isolated function scanDelimitedIdentifier(ScannerState state) returns FHIRPathSc
             position = newState.current);
     }
 
-    // The closing `
     [string, ScannerState] result = advanceScanner(newState);
     newState = result[1];
 
-    // Trim the surrounding backticks
     string value = newState.sourceCode.substring(newState.startIndex + 1, newState.current - 1);
     return addTokenWithLiteral(newState, DELIMITED_IDENTIFIER, value);
 }
 
-# Scans a numeric literal (integer or decimal).
-# Handles both integer values and floating-point numbers with decimal parts.
+# Scans a numeric literal (integer, decimal, or long number).
+# Handles integer, floating-point, and L-suffixed long numbers.
 #
 # + state - The current scanner state (positioned at the first digit)
 # + return - Updated scanner state with the number token added
@@ -215,20 +365,38 @@ isolated function scanNumber(ScannerState state) returns ScannerState {
 
     // Look for a fractional part
     if peekScanner(newState) == "." && isDigit(peekScannerNext(newState)) {
-        // Consume the "."
         [string, ScannerState] result = advanceScanner(newState);
         newState = result[1];
-
         while isDigit(peekScanner(newState)) {
             [string, ScannerState] advResult = advanceScanner(newState);
             newState = advResult[1];
         }
     }
 
+    // Check for long number suffix 'L'
+    if peekScanner(newState) == "L" {
+        [string, ScannerState] lResult = advanceScanner(newState);
+        newState = lResult[1];
+        string longStr = newState.sourceCode.substring(newState.startIndex, newState.current - 1);
+        int|error longVal = int:fromString(longStr);
+        if longVal is int {
+            return addTokenWithLiteral(newState, LONGNUMBER, longVal);
+        }
+        return addToken(newState, LONGNUMBER);
+    }
+
     string numberStr = newState.sourceCode.substring(newState.startIndex, newState.current);
-    float|error num = float:fromString(numberStr);
-    if num is float {
-        return addTokenWithLiteral(newState, NUMBER, num);
+    // Store as decimal if it has a fractional part, int otherwise
+    if numberStr.includes(".") {
+        decimal|error decVal = decimal:fromString(numberStr);
+        if decVal is decimal {
+            return addTokenWithLiteral(newState, NUMBER, decVal);
+        }
+    } else {
+        int|error intVal = int:fromString(numberStr);
+        if intVal is int {
+            return addTokenWithLiteral(newState, NUMBER, intVal);
+        }
     }
     return newState;
 }
@@ -241,7 +409,6 @@ isolated function scanNumber(ScannerState state) returns ScannerState {
 isolated function scanString(ScannerState state) returns FHIRPathScannerError|ScannerState {
     ScannerState newState = state;
     while peekScanner(newState) != "'" && !isScannerAtEnd(newState) {
-        // Handle escape sequences
         if peekScanner(newState) == "\\" {
             [string, ScannerState] escResult = advanceScanner(newState);
             newState = escResult[1];
@@ -260,13 +427,78 @@ isolated function scanString(ScannerState state) returns FHIRPathScannerError|Sc
             position = newState.current);
     }
 
-    // The closing '
     [string, ScannerState] result = advanceScanner(newState);
     newState = result[1];
 
-    // Trim the surrounding quotes
-    string value = newState.sourceCode.substring(newState.startIndex + 1, newState.current - 1);
+    // Process escape sequences in the string value
+    string raw = newState.sourceCode.substring(newState.startIndex + 1, newState.current - 1);
+    string value = processStringEscapes(raw);
     return addTokenWithLiteral(newState, STRING, value);
+}
+
+# Processes escape sequences in a raw string value.
+# Handles \\, \', \", \n, \r, \t, \f, \uXXXX sequences.
+#
+# + raw - The raw string with potential escape sequences
+# + return - The processed string with escape sequences replaced
+isolated function processStringEscapes(string raw) returns string {
+    string result = "";
+    int i = 0;
+    while i < raw.length() {
+        string ch = raw.substring(i, i + 1);
+        if ch == "\\" && i + 1 < raw.length() {
+            string next = raw.substring(i + 1, i + 2);
+            if next == "n" {
+                result += "\n";
+                i += 2;
+            } else if next == "r" {
+                result += "\r";
+                i += 2;
+            } else if next == "t" {
+                result += "\t";
+                i += 2;
+            } else if next == "f" {
+                result += "\u{000C}";
+                i += 2;
+            } else if next == "\\" {
+                result += "\\";
+                i += 2;
+            } else if next == "'" {
+                result += "'";
+                i += 2;
+            } else if next == "\"" {
+                result += "\"";
+                i += 2;
+            } else if next == "`" {
+                result += "`";
+                i += 2;
+            } else if next == "/" {
+                result += "/";
+                i += 2;
+            } else if next == "u" && i + 6 <= raw.length() {
+                string hex = raw.substring(i + 2, i + 6);
+                int|error codePoint = int:fromHexString(hex);
+                if codePoint is int {
+                    string:Char|error ch2 = string:fromCodePointInt(codePoint);
+                    if ch2 is string:Char {
+                        result += ch2;
+                    } else {
+                        result += "\\u" + hex;
+                    }
+                } else {
+                    result += "\\u" + hex;
+                }
+                i += 6;
+            } else {
+                result += ch;
+                i += 1;
+            }
+        } else {
+            result += ch;
+            i += 1;
+        }
+    }
+    return result;
 }
 
 // ========================================
@@ -405,7 +637,7 @@ isolated function addToken(ScannerState state, TokenType tokenType) returns Scan
 #
 # + state - The current scanner state
 # + tokenType - The type of token to add
-# + literal - The literal value associated with the token (e.g., number value, string content)
+# + literal - The literal value associated with the token (e.g., numeric value, string content)
 # + return - Updated scanner state with the token added
 isolated function addTokenWithLiteral(ScannerState state, TokenType tokenType, anydata? literal) returns ScannerState {
     string text = state.sourceCode.substring(state.startIndex, state.current);

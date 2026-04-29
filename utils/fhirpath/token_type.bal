@@ -17,29 +17,72 @@
 // TokenType enum
 enum TokenType {
     // Single-character tokens
-    LEFT_PAREN, // (
-    RIGHT_PAREN, // )
-    LEFT_BRACKET, // [
+    LEFT_PAREN,    // (
+    RIGHT_PAREN,   // )
+    LEFT_BRACKET,  // [
     RIGHT_BRACKET, // ]
-    DOT, // .
-    COMMA, // ,
+    LEFT_BRACE,    // {
+    RIGHT_BRACE,   // }
+    DOT,           // .
+    COMMA,         // ,
 
-    // One or two character tokens
-    EQUAL, // =
-    BANG_EQUAL, // !=
+    // Arithmetic / string operators
+    PLUS,          // +
+    MINUS,         // -
+    STAR,          // *
+    SLASH,         // /
+    AMPERSAND,     // &
+    PIPE,          // |
+    TILDE,         // ~
+    PERCENT,       // %
+
+    // Comparison operators (one or two chars)
+    EQUAL,         // =
+    BANG_EQUAL,    // !=
+    BANG_TILDE,    // !~
+    LESS_THAN,     // <
+    GREATER_THAN,  // >
+    LESS_EQUAL,    // <=
+    GREATER_EQUAL, // >=
 
     // Literals
     IDENTIFIER,
     DELIMITED_IDENTIFIER, // `identifier`
     STRING,
     NUMBER,
+    LONGNUMBER,    // [0-9]+'L'
+    DATE,          // @YYYY(-MM(-DD)?)?
+    DATETIME,      // @YYYY-MM-DDTHH:...
+    TIME,          // @THH:...
 
-    // Keywords
+    // Keywords — boolean logic
     OR,
     XOR,
     AND,
+    IMPLIES,
+
+    // Keywords — boolean literals
     TRUE,
     FALSE,
+
+    // Keywords — type / membership
+    IS,
+    AS,
+    IN,
+    CONTAINS,
+
+    // Keywords — arithmetic
+    DIV,
+    MOD,
+
+    // Keywords — sort direction
+    ASC,
+    DESC,
+
+    // Special invocation tokens
+    DOLLAR_THIS,   // $this
+    DOLLAR_INDEX,  // $index
+    DOLLAR_TOTAL,  // $total
 
     EOF
 }

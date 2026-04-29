@@ -26,7 +26,8 @@
 
 # Base expression type representing any FHIRPath expression node in the AST.
 # This is a union of all possible expression types.
-type Expr BinaryExpr|LiteralExpr|IdentifierExpr|FunctionExpr|MemberAccessExpr|IndexerExpr;
+type Expr BinaryExpr|LiteralExpr|IdentifierExpr|FunctionExpr|MemberAccessExpr|IndexerExpr
+        |UnaryExpr|ExternalConstantExpr|QuantityLiteralExpr;
 
 // ========================================
 // EXPRESSION NODE TYPES
@@ -100,6 +101,40 @@ type IndexerExpr record {|
     "Indexer" kind;
     Expr target;
     Expr index;
+|};
+
+# Represents a unary prefix expression (e.g., -42, +3.5).
+# Used for polarity operators that negate or affirm numeric values.
+#
+# + kind - The expression kind discriminator (always "Unary")
+# + operator - The operator token (PLUS or MINUS)
+# + operand - The expression being negated or affirmed
+type UnaryExpr record {|
+    "Unary" kind;
+    FhirPathToken operator;
+    Expr operand;
+|};
+
+# Represents an external constant expression (e.g., %myParam, %"external.var").
+# External constants are environment-supplied values accessed via the % prefix.
+#
+# + kind - The expression kind discriminator (always "ExternalConstant")
+# + name - The constant name (identifier or string after the %)
+type ExternalConstantExpr record {|
+    "ExternalConstant" kind;
+    string name;
+|};
+
+# Represents a quantity literal expression (e.g., 5 'kg', 3 years, 10.5 months).
+# Quantities combine a numeric value with a unit of measure.
+#
+# + kind - The expression kind discriminator (always "QuantityLiteral")
+# + value - The numeric quantity value
+# + unit - The unit string (UCUM unit or FHIRPath datetime precision keyword)
+type QuantityLiteralExpr record {|
+    "QuantityLiteral" kind;
+    decimal value;
+    string unit;
 |};
 
 // ========================================
@@ -183,5 +218,42 @@ isolated function createIndexerExpr(Expr target, Expr index) returns IndexerExpr
         kind: "Indexer",
         target: target,
         index: index
+    };
+}
+
+# Creates a unary prefix expression node.
+#
+# + operator - The operator token (PLUS or MINUS)
+# + operand - The operand expression
+# + return - A new UnaryExpr node
+isolated function createUnaryExpr(FhirPathToken operator, Expr operand) returns UnaryExpr {
+    return {
+        kind: "Unary",
+        operator: operator,
+        operand: operand
+    };
+}
+
+# Creates an external constant expression node.
+#
+# + name - The constant name after the % prefix
+# + return - A new ExternalConstantExpr node
+isolated function createExternalConstantExpr(string name) returns ExternalConstantExpr {
+    return {
+        kind: "ExternalConstant",
+        name: name
+    };
+}
+
+# Creates a quantity literal expression node.
+#
+# + value - The numeric quantity value
+# + unit - The unit of measure
+# + return - A new QuantityLiteralExpr node
+isolated function createQuantityLiteralExpr(decimal value, string unit) returns QuantityLiteralExpr {
+    return {
+        kind: "QuantityLiteral",
+        value: value,
+        unit: unit
     };
 }

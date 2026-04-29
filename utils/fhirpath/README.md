@@ -49,20 +49,24 @@ FHIRPath string → Scanner → Tokens → Parser → AST → Interpreter → Re
 ### Pipeline Stages
 
 1. **Scanning / Lexical Analysis** ([scanner.bal](scanner.bal), [token.bal](token.bal), [token_type.bal](token_type.bal))
-   The scanner (lexer) takes a raw FHIRPath expression string and breaks it into a sequence of tokens. Each token has a type (e.g., `IDENTIFIER`, `NUMBER`, `STRING`, `DOT`, `LPAREN`, etc.) and the corresponding lexeme text.
+   The scanner (lexer) takes a raw FHIRPath expression string and breaks it into a sequence of tokens. Each token has a type and the corresponding lexeme text. Beyond basic identifiers, numbers, and strings, the scanner recognises: date/datetime/time literals (`@YYYY-MM-DD`, `@YYYY-MM-DDTHH:MM:SS`, `@THH:MM:SS`), delimited identifiers (backtick-quoted), the `%` prefix for external constants, the special invocations `$this`/`$index`/`$total`, all comparison and arithmetic operators, and skips line (`//`) and block (`/* */`) comments.
 
 2. **Parsing** ([parser.bal](parser.bal), [expr.bal](expr.bal))
-   A hand-written **recursive-descent (top-down) parser** consumes the token stream and builds an Abstract Syntax Tree (AST). The AST node types are defined in [expr.bal](expr.bal) and include `BinaryExpr`, `LiteralExpr`, `IdentifierExpr`, `FunctionExpr`, `MemberAccessExpr`, and `IndexerExpr`. The parser functions in [parser.bal](parser.bal) directly correspond to the grammar rules and are organized by operator precedence (or → and → equality → indexer → invocation → term).
+   A hand-written **recursive-descent (top-down) parser** consumes the token stream and builds an Abstract Syntax Tree (AST). The AST node types are defined in [expr.bal](expr.bal) and include `BinaryExpr`, `LiteralExpr`, `IdentifierExpr`, `FunctionExpr`, `MemberAccessExpr`, `IndexerExpr`, `UnaryExpr`, `ExternalConstantExpr`, and `QuantityLiteralExpr`. The parser functions in [parser.bal](parser.bal) directly correspond to the grammar rules and are organized by operator precedence (lowest → highest binding): `implies → or/xor → and → in/contains → =/~/!=/!~ → </>/<=/>= → | → is/as → +/-/& → */div/mod → unary +/- → postfix ./[] → primary`.
 
 3. **Interpretation** ([interpreter.bal](interpreter.bal))
-   A tree-walking interpreter traverses the AST and evaluates it against the provided FHIR JSON resource. It supports both **getting** values (collecting matching nodes) and **setting/removing** values (producing a modified copy of the resource). The interpreter handles member access, array indexing, function calls (e.g., `where()`), and binary operators (`=`, `!=`, `and`, `or`, `xor`).
+   A tree-walking interpreter traverses the AST and evaluates it against the provided FHIR JSON resource. It supports both **getting** values (collecting matching nodes) and **setting/removing** values (producing a modified copy of the resource). The interpreter handles:
+   - **Member access** (`.`), **array indexing** (`[n]`), **unary polarity** (`+`/`-`)
+   - **All binary operators**: `=`, `~`, `!=`, `!~`, `<`, `>`, `<=`, `>=`, `+`, `-`, `&` (string concat), `*`, `/`, `div`, `mod`, `and`, `or`, `xor`, `implies`, `in`, `contains`, `|` (union), `is`, `as`
+   - **External constants** (`%name`) resolved from the `variables` map passed at call time
+   - **Built-in functions**: `where`, `select`, `repeat`, `all`, `aggregate`, `exists`, `empty`, `not`, `hasValue`, `first`, `last`, `tail`, `skip`, `take`, `count`, `distinct`, `children`, `descendants`, `combine`, `union`, `intersect`, `exclude`, `subsetOf`, `supersetOf`, `ofType`, `iif`, `extension`, `resolve`, `memberOf`, `startsWith`, `endsWith`, `indexOf`, `substring`, `matches`, `encode`, `decode`, `upper`, `lower`, `trim`, `toInteger`, `toDecimal`, `toString`, `toDate`, `toDateTime`, `toTime`, `toQuantity`, `convertsToInteger`, `convertsToDecimal`
 
 4. **Public API** ([fhir_path_processor.bal](fhir_path_processor.bal))
    The top-level functions `getValuesFromFhirPath` and `setValuesToFhirPath` orchestrate the full pipeline — scan, parse, interpret — and optionally validate the FHIR resource before and/or after the operation.
 
 ### Grammar Reference
 
-The file [grammar.g4](grammar.g4) contains the **ANTLR grammar extracted from the official FHIRPath specification** ([HL7 FHIRPath Grammar](https://build.fhir.org/ig/HL7/FHIRPath/grammar.html/)). It serves as the authoritative reference for the subset of FHIRPath syntax that this library supports. The ANTLR grammar (which is a bottom-up / left-recursive notation) has been manually converted into the **top-down recursive-descent parser** implemented in [parser.bal](parser.bal). When comparing the two, each labeled alternative in the `.g4` file (e.g., `#invocationExpression`, `#indexerExpression`, `#equalityExpression`) maps to a corresponding parse function in [parser.bal](parser.bal).
+The file [grammar.g4](grammar.g4) contains the **ANTLR grammar extracted from the official FHIRPath specification** ([HL7 FHIRPath Grammar](https://build.fhir.org/ig/HL7/FHIRPath/grammar.html/)). It serves as the authoritative reference for the subset of FHIRPath syntax that this library supports. The ANTLR grammar (which is a bottom-up / left-recursive notation) has been manually converted into the **top-down recursive-descent parser** implemented in [parser.bal](parser.bal).
 
 ### Updating & Extending the Library
 
@@ -70,8 +74,8 @@ If additional FHIRPath features need to be supported in the future, follow these
 
 1. **Update the grammar** — Add or modify the relevant production rules in [grammar.g4](grammar.g4) to reflect the new syntax from the official FHIRPath specification.
 2. **Add token types** — If new operators or keywords are needed, add entries to the `TokenType` enum in [token_type.bal](token_type.bal) and update the scanner in [scanner.bal](scanner.bal) to recognize them.
-3. **Extend the parser** — Add new parse functions or update existing ones in [parser.bal](parser.bal) to match the updated grammar rules. Ensure operator precedence is handled correctly in the recursive-descent structure.
-4. **Add AST node types** — If the new syntax requires a new kind of expression, define a new record type in [expr.bal](expr.bal) and add it to the `Expr` union type.
+3. **Add AST node types** — If the new syntax requires a new kind of expression, define a new record type in [expr.bal](expr.bal) and add it to the `Expr` union type.
+4. **Extend the parser** — Add new parse functions or update existing ones in [parser.bal](parser.bal) to match the updated grammar rules. Ensure operator precedence is handled correctly in the recursive-descent structure.
 5. **Update the interpreter** — Implement evaluation logic for the new AST nodes in [interpreter.bal](interpreter.bal), for both get and set operations.
 6. **Add tests** — Write test cases in the [tests/](tests/) directory covering the new functionality.
 
@@ -136,6 +140,91 @@ public function main() {
     json[]|fhirpath:FHIRPathError errorResult = fhirpath:getValuesFromFhirPath(patient, "Patient.name[");
     if errorResult is fhirpath:FHIRPathError {
         io:println("Error: ", errorResult.message());
+    }
+
+    // Complex expression: extract all given names from names that have a family name starting with 'C'
+    json patient2 = {
+        "resourceType": "Patient",
+        "id": "2",
+        "name": [
+            {"use": "official", "family": "Chalmers", "given": ["Peter", "James"]},
+            {"use": "nickname", "family": "Smith", "given": ["Pete"]},
+            {"use": "maiden", "family": "Clarke", "given": ["Mary"]}
+        ],
+        "telecom": [
+            {"system": "phone", "value": "+1-555-867-5309", "use": "home"},
+            {"system": "email", "value": "peter@example.com"},
+            {"system": "phone", "value": "+1-555-000-0001", "use": "work"}
+        ]
+    };
+
+    // Extract all home phone numbers using chained where() filters
+    json[]|fhirpath:FHIRPathError homePhones = fhirpath:getValuesFromFhirPath(patient2,
+        "Patient.telecom.where(system = 'phone').where(use = 'home').value");
+    if homePhones is json[] {
+        io:println("Home phone numbers: ", homePhones);
+    }
+
+    // Extract given names from all official or maiden name entries
+    json[]|fhirpath:FHIRPathError givenNames = fhirpath:getValuesFromFhirPath(patient2,
+        "Patient.name.where(use = 'official' or use = 'maiden').given");
+    if givenNames is json[] {
+        io:println("Given names (official or maiden): ", givenNames);
+    }
+}
+```
+
+### Using Variables in FHIRPath Expressions
+
+Variables let you pass dynamic values into a FHIRPath expression at runtime using the `%variableName` syntax. This avoids string interpolation and keeps expressions reusable.
+
+```ballerina
+import ballerina/io;
+import ballerinax/health.fhir.r4utils.fhirpath;
+
+public function main() {
+    json patient = {
+        "resourceType": "Patient",
+        "id": "1",
+        "name": [
+            {"use": "official", "family": "Chalmers", "given": ["Peter", "James"]},
+            {"use": "usual",    "family": "Fenders",  "given": ["Jim"]}
+        ],
+        "telecom": [
+            {"system": "phone", "value": "+1-555-867-5309", "use": "home"},
+            {"system": "email", "value": "peter@example.com"},
+            {"system": "phone", "value": "+1-555-000-0001", "use": "work"}
+        ]
+    };
+
+    // Use a variable to parameterise the name use filter
+    json[]|fhirpath:FHIRPathError officialFamily = fhirpath:getValuesFromFhirPath(
+        patient,
+        "name.where(use = %name_use).family",
+        variables = {"name_use": "official"}
+    );
+    if officialFamily is json[] {
+        io:println("Official family name: ", officialFamily); // ["Chalmers"]
+    }
+
+    // Reuse the same expression with a different variable value
+    json[]|fhirpath:FHIRPathError usualFamily = fhirpath:getValuesFromFhirPath(
+        patient,
+        "name.where(use = %name_use).family",
+        variables = {"name_use": "usual"}
+    );
+    if usualFamily is json[] {
+        io:println("Usual family name: ", usualFamily); // ["Fenders"]
+    }
+
+    // Variables work with any scalar-comparable field
+    json[]|fhirpath:FHIRPathError contactValue = fhirpath:getValuesFromFhirPath(
+        patient,
+        "telecom.where(system = %contact_system).value",
+        variables = {"contact_system": "email"}
+    );
+    if contactValue is json[] {
+        io:println("Email address: ", contactValue); // ["peter@example.com"]
     }
 }
 ```
@@ -290,3 +379,59 @@ public function main() {
     }
 }
 ```
+
+## Supported Functions
+
+### Existence & Boolean
+
+| | | | | |
+|---|---|---|---|---|
+| `empty` | `exists` | `not` | `hasValue` | `all` |
+| `isDistinct` | `subsetOf` | `supersetOf` | | |
+
+### Filtering & Projection
+
+| | | | | |
+|---|---|---|---|---|
+| `where` | `select` | `repeat` | `ofType` | |
+
+### Collection
+
+| | | | | |
+|---|---|---|---|---|
+| `first` | `last` | `tail` | `skip` | `take` |
+| `single` | `count` | `distinct` | `combine` | `union` |
+| `intersect` | `exclude` | `children` | `descendants` | `aggregate` |
+| `sort` | `sum` | | | |
+
+### String
+
+| | | | | |
+|---|---|---|---|---|
+| `length` | `trim` | `toChars` | `split` | `join` |
+| `upper` | `lower` | `startsWith` | `endsWith` | `contains` |
+| `indexOf` | `substring` | `replace` | `matches` | `matchesFull` |
+| `replaceMatches` | `encode` | `decode` | `escape` | `unescape` |
+
+### Math
+
+| | | | | |
+|---|---|---|---|---|
+| `abs` | `ceiling` | `floor` | `truncate` | `round` |
+| `sqrt` | `power` | `exp` | `ln` | `log` |
+
+### Type & Conversion
+
+| | | | | |
+|---|---|---|---|---|
+| `type` | `is` | `as` | `toInteger` |
+| `toDecimal` | `toString` | `toBoolean` | `toDate` | `toDateTime` |
+| `toTime` | `toQuantity` | `convertsToInteger` | `convertsToDecimal` | `convertsToString` |
+| `convertsToBoolean` | `convertsToDate` | `convertsToDateTime` | `convertsToTime` | `convertsToQuantity` |
+
+### Date & Time
+
+| | | | | |
+|---|---|---|---|---|
+| `today` | `now` | `precision` |
+
