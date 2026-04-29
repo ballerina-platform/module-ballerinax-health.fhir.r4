@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.12.10"
+distribution-version = "2201.12.8"
 
 [[package]]
 org = "ballerina"
@@ -478,7 +478,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.fhirpath"
-version = "6.0.0"
+version = "6.0.1"
 dependencies = [
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "lang.array"},
