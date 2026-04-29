@@ -1,0 +1,13 @@
+[package]
+org = "mahima_de_silva"
+name = "sql_on_fhir_lib"
+version = "0.1.0"
+distribution = "2201.12.10"
+
+[[package.modules]]
+name = "sql_on_fhir_lib.in_memory_runner"
+export = true
+
+[[package.modules]]
+name = "sql_on_fhir_lib.pg_db_runner"
+export = true
