@@ -51,8 +51,9 @@ function assertResultsMatch(json[] result, json[] expected) {
         }
         if foundIdx == -1 {
             test:assertFail(string `Expected row not found in result: ${expectedRow.toJsonString()}`);
+        } else {
+            _ = remaining.remove(foundIdx);
         }
-        _ = remaining.remove(foundIdx);
     }
 }
 

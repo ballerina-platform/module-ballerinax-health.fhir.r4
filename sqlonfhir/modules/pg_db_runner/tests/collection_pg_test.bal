@@ -71,7 +71,6 @@ json[] collectionResources = [
     }
 ];
 
-
 // TODO: reenable after completing fhirpath transpiler
 @test:Config {enable: false}
 function testFailWhenCollectionIsNotTrue() returns error? {
@@ -317,7 +316,7 @@ function testCollectionFalseRelativeToForeachornullParent() returns error? {
                 ],
                 "select": [
                     {
-                        "forEach": "name",
+                        "forEachOrNull": "name",
                         "column": [
                             {
                                 "name": "last_name",

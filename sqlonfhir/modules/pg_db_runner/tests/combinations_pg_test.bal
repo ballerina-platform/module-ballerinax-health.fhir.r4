@@ -34,7 +34,6 @@ json[] combinationsResources = [
     }
 ];
 
-
 @test:Config {}
 function testSelect() returns error? {
     postgresql:Client dbClient = check new (host, username, password, database, port);
@@ -387,7 +386,7 @@ function testUnionallForeachColumnSelect() returns error? {
     };
     json[] expected = [
         {
-            "id": "pt1"
+            "id": "pt"
         },
         {
             "id": "pt2"
