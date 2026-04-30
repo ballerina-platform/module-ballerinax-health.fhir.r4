@@ -16,6 +16,7 @@
 
 // Source: SQL-on-FHIR v2 test suite (https://github.com/FHIR/sql-on-fhir-v2)
 import ballerina/test;
+
 import mahima_de_silva/sql_on_fhir_lib;
 
 json[] collectionResources = [
@@ -69,7 +70,6 @@ json[] collectionResources = [
         "birthDate": "1950-01-01"
     }
 ];
-
 
 @test:Config {}
 function testFailWhenCollectionIsNotTrue() {
@@ -160,7 +160,8 @@ function testCollectionTrue() returns error? {
         }
     ];
     json[] result = check evaluate(collectionResources, view);
-    test:assertEquals(result, expected);}
+    test:assertEquals(result, expected);
+}
 
 @test:Config {}
 function testCollectionFalseRelativeToForeachParent() returns error? {
@@ -231,10 +232,11 @@ function testCollectionFalseRelativeToForeachParent() returns error? {
         }
     ];
     json[] result = check evaluate(collectionResources, view);
-    test:assertEquals(result, expected);}
+    test:assertEquals(result, expected);
+}
 
 @test:Config {}
-function testCollectionFalseRelativeToForeachornullParent() returns error? {
+function testCollectionFalseRelativeToForeachParent() returns error? {
     sql_on_fhir_lib:ViewDefinition view = {
         'resource: "Patient",
         status: "active",
@@ -302,4 +304,5 @@ function testCollectionFalseRelativeToForeachornullParent() returns error? {
         }
     ];
     json[] result = check evaluate(collectionResources, view);
-    test:assertEquals(result, expected);}
+    test:assertEquals(result, expected);
+}
