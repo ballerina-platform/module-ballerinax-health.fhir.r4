@@ -462,6 +462,11 @@ isolated function collectForEachSelectColumns(
     sql_on_fhir_lib:ViewDefinitionSelect[]? nested = sel.'select;
     if nested is sql_on_fhir_lib:ViewDefinitionSelect[] {
         foreach sql_on_fhir_lib:ViewDefinitionSelect ns in nested {
+            // Skip children with unionAll — handled as separate combination entries.
+            sql_on_fhir_lib:ViewDefinitionSelect[]? nsUnionAll = ns.unionAll;
+            if nsUnionAll is sql_on_fhir_lib:ViewDefinitionSelect[] && nsUnionAll.length() > 0 {
+                continue;
+            }
             if ns.forEach is string || ns.forEachOrNull is string {
                 // Nested forEach: use its own context.
                 TranspilerContext? nestedCtx = lookupForEachContext(contextMap, ns);
@@ -537,6 +542,11 @@ isolated function collectNonForEachSelectColumns(
     sql_on_fhir_lib:ViewDefinitionSelect[]? nested = sel.'select;
     if nested is sql_on_fhir_lib:ViewDefinitionSelect[] {
         foreach sql_on_fhir_lib:ViewDefinitionSelect ns in nested {
+            // Skip children with unionAll — handled as separate combination entries.
+            sql_on_fhir_lib:ViewDefinitionSelect[]? nsUnionAll = ns.unionAll;
+            if nsUnionAll is sql_on_fhir_lib:ViewDefinitionSelect[] && nsUnionAll.length() > 0 {
+                continue;
+            }
             if ns.forEach is string || ns.forEachOrNull is string {
                 // Nested forEach: use its forEach context.
                 TranspilerContext? forEachCtx = lookupForEachContext(contextMap, ns);

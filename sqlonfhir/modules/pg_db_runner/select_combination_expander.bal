@@ -43,14 +43,40 @@ isolated function expandSelectCombinations(
 
     SelectCombination[] newCombinations = [];
     foreach SelectCombination combination in currentCombinations {
+        SelectCombination[] expanded;
         sql_on_fhir_lib:ViewDefinitionSelect[]? unionAll = sel.unionAll;
         if unionAll is sql_on_fhir_lib:ViewDefinitionSelect[] && unionAll.length() > 0 {
-            SelectCombination[] expanded = expandUnionAllOptions(sel, unionAll, combination);
-            foreach SelectCombination c in expanded {
+            expanded = expandUnionAllOptions(sel, unionAll, combination);
+        } else {
+            expanded = [addNonUnionCombination(sel, combination)];
+        }
+
+        // Descend into child selects that carry their own unionAll so that their
+        // union branch choices are tracked as separate combination entries.
+        // Children without unionAll are left to collectSelectColumns recursion.
+        sql_on_fhir_lib:ViewDefinitionSelect[]? childSelects = sel.'select;
+        if childSelects is sql_on_fhir_lib:ViewDefinitionSelect[] && childSelects.length() > 0 {
+            SelectCombination[] withChildren = expanded;
+            foreach sql_on_fhir_lib:ViewDefinitionSelect childSel in childSelects {
+                sql_on_fhir_lib:ViewDefinitionSelect[]? childUnionAll = childSel.unionAll;
+                if childUnionAll is sql_on_fhir_lib:ViewDefinitionSelect[] && childUnionAll.length() > 0 {
+                    SelectCombination[] nextWithChildren = [];
+                    foreach SelectCombination c in withChildren {
+                        SelectCombination[] childExpanded = expandUnionAllOptions(childSel, childUnionAll, c);
+                        foreach SelectCombination ce in childExpanded {
+                            nextWithChildren.push(ce);
+                        }
+                    }
+                    withChildren = nextWithChildren;
+                }
+            }
+            foreach SelectCombination c in withChildren {
                 newCombinations.push(c);
             }
         } else {
-            newCombinations.push(addNonUnionCombination(sel, combination));
+            foreach SelectCombination c in expanded {
+                newCombinations.push(c);
+            }
         }
     }
     return newCombinations;

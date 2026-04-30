@@ -210,6 +210,12 @@ isolated function collectSelectColumns(sql_on_fhir_lib:ViewDefinitionSelect sel,
     sql_on_fhir_lib:ViewDefinitionSelect[]? nested = sel.'select;
     if nested is sql_on_fhir_lib:ViewDefinitionSelect[] {
         foreach sql_on_fhir_lib:ViewDefinitionSelect nestedSel in nested {
+            // Skip children with unionAll — those are expanded as separate
+            // combination entries by expandSelectCombinations and handled there.
+            sql_on_fhir_lib:ViewDefinitionSelect[]? nestedUnionAll = nestedSel.unionAll;
+            if nestedUnionAll is sql_on_fhir_lib:ViewDefinitionSelect[] && nestedUnionAll.length() > 0 {
+                continue;
+            }
             string[] nestedCols = check collectSelectColumns(nestedSel, ctx);
             foreach string c in nestedCols {
                 parts.push(c);
