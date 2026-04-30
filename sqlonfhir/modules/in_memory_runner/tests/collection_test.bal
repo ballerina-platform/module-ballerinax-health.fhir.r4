@@ -236,7 +236,7 @@ function testCollectionFalseRelativeToForeachParent() returns error? {
 }
 
 @test:Config {}
-function testCollectionFalseRelativeToForeachParent() returns error? {
+function testCollectionFalseRelativeToForeachornullParent() returns error? {
     sql_on_fhir_lib:ViewDefinition view = {
         'resource: "Patient",
         status: "active",
@@ -251,7 +251,7 @@ function testCollectionFalseRelativeToForeachParent() returns error? {
                 ],
                 'select: [
                     {
-                        forEach: "name",
+                        forEachOrNull: "name",
                         column: [
                             {
                                 name: "last_name",
