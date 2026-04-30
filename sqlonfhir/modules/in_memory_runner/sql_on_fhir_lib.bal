@@ -46,7 +46,7 @@ public isolated function defaultGetResourceKey(json[] nodes) returns json[]|erro
 public isolated function defaultGetReferenceKey(json[] nodes, string? resourceType) returns json[]|error {
     json[] result = [];
     foreach json node in nodes {
-        if node is map<json> && node.hasKey("reference") {
+        if node is map<json> && node["reference"] is string {
             string reference = <string>node["reference"];
             // Remove double slashes
             string cleanRef = re `//`.replaceAll(reference, "");
@@ -81,17 +81,13 @@ isolated function processConstants(sql_on_fhir_lib:ViewDefinitionConstant[]? con
     map<json> result = {};
     foreach sql_on_fhir_lib:ViewDefinitionConstant c in (constants ?: []) {
         map<json> cJson = <map<json>>c.toJson();
-        boolean found = false;
-        foreach string key in cJson.keys() {
-            if key.startsWith("value") {
-                result[c.name] = cJson[key];
-                found = true;
-                break;
-            }
-        }
-        if !found {
+        string[] valueKeys = cJson.keys().filter(k => k.startsWith("value"));
+        if valueKeys.length() == 0 {
             return error("Constant '" + c.name + "' has no value");
+        } else if valueKeys.length() > 1 {
+            return error("Constant '" + c.name + "' is ambiguous: multiple value fields: " + valueKeys.toString());
         }
+        result[c.name] = cJson[valueKeys[0]];
     }
     return result;
 }
@@ -214,8 +210,21 @@ isolated function evaluateFhirPath(json node, string path, FhirPathExtensions? e
     // instead of a property access.
     map<json> relevantVars = {};
     foreach [string, json] [key, value] in constants.entries() {
-        if rewrittenPath.includes("%" + key) {
-            relevantVars[key] = value;
+        // Use a token-aware check: %key must not be immediately followed by an
+        // identifier character, otherwise "%id" would falsely match "%id2".
+        string token = "%" + key;
+        int searchFrom = 0;
+        while true {
+            int? idx = rewrittenPath.indexOf(token, searchFrom);
+            if idx is () {
+                break;
+            }
+            int afterIdx = idx + token.length();
+            if afterIdx >= rewrittenPath.length() || !re `[a-zA-Z0-9_]`.isFullMatch(rewrittenPath.substring(afterIdx, afterIdx + 1)) {
+                relevantVars[key] = value;
+                break;
+            }
+            searchFrom = afterIdx;
         }
     }
     map<json>? vars = relevantVars.length() > 0 ? relevantVars : ();
