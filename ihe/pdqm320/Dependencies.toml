@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.12.10"
+distribution-version = "2201.13.1"
 
 [[package]]
 org = "ballerina"
@@ -73,7 +73,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "http"
-version = "2.14.10"
+version = "2.16.1"
 dependencies = [
 	{org = "ballerina", name = "auth"},
 	{org = "ballerina", name = "cache"},
@@ -205,7 +205,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "log"
-version = "2.14.0"
+version = "2.17.0"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
@@ -230,7 +230,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "oauth2"
-version = "2.14.1"
+version = "2.15.0"
 dependencies = [
 	{org = "ballerina", name = "cache"},
 	{org = "ballerina", name = "crypto"},
@@ -243,7 +243,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "observe"
-version = "1.6.0"
+version = "1.7.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -331,8 +331,8 @@ modules = [
 
 [[package]]
 org = "ballerinax"
-name = "health.fhir.r4.ihe.pdqm"
-version = "3.2.0"
+name = "health.fhir.r4.ihe.pdqm320"
+version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "log"},
@@ -340,7 +340,7 @@ dependencies = [
 	{org = "ballerinax", name = "health.fhir.r4.international401"}
 ]
 modules = [
-	{org = "ballerinax", packageName = "health.fhir.r4.ihe.pdqm", moduleName = "health.fhir.r4.ihe.pdqm"}
+	{org = "ballerinax", packageName = "health.fhir.r4.ihe.pdqm320", moduleName = "health.fhir.r4.ihe.pdqm320"}
 ]
 
 [[package]]
