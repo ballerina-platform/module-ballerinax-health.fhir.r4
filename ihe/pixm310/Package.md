@@ -1,7 +1,7 @@
 Ballerina package containing FHIR resource data models
 compliant with https://profiles.ihe.net/ITI/PIXm/ implementation guide.
 
-# FHIR R4 carinbb_package package
+# FHIR R4 health.fhir.r4.ihe.pixm310 package
 
 ## Package Overview
 
@@ -32,17 +32,17 @@ compliant with https://profiles.ihe.net/ITI/PIXm/ implementation guide.
 | 10). AuditPixmFeedSourceDelete | [[Definition]][s10] [[Ballerina Record]][m10] |
 | 11). PIXmQueryParametersOut | [[Definition]][s11] [[Ballerina Record]][m11] |
 
-[m1]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#PIXmPatientBirthDateRequired
-[m2]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#PIXmQueryParametersIn
-[m3]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#AuditPixmFeedSourceUpdate
-[m4]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#AuditPixmQueryManager
-[m5]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#AuditPixmQueryConsumer
-[m6]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#AuditPixmFeedManagerCreate
-[m7]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#AuditPixmFeedManagerUpdate
-[m8]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#AuditPixmFeedManagerDelete
-[m9]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#PIXmPatient
-[m10]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#AuditPixmFeedSourceDelete
-[m11]: https://lib.ballerina.io/healthcare_samples/carinbb_package/1.0.0#PIXmQueryParametersOut
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#PIXmPatientBirthDateRequired
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#PIXmQueryParametersIn
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedSourceUpdate
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmQueryManager
+[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmQueryConsumer
+[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedManagerCreate
+[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedManagerUpdate
+[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedManagerDelete
+[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#PIXmPatient
+[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedSourceDelete
+[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#PIXmQueryParametersOut
 
 [s1]: https://profiles.ihe.net/ITI/PIXm/StructureDefinition/IHE.PIXm.Patient.BirthDateRequired
 [s2]: https://profiles.ihe.net/ITI/PIXm/StructureDefinition/IHE.PIXm.Query.Parameters.In
