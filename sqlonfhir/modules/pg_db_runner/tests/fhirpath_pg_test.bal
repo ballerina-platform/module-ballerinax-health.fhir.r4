@@ -117,8 +117,8 @@ function testOneElement() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -170,8 +170,8 @@ function testTwoElementsFirst() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -231,8 +231,8 @@ function testCollection() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -285,8 +285,8 @@ function testIndex0() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -339,8 +339,8 @@ function testIndex1() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -392,8 +392,8 @@ function testOutOfIndex() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -445,8 +445,8 @@ function testWhere() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -506,8 +506,8 @@ function testExists() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -567,8 +567,8 @@ function testNestedExists() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -628,8 +628,8 @@ function testStringJoin() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -689,6 +689,6 @@ function testStringJoinDefaultSeparator() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }

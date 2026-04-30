@@ -87,8 +87,8 @@ function testSelect() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -154,8 +154,8 @@ function testColumnSelect() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -219,8 +219,8 @@ function testSiblingSelect() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -288,8 +288,8 @@ function testSiblingSelectInsideASelect() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -352,8 +352,8 @@ function testColumnSelectWithWhere() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -386,7 +386,7 @@ function testUnionallForeachColumnSelect() returns error? {
     };
     json[] expected = [
         {
-            "id": "pt"
+            "id": "pt1"
         },
         {
             "id": "pt2"
@@ -409,6 +409,6 @@ function testUnionallForeachColumnSelect() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }

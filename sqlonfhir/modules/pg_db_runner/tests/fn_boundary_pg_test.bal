@@ -126,8 +126,8 @@ function testDecimalLowboundary() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -192,8 +192,8 @@ function testDecimalHighboundary() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -258,8 +258,8 @@ function testDatetimeLowboundary() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -324,8 +324,8 @@ function testDatetimeHighboundary() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -378,8 +378,8 @@ function testDateLowboundary() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -432,8 +432,8 @@ function testDateHighboundary() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -498,8 +498,8 @@ function testTimeLowboundary() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 // TODO: reenable after completing fhirpath transpiler
@@ -564,6 +564,6 @@ function testTimeHighboundary() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }

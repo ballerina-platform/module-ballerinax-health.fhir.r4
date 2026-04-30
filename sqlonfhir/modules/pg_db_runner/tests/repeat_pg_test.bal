@@ -146,8 +146,8 @@ function testBasic() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -238,8 +238,8 @@ function testItemAndAnswerItem() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -293,8 +293,8 @@ function testEmptyExpression() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -379,8 +379,8 @@ function testEmptyChildExpression() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -454,8 +454,8 @@ function testCombinedWithForeach() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -549,8 +549,8 @@ function testCombinedWithForeachornull() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -708,6 +708,6 @@ function testCombinedWithUnionall() returns error? {
             result.push(row.toJson());
         };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }

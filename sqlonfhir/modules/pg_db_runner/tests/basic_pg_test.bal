@@ -95,8 +95,8 @@ function testBasicAttribute() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -155,8 +155,8 @@ function testBooleanAttributeWithFalse() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -215,8 +215,8 @@ function testTwoColumns() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -279,8 +279,8 @@ function testTwoSelectsWithColumns() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -330,8 +330,8 @@ function testWhere1() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -381,8 +381,8 @@ function testWhere2() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -432,8 +432,8 @@ function testWhereReturnsNonBooleanForSomeCases() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -483,8 +483,8 @@ function testWhereAsExpr1() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -534,8 +534,8 @@ function testWhereAsExpr2() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -600,8 +600,8 @@ function testSelectColumn() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
 
 @test:Config {}
@@ -749,6 +749,6 @@ function testColumnOrdering() returns error? {
         result.push(row.toJson());
     };
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    assertResultsMatch(result, expected);
     check dbClient.close();
+    assertResultsMatch(result, expected);
 }
