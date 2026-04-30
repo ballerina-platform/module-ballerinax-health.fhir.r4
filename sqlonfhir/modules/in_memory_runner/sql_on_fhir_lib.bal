@@ -1,3 +1,19 @@
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
+
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+
+// http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 import ballerinax/health.fhir.r4utils.fhirpath;
 
 import mahima_de_silva/sql_on_fhir_lib;
@@ -29,7 +45,7 @@ public type FhirPathExtensions record {|
 # Default implementation of getResourceKey - extracts id from nodes
 # + nodes - Array of FHIR nodes
 # + return - Array of resource ids
-public isolated function defaultGetResourceKey(json[] nodes) returns json[]|error {
+isolated function defaultGetResourceKey(json[] nodes) returns json[]|error {
     json[] result = [];
     foreach json node in nodes {
         if node is map<json> && node.hasKey("id") {
@@ -43,7 +59,7 @@ public isolated function defaultGetResourceKey(json[] nodes) returns json[]|erro
 # + nodes - Array of FHIR nodes containing reference field
 # + resourceType - Optional resource type to filter by
 # + return - Array of extracted reference keys
-public isolated function defaultGetReferenceKey(json[] nodes, string? resourceType) returns json[]|error {
+isolated function defaultGetReferenceKey(json[] nodes, string? resourceType) returns json[]|error {
     json[] result = [];
     foreach json node in nodes {
         if node is map<json> && node["reference"] is string {
