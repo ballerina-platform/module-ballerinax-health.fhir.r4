@@ -45,17 +45,17 @@ compliant with https://profiles.ihe.net/ITI/PIXm/ implementation guide.
 | 10). PixmQueryParametersIn | [[Definition]][s10] [[Ballerina Record]][m10] |
 | 11). PixmQueryParametersOut | [[Definition]][s11] [[Ballerina Record]][m11] |
 
-[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#AuditPixmFeedManagerCreate
-[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#AuditPixmFeedManagerDelete
-[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#AuditPixmFeedManagerUpdate
-[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#AuditPixmFeedSourceDelete
-[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#AuditPixmFeedSourceUpdate
-[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#AuditPixmQueryConsumer
-[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#AuditPixmQueryManager
-[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#PixmPatient
-[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#PixmPatientBirthDateRequired
-[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#PixmQueryParametersIn
-[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm/1.0.0#PixmQueryParametersOut
+[m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedManagerCreate
+[m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedManagerDelete
+[m3]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedManagerUpdate
+[m4]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedSourceDelete
+[m5]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedSourceUpdate
+[m6]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmQueryConsumer
+[m7]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmQueryManager
+[m8]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#PIXmPatient
+[m9]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#PIXmPatientBirthDateRequired
+[m10]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#PIXmQueryParametersIn
+[m11]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#PIXmQueryParametersOut
 
 [s1]: https://profiles.ihe.net/ITI/PIXm/StructureDefinition/IHE.PIXm.Feed.Create.Audit.Manager
 [s2]: https://profiles.ihe.net/ITI/PIXm/StructureDefinition/IHE.PIXm.Feed.Delete.Audit.Manager
@@ -113,8 +113,8 @@ public function main() {
     };
 
     do {
-        anydata parsedResult = check parser:parse(patientPayload, pixm310:PixmPatient);
-        pixm310:PixmPatient patientModel = check parsedResult.ensureType();
+        anydata parsedResult = check parser:parse(patientPayload, pixm310:PIXmPatient);
+        pixm310:PIXmPatient patientModel = check parsedResult.ensureType();
         log:printInfo(string `Patient name : ${patientModel.name.toString()}`);
     } on fail error parseError {
         log:printError(string `Error occurred while parsing : ${parseError.message()}`, parseError);
@@ -131,7 +131,7 @@ import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.ihe.pixm310;
 
 public function main() {
-    pixm310:PixmPatient patient = {
+    pixm310:PIXmPatient patient = {
         meta: {
             lastUpdated: time:utcToString(time:utcNow()),
             profile: [pixm310:PROFILE_BASE_PIXMPATIENT]
