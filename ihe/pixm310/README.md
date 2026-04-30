@@ -40,10 +40,10 @@ compliant with https://profiles.ihe.net/ITI/PIXm/ implementation guide.
 | 5). AuditPixmFeedSourceUpdate | [[Definition]][s5] [[Ballerina Record]][m5] |
 | 6). AuditPixmQueryConsumer | [[Definition]][s6] [[Ballerina Record]][m6] |
 | 7). AuditPixmQueryManager | [[Definition]][s7] [[Ballerina Record]][m7] |
-| 8). PixmPatient | [[Definition]][s8] [[Ballerina Record]][m8] |
-| 9). PixmPatientBirthDateRequired | [[Definition]][s9] [[Ballerina Record]][m9] |
-| 10). PixmQueryParametersIn | [[Definition]][s10] [[Ballerina Record]][m10] |
-| 11). PixmQueryParametersOut | [[Definition]][s11] [[Ballerina Record]][m11] |
+| 8). PIXmPatient | [[Definition]][s8] [[Ballerina Record]][m8] |
+| 9). PIXmPatientBirthDateRequired | [[Definition]][s9] [[Ballerina Record]][m9] |
+| 10). PIXmQueryParametersIn | [[Definition]][s10] [[Ballerina Record]][m10] |
+| 11). PIXmQueryParametersOut | [[Definition]][s11] [[Ballerina Record]][m11] |
 
 [m1]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedManagerCreate
 [m2]: https://lib.ballerina.io/ballerinax/health.fhir.r4.ihe.pixm310/1.0.0#AuditPixmFeedManagerDelete
