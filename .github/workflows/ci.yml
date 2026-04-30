@@ -160,10 +160,17 @@ jobs:
           version: $BALLERINA_VERSION
 
       - name: Ballerina Test
-        if: ${{ matrix.path != 'fhirr4' }}
+        if: ${{ matrix.path != 'fhirr4' && matrix.path != 'sqlonfhir' }}
         run: |
           pushd "${{ matrix.path }}"
           bal test --code-coverage
+          popd
+
+      - name: Ballerina Test (in-memory only, no DB required)
+        if: ${{ matrix.path == 'sqlonfhir' }}
+        run: |
+          pushd sqlonfhir
+          bal test --tests sql_on_fhir_lib.in_memory_runner:* --code-coverage
           popd
 
       - name: Setup Maven
