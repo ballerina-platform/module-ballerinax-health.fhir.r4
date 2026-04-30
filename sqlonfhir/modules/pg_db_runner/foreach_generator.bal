@@ -361,7 +361,7 @@ isolated function buildLateralJoinSegments(
     if segments.length() == 1 {
         string onClause = isOrNull ? " ON TRUE" : "";
         return "\n" + joinType + " LATERAL jsonb_array_elements("
-            + sourceExpr + "->'" + segments[0] + "') AS " + finalAlias + "(value)" + onClause;
+            + sourceExpr + "->'" + escapeSqlLiteral(segments[0]) + "') AS " + finalAlias + "(value)" + onClause;
     }
 
     // Multi-segment: generate one intermediate join per segment except the last.
@@ -374,7 +374,7 @@ isolated function buildLateralJoinSegments(
         string segJoinType = isLast ? joinType : "CROSS JOIN";
         string onClause = (isLast && isOrNull) ? " ON TRUE" : "";
         result += "\n" + segJoinType + " LATERAL jsonb_array_elements("
-            + currentSource + "->'" + segments[i] + "') AS " + segAlias + "(value)" + onClause;
+            + currentSource + "->'" + escapeSqlLiteral(segments[i]) + "') AS " + segAlias + "(value)" + onClause;
         currentSource = segAlias + ".value";
     }
 

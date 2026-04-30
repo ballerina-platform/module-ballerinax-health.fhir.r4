@@ -258,7 +258,7 @@ isolated function buildRepeatCteDefinition(
     string firstPath = entry.paths[0];
     string anchor = "SELECT " + resourceAlias + ".ctid AS resource_id, anchor.value AS item_json, 0 AS depth\n"
         + "  FROM " + tableName + " AS " + resourceAlias + "\n"
-        + "  CROSS JOIN LATERAL jsonb_array_elements(" + entry.sourceExpr + "->'" + firstPath
+        + "  CROSS JOIN LATERAL jsonb_array_elements(" + entry.sourceExpr + "->'" + escapeSqlLiteral(firstPath)
         + "') AS anchor(value)";
 
     // PostgreSQL imposes two constraints on recursive CTEs:
@@ -310,7 +310,7 @@ isolated function buildRepeatRecursiveMember(string path, string cteAlias, int i
         string alias = "child_" + index.toString();
         return "SELECT cte.resource_id, " + alias + ".value AS item_json, cte.depth + 1\n"
             + "  FROM " + cteAlias + " AS cte\n"
-            + "  CROSS JOIN LATERAL jsonb_array_elements(cte.item_json->'" + segments[0]
+            + "  CROSS JOIN LATERAL jsonb_array_elements(cte.item_json->'" + escapeSqlLiteral(segments[0])
             + "') AS " + alias + "(value)";
     }
 
@@ -319,7 +319,7 @@ isolated function buildRepeatRecursiveMember(string path, string cteAlias, int i
     foreach int i in 0 ..< segments.length() {
         string alias = "child_" + index.toString() + "_" + i.toString();
         crossJoins += "\n  CROSS JOIN LATERAL jsonb_array_elements(" + currentSource + "->'"
-            + segments[i] + "') AS " + alias + "(value)";
+            + escapeSqlLiteral(segments[i]) + "') AS " + alias + "(value)";
         currentSource = alias + ".value";
     }
     string finalAlias = "child_" + index.toString() + "_" + (segments.length() - 1).toString();
@@ -383,7 +383,7 @@ isolated function buildLateralPathQuery(string path, int index) returns string {
     if segments.length() == 1 {
         string alias = "path_" + index.toString();
         return "SELECT " + alias + ".value AS item_json\n"
-            + "    FROM jsonb_array_elements(cte.item_json->'" + segments[0] + "') AS " + alias;
+            + "    FROM jsonb_array_elements(cte.item_json->'" + escapeSqlLiteral(segments[0]) + "') AS " + alias;
     }
 
     string froms = "";
@@ -391,7 +391,7 @@ isolated function buildLateralPathQuery(string path, int index) returns string {
     foreach int i in 0 ..< segments.length() {
         string alias = "path_" + index.toString() + "_" + i.toString();
         string joinClause = i == 0 ? "FROM " : "CROSS JOIN ";
-        froms += "\n    " + joinClause + "jsonb_array_elements(" + currentSource + "->'" + segments[i] + "') AS " + alias;
+        froms += "\n    " + joinClause + "jsonb_array_elements(" + currentSource + "->'" + escapeSqlLiteral(segments[i]) + "') AS " + alias;
         currentSource = alias + ".value";
     }
     string finalAlias = "path_" + index.toString() + "_" + (segments.length() - 1).toString();
@@ -696,4 +696,13 @@ isolated function selectContextFor(
         }
     }
     return parentCtx;
+}
+
+# Escape a value for safe embedding inside a PostgreSQL single-quoted string literal.
+# Doubles any single-quote characters so they do not prematurely terminate the literal.
+#
+# + s - The raw string to escape
+# + return - The escaped string safe for use inside `'...'`
+isolated function escapeSqlLiteral(string s) returns string {
+    return re `'`.replaceAll(s, "''");
 }
