@@ -146,6 +146,30 @@ isolated function extractReferenceKeyParam(string path) returns string? {
     return paramStr;
 }
 
+// Returns any FHIRPath suffix that follows the ".getResourceKey()" call site
+isolated function extractSuffixAfterGetResourceKey(string path) returns string {
+    if path.startsWith("getResourceKey()") {
+        return path.substring("getResourceKey()".length());
+    }
+    int? idx = path.indexOf(".getResourceKey()");
+    return idx is int ? path.substring(idx + ".getResourceKey()".length()) : "";
+}
+
+// Returns any FHIRPath suffix that follows the closing ")" of the ".getReferenceKey(...)" call
+isolated function extractSuffixAfterGetReferenceKey(string path) returns string {
+    int parenStart;
+    int? startIdx = path.indexOf(".getReferenceKey(");
+    if startIdx is int {
+        parenStart = startIdx + ".getReferenceKey(".length();
+    } else if path.startsWith("getReferenceKey(") {
+        parenStart = "getReferenceKey(".length();
+    } else {
+        return "";
+    }
+    int? endIdx = path.indexOf(")", parenStart);
+    return endIdx is int ? path.substring(endIdx + 1) : "";
+}
+
 // Finds the position of the top-level = operator (not inside parentheses, not != <= >= ~=)
 isolated function findTopLevelEquals(string path) returns int? {
     int parenDepth = 0;
@@ -256,18 +280,44 @@ isolated function evaluateFhirPath(json node, string path, FhirPathExtensions? e
     // Check for getResourceKey() function call
     if containsGetResourceKey(rewrittenPath) {
         string basePath = extractBasePath(rewrittenPath, ".getResourceKey()");
+        string suffix = extractSuffixAfterGetResourceKey(rewrittenPath);
         json[] nodes = basePath.length() > 0 ? check fhirpath:getValuesFromFhirPath(node, basePath, variables = vars) : [node];
         GetResourceKeyFunction getResourceKeyFn = extensions?.getResourceKey ?: defaultGetResourceKey;
-        return getResourceKeyFn(nodes);
+        json[] keyResults = check getResourceKeyFn(nodes);
+        if suffix.length() == 0 {
+            return keyResults;
+        }
+        string suffixPath = suffix.startsWith(".") ? suffix.substring(1) : suffix;
+        json[] aggregated = [];
+        foreach json keyVal in keyResults {
+            json[] partial = check evaluateFhirPath(keyVal, suffixPath, extensions, constants);
+            foreach json r in partial {
+                aggregated.push(r);
+            }
+        }
+        return aggregated;
     }
 
     // Check for getReferenceKey() function call with optional parameter
     if containsGetReferenceKey(rewrittenPath) {
         string basePath = extractBasePath(rewrittenPath, ".getReferenceKey(");
+        string suffix = extractSuffixAfterGetReferenceKey(rewrittenPath);
         json[] nodes = basePath.length() > 0 ? check fhirpath:getValuesFromFhirPath(node, basePath, variables = vars) : [node];
         string? resourceTypeParam = extractReferenceKeyParam(rewrittenPath);
         GetReferenceKeyFunction getReferenceKeyFn = extensions?.getReferenceKey ?: defaultGetReferenceKey;
-        return getReferenceKeyFn(nodes, resourceTypeParam);
+        json[] keyResults = check getReferenceKeyFn(nodes, resourceTypeParam);
+        if suffix.length() == 0 {
+            return keyResults;
+        }
+        string suffixPath = suffix.startsWith(".") ? suffix.substring(1) : suffix;
+        json[] aggregated = [];
+        foreach json keyVal in keyResults {
+            json[] partial = check evaluateFhirPath(keyVal, suffixPath, extensions, constants);
+            foreach json r in partial {
+                aggregated.push(r);
+            }
+        }
+        return aggregated;
     }
 
     // Standard FHIRPath evaluation
