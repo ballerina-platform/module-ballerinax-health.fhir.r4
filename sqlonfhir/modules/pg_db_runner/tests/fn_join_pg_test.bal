@@ -1,12 +1,12 @@
 // Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
-// 
+//
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -39,12 +39,6 @@ json[] fnJoinResources = [
 @test:Config {}
 function testJoinWithComma() returns error? {
     postgresql:Client dbClient = check new (host, username, password, database, port);
-    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
-    _ = check dbClient->execute(`DELETE FROM PatientTable`);
-    foreach json r in fnJoinResources {
-        string rStr = r.toJsonString();
-        _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
-    }
     json viewJson = {
         "resource": "Patient",
         "status": "active",
@@ -75,15 +69,27 @@ function testJoinWithComma() returns error? {
         resourceColumn: "resource_json",
         tableName: "PatientTable"
     };
-    string viewSql = check generateQuery(viewJson, ctx);
-    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
-    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
     json[] result = [];
-    check from record {} row in resultStream
-        do {
-            result.push(row.toJson());
-        };
+    do {
+        _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+        _ = check dbClient->execute(`DELETE FROM PatientTable`);
+        foreach json r in fnJoinResources {
+            string rStr = r.toJsonString();
+            _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+        }
+        string viewSql = check generateQuery(viewJson, ctx);
+        _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+        _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+        stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+        check from record {} row in resultStream
+            do {
+                result.push(row.toJson());
+            };
+    } on fail error e {
+        _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+        check dbClient.close();
+        return e;
+    }
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
     check dbClient.close();
     assertResultsMatch(result, expected);
@@ -92,12 +98,6 @@ function testJoinWithComma() returns error? {
 @test:Config {}
 function testJoinWithEmptyValue() returns error? {
     postgresql:Client dbClient = check new (host, username, password, database, port);
-    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
-    _ = check dbClient->execute(`DELETE FROM PatientTable`);
-    foreach json r in fnJoinResources {
-        string rStr = r.toJsonString();
-        _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
-    }
     json viewJson = {
         "resource": "Patient",
         "status": "active",
@@ -128,15 +128,27 @@ function testJoinWithEmptyValue() returns error? {
         resourceColumn: "resource_json",
         tableName: "PatientTable"
     };
-    string viewSql = check generateQuery(viewJson, ctx);
-    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
-    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
     json[] result = [];
-    check from record {} row in resultStream
-        do {
-            result.push(row.toJson());
-        };
+    do {
+        _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+        _ = check dbClient->execute(`DELETE FROM PatientTable`);
+        foreach json r in fnJoinResources {
+            string rStr = r.toJsonString();
+            _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+        }
+        string viewSql = check generateQuery(viewJson, ctx);
+        _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+        _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+        stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+        check from record {} row in resultStream
+            do {
+                result.push(row.toJson());
+            };
+    } on fail error e {
+        _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+        check dbClient.close();
+        return e;
+    }
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
     check dbClient.close();
     assertResultsMatch(result, expected);
@@ -145,12 +157,6 @@ function testJoinWithEmptyValue() returns error? {
 @test:Config {}
 function testJoinWithNoValueDefaultToNoSeparator() returns error? {
     postgresql:Client dbClient = check new (host, username, password, database, port);
-    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
-    _ = check dbClient->execute(`DELETE FROM PatientTable`);
-    foreach json r in fnJoinResources {
-        string rStr = r.toJsonString();
-        _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
-    }
     json viewJson = {
         "resource": "Patient",
         "status": "active",
@@ -181,15 +187,27 @@ function testJoinWithNoValueDefaultToNoSeparator() returns error? {
         resourceColumn: "resource_json",
         tableName: "PatientTable"
     };
-    string viewSql = check generateQuery(viewJson, ctx);
-    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
-    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
-    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
     json[] result = [];
-    check from record {} row in resultStream
-        do {
-            result.push(row.toJson());
-        };
+    do {
+        _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+        _ = check dbClient->execute(`DELETE FROM PatientTable`);
+        foreach json r in fnJoinResources {
+            string rStr = r.toJsonString();
+            _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+        }
+        string viewSql = check generateQuery(viewJson, ctx);
+        _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+        _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+        stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+        check from record {} row in resultStream
+            do {
+                result.push(row.toJson());
+            };
+    } on fail error e {
+        _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+        check dbClient.close();
+        return e;
+    }
     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
     check dbClient.close();
     assertResultsMatch(result, expected);

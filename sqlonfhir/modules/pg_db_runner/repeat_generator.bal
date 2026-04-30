@@ -176,6 +176,26 @@ isolated function collectTopLevelRepeat(
 
     foreach sql_on_fhir_lib:ViewDefinitionSelect sel in selects {
         if isRepeatSelect(sel) {
+            int repeatSelIdx = indexOfSelect(combination, sel);
+            if repeatSelIdx >= 0 {
+                int repeatUnionChoice = combination.unionChoices[repeatSelIdx];
+                sql_on_fhir_lib:ViewDefinitionSelect[]? repeatUnionAll = sel.unionAll;
+                if repeatUnionAll is sql_on_fhir_lib:ViewDefinitionSelect[] && repeatUnionChoice >= 0 && repeatUnionChoice < repeatUnionAll.length() {
+                    sql_on_fhir_lib:ViewDefinitionSelect branch = repeatUnionAll[repeatUnionChoice];
+                    if isRepeatSelect(branch) {
+                        result.push(branch);
+                    } else {
+                        sql_on_fhir_lib:ViewDefinitionSelect[]? branchNested = branch.'select;
+                        if branchNested is sql_on_fhir_lib:ViewDefinitionSelect[] {
+                            foreach sql_on_fhir_lib:ViewDefinitionSelect ns in branchNested {
+                                if isRepeatSelect(ns) {
+                                    result.push(ns);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             result.push(sel);
             continue;
         }

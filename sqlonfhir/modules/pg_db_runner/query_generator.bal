@@ -376,25 +376,54 @@ isolated function combinationHasForEach(SelectCombination combination) returns b
     return false;
 }
 
+# Check whether a single select element (or any element reachable from it) uses repeat.
+#
+# Recursively checks nested `select` arrays and `unionAll` options.
+#
+# + sel - The select element to check
+# + return - `true` if the element or any descendant uses repeat
+isolated function selectHasRepeat(sql_on_fhir_lib:ViewDefinitionSelect sel) returns boolean {
+    string[]? rep = sel.repeat;
+    if rep is string[] && rep.length() > 0 {
+        return true;
+    }
+    sql_on_fhir_lib:ViewDefinitionSelect[]? nested = sel.'select;
+    if nested is sql_on_fhir_lib:ViewDefinitionSelect[] {
+        foreach sql_on_fhir_lib:ViewDefinitionSelect ns in nested {
+            if selectHasRepeat(ns) {
+                return true;
+            }
+        }
+    }
+    sql_on_fhir_lib:ViewDefinitionSelect[]? ua = sel.unionAll;
+    if ua is sql_on_fhir_lib:ViewDefinitionSelect[] {
+        foreach sql_on_fhir_lib:ViewDefinitionSelect u in ua {
+            if selectHasRepeat(u) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 # Check whether any select in the combination has a `repeat` directive.
 #
-# Also checks the chosen `unionAll` branch for each select.
+# Recursively checks nested `select` arrays and `unionAll` options, and also
+# checks the chosen `unionAll` branch for each top-level select element.
 #
 # + combination - The select combination
-# + return - `true` if any select (or chosen union branch) uses repeat
+# + return - `true` if any select (or any descendant) uses repeat
 isolated function combinationHasRepeat(SelectCombination combination) returns boolean {
     foreach int i in 0 ..< combination.selects.length() {
         sql_on_fhir_lib:ViewDefinitionSelect sel = combination.selects[i];
-        string[]? rep = sel.repeat;
-        if rep is string[] && rep.length() > 0 {
+        if selectHasRepeat(sel) {
             return true;
         }
         int unionChoice = combination.unionChoices[i];
         sql_on_fhir_lib:ViewDefinitionSelect[]? unionAll = sel.unionAll;
         if unionAll is sql_on_fhir_lib:ViewDefinitionSelect[] && unionChoice >= 0 && unionChoice < unionAll.length() {
             sql_on_fhir_lib:ViewDefinitionSelect branch = unionAll[unionChoice];
-            string[]? branchRep = branch.repeat;
-            if branchRep is string[] && branchRep.length() > 0 {
+            if selectHasRepeat(branch) {
                 return true;
             }
         }
