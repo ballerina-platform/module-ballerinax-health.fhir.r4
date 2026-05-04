@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.12.10"
+distribution-version = "2201.12.3"
 
 [[package]]
 org = "ballerina"
@@ -331,8 +331,8 @@ modules = [
 
 [[package]]
 org = "ballerinax"
-name = "health.fhir.r4.ihe.pdqm"
-version = "3.2.0"
+name = "health.fhir.r4.ihe.pdqm320"
+version = "1.0.1"
 dependencies = [
 	{org = "ballerina", name = "constraint"},
 	{org = "ballerina", name = "log"},
@@ -340,7 +340,7 @@ dependencies = [
 	{org = "ballerinax", name = "health.fhir.r4.international401"}
 ]
 modules = [
-	{org = "ballerinax", packageName = "health.fhir.r4.ihe.pdqm", moduleName = "health.fhir.r4.ihe.pdqm"}
+	{org = "ballerinax", packageName = "health.fhir.r4.ihe.pdqm320", moduleName = "health.fhir.r4.ihe.pdqm320"}
 ]
 
 [[package]]
