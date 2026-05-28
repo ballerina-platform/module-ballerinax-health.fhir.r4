@@ -59,7 +59,7 @@ compliant with https://profiles.ihe.net/ITI/PDQm/ implementation guide.
 
 ## Sample Usage
 
-This section focuses on samples depicting how to use this package to implement FHIR related integrations
+This section focuses on samples depicting how to use this package to implement FHIR-related integrations
 
 ### Prerequisites
 
