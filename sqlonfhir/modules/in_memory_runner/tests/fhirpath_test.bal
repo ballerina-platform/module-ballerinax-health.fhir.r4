@@ -1,0 +1,448 @@
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
+// 
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+// Source: SQL-on-FHIR v2 test suite (https://github.com/FHIR/sql-on-fhir-v2)
+import ballerina/test;
+import mahima_de_silva/sql_on_fhir_lib;
+
+json[] fhirpathResources = [
+    {
+        "resourceType": "Patient",
+        "id": "pt1",
+        "managingOrganization": {
+            "reference": "Organization/o1"
+        },
+        "name": [
+            {
+                "family": "f1.1",
+                "use": "official",
+                "given": [
+                    "g1.1.1",
+                    "g1.1.2"
+                ]
+            },
+            {
+                "family": "f1.2",
+                "given": [
+                    "g1.2.1"
+                ]
+            }
+        ],
+        "active": true
+    },
+    {
+        "resourceType": "Patient",
+        "id": "pt2",
+        "managingOrganization": {
+            "reference": "http://myapp.com/prefix/Organization/o2"
+        },
+        "name": [
+            {
+                "family": "f2.1"
+            },
+            {
+                "family": "f2.2",
+                "use": "official"
+            }
+        ],
+        "active": false
+    },
+    {
+        "resourceType": "Patient",
+        "id": "pt3"
+    }
+];
+
+
+@test:Config {}
+function testOneElement() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "id",
+                        path: "id",
+                        'type: "id"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "pt1"
+        },
+        {
+            "id": "pt2"
+        },
+        {
+            "id": "pt3"
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testTwoElementsFirst() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "v",
+                        path: "name.family.first()",
+                        'type: "string"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "v": "f1.1"
+        },
+        {
+            "v": "f2.1"
+        },
+        {
+            "v": ()
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testCollection() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "v",
+                        path: "name.family",
+                        'type: "string",
+                        collection: true
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "v": [
+                "f1.1",
+                "f1.2"
+            ]
+        },
+        {
+            "v": [
+                "f2.1",
+                "f2.2"
+            ]
+        },
+        {
+            "v": []
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testIndex0() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "v",
+                        path: "name[0].family",
+                        'type: "string"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "v": "f1.1"
+        },
+        {
+            "v": "f2.1"
+        },
+        {
+            "v": ()
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testIndex1() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "v",
+                        path: "name[1].family",
+                        'type: "string"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "v": "f1.2"
+        },
+        {
+            "v": "f2.2"
+        },
+        {
+            "v": ()
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testOutOfIndex() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "v",
+                        path: "name[2].family",
+                        'type: "string"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "v": ()
+        },
+        {
+            "v": ()
+        },
+        {
+            "v": ()
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testWhere() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "v",
+                        path: "name.where(use='official').family",
+                        'type: "string"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "v": "f1.1"
+        },
+        {
+            "v": "f2.2"
+        },
+        {
+            "v": ()
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testExists() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "id",
+                        path: "id",
+                        'type: "id"
+                    },
+                    {
+                        name: "has_name",
+                        path: "name.exists()",
+                        'type: "boolean"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "pt1",
+            "has_name": true
+        },
+        {
+            "id": "pt2",
+            "has_name": true
+        },
+        {
+            "id": "pt3",
+            "has_name": false
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testNestedExists() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "id",
+                        path: "id",
+                        'type: "id"
+                    },
+                    {
+                        name: "has_given",
+                        path: "name.given.exists()",
+                        'type: "boolean"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "pt1",
+            "has_given": true
+        },
+        {
+            "id": "pt2",
+            "has_given": false
+        },
+        {
+            "id": "pt3",
+            "has_given": false
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testStringJoin() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "id",
+                        path: "id",
+                        'type: "id"
+                    },
+                    {
+                        name: "given",
+                        path: "name.given.join(', ' )",
+                        'type: "string"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "pt1",
+            "given": "g1.1.1, g1.1.2, g1.2.1"
+        },
+        {
+            "id": "pt2",
+            "given": ""
+        },
+        {
+            "id": "pt3",
+            "given": ""
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}
+
+@test:Config {}
+function testStringJoinDefaultSeparator() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "id",
+                        path: "id",
+                        'type: "id"
+                    },
+                    {
+                        name: "given",
+                        path: "name.given.join()",
+                        'type: "string"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "pt1",
+            "given": "g1.1.1g1.1.2g1.2.1"
+        },
+        {
+            "id": "pt2",
+            "given": ""
+        },
+        {
+            "id": "pt3",
+            "given": ""
+        }
+    ];
+    json[] result = check evaluate(fhirpathResources, view);
+    test:assertEquals(result, expected);}

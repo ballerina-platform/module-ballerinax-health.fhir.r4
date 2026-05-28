@@ -1,0 +1,920 @@
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
+// 
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+// // Source: SQL-on-FHIR v2 test suite (https://github.com/FHIR/sql-on-fhir-v2)
+
+// TODO: implement %rowIndex support in evaluateFhirPath before enabling these tests
+
+// import ballerina/sql;
+// import ballerina/test;
+// import ballerinax/postgresql;
+
+// json[] rowIndexResources = [
+//     {
+//         "resourceType": "Patient",
+//         "id": "pt1",
+//         "name": [
+//             {
+//                 "family": "Smith",
+//                 "given": [
+//                     "John",
+//                     "James"
+//                 ]
+//             },
+//             {
+//                 "family": "Jones",
+//                 "given": [
+//                     "Jane"
+//                 ]
+//             }
+//         ],
+//         "contact": [
+//             {
+//                 "name": {
+//                     "family": "Contact1"
+//                 },
+//                 "telecom": [
+//                     {
+//                         "system": "phone",
+//                         "value": "111-1111"
+//                     },
+//                     {
+//                         "system": "email",
+//                         "value": "a@example.com"
+//                     }
+//                 ]
+//             },
+//             {
+//                 "name": {
+//                     "family": "Contact2"
+//                 },
+//                 "telecom": [
+//                     {
+//                         "system": "phone",
+//                         "value": "222-2222"
+//                     }
+//                 ]
+//             }
+//         ]
+//     },
+//     {
+//         "resourceType": "Patient",
+//         "id": "pt2",
+//         "name": [
+//             {
+//                 "family": "Brown"
+//             }
+//         ]
+//     },
+//     {
+//         "resourceType": "Patient",
+//         "id": "pt3"
+//     },
+//     {
+//         "resourceType": "QuestionnaireResponse",
+//         "id": "qr1",
+//         "item": [
+//             {
+//                 "linkId": "1",
+//                 "text": "Group 1",
+//                 "item": [
+//                     {
+//                         "linkId": "1.1",
+//                         "text": "Question 1.1"
+//                     },
+//                     {
+//                         "linkId": "1.2",
+//                         "text": "Question 1.2"
+//                     }
+//                 ]
+//             },
+//             {
+//                 "linkId": "2",
+//                 "text": "Group 2"
+//             }
+//         ]
+//     }
+// ];
+
+// @test:Config {}
+// function testRowindexAtTopLevel() returns error? {
+//     postgresql:Client dbClient = check new (host, username, password, database, port);
+//     _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+//     _ = check dbClient->execute(`DELETE FROM PatientTable`);
+//     foreach json r in rowIndexResources {
+//         string rStr = r.toJsonString();
+//         _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+//     }
+//     json viewJson = {
+//         "resource": "Patient",
+//         "status": "active",
+//         "select": [
+//             {
+//                 "column": [
+//                     {
+//                         "name": "id",
+//                         "path": "id",
+//                         "type": "id"
+//                     },
+//                     {
+//                         "name": "row_index",
+//                         "path": "%rowIndex",
+//                         "type": "integer"
+//                     }
+//                 ]
+//             }
+//         ]
+//     };
+//     json[] expected = [
+//         {
+//             "id": "pt1",
+//             "row_index": 0
+//         },
+//         {
+//             "id": "pt2",
+//             "row_index": 0
+//         },
+//         {
+//             "id": "pt3",
+//             "row_index": 0
+//         }
+//     ];
+//     TranspilerContext ctx = {
+//         resourceColumn: "resource_json",
+//         tableName: "PatientTable",
+////     };
+//     string viewSql = check generateQuery(viewJson, ctx);
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+//     stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+//     json[] result = [];
+//     check from record {} row in resultStream
+//         do {
+//             result.push(row.toJson());
+//         };
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     assertResultsMatch(result, expected);
+//     check dbClient.close();
+// }
+
+// @test:Config {}
+// function testRowindexWithForeach() returns error? {
+//     postgresql:Client dbClient = check new (host, username, password, database, port);
+//     _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+//     _ = check dbClient->execute(`DELETE FROM PatientTable`);
+//     foreach json r in rowIndexResources {
+//         string rStr = r.toJsonString();
+//         _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+//     }
+//     json viewJson = {
+//         "resource": "Patient",
+//         "status": "active",
+//         "select": [
+//             {
+//                 "column": [
+//                     {
+//                         "name": "id",
+//                         "path": "id",
+//                         "type": "id"
+//                     }
+//                 ]
+//             },
+//             {
+//                 "forEach": "name",
+//                 "column": [
+//                     {
+//                         "name": "name_index",
+//                         "path": "%rowIndex",
+//                         "type": "integer"
+//                     },
+//                     {
+//                         "name": "family",
+//                         "path": "family",
+//                         "type": "string"
+//                     }
+//                 ]
+//             }
+//         ]
+//     };
+//     json[] expected = [
+//         {
+//             "id": "pt1",
+//             "name_index": 0,
+//             "family": "Smith"
+//         },
+//         {
+//             "id": "pt1",
+//             "name_index": 1,
+//             "family": "Jones"
+//         },
+//         {
+//             "id": "pt2",
+//             "name_index": 0,
+//             "family": "Brown"
+//         }
+//     ];
+//     TranspilerContext ctx = {
+//         resourceColumn: "resource_json",
+//         tableName: "PatientTable",
+////     };
+//     string viewSql = check generateQuery(viewJson, ctx);
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+//     stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+//     json[] result = [];
+//     check from record {} row in resultStream
+//         do {
+//             result.push(row.toJson());
+//         };
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     assertResultsMatch(result, expected);
+//     check dbClient.close();
+// }
+
+// @test:Config {}
+// function testRowindexWithForeachornull() returns error? {
+//     postgresql:Client dbClient = check new (host, username, password, database, port);
+//     _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+//     _ = check dbClient->execute(`DELETE FROM PatientTable`);
+//     foreach json r in rowIndexResources {
+//         string rStr = r.toJsonString();
+//         _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+//     }
+//     json viewJson = {
+//         "resource": "Patient",
+//         "status": "active",
+//         "select": [
+//             {
+//                 "column": [
+//                     {
+//                         "name": "id",
+//                         "path": "id",
+//                         "type": "id"
+//                     }
+//                 ]
+//             },
+//             {
+//                 "forEachOrNull": "name",
+//                 "column": [
+//                     {
+//                         "name": "name_index",
+//                         "path": "%rowIndex",
+//                         "type": "integer"
+//                     },
+//                     {
+//                         "name": "family",
+//                         "path": "family",
+//                         "type": "string"
+//                     }
+//                 ]
+//             }
+//         ]
+//     };
+//     json[] expected = [
+//         {
+//             "id": "pt1",
+//             "name_index": 0,
+//             "family": "Smith"
+//         },
+//         {
+//             "id": "pt1",
+//             "name_index": 1,
+//             "family": "Jones"
+//         },
+//         {
+//             "id": "pt2",
+//             "name_index": 0,
+//             "family": "Brown"
+//         },
+//         {
+//             "id": "pt3",
+//             "name_index": 0,
+//             "family": ()
+//         }
+//     ];
+//     TranspilerContext ctx = {
+//         resourceColumn: "resource_json",
+//         tableName: "PatientTable",
+////     };
+//     string viewSql = check generateQuery(viewJson, ctx);
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+//     stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+//     json[] result = [];
+//     check from record {} row in resultStream
+//         do {
+//             result.push(row.toJson());
+//         };
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     assertResultsMatch(result, expected);
+//     check dbClient.close();
+// }
+
+// @test:Config {}
+// function testRowindexWithNestedForeach() returns error? {
+//     postgresql:Client dbClient = check new (host, username, password, database, port);
+//     _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+//     _ = check dbClient->execute(`DELETE FROM PatientTable`);
+//     foreach json r in rowIndexResources {
+//         string rStr = r.toJsonString();
+//         _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+//     }
+//     json viewJson = {
+//         "resource": "Patient",
+//         "status": "active",
+//         "select": [
+//             {
+//                 "column": [
+//                     {
+//                         "name": "id",
+//                         "path": "id",
+//                         "type": "id"
+//                     }
+//                 ]
+//             },
+//             {
+//                 "forEach": "contact",
+//                 "column": [
+//                     {
+//                         "name": "contact_index",
+//                         "path": "%rowIndex",
+//                         "type": "integer"
+//                     },
+//                     {
+//                         "name": "contact_family",
+//                         "path": "name.family",
+//                         "type": "string"
+//                     }
+//                 ],
+//                 "select": [
+//                     {
+//                         "forEach": "telecom",
+//                         "column": [
+//                             {
+//                                 "name": "telecom_index",
+//                                 "path": "%rowIndex",
+//                                 "type": "integer"
+//                             },
+//                             {
+//                                 "name": "system",
+//                                 "path": "system",
+//                                 "type": "code"
+//                             }
+//                         ]
+//                     }
+//                 ]
+//             }
+//         ]
+//     };
+//     json[] expected = [
+//         {
+//             "id": "pt1",
+//             "contact_index": 0,
+//             "contact_family": "Contact1",
+//             "telecom_index": 0,
+//             "system": "phone"
+//         },
+//         {
+//             "id": "pt1",
+//             "contact_index": 0,
+//             "contact_family": "Contact1",
+//             "telecom_index": 1,
+//             "system": "email"
+//         },
+//         {
+//             "id": "pt1",
+//             "contact_index": 1,
+//             "contact_family": "Contact2",
+//             "telecom_index": 0,
+//             "system": "phone"
+//         }
+//     ];
+//     TranspilerContext ctx = {
+//         resourceColumn: "resource_json",
+//         tableName: "PatientTable",
+////     };
+//     string viewSql = check generateQuery(viewJson, ctx);
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+//     stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+//     json[] result = [];
+//     check from record {} row in resultStream
+//         do {
+//             result.push(row.toJson());
+//         };
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     assertResultsMatch(result, expected);
+//     check dbClient.close();
+// }
+
+// @test:Config {}
+// function testRowindexWithRepeat() returns error? {
+//     postgresql:Client dbClient = check new (host, username, password, database, port);
+//     _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+//     _ = check dbClient->execute(`DELETE FROM PatientTable`);
+//     foreach json r in rowIndexResources {
+//         string rStr = r.toJsonString();
+//         _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+//     }
+//     json viewJson = {
+//         "resource": "QuestionnaireResponse",
+//         "status": "active",
+//         "select": [
+//             {
+//                 "column": [
+//                     {
+//                         "name": "id",
+//                         "path": "id",
+//                         "type": "id"
+//                     }
+//                 ]
+//             },
+//             {
+//                 "repeat": [
+//                     "item"
+//                 ],
+//                 "column": [
+//                     {
+//                         "name": "item_index",
+//                         "path": "%rowIndex",
+//                         "type": "integer"
+//                     },
+//                     {
+//                         "name": "linkId",
+//                         "path": "linkId",
+//                         "type": "string"
+//                     }
+//                 ]
+//             }
+//         ]
+//     };
+//     json[] expected = [
+//         {
+//             "id": "qr1",
+//             "item_index": 0,
+//             "linkId": "1"
+//         },
+//         {
+//             "id": "qr1",
+//             "item_index": 1,
+//             "linkId": "1.1"
+//         },
+//         {
+//             "id": "qr1",
+//             "item_index": 2,
+//             "linkId": "1.2"
+//         },
+//         {
+//             "id": "qr1",
+//             "item_index": 3,
+//             "linkId": "2"
+//         }
+//     ];
+//     TranspilerContext ctx = {
+//         resourceColumn: "resource_json",
+//         tableName: "PatientTable",
+////     };
+//     string viewSql = check generateQuery(viewJson, ctx);
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+//     stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+//     json[] result = [];
+//     check from record {} row in resultStream
+//         do {
+//             result.push(row.toJson());
+//         };
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     assertResultsMatch(result, expected);
+//     check dbClient.close();
+// }
+
+// @test:Config {}
+// function testRowindexWithUnionall() returns error? {
+//     postgresql:Client dbClient = check new (host, username, password, database, port);
+//     _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+//     _ = check dbClient->execute(`DELETE FROM PatientTable`);
+//     foreach json r in rowIndexResources {
+//         string rStr = r.toJsonString();
+//         _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+//     }
+//     json viewJson = {
+//         "resource": "Patient",
+//         "status": "active",
+//         "select": [
+//             {
+//                 "column": [
+//                     {
+//                         "name": "id",
+//                         "path": "id",
+//                         "type": "id"
+//                     }
+//                 ]
+//             },
+//             {
+//                 "unionAll": [
+//                     {
+//                         "forEach": "name",
+//                         "column": [
+//                             {
+//                                 "name": "index",
+//                                 "path": "%rowIndex",
+//                                 "type": "integer"
+//                             },
+//                             {
+//                                 "name": "value",
+//                                 "path": "family",
+//                                 "type": "string"
+//                             },
+//                             {
+//                                 "name": "source",
+//                                 "path": "'name'",
+//                                 "type": "string"
+//                             }
+//                         ]
+//                     },
+//                     {
+//                         "forEach": "contact",
+//                         "column": [
+//                             {
+//                                 "name": "index",
+//                                 "path": "%rowIndex",
+//                                 "type": "integer"
+//                             },
+//                             {
+//                                 "name": "value",
+//                                 "path": "name.family",
+//                                 "type": "string"
+//                             },
+//                             {
+//                                 "name": "source",
+//                                 "path": "'contact'",
+//                                 "type": "string"
+//                             }
+//                         ]
+//                     }
+//                 ]
+//             }
+//         ]
+//     };
+//     json[] expected = [
+//         {
+//             "id": "pt1",
+//             "index": 0,
+//             "value": "Smith",
+//             "source": "name"
+//         },
+//         {
+//             "id": "pt1",
+//             "index": 1,
+//             "value": "Jones",
+//             "source": "name"
+//         },
+//         {
+//             "id": "pt1",
+//             "index": 0,
+//             "value": "Contact1",
+//             "source": "contact"
+//         },
+//         {
+//             "id": "pt1",
+//             "index": 1,
+//             "value": "Contact2",
+//             "source": "contact"
+//         },
+//         {
+//             "id": "pt2",
+//             "index": 0,
+//             "value": "Brown",
+//             "source": "name"
+//         }
+//     ];
+//     TranspilerContext ctx = {
+//         resourceColumn: "resource_json",
+//         tableName: "PatientTable",
+////     };
+//     string viewSql = check generateQuery(viewJson, ctx);
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+//     stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+//     json[] result = [];
+//     check from record {} row in resultStream
+//         do {
+//             result.push(row.toJson());
+//         };
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     assertResultsMatch(result, expected);
+//     check dbClient.close();
+// }
+
+// @test:Config {}
+// function testRowindexInUnionallWithoutForeach() returns error? {
+//     postgresql:Client dbClient = check new (host, username, password, database, port);
+//     _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+//     _ = check dbClient->execute(`DELETE FROM PatientTable`);
+//     foreach json r in rowIndexResources {
+//         string rStr = r.toJsonString();
+//         _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+//     }
+//     json viewJson = {
+//         "resource": "Patient",
+//         "status": "active",
+//         "select": [
+//             {
+//                 "unionAll": [
+//                     {
+//                         "column": [
+//                             {
+//                                 "name": "id",
+//                                 "path": "id",
+//                                 "type": "id"
+//                             },
+//                             {
+//                                 "name": "row_index",
+//                                 "path": "%rowIndex",
+//                                 "type": "integer"
+//                             },
+//                             {
+//                                 "name": "source",
+//                                 "path": "'a'",
+//                                 "type": "string"
+//                             }
+//                         ]
+//                     },
+//                     {
+//                         "column": [
+//                             {
+//                                 "name": "id",
+//                                 "path": "id",
+//                                 "type": "id"
+//                             },
+//                             {
+//                                 "name": "row_index",
+//                                 "path": "%rowIndex",
+//                                 "type": "integer"
+//                             },
+//                             {
+//                                 "name": "source",
+//                                 "path": "'b'",
+//                                 "type": "string"
+//                             }
+//                         ]
+//                     }
+//                 ]
+//             }
+//         ]
+//     };
+//     json[] expected = [
+//         {
+//             "id": "pt1",
+//             "row_index": 0,
+//             "source": "a"
+//         },
+//         {
+//             "id": "pt2",
+//             "row_index": 0,
+//             "source": "a"
+//         },
+//         {
+//             "id": "pt3",
+//             "row_index": 0,
+//             "source": "a"
+//         },
+//         {
+//             "id": "pt1",
+//             "row_index": 0,
+//             "source": "b"
+//         },
+//         {
+//             "id": "pt2",
+//             "row_index": 0,
+//             "source": "b"
+//         },
+//         {
+//             "id": "pt3",
+//             "row_index": 0,
+//             "source": "b"
+//         }
+//     ];
+//     TranspilerContext ctx = {
+//         resourceColumn: "resource_json",
+//         tableName: "PatientTable",
+////     };
+//     string viewSql = check generateQuery(viewJson, ctx);
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+//     stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+//     json[] result = [];
+//     check from record {} row in resultStream
+//         do {
+//             result.push(row.toJson());
+//         };
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     assertResultsMatch(result, expected);
+//     check dbClient.close();
+// }
+
+// @test:Config {}
+// function testRowindexInUnionallInsideForeach() returns error? {
+//     postgresql:Client dbClient = check new (host, username, password, database, port);
+//     _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+//     _ = check dbClient->execute(`DELETE FROM PatientTable`);
+//     foreach json r in rowIndexResources {
+//         string rStr = r.toJsonString();
+//         _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+//     }
+//     json viewJson = {
+//         "resource": "Patient",
+//         "status": "active",
+//         "select": [
+//             {
+//                 "column": [
+//                     {
+//                         "name": "id",
+//                         "path": "id",
+//                         "type": "id"
+//                     }
+//                 ]
+//             },
+//             {
+//                 "forEach": "contact",
+//                 "column": [
+//                     {
+//                         "name": "contact_index",
+//                         "path": "%rowIndex",
+//                         "type": "integer"
+//                     }
+//                 ],
+//                 "select": [
+//                     {
+//                         "unionAll": [
+//                             {
+//                                 "forEach": "telecom",
+//                                 "column": [
+//                                     {
+//                                         "name": "telecom_index",
+//                                         "path": "%rowIndex",
+//                                         "type": "integer"
+//                                     },
+//                                     {
+//                                         "name": "value",
+//                                         "path": "value",
+//                                         "type": "string"
+//                                     }
+//                                 ]
+//                             },
+//                             {
+//                                 "column": [
+//                                     {
+//                                         "name": "telecom_index",
+//                                         "path": "%rowIndex",
+//                                         "type": "integer"
+//                                     },
+//                                     {
+//                                         "name": "value",
+//                                         "path": "name.family",
+//                                         "type": "string"
+//                                     }
+//                                 ]
+//                             }
+//                         ]
+//                     }
+//                 ]
+//             }
+//         ]
+//     };
+//     json[] expected = [
+//         {
+//             "id": "pt1",
+//             "contact_index": 0,
+//             "telecom_index": 0,
+//             "value": "111-1111"
+//         },
+//         {
+//             "id": "pt1",
+//             "contact_index": 0,
+//             "telecom_index": 1,
+//             "value": "a@example.com"
+//         },
+//         {
+//             "id": "pt1",
+//             "contact_index": 0,
+//             "telecom_index": 0,
+//             "value": "Contact1"
+//         },
+//         {
+//             "id": "pt1",
+//             "contact_index": 1,
+//             "telecom_index": 0,
+//             "value": "222-2222"
+//         },
+//         {
+//             "id": "pt1",
+//             "contact_index": 1,
+//             "telecom_index": 1,
+//             "value": "Contact2"
+//         }
+//     ];
+//     TranspilerContext ctx = {
+//         resourceColumn: "resource_json",
+//         tableName: "PatientTable",
+////     };
+//     string viewSql = check generateQuery(viewJson, ctx);
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+//     stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+//     json[] result = [];
+//     check from record {} row in resultStream
+//         do {
+//             result.push(row.toJson());
+//         };
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     assertResultsMatch(result, expected);
+//     check dbClient.close();
+// }
+
+// @test:Config {}
+// function testRowindexForSurrogateKey() returns error? {
+//     postgresql:Client dbClient = check new (host, username, password, database, port);
+//     _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS PatientTable (resource_json JSONB)`);
+//     _ = check dbClient->execute(`DELETE FROM PatientTable`);
+//     foreach json r in rowIndexResources {
+//         string rStr = r.toJsonString();
+//         _ = check dbClient->execute(`INSERT INTO PatientTable (resource_json) VALUES (${rStr}::jsonb)`);
+//     }
+//     json viewJson = {
+//         "resource": "Patient",
+//         "status": "active",
+//         "select": [
+//             {
+//                 "column": [
+//                     {
+//                         "name": "id",
+//                         "path": "id",
+//                         "type": "id"
+//                     }
+//                 ]
+//             },
+//             {
+//                 "forEach": "name",
+//                 "column": [
+//                     {
+//                         "name": "name_index",
+//                         "path": "%rowIndex",
+//                         "type": "integer"
+//                     },
+//                     {
+//                         "name": "family",
+//                         "path": "family",
+//                         "type": "string"
+//                     }
+//                 ]
+//             }
+//         ]
+//     };
+//     json[] expected = [
+//         {
+//             "id": "pt1",
+//             "name_index": 0,
+//             "family": "Smith"
+//         },
+//         {
+//             "id": "pt1",
+//             "name_index": 1,
+//             "family": "Jones"
+//         },
+//         {
+//             "id": "pt2",
+//             "name_index": 0,
+//             "family": "Brown"
+//         }
+//     ];
+//     TranspilerContext ctx = {
+//         resourceColumn: "resource_json",
+//         tableName: "PatientTable",
+////     };
+//     string viewSql = check generateQuery(viewJson, ctx);
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+//     stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+//     json[] result = [];
+//     check from record {} row in resultStream
+//         do {
+//             result.push(row.toJson());
+//         };
+//     _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+//     assertResultsMatch(result, expected);
+//     check dbClient.close();
+// }

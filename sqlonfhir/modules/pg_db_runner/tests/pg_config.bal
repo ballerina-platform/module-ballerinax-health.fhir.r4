@@ -1,0 +1,87 @@
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
+// 
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+
+import ballerina/sql;
+import ballerina/test;
+import ballerinax/postgresql.driver as _;
+
+configurable string host = "localhost";
+configurable int port = 5432;
+configurable string database = "postgres";
+configurable string username = "postgres";
+configurable string password = "postgres";
+
+// Satisfies sql:ParameterizedQuery for a runtime SQL string with no value bindings,
+// used to execute dynamically generated DDL (e.g. CREATE VIEW).
+class DynamicQuery {
+    *sql:ParameterizedQuery;
+    public final (string[] & readonly) strings;
+    public final sql:Value[] insertions = [];
+
+    function init(string sql) {
+        self.strings = [sql].cloneReadOnly();
+    }
+}
+
+// Assert two json[] result sets are equal as multisets, ignoring key insertion order within each row.
+function assertResultsMatch(json[] result, json[] expected) {
+    test:assertEquals(result.length(), expected.length(), msg = "Row count mismatch");
+    json[] remaining = result.clone();
+    foreach json expectedRow in expected {
+        int foundIdx = -1;
+        foreach int i in 0 ..< remaining.length() {
+            if jsonRowEquals(expectedRow, remaining[i]) {
+                foundIdx = i;
+                break;
+            }
+        }
+        if foundIdx == -1 {
+            test:assertFail(string `Expected row not found in result: ${expectedRow.toJsonString()}`);
+        } else {
+            _ = remaining.remove(foundIdx);
+        }
+    }
+}
+
+function jsonRowEquals(json a, json b) returns boolean {
+    if a is map<json> && b is map<json> {
+        if a.length() != b.length() {
+            return false;
+        }
+        foreach [string, json] [key, val] in a.entries() {
+            if !b.hasKey(key) {
+                return false;
+            }
+            if !jsonRowEquals(val, b.get(key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    if a is json[] && b is json[] {
+        if a.length() != b.length() {
+            return false;
+        }
+        foreach int i in 0 ..< a.length() {
+            if !jsonRowEquals(a[i], b[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return a == b;
+}

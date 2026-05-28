@@ -1,0 +1,308 @@
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
+// 
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+// Source: SQL-on-FHIR v2 test suite (https://github.com/FHIR/sql-on-fhir-v2)
+import ballerina/test;
+
+import mahima_de_silva/sql_on_fhir_lib;
+
+json[] collectionResources = [
+    {
+        "resourceType": "Patient",
+        "id": "pt1",
+        "name": [
+            {
+                "use": "official",
+                "family": "f1.1",
+                "given": [
+                    "g1.1"
+                ]
+            },
+            {
+                "family": "f1.2",
+                "given": [
+                    "g1.2",
+                    "g1.3"
+                ]
+            }
+        ],
+        "gender": "male",
+        "birthDate": "1950-01-01",
+        "address": [
+            {
+                "city": "c1"
+            }
+        ]
+    },
+    {
+        "resourceType": "Patient",
+        "id": "pt2",
+        "name": [
+            {
+                "family": "f2.1",
+                "given": [
+                    "g2.1"
+                ]
+            },
+            {
+                "use": "official",
+                "family": "f2.2",
+                "given": [
+                    "g2.2",
+                    "g2.3"
+                ]
+            }
+        ],
+        "gender": "female",
+        "birthDate": "1950-01-01"
+    }
+];
+
+@test:Config {}
+function testFailWhenCollectionIsNotTrue() {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "id",
+                        path: "id",
+                        'type: "id"
+                    },
+                    {
+                        name: "last_name",
+                        path: "name.family",
+                        'type: "string",
+                        collection: false
+                    },
+                    {
+                        name: "first_name",
+                        path: "name.given",
+                        'type: "string",
+                        collection: true
+                    }
+                ]
+            }
+        ]
+    };
+    json[]|error result = evaluate(collectionResources, view);
+    test:assertTrue(result is error, msg = "Expected an error for: fail when 'collection' is not true");
+}
+
+@test:Config {}
+function testCollectionTrue() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "id",
+                        path: "id",
+                        'type: "id"
+                    },
+                    {
+                        name: "last_name",
+                        path: "name.family",
+                        'type: "string",
+                        collection: true
+                    },
+                    {
+                        name: "first_name",
+                        path: "name.given",
+                        'type: "string",
+                        collection: true
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "pt1",
+            "last_name": [
+                "f1.1",
+                "f1.2"
+            ],
+            "first_name": [
+                "g1.1",
+                "g1.2",
+                "g1.3"
+            ]
+        },
+        {
+            "id": "pt2",
+            "last_name": [
+                "f2.1",
+                "f2.2"
+            ],
+            "first_name": [
+                "g2.1",
+                "g2.2",
+                "g2.3"
+            ]
+        }
+    ];
+    json[] result = check evaluate(collectionResources, view);
+    test:assertEquals(result, expected);
+}
+
+@test:Config {}
+function testCollectionFalseRelativeToForeachParent() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "id",
+                        path: "id",
+                        'type: "id"
+                    }
+                ],
+                'select: [
+                    {
+                        forEach: "name",
+                        column: [
+                            {
+                                name: "last_name",
+                                path: "family",
+                                'type: "string",
+                                collection: false
+                            },
+                            {
+                                name: "first_name",
+                                path: "given",
+                                'type: "string",
+                                collection: true
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "pt1",
+            "last_name": "f1.1",
+            "first_name": [
+                "g1.1"
+            ]
+        },
+        {
+            "id": "pt1",
+            "last_name": "f1.2",
+            "first_name": [
+                "g1.2",
+                "g1.3"
+            ]
+        },
+        {
+            "id": "pt2",
+            "last_name": "f2.1",
+            "first_name": [
+                "g2.1"
+            ]
+        },
+        {
+            "id": "pt2",
+            "last_name": "f2.2",
+            "first_name": [
+                "g2.2",
+                "g2.3"
+            ]
+        }
+    ];
+    json[] result = check evaluate(collectionResources, view);
+    test:assertEquals(result, expected);
+}
+
+@test:Config {}
+function testCollectionFalseRelativeToForeachornullParent() returns error? {
+    sql_on_fhir_lib:ViewDefinition view = {
+        'resource: "Patient",
+        status: "active",
+        'select: [
+            {
+                column: [
+                    {
+                        name: "id",
+                        path: "id",
+                        'type: "id"
+                    }
+                ],
+                'select: [
+                    {
+                        forEachOrNull: "name",
+                        column: [
+                            {
+                                name: "last_name",
+                                path: "family",
+                                'type: "string",
+                                collection: false
+                            },
+                            {
+                                name: "first_name",
+                                path: "given",
+                                'type: "string",
+                                collection: true
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "pt1",
+            "last_name": "f1.1",
+            "first_name": [
+                "g1.1"
+            ]
+        },
+        {
+            "id": "pt1",
+            "last_name": "f1.2",
+            "first_name": [
+                "g1.2",
+                "g1.3"
+            ]
+        },
+        {
+            "id": "pt2",
+            "last_name": "f2.1",
+            "first_name": [
+                "g2.1"
+            ]
+        },
+        {
+            "id": "pt2",
+            "last_name": "f2.2",
+            "first_name": [
+                "g2.2",
+                "g2.3"
+            ]
+        }
+    ];
+    json[] result = check evaluate(collectionResources, view);
+    test:assertEquals(result, expected);
+}

@@ -1,0 +1,569 @@
+// Copyright (c) 2026, WSO2 LLC. (http://www.wso2.com).
+// 
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+// Source: SQL-on-FHIR v2 test suite (https://github.com/FHIR/sql-on-fhir-v2)
+import ballerina/sql;
+import ballerina/test;
+import ballerinax/postgresql;
+
+json[] fnBoundaryResources = [
+    {
+        "resourceType": "Observation",
+        "id": "o1",
+        "code": {
+            "text": "code"
+        },
+        "status": "final",
+        "valueQuantity": {
+            "value": 1.0
+        }
+    },
+    {
+        "resourceType": "Observation",
+        "id": "o2",
+        "code": {
+            "text": "code"
+        },
+        "status": "final",
+        "valueDateTime": "2010-10-10"
+    },
+    {
+        "resourceType": "Observation",
+        "id": "o3",
+        "code": {
+            "text": "code"
+        },
+        "status": "final"
+    },
+    {
+        "resourceType": "Observation",
+        "id": "o4",
+        "code": {
+            "text": "code"
+        },
+        "valueTime": "12:34"
+    },
+    {
+        "resourceType": "Patient",
+        "id": "p1",
+        "birthDate": "1970-06"
+    }
+];
+
+
+// TODO: reenable after completing fhirpath transpiler
+@test:Config {enable: false}
+function testDecimalLowboundary() returns error? {
+    postgresql:Client dbClient = check new (host, username, password, database, port);
+    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS ObservationTable (resource_json JSONB)`);
+    _ = check dbClient->execute(`DELETE FROM ObservationTable`);
+    foreach json r in fnBoundaryResources {
+        string rStr = r.toJsonString();
+        _ = check dbClient->execute(`INSERT INTO ObservationTable (resource_json) VALUES (${rStr}::jsonb)`);
+    }
+    json viewJson = {
+        "resource": "Observation",
+        "status": "active",
+        "select": [
+            {
+                "column": [
+                    {
+                        "name": "id",
+                        "path": "id",
+                        "type": "id"
+                    },
+                    {
+                        "name": "decimal",
+                        "path": "value.ofType(Quantity).value.lowBoundary()",
+                        "type": "decimal"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "o1",
+            "decimal": 0.95
+        },
+        {
+            "id": "o2",
+            "decimal": ()
+        },
+        {
+            "id": "o3",
+            "decimal": ()
+        },
+        {
+            "id": "o4",
+            "decimal": ()
+        }
+    ];
+    TranspilerContext ctx = {
+        resourceColumn: "resource_json",
+        tableName: "ObservationTable"
+    };
+    string viewSql = check generateQuery(viewJson, ctx);
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+    json[] result = [];
+    check from record {} row in resultStream
+        do {
+            result.push(row.toJson());
+        };
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    check dbClient.close();
+    assertResultsMatch(result, expected);
+}
+
+// TODO: reenable after completing fhirpath transpiler
+@test:Config {enable: false}
+function testDecimalHighboundary() returns error? {
+    postgresql:Client dbClient = check new (host, username, password, database, port);
+    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS ObservationTable (resource_json JSONB)`);
+    _ = check dbClient->execute(`DELETE FROM ObservationTable`);
+    foreach json r in fnBoundaryResources {
+        string rStr = r.toJsonString();
+        _ = check dbClient->execute(`INSERT INTO ObservationTable (resource_json) VALUES (${rStr}::jsonb)`);
+    }
+    json viewJson = {
+        "resource": "Observation",
+        "status": "active",
+        "select": [
+            {
+                "column": [
+                    {
+                        "name": "id",
+                        "path": "id",
+                        "type": "id"
+                    },
+                    {
+                        "name": "decimal",
+                        "path": "value.ofType(Quantity).value.highBoundary()",
+                        "type": "decimal"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "o1",
+            "decimal": 1.05
+        },
+        {
+            "id": "o2",
+            "decimal": ()
+        },
+        {
+            "id": "o3",
+            "decimal": ()
+        },
+        {
+            "id": "o4",
+            "decimal": ()
+        }
+    ];
+    TranspilerContext ctx = {
+        resourceColumn: "resource_json",
+        tableName: "ObservationTable"
+    };
+    string viewSql = check generateQuery(viewJson, ctx);
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+    json[] result = [];
+    check from record {} row in resultStream
+        do {
+            result.push(row.toJson());
+        };
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    check dbClient.close();
+    assertResultsMatch(result, expected);
+}
+
+// TODO: reenable after completing fhirpath transpiler
+@test:Config {enable: false}
+function testDatetimeLowboundary() returns error? {
+    postgresql:Client dbClient = check new (host, username, password, database, port);
+    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS ObservationTable (resource_json JSONB)`);
+    _ = check dbClient->execute(`DELETE FROM ObservationTable`);
+    foreach json r in fnBoundaryResources {
+        string rStr = r.toJsonString();
+        _ = check dbClient->execute(`INSERT INTO ObservationTable (resource_json) VALUES (${rStr}::jsonb)`);
+    }
+    json viewJson = {
+        "resource": "Observation",
+        "status": "active",
+        "select": [
+            {
+                "column": [
+                    {
+                        "name": "id",
+                        "path": "id",
+                        "type": "id"
+                    },
+                    {
+                        "name": "datetime",
+                        "path": "value.ofType(dateTime).lowBoundary()",
+                        "type": "dateTime"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "o1",
+            "datetime": ()
+        },
+        {
+            "id": "o2",
+            "datetime": "2010-10-10T00:00:00.000+14:00"
+        },
+        {
+            "id": "o3",
+            "datetime": ()
+        },
+        {
+            "id": "o4",
+            "datetime": ()
+        }
+    ];
+    TranspilerContext ctx = {
+        resourceColumn: "resource_json",
+        tableName: "ObservationTable"
+    };
+    string viewSql = check generateQuery(viewJson, ctx);
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+    json[] result = [];
+    check from record {} row in resultStream
+        do {
+            result.push(row.toJson());
+        };
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    check dbClient.close();
+    assertResultsMatch(result, expected);
+}
+
+// TODO: reenable after completing fhirpath transpiler
+@test:Config {enable: false}
+function testDatetimeHighboundary() returns error? {
+    postgresql:Client dbClient = check new (host, username, password, database, port);
+    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS ObservationTable (resource_json JSONB)`);
+    _ = check dbClient->execute(`DELETE FROM ObservationTable`);
+    foreach json r in fnBoundaryResources {
+        string rStr = r.toJsonString();
+        _ = check dbClient->execute(`INSERT INTO ObservationTable (resource_json) VALUES (${rStr}::jsonb)`);
+    }
+    json viewJson = {
+        "resource": "Observation",
+        "status": "active",
+        "select": [
+            {
+                "column": [
+                    {
+                        "name": "id",
+                        "path": "id",
+                        "type": "id"
+                    },
+                    {
+                        "name": "datetime",
+                        "path": "value.ofType(dateTime).highBoundary()",
+                        "type": "dateTime"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "o1",
+            "datetime": ()
+        },
+        {
+            "id": "o2",
+            "datetime": "2010-10-10T23:59:59.999-12:00"
+        },
+        {
+            "id": "o3",
+            "datetime": ()
+        },
+        {
+            "id": "o4",
+            "datetime": ()
+        }
+    ];
+    TranspilerContext ctx = {
+        resourceColumn: "resource_json",
+        tableName: "ObservationTable"
+    };
+    string viewSql = check generateQuery(viewJson, ctx);
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+    json[] result = [];
+    check from record {} row in resultStream
+        do {
+            result.push(row.toJson());
+        };
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    check dbClient.close();
+    assertResultsMatch(result, expected);
+}
+
+// TODO: reenable after completing fhirpath transpiler
+@test:Config {enable: false}
+function testDateLowboundary() returns error? {
+    postgresql:Client dbClient = check new (host, username, password, database, port);
+    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS ObservationTable (resource_json JSONB)`);
+    _ = check dbClient->execute(`DELETE FROM ObservationTable`);
+    foreach json r in fnBoundaryResources {
+        string rStr = r.toJsonString();
+        _ = check dbClient->execute(`INSERT INTO ObservationTable (resource_json) VALUES (${rStr}::jsonb)`);
+    }
+    json viewJson = {
+        "resource": "Patient",
+        "status": "active",
+        "select": [
+            {
+                "column": [
+                    {
+                        "name": "id",
+                        "path": "id",
+                        "type": "id"
+                    },
+                    {
+                        "name": "date",
+                        "path": "birthDate.lowBoundary()",
+                        "type": "date"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "p1",
+            "date": "1970-06-01"
+        }
+    ];
+    TranspilerContext ctx = {
+        resourceColumn: "resource_json",
+        tableName: "ObservationTable"
+    };
+    string viewSql = check generateQuery(viewJson, ctx);
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+    json[] result = [];
+    check from record {} row in resultStream
+        do {
+            result.push(row.toJson());
+        };
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    check dbClient.close();
+    assertResultsMatch(result, expected);
+}
+
+// TODO: reenable after completing fhirpath transpiler
+@test:Config {enable: false}
+function testDateHighboundary() returns error? {
+    postgresql:Client dbClient = check new (host, username, password, database, port);
+    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS ObservationTable (resource_json JSONB)`);
+    _ = check dbClient->execute(`DELETE FROM ObservationTable`);
+    foreach json r in fnBoundaryResources {
+        string rStr = r.toJsonString();
+        _ = check dbClient->execute(`INSERT INTO ObservationTable (resource_json) VALUES (${rStr}::jsonb)`);
+    }
+    json viewJson = {
+        "resource": "Patient",
+        "status": "active",
+        "select": [
+            {
+                "column": [
+                    {
+                        "name": "id",
+                        "path": "id",
+                        "type": "id"
+                    },
+                    {
+                        "name": "date",
+                        "path": "birthDate.highBoundary()",
+                        "type": "date"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "p1",
+            "date": "1970-06-30"
+        }
+    ];
+    TranspilerContext ctx = {
+        resourceColumn: "resource_json",
+        tableName: "ObservationTable"
+    };
+    string viewSql = check generateQuery(viewJson, ctx);
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+    json[] result = [];
+    check from record {} row in resultStream
+        do {
+            result.push(row.toJson());
+        };
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    check dbClient.close();
+    assertResultsMatch(result, expected);
+}
+
+// TODO: reenable after completing fhirpath transpiler
+@test:Config {enable: false}
+function testTimeLowboundary() returns error? {
+    postgresql:Client dbClient = check new (host, username, password, database, port);
+    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS ObservationTable (resource_json JSONB)`);
+    _ = check dbClient->execute(`DELETE FROM ObservationTable`);
+    foreach json r in fnBoundaryResources {
+        string rStr = r.toJsonString();
+        _ = check dbClient->execute(`INSERT INTO ObservationTable (resource_json) VALUES (${rStr}::jsonb)`);
+    }
+    json viewJson = {
+        "resource": "Observation",
+        "status": "active",
+        "select": [
+            {
+                "column": [
+                    {
+                        "name": "id",
+                        "path": "id",
+                        "type": "id"
+                    },
+                    {
+                        "name": "time",
+                        "path": "value.ofType(time).lowBoundary()",
+                        "type": "time"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "o1",
+            "time": ()
+        },
+        {
+            "id": "o2",
+            "time": ()
+        },
+        {
+            "id": "o3",
+            "time": ()
+        },
+        {
+            "id": "o4",
+            "time": "12:34:00.000"
+        }
+    ];
+    TranspilerContext ctx = {
+        resourceColumn: "resource_json",
+        tableName: "ObservationTable"
+    };
+    string viewSql = check generateQuery(viewJson, ctx);
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+    json[] result = [];
+    check from record {} row in resultStream
+        do {
+            result.push(row.toJson());
+        };
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    check dbClient.close();
+    assertResultsMatch(result, expected);
+}
+
+// TODO: reenable after completing fhirpath transpiler
+@test:Config {enable: false}
+function testTimeHighboundary() returns error? {
+    postgresql:Client dbClient = check new (host, username, password, database, port);
+    _ = check dbClient->execute(`CREATE TABLE IF NOT EXISTS ObservationTable (resource_json JSONB)`);
+    _ = check dbClient->execute(`DELETE FROM ObservationTable`);
+    foreach json r in fnBoundaryResources {
+        string rStr = r.toJsonString();
+        _ = check dbClient->execute(`INSERT INTO ObservationTable (resource_json) VALUES (${rStr}::jsonb)`);
+    }
+    json viewJson = {
+        "resource": "Observation",
+        "status": "active",
+        "select": [
+            {
+                "column": [
+                    {
+                        "name": "id",
+                        "path": "id",
+                        "type": "id"
+                    },
+                    {
+                        "name": "time",
+                        "path": "value.ofType(time).highBoundary()",
+                        "type": "time"
+                    }
+                ]
+            }
+        ]
+    };
+    json[] expected = [
+        {
+            "id": "o1",
+            "time": ()
+        },
+        {
+            "id": "o2",
+            "time": ()
+        },
+        {
+            "id": "o3",
+            "time": ()
+        },
+        {
+            "id": "o4",
+            "time": "12:34:59.999"
+        }
+    ];
+    TranspilerContext ctx = {
+        resourceColumn: "resource_json",
+        tableName: "ObservationTable"
+    };
+    string viewSql = check generateQuery(viewJson, ctx);
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    _ = check dbClient->execute(new DynamicQuery("CREATE VIEW sof_test_view AS " + viewSql));
+    stream<record {}, sql:Error?> resultStream = dbClient->query(`SELECT * FROM sof_test_view`);
+    json[] result = [];
+    check from record {} row in resultStream
+        do {
+            result.push(row.toJson());
+        };
+    _ = check dbClient->execute(`DROP VIEW IF EXISTS sof_test_view`);
+    check dbClient.close();
+    assertResultsMatch(result, expected);
+}
