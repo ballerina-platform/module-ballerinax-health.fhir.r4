@@ -290,8 +290,22 @@ public isolated class FHIRRegistry {
                             foreach json levelEntry in operationLevels {
                                 if levelEntry is map<json> {
                                     json|error resourceList = levelEntry.'resource;
-                                    boolean resourceMatches = resourceList !is json[]
-                                        || (<json[]>resourceList).indexOf(resourceType) != ();
+                                    boolean resourceMatches;
+                                    if resourceList is json[] {
+                                        // A 'resource' filter is specified: apply this entry only when
+                                        // the current resource type is listed.
+                                        resourceMatches = resourceList.indexOf(resourceType) != ();
+                                    } else if resourceList is error {
+                                        // No 'resource' field: the entry applies to all resources.
+                                        resourceMatches = true;
+                                    } else {
+                                        // 'resource' field is present but not a JSON array: this is a
+                                        // misconfiguration. Skip the entry instead of silently applying
+                                        // it to every resource, so the error is not masked.
+                                        log:printWarn("Skipping operation level entry: 'resource' must be a JSON array",
+                                                operation = opConfig.name);
+                                        resourceMatches = false;
+                                    }
                                     if resourceMatches {
                                         json|error typeLevel = levelEntry.typeLevel;
                                         json|error systemLevel = levelEntry.systemLevel;
