@@ -284,22 +284,29 @@ public isolated class FHIRRegistry {
                     json additionalProps = opConfig?.additionalProperties;
                     //access the operation level information
                     json|error metaInfo = additionalProps.meta;
-                    if metaInfo is json {
+                    if metaInfo is map<json> {
                         json|error operationLevels = metaInfo.operationLevels;
-                        if operationLevels is json {
-                            json|error typeLevel = operationLevels.typeLevel;
-                            json|error systemLevel = operationLevels.systemLevel;
-                            json|error instanceLevel = operationLevels.instanceLevel;
-                            // Set the operation levels
-                            if typeLevel is boolean {
-                                operationDefinition.typeLevel = typeLevel;
-                            }
-                            // Set the system and instance levels
-                            if systemLevel is boolean {
-                                operationDefinition.systemLevel = <boolean>systemLevel;
-                            }
-                            if instanceLevel is boolean {
-                                operationDefinition.instanceLevel = <boolean>instanceLevel;
+                        if operationLevels is json[] {
+                            foreach json levelEntry in operationLevels {
+                                if levelEntry is map<json> {
+                                    json|error resourceList = levelEntry.'resource;
+                                    boolean resourceMatches = resourceList !is json[]
+                                        || (<json[]>resourceList).indexOf(resourceType) != ();
+                                    if resourceMatches {
+                                        json|error typeLevel = levelEntry.typeLevel;
+                                        json|error systemLevel = levelEntry.systemLevel;
+                                        json|error instanceLevel = levelEntry.instanceLevel;
+                                        if typeLevel is boolean {
+                                            operationDefinition.typeLevel = typeLevel;
+                                        }
+                                        if systemLevel is boolean {
+                                            operationDefinition.systemLevel = systemLevel;
+                                        }
+                                        if instanceLevel is boolean {
+                                            operationDefinition.instanceLevel = instanceLevel;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
