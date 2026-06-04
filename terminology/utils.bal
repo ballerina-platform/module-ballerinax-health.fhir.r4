@@ -1743,8 +1743,11 @@ final readonly & map<r4:FHIROperationDefinition[]> TERMINOLOGY_OPERATIONS = {
     ]
 };
 
-r4:InMemoryTerminologyLoader terminologyLoader = new([], []);
-r4:Terminology terminology = check terminologyLoader.load();
+// This IG record is seeded with an empty terminology; CodeSystems and ValueSets are registered
+// at runtime via the terminology API rather than loaded at module init. Constructing the empty
+// `Terminology` directly avoids a module-level `check`, which would panic and crash the
+// application on initialization failure.
+r4:Terminology terminology = {codeSystems: [], valueSets: []};
 public readonly & r4:IGInfoRecord terminologyIgRecord = {
     title: "Terminology",
     name: "terminology",
