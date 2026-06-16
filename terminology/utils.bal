@@ -955,3 +955,888 @@ isolated function haveResultParameter(r4:ParametersParameter[] parameters) retur
     return false;
 }
 
+
+final readonly & map<r4:FHIROperationDefinition[]> TERMINOLOGY_OPERATIONS = {
+    "expand": [
+        {
+            name: "expand",
+            instanceLevel: true,
+            typeLevel: true,
+            systemLevel: false,
+            'resource: [
+                "ValueSet"
+            ],
+            'parameter: [
+                {
+                    name: "url",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "uri"
+                },
+                 {
+                    name: "tx-resource",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "Resource"
+                },
+                {
+                    name: "valueSet",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "ValueSet"
+                },
+                {
+                    name: "valueSetVersion",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "context",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "uri"
+                },
+                {
+                    name: "contextDirection",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "filter",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "date",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "dateTime"
+                },
+                {
+                    name: "offset",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "integer"
+                },
+                {
+                    name: "count",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "integer"
+                },
+                {
+                    name: "includeDesignations",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "designation",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "string"
+                },
+                {
+                    name: "includeDefinition",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "activeOnly",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "excludeNested",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "excludeNotForUI",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "excludePostCoordinated",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "displayLanguage",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "exclude-system",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "canonical"
+                },
+                {
+                    name: "system-version",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "canonical"
+                },
+                {
+                    name: "check-system-version",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "canonical"
+                },
+                {
+                    name: "force-system-version",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "canonical"
+                },
+                {
+                    name: "return",
+                    use: r4:OUTPUT,
+                    min: 1,
+                    max: "1",
+                    'type: "ValueSet"
+                }
+            ]
+        }
+    ],
+    "validate-code": [
+        {
+            name: "validate-code",
+            instanceLevel: true,
+            typeLevel: true,
+            systemLevel: false,
+            'resource: [
+                "CodeSystem"
+            ],
+            'parameter: [
+                {
+                    name: "url",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "uri"
+                },
+                {
+                    name: "codeSystem",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "CodeSystem"
+                },
+                {
+                    name: "code",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "version",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "display",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "coding",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Coding"
+                },
+                {
+                    name: "codeableConcept",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "CodeableConcept"
+                },
+                {
+                    name: "date",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "dateTime"
+                },
+                {
+                    name: "abstract",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "displayLanguage",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "result",
+                    use: r4:OUTPUT,
+                    min: 1,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "message",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "display",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                }
+            ]
+        },
+        {
+            name: "validate-code",
+            instanceLevel: true,
+            typeLevel: true,
+            systemLevel: false,
+            'resource: [
+                "ValueSet"
+            ],
+            'parameter: [
+                {
+                    name: "url",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "uri"
+                },
+                {
+                    name: "context",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "uri"
+                },
+                {
+                    name: "valueSet",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "ValueSet"
+                },
+                {
+                    name: "valueSetVersion",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "code",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "system",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "uri"
+                },
+                {
+                    name: "systemVersion",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "display",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "coding",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Coding"
+                },
+                {
+                    name: "codeableConcept",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "CodeableConcept"
+                },
+                {
+                    name: "date",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "dateTime"
+                },
+                {
+                    name: "abstract",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "displayLanguage",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "result",
+                    use: r4:OUTPUT,
+                    min: 1,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "message",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "display",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                }
+            ]
+        }
+    ],
+    "lookup": [
+        {
+            name: "lookup",
+            instanceLevel: false,
+            typeLevel: true,
+            systemLevel: false,
+            'resource: [
+                "CodeSystem"
+            ],
+            'parameter: [
+                {
+                    name: "code",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "system",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "uri"
+                },
+                {
+                    name: "version",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "coding",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Coding"
+                },
+                {
+                    name: "date",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "dateTime"
+                },
+                {
+                    name: "displayLanguage",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "property",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    'type: "code"
+                },
+                {
+                    name: "name",
+                    use: r4:OUTPUT,
+                    min: 1,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "version",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "display",
+                    use: r4:OUTPUT,
+                    min: 1,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "designation",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "*",
+                    "part": [
+                        {
+                            name: "language",
+                            use: r4:OUTPUT,
+                            min: 0,
+                            max: "1",
+                            'type: "code"
+                        },
+                        {
+                            name: "use",
+                            use: r4:OUTPUT,
+                            min: 0,
+                            max: "1",
+                            'type: "Coding"
+                        },
+                        {
+                            name: "value",
+                            use: r4:OUTPUT,
+                            min: 1,
+                            max: "1",
+                            'type: "string"
+                        }
+                    ]
+                },
+                {
+                    name: "property",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "*",
+                    "part": [
+                        {
+                            name: "code",
+                            use: r4:OUTPUT,
+                            min: 1,
+                            max: "1",
+                            'type: "code"
+                        },
+                        {
+                            name: "value",
+                            use: r4:OUTPUT,
+                            min: 0,
+                            max: "1",
+                            'type: "Element"
+                        },
+                        {
+                            name: "description",
+                            use: r4:OUTPUT,
+                            min: 0,
+                            max: "1",
+                            'type: "string"
+                        },
+                        {
+                            name: "subproperty",
+                            use: r4:OUTPUT,
+                            min: 0,
+                            max: "*",
+                            "part": [
+                                {
+                                    name: "code",
+                                    use: r4:OUTPUT,
+                                    min: 1,
+                                    max: "1",
+                                    'type: "code"
+                                },
+                                {
+                                    name: "value",
+                                    use: r4:OUTPUT,
+                                    min: 1,
+                                    max: "1",
+                                    'type: "Element"
+                                },
+                                {
+                                    name: "description",
+                                    use: r4:OUTPUT,
+                                    min: 0,
+                                    max: "1",
+                                    'type: "string"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "subsumes": [
+        {
+            name: "subsumes",
+            instanceLevel: true,
+            typeLevel: true,
+            systemLevel: false,
+            'resource: [
+                "CodeSystem"
+            ],
+            'parameter: [
+                {
+                    name: "codeA",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "codeB",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "code"
+                },
+                {
+                    name: "system",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "uri"
+                },
+                {
+                    name: "version",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "codingA",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Coding"
+                },
+                {
+                    name: "codingB",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "Coding"
+                },
+                {
+                    name: "outcome",
+                    use: r4:OUTPUT,
+                    min: 1,
+                    max: "1",
+                    'type: "code"
+                }
+            ]
+        }
+    ],
+    "find-matches": [
+        {
+            name: "find-matches",
+            instanceLevel: true,
+            typeLevel: true,
+            systemLevel: false,
+            'resource: [
+                "CodeSystem"
+            ],
+            'parameter: [
+                {
+                    name: "system",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "uri"
+                },
+                {
+                    name: "version",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "string"
+                },
+                {
+                    name: "property",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "*",
+                    "part": [
+                        {
+                            name: "code",
+                            use: r4:INPUT,
+                            min: 1,
+                            max: "1",
+                            'type: "code"
+                        },
+                        {
+                            name: "value",
+                            use: r4:INPUT,
+                            min: 0,
+                            max: "1",
+                            'type: "Element"
+                        },
+                        {
+                            name: "subproperty",
+                            use: r4:INPUT,
+                            min: 0,
+                            max: "*",
+                            "part": [
+                                {
+                                    name: "code",
+                                    use: r4:INPUT,
+                                    min: 1,
+                                    max: "1",
+                                    'type: "code"
+                                },
+                                {
+                                    name: "value",
+                                    use: r4:INPUT,
+                                    min: 1,
+                                    max: "1",
+                                    'type: "Element"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "exact",
+                    use: r4:INPUT,
+                    min: 1,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "compositional",
+                    use: r4:INPUT,
+                    min: 0,
+                    max: "1",
+                    'type: "boolean"
+                },
+                {
+                    name: "match",
+                    use: r4:OUTPUT,
+                    min: 0,
+                    max: "*",
+                    "part": [
+                        {
+                            name: "code",
+                            use: r4:OUTPUT,
+                            min: 1,
+                            max: "1",
+                            'type: "Coding"
+                        },
+                        {
+                            name: "unmatched",
+                            use: r4:OUTPUT,
+                            min: 0,
+                            max: "*",
+                            "part": [
+                                {
+                                    name: "code",
+                                    use: r4:OUTPUT,
+                                    min: 1,
+                                    max: "1",
+                                    'type: "code"
+                                },
+                                {
+                                    name: "value",
+                                    use: r4:OUTPUT,
+                                    min: 1,
+                                    max: "1",
+                                    'type: "Element"
+                                },
+                                {
+                                    name: "property",
+                                    use: r4:OUTPUT,
+                                    min: 0,
+                                    max: "*",
+                                    "part": [
+                                        {
+                                            name: "code",
+                                            use: r4:OUTPUT,
+                                            min: 1,
+                                            max: "1",
+                                            'type: "code"
+                                        },
+                                        {
+                                            name: "value",
+                                            use: r4:OUTPUT,
+                                            min: 1,
+                                            max: "1",
+                                            'type: "Element"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: "comment",
+                            use: r4:OUTPUT,
+                            min: 0,
+                            max: "1",
+                            'type: "string"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
+// This IG record is seeded with an empty terminology; CodeSystems and ValueSets are registered
+// at runtime via the terminology API rather than loaded at module init. Constructing the empty
+// `Terminology` directly avoids a module-level `check`, which would panic and crash the
+// application on initialization failure.
+r4:Terminology terminology = {codeSystems: [], valueSets: []};
+public readonly & r4:IGInfoRecord terminologyIgRecord = {
+    title: "Terminology",
+    name: "terminology",
+    terminology: terminology,
+    profiles: {
+        "http://hl7.org/fhir/StructureDefinition/CodeSystem": {
+            url: r4:PROFILE_BASE_CODESYSTEM,
+            resourceType: r4:RESOURCE_NAME_CODESYSTEM,
+            modelType: r4:CodeSystem
+        },
+        "http://hl7.org/fhir/StructureDefinition/ValueSet": {
+            url: r4:PROFILE_BASE_VALUESET,
+            resourceType: r4:RESOURCE_NAME_VALUESET,
+            modelType: r4:ValueSet
+        },
+        "http://hl7.org/fhir/StructureDefinition/Bundle": {
+            url: r4:PROFILE_BASE_BUNDLE,
+            resourceType: r4:RESOURCE_NAME_BUNDLE,
+            modelType: r4:Bundle
+        }          
+    },
+    searchParameters: [
+        {
+            "url": [
+                {
+                    name: "url",
+                    'type: r4:URI,
+                    base: [r4:RESOURCE_NAME_CODESYSTEM, r4:RESOURCE_NAME_VALUESET],
+                    expression: "CodeSystem.url"
+                }
+
+            ]
+        },
+        {
+            "version": [
+                {
+                    name: "version",
+                    'type: r4:STRING,
+                    base: [r4:RESOURCE_NAME_CODESYSTEM],
+                    expression: "CodeSystem.version"
+                }
+
+            ]
+        },
+        {
+            "title": [
+                {
+                    name: "title",
+                    'type: r4:STRING,
+                    base: [r4:RESOURCE_NAME_CODESYSTEM],
+                    expression: "CodeSystem.title"
+                }
+
+            ]
+        },
+        {
+            "status": [
+                {
+                    name: "status",
+                    'type: r4:STRING,
+                    base: [r4:RESOURCE_NAME_CODESYSTEM],
+                    expression: "CodeSystem.status"
+                }
+
+            ]
+        },
+        {
+            "name": [
+                {
+                    name: "name",
+                    'type: r4:STRING,
+                    base: [r4:RESOURCE_NAME_CODESYSTEM],
+                    expression: "CodeSystem.name"
+                }
+
+            ]
+        },
+        {
+            "publisher": [
+                {
+                    name: "publisher",
+                    'type: r4:STRING,
+                    base: [r4:RESOURCE_NAME_CODESYSTEM],
+                    expression: "CodeSystem.publisher"
+                }
+            ]
+        }
+    ]
+    ,
+    operations: TERMINOLOGY_OPERATIONS.cloneReadOnly()
+};
+

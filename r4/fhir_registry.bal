@@ -284,22 +284,43 @@ public isolated class FHIRRegistry {
                     json additionalProps = opConfig?.additionalProperties;
                     //access the operation level information
                     json|error metaInfo = additionalProps.meta;
-                    if metaInfo is json {
+                    if metaInfo is map<json> {
                         json|error operationLevels = metaInfo.operationLevels;
-                        if operationLevels is json {
-                            json|error typeLevel = operationLevels.typeLevel;
-                            json|error systemLevel = operationLevels.systemLevel;
-                            json|error instanceLevel = operationLevels.instanceLevel;
-                            // Set the operation levels
-                            if typeLevel is boolean {
-                                operationDefinition.typeLevel = typeLevel;
-                            }
-                            // Set the system and instance levels
-                            if systemLevel is boolean {
-                                operationDefinition.systemLevel = <boolean>systemLevel;
-                            }
-                            if instanceLevel is boolean {
-                                operationDefinition.instanceLevel = <boolean>instanceLevel;
+                        if operationLevels is json[] {
+                            foreach json levelEntry in operationLevels {
+                                if levelEntry is map<json> {
+                                    json|error resourceList = levelEntry.'resource;
+                                    boolean resourceMatches;
+                                    if resourceList is json[] {
+                                        // A 'resource' filter is specified: apply this entry only when
+                                        // the current resource type is listed.
+                                        resourceMatches = resourceList.indexOf(resourceType) != ();
+                                    } else if resourceList is error {
+                                        // No 'resource' field: the entry applies to all resources.
+                                        resourceMatches = true;
+                                    } else {
+                                        // 'resource' field is present but not a JSON array: this is a
+                                        // misconfiguration. Skip the entry instead of silently applying
+                                        // it to every resource, so the error is not masked.
+                                        log:printWarn("Skipping operation level entry: 'resource' must be a JSON array",
+                                                operation = opConfig.name);
+                                        resourceMatches = false;
+                                    }
+                                    if resourceMatches {
+                                        json|error typeLevel = levelEntry.typeLevel;
+                                        json|error systemLevel = levelEntry.systemLevel;
+                                        json|error instanceLevel = levelEntry.instanceLevel;
+                                        if typeLevel is boolean {
+                                            operationDefinition.typeLevel = typeLevel;
+                                        }
+                                        if systemLevel is boolean {
+                                            operationDefinition.systemLevel = systemLevel;
+                                        }
+                                        if instanceLevel is boolean {
+                                            operationDefinition.instanceLevel = instanceLevel;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

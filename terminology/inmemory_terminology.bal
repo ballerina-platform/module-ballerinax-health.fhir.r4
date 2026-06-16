@@ -22,7 +22,7 @@ isolated class InMemoryTerminology {
     private map<r4:ValueSet> valueSetMap = {};
     private map<r4:ConceptMap> conceptMapsMap = {};
 
-    isolated function init() {
+    function init() {
 
         // https://hl7.org/fhir/R4/terminologies-systems.html
         json internalFhirCodeSystems = [];
@@ -68,6 +68,18 @@ isolated class InMemoryTerminology {
 
         // Initialiase terminology processor
         log:printInfo("FHIR R4 InMemory Terminology implementation is initialized.");
+
+        // Register the terminology IG to FHIR registry.
+        do {
+            r4:FHIRImplementationGuide baseImplementationGuide = new (terminologyIgRecord);
+            check r4:fhirRegistry.addImplementationGuide(baseImplementationGuide);
+            log:printInfo("Terminology IG registered");
+        } on fail error e {
+            log:printError(string `Failed to register the terminology IG to the FHIR registry; ` +
+                    string `FHIR terminology operations ($lookup, $expand, $validate-code, $subsumes) ` +
+                    string `may be unavailable. In-memory terminology operations remain functional.`,
+                    'error = e);
+        }
     }
 
     // Define the populateCodeSystemMap function
