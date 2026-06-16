@@ -1,7 +1,7 @@
 [package]
 org = "ballerinax"
 name = "health.fhir.r4.international401"
-version = "4.0.3"
+version = "4.0.4"
 distribution = "2201.12.8"
 authors = ["Ballerina"]
 keywords = ["Healthcare", "FHIR", "R4", "Name/FHIR International R4 (4.0.1)", "International", "Vendor/Other", "Area/Healthcare", "Type/Library"]
