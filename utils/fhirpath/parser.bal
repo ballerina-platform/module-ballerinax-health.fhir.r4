@@ -711,7 +711,7 @@ isolated function parsePrimary(ParserState state) returns FHIRPathParserError|Pa
         [boolean, ParserState] funcParenMatch = matchToken(newState, LEFT_PAREN);
         if funcParenMatch[0] {
             newState = funcParenMatch[1];
-            ParseParamListResult paramsResult = check parseParamList(newState);
+            ParseParamListResult paramsResult = check parseParamList(newState, name == "sort");
             Expr[] params = paramsResult[0];
             newState = paramsResult[1];
 
@@ -769,7 +769,7 @@ isolated function parseInvocation(ParserState state) returns FHIRPathParserError
         [boolean, ParserState] parenMatch = matchToken(newState, LEFT_PAREN);
         if parenMatch[0] {
             newState = parenMatch[1];
-            ParseParamListResult paramsResult = check parseParamList(newState);
+            ParseParamListResult paramsResult = check parseParamList(newState, name == "sort");
             Expr[] params = paramsResult[0];
             newState = paramsResult[1];
 
@@ -810,10 +810,12 @@ isolated function matchIdentifierOrKeyword(ParserState state) returns [boolean, 
 
 # Parses a comma-separated list of function parameters.
 # Grammar: paramList -> expression ( ',' expression )*
+#          sortArgument -> expression ( 'asc' | 'desc' )?   (sort() parameters)
 #
 # + state - The current parser state
+# + sortArguments - Whether the parameters are sort() key selectors that may carry a direction
 # + return - A parse result with the parameter list and updated state, or an error
-isolated function parseParamList(ParserState state) returns FHIRPathParserError|ParseParamListResult {
+isolated function parseParamList(ParserState state, boolean sortArguments = false) returns FHIRPathParserError|ParseParamListResult {
     Expr[] params = [];
     ParserState newState = state;
 
@@ -829,7 +831,9 @@ isolated function parseParamList(ParserState state) returns FHIRPathParserError|
         return [params, newState];
     }
 
-    params.push(expr);
+    [Expr, ParserState] [param, afterParam] = withSortDirection(expr, newState, sortArguments);
+    newState = afterParam;
+    params.push(param);
 
     [boolean, ParserState] matchResult = matchToken(newState, COMMA);
     while matchResult[0] {
@@ -842,11 +846,29 @@ isolated function parseParamList(ParserState state) returns FHIRPathParserError|
             return [params, newState];
         }
 
-        params.push(nextExpr);
+        [Expr, ParserState] [nextParam, afterNext] = withSortDirection(nextExpr, newState, sortArguments);
+        newState = afterNext;
+        params.push(nextParam);
         matchResult = matchToken(newState, COMMA);
     }
 
     return [params, newState];
+}
+
+// Consumes an optional 'asc' / 'desc' after a sort() key selector
+isolated function withSortDirection(Expr expr, ParserState state, boolean sortArguments) returns [Expr, ParserState] {
+    if !sortArguments {
+        return [expr, state];
+    }
+    [boolean, ParserState] ascMatch = matchToken(state, ASC);
+    if ascMatch[0] {
+        return [createSortArgumentExpr(expr, false), ascMatch[1]];
+    }
+    [boolean, ParserState] descMatch = matchToken(state, DESC);
+    if descMatch[0] {
+        return [createSortArgumentExpr(expr, true), descMatch[1]];
+    }
+    return [expr, state];
 }
 
 // ========================================

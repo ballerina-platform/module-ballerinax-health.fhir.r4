@@ -246,6 +246,261 @@ isolated function applyPrecisionFunction(FhirPathItem[] collection, Expr[] param
 // HELPERS
 // ========================================
 
+// ---- Date/time string parsing (toDate / toDateTime) ----
+
+// Components of a parsed date/time; components after the first missing one are absent
+type DateTimeParts record {|
+    int year;
+    int? month = ();
+    int? day = ();
+    int? hour = ();
+    int? minute = ();
+    int? second = ();
+    string? fraction = ();
+    string? timezone = ();
+|};
+
+final readonly & string[] MONTH_NAMES = ["january", "february", "march", "april", "may", "june", "july", "august",
+    "september", "october", "november", "december"];
+
+// Parses an ISO date: YYYY, YYYY-MM or YYYY-MM-DD
+isolated function parseIsoDate(string s) returns DateTimeParts? {
+    if !re `[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?`.isFullMatch(s) {
+        return ();
+    }
+    return validDateTimeParts({
+        year: digitsToInt(s.substring(0, 4)),
+        month: s.length() >= 7 ? digitsToInt(s.substring(5, 7)) : (),
+        day: s.length() >= 10 ? digitsToInt(s.substring(8, 10)) : ()
+    }) ?: ();
+}
+
+// Parses an ISO date/time: YYYY(-MM(-DD(T(HH(:mm(:ss(.fff)?)?)?)?(Z|(+|-)HH:mm)?)?)?)?
+isolated function parseIsoDateTime(string s) returns DateTimeParts? {
+    if !re `[0-9]{4}(-[0-9]{2}(-[0-9]{2}(T([0-9]{2}(:[0-9]{2}(:[0-9]{2}(\.[0-9]+)?)?)?(Z|[+-][0-9]{2}:[0-9]{2})?)?)?)?)?`.isFullMatch(s) {
+        return ();
+    }
+    int? tIdx = s.indexOf("T");
+    DateTimeParts? date = parseIsoDate(tIdx is int ? s.substring(0, tIdx) : s);
+    if date is () || tIdx is () {
+        return date;
+    }
+    [string, string] [timePart, timezone] = extractTzFromTime(s.substring(tIdx + 1));
+    if timePart.length() > 0 {
+        date.hour = digitsToInt(timePart.substring(0, 2));
+    }
+    if timePart.length() >= 5 {
+        date.minute = digitsToInt(timePart.substring(3, 5));
+    }
+    if timePart.length() >= 8 {
+        date.second = digitsToInt(timePart.substring(6, 8));
+    }
+    if timePart.length() > 9 {
+        date.fraction = timePart.substring(9);
+    }
+    date.timezone = timezone == "" ? () : timezone;
+    return validDateTimeParts(date);
+}
+
+// Parses a date/time using a FHIRPath format template (see "Date/DateTime String Format Codes")
+isolated function parseDateTimeWithFormat(string input, string format) returns DateTimeParts? {
+    int? year = ();
+    int? month = ();
+    int? day = ();
+    int? hour = ();
+    int? hour12 = ();
+    string? meridiem = ();
+    int? minute = ();
+    int? second = ();
+    string? fraction = ();
+    string? timezone = ();
+
+    int pos = 0;
+    int f = 0;
+    while f < format.length() {
+        string code = format.substring(f, f + 1);
+        int runEnd = f;
+        while runEnd < format.length() && format.substring(runEnd, runEnd + 1) == code {
+            runEnd += 1;
+        }
+        int run = runEnd - f;
+        string rest = input.substring(pos);
+        if code == "y" {
+            int width = run == 2 ? 2 : 4;
+            int? value = leadingDigits(rest, width, width);
+            if value is () { return (); }
+            year = run == 2 ? (value < 50 ? 2000 + value : 1900 + value) : value;
+            pos += width;
+        } else if code == "M" && run >= 3 {
+            [int, int]? named = leadingMonthName(rest, run == 3);
+            if named is () { return (); }
+            [month, pos] = [named[0], pos + named[1]];
+        } else if code == "M" || code == "d" || code == "H" || code == "h" || code == "m" || code == "s" {
+            int minWidth = run >= 2 ? 2 : 1;
+            int? value = leadingDigits(rest, minWidth, 2);
+            if value is () { return (); }
+            pos += digitRunLength(rest, 2);
+            match code {
+                "M" => { month = value; }
+                "d" => { day = value; }
+                "H" => { hour = value; }
+                "h" => { hour12 = value; }
+                "m" => { minute = value; }
+                _ => { second = value; }
+            }
+        } else if code == "S" {
+            if digitRunLength(rest, run) != run { return (); }
+            fraction = rest.substring(0, run);
+            pos += run;
+        } else if code == "a" {
+            string upper = rest.toUpperAscii();
+            int width = upper.startsWith("AM") || upper.startsWith("PM") ? 2 : (upper.startsWith("A") || upper.startsWith("P") ? 1 : 0);
+            if width == 0 { return (); }
+            meridiem = upper.substring(0, 1);
+            pos += width;
+        } else if code == "Z" {
+            string? offset = leadingTimezoneOffset(rest);
+            if offset is () { return (); }
+            timezone = offset == "Z" ? "Z" : offset.substring(0, 3) + ":" + offset.substring(offset.length() - 2);
+            pos += offset.length();
+        } else if code == "z" {
+            // Time zone names cannot be mapped to offsets; accept and ignore them
+            int width = 0;
+            while width < rest.length() && re `[A-Za-z_/]`.isFullMatch(rest.substring(width, width + 1)) {
+                width += 1;
+            }
+            if width == 0 { return (); }
+            pos += width;
+        } else {
+            // Any other character is a literal
+            if !rest.startsWith(format.substring(f, runEnd)) { return (); }
+            pos += run;
+        }
+        f = runEnd;
+    }
+    if pos != input.length() || year is () {
+        return ();
+    }
+    if hour12 is int {
+        if hour12 < 1 || hour12 > 12 { return (); }
+        hour = meridiem == "P" ? (hour12 % 12) + 12 : hour12 % 12;
+    }
+    return validDateTimeParts({year, month, day, hour, minute, second, fraction, timezone});
+}
+
+// Integer value of a string already validated to contain only digits
+isolated function digitsToInt(string digits) returns int {
+    int|error value = int:fromString(digits);
+    return value is int ? value : 0;
+}
+
+// Reads between minWidth and maxWidth leading digits
+isolated function leadingDigits(string s, int minWidth, int maxWidth) returns int? {
+    int width = digitRunLength(s, maxWidth);
+    if width < minWidth {
+        return ();
+    }
+    int|error value = int:fromString(s.substring(0, width));
+    return (value is int) ? value : ();
+}
+
+isolated function digitRunLength(string s, int maxWidth) returns int {
+    int width = 0;
+    while width < maxWidth && width < s.length() && isDigit(s.substring(width, width + 1)) {
+        width += 1;
+    }
+    return width;
+}
+
+// Reads a leading English month name, returning [month, consumed length]
+isolated function leadingMonthName(string s, boolean abbreviated) returns [int, int]? {
+    string lower = s.toLowerAscii();
+    foreach int i in 0 ..< MONTH_NAMES.length() {
+        string name = abbreviated ? MONTH_NAMES[i].substring(0, 3) : MONTH_NAMES[i];
+        if lower.startsWith(name) {
+            return [i + 1, name.length()];
+        }
+    }
+    return ();
+}
+
+// Reads a leading "Z", "+HHmm" or "+HH:mm" offset
+isolated function leadingTimezoneOffset(string s) returns string? {
+    if s.startsWith("Z") {
+        return "Z";
+    }
+    if s.length() >= 6 && re `[+-][0-9]{2}:[0-9]{2}`.isFullMatch(s.substring(0, 6)) {
+        return s.substring(0, 6);
+    }
+    if s.length() >= 5 && re `[+-][0-9]{4}`.isFullMatch(s.substring(0, 5)) {
+        return s.substring(0, 5);
+    }
+    return ();
+}
+
+// Checks component ranges and that no component is present after a missing one
+isolated function validDateTimeParts(DateTimeParts parts) returns DateTimeParts? {
+    int? month = parts.month;
+    int? day = parts.day;
+    int? hour = parts.hour;
+    int? minute = parts.minute;
+    int? second = parts.second;
+    if (month is () && day !is ()) || (day is () && hour !is ()) || (hour is () && minute !is ())
+            || (minute is () && second !is ()) || (second is () && parts.fraction !is ()) {
+        return ();
+    }
+    if (month is int && (month < 1 || month > 12)) || (hour is int && hour > 23) || (minute is int && minute > 59)
+            || (second is int && second > 59) {
+        return ();
+    }
+    if month is int && day is int && (day < 1 || day > lastDayOfMonth(parts.year, month)) {
+        return ();
+    }
+    return parts;
+}
+
+isolated function formatDateParts(DateTimeParts parts) returns string {
+    string result = zeroPad4(parts.year);
+    int? month = parts.month;
+    int? day = parts.day;
+    if month is int {
+        result += "-" + zeroPad(month);
+        if day is int {
+            result += "-" + zeroPad(day);
+        }
+    }
+    return result;
+}
+
+isolated function formatDateTimeParts(DateTimeParts parts) returns string {
+    string result = formatDateParts(parts) + "T";
+    int? hour = parts.hour;
+    int? minute = parts.minute;
+    int? second = parts.second;
+    string? fraction = parts.fraction;
+    if hour is int {
+        result += zeroPad(hour);
+        if minute is int {
+            result += ":" + zeroPad(minute);
+            if second is int {
+                result += ":" + zeroPad(second);
+                if fraction is string {
+                    result += "." + fraction;
+                }
+            }
+        }
+    }
+    return result + (parts.timezone ?: "");
+}
+
+isolated function zeroPad4(int n) returns string {
+    string s = n.toString();
+    while s.length() < 4 {
+        s = "0" + s;
+    }
+    return s;
+}
+
 // Maximum precision of the item's date/time type (Date 8, DateTime 17, Time 9)
 isolated function defaultBoundaryPrecision(FhirPathItem item, string val) returns int {
     [string, string] [_, name] = typeOfItem(item);

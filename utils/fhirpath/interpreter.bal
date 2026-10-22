@@ -90,8 +90,16 @@ isolated function interpret(Expr expression, json context, map<json>? variables 
             _ = scope.define(k, toCollection(v));
         }
     }
+    // Environment variables: %context is the evaluation input; %resource and %rootResource are the input
+    // resource (caller-supplied variables of the same name take precedence)
+    FhirPathItem root = rootItem(context);
+    foreach string name in ["context", "resource", "rootResource"] {
+        if !scope.hasKey(name) {
+            _ = scope.define(name, wrapInCollection(root));
+        }
+    }
     FhirPathEnv env = {scope: scope};
-    FhirPathItem[] results = check evaluate(expression, rootItem(context), env);
+    FhirPathItem[] results = check evaluate(expression, root, env);
     return toOutputJson(results);
 }
 
@@ -131,6 +139,9 @@ isolated function evaluate(Expr expr, FhirPathItem context, FhirPathEnv env) ret
         "QuantityLiteral" => {
             return visitQuantityLiteralExpr(<QuantityLiteralExpr>expr);
         }
+        "SortArgument" => {
+            return evaluate((<SortArgumentExpr>expr).key, context, env);
+        }
     }
     return [];
 }
@@ -165,12 +176,6 @@ isolated function visitIdentifierExpr(IdentifierExpr expr, FhirPathItem context,
             return [];
         }
         return [total];
-    }
-
-    // Named variables defined by defineVariable()
-    FhirPathItem[]? variable = env.scope.get(expr.name);
-    if variable is FhirPathItem[] {
-        return variable;
     }
 
     json contextValue = valueOf(context);
@@ -1112,18 +1117,18 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
     if name == "toDecimal" { return applyToDecimalFunction(targetResults, params); }
     if name == "toString" { return applyToStringFunction(targetResults, params); }
     if name == "toBoolean" { return applyToBooleanFunction(targetResults, params); }
-    if name == "toDate" { return typedResults(check applyToDateFunction(targetResults, params)); }
-    if name == "toDateTime" { return typedResults(check applyToDateTimeFunction(targetResults, params)); }
-    if name == "toTime" { return typedResults(check applyToTimeFunction(targetResults, params)); }
-    if name == "toQuantity" { return typedResults(check applyToQuantityFunction(targetResults, params)); }
+    if name == "toDate" { return applyToDateFunction(targetResults, params, context, env); }
+    if name == "toDateTime" { return applyToDateTimeFunction(targetResults, params, context, env); }
+    if name == "toTime" { return applyToTimeFunction(targetResults, params); }
+    if name == "toQuantity" { return applyToQuantityFunction(targetResults, params, context, env); }
     if name == "convertsToInteger" { return applyConvertsToIntegerFunction(targetResults, params); }
     if name == "convertsToDecimal" { return applyConvertsToDecimalFunction(targetResults, params); }
     if name == "convertsToString" { return applyConvertsToStringFunction(targetResults, params); }
     if name == "convertsToBoolean" { return applyConvertsToBooleanFunction(targetResults, params); }
-    if name == "convertsToDate" { return applyConvertsToDateFunction(targetResults, params); }
-    if name == "convertsToDateTime" { return applyConvertsToDateTimeFunction(targetResults, params); }
+    if name == "convertsToDate" { return applyConvertsToDateFunction(targetResults, params, context, env); }
+    if name == "convertsToDateTime" { return applyConvertsToDateTimeFunction(targetResults, params, context, env); }
     if name == "convertsToTime" { return applyConvertsToTimeFunction(targetResults, params); }
-    if name == "convertsToQuantity" { return applyConvertsToQuantityFunction(targetResults, params); }
+    if name == "convertsToQuantity" { return applyConvertsToQuantityFunction(targetResults, params, context, env); }
     if name == "type" { return applyTypeFunction(targetResults, params); }
     if name == "ofType" { return applyOfTypeFunction(targetResults, params); }
     if name == "is" { return applyIsTypeFunction(targetResults, params); }

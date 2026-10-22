@@ -132,8 +132,16 @@ isolated function applySingleFunction(FhirPathItem[] collection, Expr[] params) 
 }
 
 isolated function applyCombineFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if params.length() != 1 {
-        return fnError("combine", "1 parameter", params.length());
+    if params.length() < 1 || params.length() > 2 {
+        return fnError("combine", "1 or 2 parameters", params.length());
+    }
+    if params.length() == 2 {
+        // preserveOrder: the input items are always followed by the other items in order
+        FhirPathItem[] preserveOrder = check evaluate(params[1], context, env);
+        if preserveOrder.length() > 1 || (preserveOrder.length() == 1 && valueOf(preserveOrder[0]) !is boolean) {
+            return error FHIRPathInterpreterError("combine() preserveOrder must be a Boolean",
+                token = {tokenType: IDENTIFIER, lexeme: "combine", literal: (), position: 0});
+        }
     }
     FhirPathItem[] otherResult = check evaluate(params[0], context, env);
     FhirPathItem[] result = [...collection, ...otherResult];
@@ -222,41 +230,87 @@ isolated function applySortFunction(FhirPathItem[] collection, Expr[] params, Fh
     if collection.length() <= 1 {
         return collection;
     }
-    // Basic sort: sort primitives by natural ordering
-    // If a criteria expression is provided, sort by that
-    if params.length() == 0 {
-        return sortCollection(collection);
+    // Key selectors with their direction; `-key` is accepted as a legacy form of `key desc`
+    [Expr, boolean][] selectors = [];
+    foreach Expr param in params {
+        if param is SortArgumentExpr {
+            selectors.push([param.key, param.isDescending]);
+        } else if param is UnaryExpr && param.operator.tokenType == MINUS {
+            selectors.push([param.operand, true]);
+        } else {
+            selectors.push([param, false]);
+        }
     }
-    if params.length() > 1 {
-        return fnError("sort", "0 or 1 parameter", params.length());
-    }
-    // With criteria: evaluate criteria for each item and sort by result
-    Expr criteria = params[0];
-    [FhirPathItem, FhirPathItem][] keyedItems = [];
-    int idx = 0;
+
+    // Evaluate every key once per item ($index is undefined in sort())
+    [FhirPathItem, FhirPathItem?[]][] keyed = [];
     foreach FhirPathItem item in collection {
-        FhirPathEnv itemEnv = {index: idx, total: env?.total, scope: env.scope.childScope()};
-        FhirPathItem[] keyResult = check evaluate(criteria, item, itemEnv);
-        FhirPathItem sortKey = keyResult.length() > 0 ? keyResult[0] : ();
-        keyedItems.push([item, sortKey]);
-        idx += 1;
+        FhirPathItem?[] keys = [];
+        foreach [Expr, boolean] [selector, _] in selectors {
+            FhirPathItem[] keyResult = check evaluate(selector, item, {total: env?.total, scope: env.scope.childScope()});
+            if keyResult.length() > 1 {
+                return error FHIRPathInterpreterError("sort() key selector returned more than one item",
+                    token = {tokenType: IDENTIFIER, lexeme: "sort", literal: (), position: 0});
+            }
+            keys.push(keyResult.length() == 1 ? keyResult[0] : ());
+        }
+        keyed.push([item, keys]);
     }
-    // Simple insertion sort by key
-    int n = keyedItems.length();
-    foreach int i in 1 ..< n {
-        [FhirPathItem, FhirPathItem] current = keyedItems[i];
+
+    // Stable insertion sort
+    foreach int i in 1 ..< keyed.length() {
+        [FhirPathItem, FhirPathItem?[]] current = keyed[i];
         int j = i - 1;
-        while j >= 0 && compareJsonValues(keyedItems[j][1], current[1]) > 0 {
-            keyedItems[j + 1] = keyedItems[j];
+        while j >= 0 && check compareSortEntries(keyed[j], current, selectors) > 0 {
+            keyed[j + 1] = keyed[j];
             j -= 1;
         }
-        keyedItems[j + 1] = current;
+        keyed[j + 1] = current;
     }
-    FhirPathItem[] result = [];
-    foreach [FhirPathItem, FhirPathItem] pair in keyedItems {
-        result.push(pair[0]);
+    return from [FhirPathItem, FhirPathItem?[]] [item, _] in keyed select item;
+}
+
+isolated function compareSortEntries([FhirPathItem, FhirPathItem?[]] a, [FhirPathItem, FhirPathItem?[]] b,
+        [Expr, boolean][] selectors) returns int|FHIRPathInterpreterError {
+    if selectors.length() == 0 {
+        return compareSortValues(a[0], b[0]);
     }
-    return result;
+    foreach int k in 0 ..< selectors.length() {
+        int c = check compareSortValues(a[1][k], b[1][k]);
+        if c != 0 {
+            return selectors[k][1] ? -c : c;
+        }
+    }
+    return 0;
+}
+
+// Orders two sort keys with the comparison operator semantics; empty sorts before any value
+isolated function compareSortValues(FhirPathItem? a, FhirPathItem? b) returns int|FHIRPathInterpreterError {
+    if a is () || b is () {
+        return a is () ? (b is () ? 0 : -1) : 1;
+    }
+    if jsonValuesEqual(a, b) == true {
+        return 0;
+    }
+    json av = systemValueOf(a);
+    json bv = systemValueOf(b);
+    if av is map<json> && bv is map<json> && av["value"] is () {
+        // Complex values have no defined ordering; keep their relative order
+        return compareJsonValues(a, b);
+    }
+    FhirPathItem[]|FHIRPathInterpreterError less = applyComparisonOperator([a], [b], "<");
+    if less is FHIRPathInterpreterError {
+        return error FHIRPathInterpreterError("sort() cannot order values of incompatible types",
+            token = {tokenType: IDENTIFIER, lexeme: "sort", literal: (), position: 0});
+    }
+    if less.length() == 0 {
+        if av is string && bv is string {
+            return av < bv ? -1 : 1;
+        }
+        return error FHIRPathInterpreterError("sort() cannot order values of incompatible types",
+            token = {tokenType: IDENTIFIER, lexeme: "sort", literal: (), position: 0});
+    }
+    return valueOf(less[0]) == true ? -1 : 1;
 }
 
 isolated function applyAllFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {

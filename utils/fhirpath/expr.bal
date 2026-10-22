@@ -27,7 +27,7 @@
 # Base expression type representing any FHIRPath expression node in the AST.
 # This is a union of all possible expression types.
 type Expr BinaryExpr|LiteralExpr|IdentifierExpr|FunctionExpr|MemberAccessExpr|IndexerExpr
-        |UnaryExpr|ExternalConstantExpr|QuantityLiteralExpr;
+        |UnaryExpr|ExternalConstantExpr|QuantityLiteralExpr|SortArgumentExpr;
 
 // ========================================
 // EXPRESSION NODE TYPES
@@ -137,6 +137,17 @@ type QuantityLiteralExpr record {|
     "QuantityLiteral" kind;
     decimal value;
     string unit;
+|};
+
+# Represents a sort() key selector with an explicit direction (e.g., family desc).
+#
+# + kind - The expression kind discriminator (always "SortArgument")
+# + key - The key selector expression
+# + isDescending - Whether the key sorts in descending order
+type SortArgumentExpr record {|
+    "SortArgument" kind;
+    Expr key;
+    boolean isDescending;
 |};
 
 // ========================================
@@ -259,5 +270,18 @@ isolated function createQuantityLiteralExpr(decimal value, string unit) returns 
         kind: "QuantityLiteral",
         value: value,
         unit: unit
+    };
+}
+
+# Creates a sort() key selector node.
+#
+# + key - The key selector expression
+# + isDescending - Whether the key sorts in descending order
+# + return - A new SortArgumentExpr node
+isolated function createSortArgumentExpr(Expr key, boolean isDescending) returns SortArgumentExpr {
+    return {
+        kind: "SortArgument",
+        key: key,
+        isDescending: isDescending
     };
 }

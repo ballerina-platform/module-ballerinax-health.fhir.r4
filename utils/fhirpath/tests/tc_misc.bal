@@ -322,9 +322,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "('a' | 'b' | 'c').sort(-$this) = ('c' | 'b' | 'a')",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testSort9",
@@ -341,7 +339,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             resourceKey: "patient",
             expected: [true],
             expectError: false,
-            // TODO: enable once implementation supports this
+            // Conflicts with the STU3 sort() text: an empty key is lower than all values, so it sorts last when descending
             disabled: true
         },
         {

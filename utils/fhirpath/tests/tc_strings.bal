@@ -588,9 +588,7 @@ function getStringsTestCases() returns FHIRPathTestCase[] {
             expression: "'http://fhir.org/guides/cqf/common/Library/FHIR-ModelInfo|4.0.1'.matches('Library')",
             resourceKey: "empty",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testMatchesWithinUrl3",

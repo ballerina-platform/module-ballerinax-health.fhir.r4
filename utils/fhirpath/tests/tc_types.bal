@@ -767,7 +767,8 @@ function getTypesTestCases() returns FHIRPathTestCase[] {
             group: "testTypes",
             expression: "'1'.toQuantity()",
             resourceKey: "patient",
-            expected: ["1 '1'"],
+            // toQuantity() returns a System Quantity, output as {"value", "unit"}
+            expected: [{"value": 1d, "unit": "1"}],
             expectError: false
         },
         {

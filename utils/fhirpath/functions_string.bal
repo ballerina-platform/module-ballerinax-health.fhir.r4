@@ -314,88 +314,172 @@ isolated function applyReplaceFunction(FhirPathItem[] collection, Expr[] params,
 }
 
 isolated function applyMatchesFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if params.length() != 1 {
-        return fnError("matches", "1 parameter", params.length());
-    }
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = valueOf(collection[0]);
-    if val !is string {
-        return [];
-    }
-    FhirPathItem[] regexResult = check evaluate(params[0], context, env);
-    if regexResult.length() == 0 {
-        return [];
-    }
-    json regexVal = valueOf(regexResult[0]);
-    if regexVal !is string {
-        return [];
-    }
-    boolean|error matched = trap regex:matches(val, regexVal);
-    if matched is boolean {
-        return [matched];
-    }
-    return [false];
+    return applyRegexMatch(collection, params, context, env, "matches", false);
 }
 
 isolated function applyMatchesFullFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if params.length() != 1 {
-        return fnError("matchesFull", "1 parameter", params.length());
+    return applyRegexMatch(collection, params, context, env, "matchesFull", true);
+}
+
+// matches() succeeds when the regex matches any part of the input, matchesFull() when it matches all of it
+isolated function applyRegexMatch(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env,
+        string name, boolean full) returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() < 1 || params.length() > 2 {
+        return fnError(name, "1 or 2 parameters", params.length());
     }
-    if collection.length() == 0 {
+    FhirPathItem? input = check singleInput(collection, name);
+    if input is () {
         return [];
     }
-    json val = valueOf(collection[0]);
+    json val = valueOf(input);
     if val !is string {
         return [];
     }
-    FhirPathItem[] regexResult = check evaluate(params[0], context, env);
-    if regexResult.length() == 0 {
+    string? pattern = check stringParam(params[0], context, env);
+    if pattern is () {
         return [];
     }
-    json regexVal = valueOf(regexResult[0]);
-    if regexVal !is string {
-        return [];
+    string flags = params.length() == 2 ? (check stringParam(params[1], context, env) ?: "") : "";
+    string prefix = check regexFlagPrefix(flags, name);
+    string regexStr = full ? prefix + "(?:" + pattern + ")" : prefix + ".*?(?:" + pattern + ").*";
+    boolean|error matched = trap regex:matches(val, regexStr);
+    if matched is error {
+        return error FHIRPathInterpreterError(string `${name}(): invalid regular expression '${pattern}'`,
+            token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
     }
-    // Full-string match: anchor pattern and use regex:matches
-    string anchored = "^(?:" + regexVal + ")$";
-    boolean|error matched = trap regex:matches(val, anchored);
-    if matched is boolean {
-        return [matched];
-    }
-    return [false];
+    return [matched];
 }
 
 isolated function applyReplaceMatchesFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if params.length() != 2 {
-        return fnError("replaceMatches", "2 parameters", params.length());
+    if params.length() < 2 || params.length() > 3 {
+        return fnError("replaceMatches", "2 or 3 parameters", params.length());
     }
-    if collection.length() == 0 {
+    FhirPathItem? input = check singleInput(collection, "replaceMatches");
+    if input is () {
         return [];
     }
-    json val = valueOf(collection[0]);
+    json val = valueOf(input);
     if val !is string {
         return [];
     }
-    FhirPathItem[] regexResult = check evaluate(params[0], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
-    FhirPathItem[] repResult = check evaluate(params[1], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
-    if regexResult.length() == 0 || repResult.length() == 0 {
+    string? pattern = check stringParam(params[0], context, env);
+    string? substitution = check stringParam(params[1], context, env);
+    if pattern is () || substitution is () {
         return [];
     }
-    json regexVal = valueOf(regexResult[0]);
-    json rep = valueOf(repResult[0]);
-    if regexVal is string && rep is string {
-        if regexVal == "" {
-            return [val];
-        }
-        string|error result = trap regex:replaceAll(val, regexVal, rep);
-        if result is string {
-            return [result];
-        }
+    if pattern == "" {
         return [val];
     }
-    return [val];
+    string flags = params.length() == 3 ? (check stringParam(params[2], context, env) ?: "") : "";
+    string prefix = check regexFlagPrefix(flags, "replaceMatches");
+    final readonly & map<int> groupIndexes = captureGroupIndexes(pattern).cloneReadOnly();
+    final string replacement = substitution;
+    string|error result = trap regex:replaceAll(val, prefix + pattern,
+        isolated function(regex:Match matched) returns string => expandSubstitution(replacement, matched, groupIndexes));
+    if result is error {
+        return error FHIRPathInterpreterError(string `replaceMatches(): invalid regular expression '${pattern}'`,
+            token = {tokenType: IDENTIFIER, lexeme: "replaceMatches", literal: (), position: 0});
+    }
+    return [result];
+}
+
+// Expands $n and ${name} group references in a replaceMatches() substitution
+isolated function expandSubstitution(string substitution, regex:Match matched, map<int> groupIndexes) returns string {
+    string result = "";
+    int i = 0;
+    while i < substitution.length() {
+        string ch = substitution.substring(i, i + 1);
+        if ch == "$" && i + 1 < substitution.length() {
+            int? groupIndex = ();
+            int next = i + 1;
+            if substitution.substring(next, next + 1) == "{" {
+                int? close = substitution.indexOf("}", next);
+                if close is int {
+                    groupIndex = groupIndexes[substitution.substring(next + 1, close)];
+                    next = close + 1;
+                }
+            } else {
+                int end = next;
+                while end < substitution.length() && isDigit(substitution.substring(end, end + 1)) {
+                    end += 1;
+                }
+                if end > next {
+                    groupIndex = digitsToInt(substitution.substring(next, end));
+                    next = end;
+                }
+            }
+            if groupIndex is int {
+                // get() panics for an index past the last group; such references are kept literally
+                regex:PartMatch?|error group = trap matched.groups.get(groupIndex);
+                if group !is error {
+                    result += group is regex:PartMatch ? group.matched : "";
+                    i = next;
+                    continue;
+                }
+            }
+        }
+        result += ch;
+        i += 1;
+    }
+    return result;
+}
+
+// Maps capture group names to their indexes; numbered groups are also included under their index
+isolated function captureGroupIndexes(string pattern) returns map<int> {
+    map<int> indexes = {};
+    int groupIndex = 0;
+    boolean inClass = false;
+    int i = 0;
+    while i < pattern.length() {
+        string ch = pattern.substring(i, i + 1);
+        if ch == "\\" {
+            i += 2;
+            continue;
+        }
+        if inClass {
+            inClass = ch != "]";
+        } else if ch == "[" {
+            inClass = true;
+        } else if ch == "(" {
+            string rest = pattern.substring(i + 1);
+            if !rest.startsWith("?") {
+                groupIndex += 1;
+            } else if rest.startsWith("?<") && !rest.startsWith("?<=") && !rest.startsWith("?<!") {
+                groupIndex += 1;
+                int? close = rest.indexOf(">");
+                if close is int {
+                    indexes[rest.substring(2, close)] = groupIndex;
+                }
+            }
+        }
+        i += 1;
+    }
+    return indexes;
+}
+
+// Inline flags for a FHIRPath regex: always single-line mode (s), plus i (case-insensitive) and m (multi-line)
+isolated function regexFlagPrefix(string flags, string name) returns string|FHIRPathInterpreterError {
+    string inline = "s";
+    foreach string flag in flags {
+        if flag != "i" && flag != "m" {
+            return error FHIRPathInterpreterError(string `${name}(): invalid regex flag '${flag}'`,
+                token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+        }
+        if !inline.includes(flag) {
+            inline += flag;
+        }
+    }
+    return "(?" + inline + ")";
+}
+
+// Evaluates a parameter expected to be a single String; () when it is empty
+isolated function stringParam(Expr param, FhirPathItem context, FhirPathEnv env) returns string?|FHIRPathInterpreterError {
+    FhirPathItem[] result = check evaluate(param, context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
+    if result.length() == 0 {
+        return ();
+    }
+    json val = valueOf(result[0]);
+    return (val is string) ? val : ();
 }
 
 isolated function applyEncodeDecodeFunction(string funcName, FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
@@ -516,7 +600,7 @@ isolated function toInt(FhirPathItem item) returns int {
         return <int>val;
     } else if val is string {
         int|error i = int:fromString(val);
-        return i is int ? i : 0;
+        return (i is int) ? i : 0;
     }
     return 0;
 }

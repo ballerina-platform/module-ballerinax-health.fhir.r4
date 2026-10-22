@@ -125,7 +125,7 @@ isolated function toLongValue(FhirPathItem item) returns int? {
     }
     if kind == "String" && val is string && re `(\+|-)?[0-9]+`.isFullMatch(val) {
         int|error parsed = int:fromString(val.startsWith("+") ? val.substring(1) : val);
-        return parsed is int ? parsed : ();
+        return (parsed is int) ? parsed : ();
     }
     return ();
 }
@@ -227,50 +227,106 @@ isolated function applyToBooleanFunction(FhirPathItem[] collection, Expr[] param
     return [];
 }
 
-isolated function applyToDateFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if params.length() != 0 {
-        return fnError("toDate", "0 parameters", params.length());
-    }
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = systemValueOf(collection[0]);
-    if val is string {
-        // Accept @YYYY-MM-DD format or plain YYYY-MM-DD
-        string s = val.startsWith("@") ? val : "@" + val;
-        return [s];
-    }
-    return [];
+isolated function applyToDateFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    string? converted = check convertDateTimeInput(collection, params, context, env, "toDate", false);
+    return (converted is string) ? [systemItem("Date", converted)] : [];
 }
 
-isolated function applyToDateTimeFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if params.length() != 0 {
-        return fnError("toDateTime", "0 parameters", params.length());
-    }
+isolated function applyConvertsToDateFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if collection.length() == 0 {
         return [];
     }
-    json val = systemValueOf(collection[0]);
-    if val is string {
-        string s = val.startsWith("@") ? val : "@" + val;
-        return [s];
+    return [check convertDateTimeInput(collection, params, context, env, "convertsToDate", false) is string];
+}
+
+isolated function applyToDateTimeFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    string? converted = check convertDateTimeInput(collection, params, context, env, "toDateTime", true);
+    return (converted is string) ? [systemItem("DateTime", converted)] : [];
+}
+
+isolated function applyConvertsToDateTimeFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    if collection.length() == 0 {
+        return [];
     }
-    return [];
+    return [check convertDateTimeInput(collection, params, context, env, "convertsToDateTime", true) is string];
+}
+
+// Shared by toDate()/toDateTime() and their convertsTo variants. Returns the '@'-prefixed Date (or DateTime
+// when `toDateTime` is set) the single input converts to, or () when it does not convert.
+isolated function convertDateTimeInput(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env,
+        string name, boolean toDateTime) returns string?|FHIRPathInterpreterError {
+    if params.length() > 1 {
+        return fnError(name, "0 or 1 parameter", params.length());
+    }
+    FhirPathItem? input = check singleInput(collection, name);
+    if input is () {
+        return ();
+    }
+    string kind = systemTypeOf(input);
+    json val = systemValueOf(input);
+    if val !is string {
+        return ();
+    }
+    if kind == "Date" || kind == "DateTime" {
+        // The format parameter is ignored for non-string inputs
+        string datePart = datePartOf(val);
+        if !toDateTime {
+            return "@" + datePart;
+        }
+        return kind == "Date" ? "@" + datePart + "T" : val;
+    }
+    if kind != "String" {
+        return ();
+    }
+    DateTimeParts? parts;
+    if params.length() == 1 {
+        string? format = check stringParam(params[0], context, env);
+        if format is () {
+            return ();
+        }
+        parts = parseDateTimeWithFormat(val, format);
+    } else {
+        parts = toDateTime ? parseIsoDateTime(val) : parseIsoDate(val);
+    }
+    if parts is () {
+        return ();
+    }
+    return toDateTime ? "@" + formatDateTimeParts(parts) : "@" + formatDateParts(parts);
 }
 
 isolated function applyToTimeFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("toTime", "0 parameters", params.length());
     }
+    string? converted = check convertTimeInput(collection, "toTime");
+    return (converted is string) ? [systemItem("Time", converted)] : [];
+}
+
+isolated function applyConvertsToTimeFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if collection.length() == 0 {
         return [];
     }
-    json val = systemValueOf(collection[0]);
-    if val is string {
-        string s = val.startsWith("@T") ? val : "@T" + val;
-        return [s];
+    return [check convertTimeInput(collection, "convertsToTime") is string];
+}
+
+isolated function convertTimeInput(FhirPathItem[] collection, string name) returns string?|FHIRPathInterpreterError {
+    FhirPathItem? input = check singleInput(collection, name);
+    if input is () {
+        return ();
     }
-    return [];
+    string kind = systemTypeOf(input);
+    json val = systemValueOf(input);
+    if val !is string {
+        return ();
+    }
+    if kind == "Time" {
+        return val;
+    }
+    if kind == "String" {
+        string s = val.startsWith("T") ? val.substring(1) : val;
+        return isTimeFormat(s) ? "@T" + s : ();
+    }
+    return ();
 }
 
 isolated function applyConvertsToIntegerFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
@@ -332,92 +388,62 @@ isolated function applyConvertsToBooleanFunction(FhirPathItem[] collection, Expr
     return [false];
 }
 
-isolated function applyConvertsToDateFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+isolated function applyConvertsToQuantityFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if collection.length() == 0 {
         return [];
     }
-    json val = systemValueOf(collection[0]);
-    if val is string {
-        string s = val.startsWith("@") ? val.substring(1) : val;
-        return [isDateFormat(s)];
-    }
-    return [false];
+    return [check convertQuantityInput(collection, params, context, env, "convertsToQuantity") is TypedValue];
 }
 
-isolated function applyConvertsToDateTimeFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = systemValueOf(collection[0]);
-    if val is string {
-        string s = val.startsWith("@") ? val.substring(1) : val;
-        return [isDateFormat(s) || isDateTimeFormat(s)];
-    }
-    return [false];
+isolated function applyToQuantityFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    TypedValue? converted = check convertQuantityInput(collection, params, context, env, "toQuantity");
+    return (converted is TypedValue) ? [converted] : [];
 }
 
-isolated function applyConvertsToTimeFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if collection.length() == 0 {
-        return [];
+// Shared by toQuantity() and convertsToQuantity(): the Quantity the single input converts to,
+// expressed in the requested unit when one is given
+isolated function convertQuantityInput(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env,
+        string name) returns TypedValue?|FHIRPathInterpreterError {
+    if params.length() > 1 {
+        return fnError(name, "0 or 1 parameter", params.length());
     }
-    json val = systemValueOf(collection[0]);
-    if val is string {
-        string s = val.startsWith("@T") ? val.substring(2) : val.startsWith("T") ? val.substring(1) : val;
-        return [isTimeFormat(s)];
+    FhirPathItem? input = check singleInput(collection, name);
+    if input is () {
+        return ();
     }
-    return [false];
-}
-
-isolated function applyConvertsToQuantityFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = systemValueOf(collection[0]);
-    if val is int || val is decimal || val is float { return [true]; }
-    if val is boolean { return [true]; }
-    if val is string { return [isValidQuantityString(val)]; }
-    if val is map<json> {
-        return [val["value"] !is () && val["unit"] !is ()];
-    }
-    return [false];
-}
-
-isolated function applyToQuantityFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if params.length() != 0 {
-        return fnError("toQuantity", "0 parameters", params.length());
-    }
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = systemValueOf(collection[0]);
-    if val is int {
-        return [{"value": <decimal>val, "unit": "1"}];
-    }
-    if val is decimal {
-        return [{"value": val, "unit": "1"}];
-    }
-    if val is float {
-        decimal|error d = decimal:fromString(val.toString());
-        if d is decimal { return [{"value": d, "unit": "1"}]; }
-        return [];
-    }
-    if val is boolean {
-        return [{"value": val ? 1d : 0d, "unit": "1"}];
-    }
-    if val is string {
-        map<json>? q = parseQuantityFromString(val);
-        if q is () { return []; }
-        json unitJson = q["unit"];
-        json valJson = q["value"];
-        if unitJson !is string || valJson !is decimal { return []; }
-        return [quantityToString(<decimal>valJson, <string>unitJson)];
-    }
-    if val is map<json> {
-        if val["value"] !is () && val["unit"] !is () {
-            return [val];
+    string kind = systemTypeOf(input);
+    json val = valueOf(input);
+    decimal value;
+    string unit;
+    if (kind == "Integer" || kind == "Long" || kind == "Decimal") && (val is int || val is decimal || val is float) {
+        [value, unit] = [toDecimalValue(val), "1"];
+    } else if val is boolean {
+        [value, unit] = [val ? 1.0d : 0.0d, "1"];
+    } else if kind == "String" && val is string {
+        map<json>? parsed = parseQuantityFromString(val);
+        if parsed is () {
+            return ();
         }
+        [value, unit] = [toDecimalValue(parsed["value"]), <string>parsed["unit"]];
+    } else if kind == "Quantity" && val is map<json> && val["value"] !is () {
+        json code = val["code"];
+        json unitJson = val["unit"];
+        [value, unit] = [toDecimalValue(val["value"]), code is string ? code : (unitJson is string ? unitJson : "1")];
+    } else {
+        return ();
     }
-    return [];
+    if params.length() == 1 {
+        string? targetUnit = check stringParam(params[0], context, env);
+        if targetUnit is () {
+            return ();
+        }
+        decimal? converted = convertQuantity(value, unit, targetUnit);
+        if converted is () {
+            return ();
+        }
+        return quantityItem(converted, targetUnit);
+    }
+    return quantityItem(value, unit);
 }
 
 isolated function applyOfTypeFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
@@ -550,19 +576,12 @@ isolated function applyAsType(FhirPathItem[] collection, string typeName, string
 
 isolated function isDateFormat(string s) returns boolean {
     // YYYY or YYYY-MM or YYYY-MM-DD
-    if s.length() == 4 { return isDigits(s); }
-    if s.length() == 7 { return isDigits(s.substring(0, 4)) && s.substring(4, 5) == "-" && isDigits(s.substring(5)); }
-    if s.length() == 10 { return isDigits(s.substring(0, 4)) && s.substring(4, 5) == "-" && isDigits(s.substring(5, 7)) && s.substring(7, 8) == "-" && isDigits(s.substring(8)); }
-    return false;
-}
-
-isolated function isDateTimeFormat(string s) returns boolean {
-    return s.includes("T") && isDateFormat(s.substring(0, (s.indexOf("T") ?: 0)));
+    return re `[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?`.isFullMatch(s);
 }
 
 isolated function isTimeFormat(string s) returns boolean {
     // HH or HH:MM or HH:MM:SS or HH:MM:SS.fff
-    return s.length() >= 2 && isDigits(s.substring(0, 2));
+    return re `[0-9]{2}(:[0-9]{2}(:[0-9]{2}(\.[0-9]+)?)?)?`.isFullMatch(s);
 }
 
 isolated function isDigits(string s) returns boolean {
@@ -604,27 +623,33 @@ isolated function quantityToString(decimal val, string unit) returns string {
 
 isolated function parseQuantityFromString(string s) returns map<json>? {
     string trimmed = s.trim();
-    if trimmed.length() == 0 {
+    int i = 0;
+    if trimmed.startsWith("+") || trimmed.startsWith("-") {
+        i = 1;
+    }
+    while i < trimmed.length() && isDigit(trimmed.substring(i, i + 1)) {
+        i += 1;
+    }
+    if i < trimmed.length() && trimmed.substring(i, i + 1) == "." {
+        i += 1;
+        while i < trimmed.length() && isDigit(trimmed.substring(i, i + 1)) {
+            i += 1;
+        }
+    }
+    string numStr = trimmed.substring(0, i);
+    if !re `(\+|-)?[0-9]+(\.[0-9]+)?`.isFullMatch(numStr) {
         return ();
     }
-    int? spaceIdx = trimmed.indexOf(" ");
-    string numStr;
-    string unitPart;
-    if spaceIdx is () {
-        numStr = trimmed;
-        unitPart = "";
-    } else {
-        numStr = trimmed.substring(0, <int>spaceIdx);
-        unitPart = trimmed.substring(<int>spaceIdx + 1).trim();
-    }
-    decimal|error d = decimal:fromString(numStr);
+    decimal|error d = decimal:fromString(numStr.startsWith("+") ? numStr.substring(1) : numStr);
     if d is error {
         return ();
     }
+    string unitPart = trimmed.substring(i).trim();
     string unit;
     if unitPart.length() == 0 {
         unit = "1";
-    } else if unitPart.startsWith("'") && unitPart.endsWith("'") && unitPart.length() >= 2 {
+    } else if unitPart.startsWith("'") && unitPart.endsWith("'") && unitPart.length() > 2
+            && !unitPart.substring(1, unitPart.length() - 1).includes("'") {
         unit = unitPart.substring(1, unitPart.length() - 1);
     } else if isCalendarQuantityUnit(unitPart) {
         unit = unitPart;

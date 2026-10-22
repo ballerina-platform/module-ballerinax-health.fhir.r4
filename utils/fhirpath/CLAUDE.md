@@ -44,6 +44,7 @@ FHIRPath string → Scanner → Tokens → Parser → AST → Interpreter → Re
 | `fhir_path_processor.bal` | Public API: `getValuesFromFhirPath` and `setValuesToFhirPath` |
 | `functions_*.bal` | Built-in function implementations split by category (collection, string, math, datetime, type, FHIR-specific) |
 | `values.bal` | Typed collection items (`FhirPathItem = json\|TypedValue`), FHIR→System implicit conversion, model-aware navigation (`childItems`) and type tests (`itemIsOfType`) |
+| `units.bal` | Quantity unit conversion (`convertQuantity`): calendar durations and UCUM definite-duration time units |
 | `model_info.bal` | **Generated** FHIR R4 model: type hierarchy (`FHIR_TYPE_BASE`) and element types (`FHIR_ELEMENT_TYPES`). Regenerate with `scripts/generate_model_info.py` (see its docstring); never edit by hand |
 | `grammar.g4` | ANTLR grammar from the HL7 FHIRPath spec — the authoritative reference for parser structure. ANTLR uses left-recursive rules; `parser.bal` manually converts these into top-down recursive-descent functions. |
 
