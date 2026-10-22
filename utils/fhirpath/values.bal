@@ -46,13 +46,20 @@ class TypedValue {
     final string? modelKey;
     # The `_name` sibling of a FHIR primitive, holding its id and extensions
     final json primitiveElement;
+    # Location within the input resource with every indexer (e.g. "Patient.name[0].given[1]"), for navigated values
+    final string? path;
+    # Location without the indexers of single-valued elements (e.g. "Patient.birthDate")
+    final string? shortPath;
 
-    isolated function init(json value, string namespace, string name, string? modelKey = (), json primitiveElement = ()) {
+    isolated function init(json value, string namespace, string name, string? modelKey = (), json primitiveElement = (),
+            string? path = (), string? shortPath = ()) {
         self.value = value;
         self.namespace = namespace;
         self.name = name;
         self.modelKey = modelKey;
         self.primitiveElement = primitiveElement;
+        self.path = path;
+        self.shortPath = shortPath;
     }
 }
 
@@ -199,7 +206,7 @@ isolated function rootItem(json value) returns FhirPathItem {
     if value is map<json> {
         json rt = value["resourceType"];
         if rt is string {
-            return new TypedValue(value, FHIR_NS, rt, rt);
+            return new TypedValue(value, FHIR_NS, rt, rt, (), rt, rt);
         }
     }
     return value;
@@ -226,6 +233,7 @@ isolated function toOutputJson(FhirPathItem[] items) returns json[] {
 isolated function childItems(FhirPathItem item, string name) returns FhirPathItem[] {
     json parent = valueOf(item);
     string? modelKey = modelKeyOf(item);
+    [string?, string?] parentPaths = pathsOf(item);
     if parent !is map<json> {
         if parent is json[] {
             FhirPathItem[] results = [];
@@ -238,13 +246,13 @@ isolated function childItems(FhirPathItem item, string name) returns FhirPathIte
         if item is TypedValue {
             json element = item.primitiveElement;
             if element is map<json> {
-                return childrenOfKey(element, item.name, name, name);
+                return childrenOfKey(element, item.name, name, name, parentPaths);
             }
         }
         return [];
     }
     if parent.hasKey(name) {
-        return childrenOfKey(parent, modelKey, name, name);
+        return childrenOfKey(parent, modelKey, name, name, parentPaths);
     }
     // Choice element: "value" → "valueQuantity", "valueString", ...
     FhirPathItem[] results = [];
@@ -253,7 +261,7 @@ isolated function childItems(FhirPathItem item, string name) returns FhirPathIte
             string suffix = key.substring(name.length());
             string first = suffix.substring(0, 1);
             if first >= "A" && first <= "Z" && isChoiceExpansion(modelKey, name) {
-                results.push(...childrenOfKey(parent, modelKey, key, name));
+                results.push(...childrenOfKey(parent, modelKey, key, name, parentPaths));
             }
         }
     }
@@ -269,8 +277,9 @@ isolated function allChildItems(FhirPathItem item) returns FhirPathItem[] {
     FhirPathItem[] results = [];
     if parent is map<json> {
         string? modelKey = modelKeyOf(item);
+        [string?, string?] parentPaths = pathsOf(item);
         foreach string key in parent.keys() {
-            results.push(...childrenOfKey(parent, modelKey, key, key));
+            results.push(...childrenOfKey(parent, modelKey, key, key, parentPaths));
         }
     } else if parent is json[] {
         foreach json element in parent {
@@ -280,6 +289,18 @@ isolated function allChildItems(FhirPathItem item) returns FhirPathItem[] {
         }
     }
     return results;
+}
+
+// [path, shortPath] of a navigated item; untyped resources are located by their resource type
+isolated function pathsOf(FhirPathItem item) returns [string?, string?] {
+    if item is TypedValue {
+        return [item.path, item.shortPath];
+    }
+    if item is map<json> {
+        json rt = item["resourceType"];
+        if rt is string { return [rt, rt]; }
+    }
+    return [(), ()];
 }
 
 isolated function modelKeyOf(FhirPathItem item) returns string? {
@@ -305,10 +326,12 @@ isolated function isChoiceExpansion(string? modelKey, string name) returns boole
 
 // Types the value(s) stored under `key` of `parent`. `name` is the FHIRPath element name, which differs
 // from the key for choice elements.
-isolated function childrenOfKey(map<json> parent, string? modelKey, string key, string name) returns FhirPathItem[] {
+isolated function childrenOfKey(map<json> parent, string? modelKey, string key, string name,
+        [string?, string?] parentPaths) returns FhirPathItem[] {
     json raw = parent[key];
     json primitiveElements = parent["_" + key];
     [string, string?] [typeName, childKey] = resolveChildType(modelKey, key, name);
+    [string?, string?] [parentPath, parentShortPath] = parentPaths;
 
     FhirPathItem[] results = [];
     if raw is json[] {
@@ -318,28 +341,33 @@ isolated function childrenOfKey(map<json> parent, string? modelKey, string key, 
             if element is () && primitiveElement is () {
                 continue;
             }
-            results.push(typedChild(element, typeName, childKey, primitiveElement));
+            string? path = parentPath is string ? string `${parentPath}.${name}[${i}]` : ();
+            string? shortPath = parentShortPath is string ? string `${parentShortPath}.${name}[${i}]` : ();
+            results.push(typedChild(element, typeName, childKey, primitiveElement, path, shortPath));
         }
-    } else if raw !is () {
-        results.push(typedChild(raw, typeName, childKey, primitiveElements));
+    } else if raw !is () || primitiveElements !is () {
+        string? path = parentPath is string ? string `${parentPath}.${name}[0]` : ();
+        string? shortPath = parentShortPath is string ? string `${parentShortPath}.${name}` : ();
+        results.push(typedChild(raw, typeName, childKey, primitiveElements, path, shortPath));
     }
     return results;
 }
 
-isolated function typedChild(json value, string typeName, string? childKey, json primitiveElement) returns TypedValue {
+isolated function typedChild(json value, string typeName, string? childKey, json primitiveElement,
+        string? path, string? shortPath) returns TypedValue {
     if value is map<json> {
         json rt = value["resourceType"];
         if rt is string {
-            return new TypedValue(value, FHIR_NS, rt, rt);
+            return new TypedValue(value, FHIR_NS, rt, rt, (), path, shortPath);
         }
     }
     if typeName.startsWith("System.") {
-        return new TypedValue(value, SYSTEM_NS, typeName.substring(7));
+        return new TypedValue(value, SYSTEM_NS, typeName.substring(7), (), (), path, shortPath);
     }
     if typeName == "" {
-        return new TypedValue(value, FHIR_NS, inferFhirType(value), (), primitiveElement);
+        return new TypedValue(value, FHIR_NS, inferFhirType(value), (), primitiveElement, path, shortPath);
     }
-    return new TypedValue(value, FHIR_NS, typeName, childKey, primitiveElement);
+    return new TypedValue(value, FHIR_NS, typeName, childKey, primitiveElement, path, shortPath);
 }
 
 // Resolves [typeName, modelKey] for the child `name` (stored under JSON property `key`) of `modelKey`.
@@ -420,6 +448,34 @@ isolated function inferFhirType(json value) returns string {
     if value is decimal || value is float { return "decimal"; }
     if value is string { return "string"; }
     return "Element";
+}
+
+# Returns the System type an item converts to implicitly (e.g. FHIR.code → String, FHIR.instant → DateTime,
+# FHIR.Age → Quantity), or the item's own type name when it has no System equivalent.
+#
+# + item - The collection item
+# + return - The System type name
+isolated function systemTypeOf(FhirPathItem item) returns string {
+    [string, string] [namespace, name] = typeOfItem(item);
+    if namespace == SYSTEM_NS {
+        return name;
+    }
+    match name {
+        "boolean" => { return "Boolean"; }
+        "integer"|"positiveInt"|"unsignedInt" => { return "Integer"; }
+        "integer64" => { return "Long"; }
+        "decimal" => { return "Decimal"; }
+        "date" => { return "Date"; }
+        "dateTime"|"instant" => { return "DateTime"; }
+        "time" => { return "Time"; }
+    }
+    if name == "string" || name == "uri" || fhirTypeDerivesFrom(name, "string") || fhirTypeDerivesFrom(name, "uri") {
+        return "String";
+    }
+    if name == "Quantity" || fhirTypeDerivesFrom(name, "Quantity") {
+        return "Quantity";
+    }
+    return name;
 }
 
 // ========================================

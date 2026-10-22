@@ -41,6 +41,90 @@ isolated function applyNowFunction(FhirPathItem[] collection, Expr[] params) ret
     return [dtStr];
 }
 
+isolated function applyTimeOfDayFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 0 {
+        return fnError("timeOfDay", "0 parameters", params.length());
+    }
+    time:Civil civil = time:utcToCivil(time:utcNow());
+    decimal second = civil.second ?: 0d;
+    int wholeSeconds = <int>second.floor();
+    int millis = <int>((second - <decimal>wholeSeconds) * 1000d).floor();
+    return [systemItem("Time", string `@T${zeroPad(civil.hour)}:${zeroPad(civil.minute)}:${zeroPad(wholeSeconds)}.${zeroPad3(millis)}`)];
+}
+
+// Date/time component extraction: yearOf(), monthOf(), dayOf(), hourOf(), minuteOf(), secondOf(),
+// millisecondOf(), timezoneOffsetOf(), dateOf() and timeOf()
+isolated function applyDateTimeComponentFunction(FhirPathItem[] collection, Expr[] params, string name)
+        returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 0 {
+        return fnError(name, "0 parameters", params.length());
+    }
+    FhirPathItem? input = check singleInput(collection, name);
+    if input is () {
+        return [];
+    }
+    json val = systemValueOf(input);
+    string? kind = dateTimeKind(val);
+    if kind is () || val !is string {
+        return [];
+    }
+    string s = val.substring(1);
+    string datePart = kind == "Time" ? "" : datePartOf(val);
+    string timeWithTz = "";
+    if kind == "Time" {
+        timeWithTz = s.substring(1);
+    } else if kind == "DateTime" {
+        timeWithTz = s.substring(datePart.length() + 1);
+    }
+    [string, string] [timePart, tz] = extractTzFromTime(timeWithTz);
+
+    match name {
+        "yearOf" => { return kind == "Time" ? [] : componentAt(datePart, 0, 4); }
+        "monthOf" => { return kind == "Time" ? [] : componentAt(datePart, 5, 7); }
+        "dayOf" => { return kind == "Time" ? [] : componentAt(datePart, 8, 10); }
+        "hourOf" => { return kind == "Date" ? [] : componentAt(timePart, 0, 2); }
+        "minuteOf" => { return kind == "Date" ? [] : componentAt(timePart, 3, 5); }
+        "secondOf" => { return kind == "Date" ? [] : componentAt(timePart, 6, 8); }
+        "millisecondOf" => {
+            if kind == "Date" || timePart.length() < 10 || timePart.substring(8, 9) != "." {
+                return [];
+            }
+            string fraction = timePart.substring(9);
+            while fraction.length() < 3 {
+                fraction += "0";
+            }
+            return componentAt(fraction, 0, 3);
+        }
+        "timezoneOffsetOf" => {
+            if kind != "DateTime" || tz == "" {
+                return [];
+            }
+            if tz == "Z" {
+                return [0.0d];
+            }
+            int|error hours = int:fromString(tz.substring(1, 3));
+            int|error minutes = int:fromString(tz.substring(4, 6));
+            if hours is error || minutes is error {
+                return [];
+            }
+            decimal offset = <decimal>hours + <decimal>minutes / 60d;
+            return [tz.startsWith("-") ? -offset : offset];
+        }
+        "dateOf" => { return kind == "Time" ? [] : [systemItem("Date", "@" + datePart)]; }
+        "timeOf" => { return kind != "DateTime" || timePart == "" ? [] : [systemItem("Time", "@T" + timePart)]; }
+    }
+    return [];
+}
+
+// The integer in s[startIndex, endIndex), or empty when the component is not present
+isolated function componentAt(string s, int startIndex, int endIndex) returns FhirPathItem[] {
+    if s.length() < endIndex {
+        return [];
+    }
+    int|error component = int:fromString(s.substring(startIndex, endIndex));
+    return (component is int) ? [component] : [];
+}
+
 isolated function applyLowBoundaryFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() > 1 {
         return fnError("lowBoundary", "0 or 1 parameter", params.length());

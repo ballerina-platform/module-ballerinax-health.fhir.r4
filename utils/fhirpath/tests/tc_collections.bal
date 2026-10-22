@@ -118,9 +118,7 @@ function getCollectionsTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.name.select(given.exists()).allTrue()",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testAllTrue2",
@@ -128,9 +126,7 @@ function getCollectionsTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.name.select(period.exists()).allTrue()",
             resourceKey: "patient",
             expected: [false],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testAllTrue3",

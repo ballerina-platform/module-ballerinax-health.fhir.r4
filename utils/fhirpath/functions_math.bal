@@ -259,6 +259,18 @@ isolated function toFloat(FhirPathItem item) returns float {
     return 0.0;
 }
 
+// Returns the single input item, () for an empty input, or an error when the input has several items
+isolated function singleInput(FhirPathItem[] collection, string name) returns FhirPathItem?|FHIRPathInterpreterError {
+    if collection.length() == 0 {
+        return ();
+    }
+    if collection.length() > 1 {
+        return error FHIRPathInterpreterError(string `${name}() requires a single input item, got ${collection.length()}`,
+            token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+    }
+    return collection[0];
+}
+
 isolated function fnError(string name, string expected, int got) returns FHIRPathInterpreterError {
     return error FHIRPathInterpreterError(
         string `${name}() requires ${expected}, got ${got}`,

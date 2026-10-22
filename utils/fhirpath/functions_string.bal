@@ -207,6 +207,30 @@ isolated function applyIndexOfFunction(FhirPathItem[] collection, Expr[] params,
     return [];
 }
 
+isolated function applyLastIndexOfFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 1 {
+        return fnError("lastIndexOf", "1 parameter", params.length());
+    }
+    FhirPathItem? input = check singleInput(collection, "lastIndexOf");
+    if input is () {
+        return [];
+    }
+    FhirPathItem[] subResult = check evaluate(params[0], context, env);
+    if subResult.length() == 0 {
+        return [];
+    }
+    json val = valueOf(input);
+    json sub = valueOf(subResult[0]);
+    if val is string && sub is string {
+        if sub == "" {
+            return [val.length()];
+        }
+        int? idx = val.lastIndexOf(sub);
+        return [idx is int ? idx : -1];
+    }
+    return [];
+}
+
 isolated function applySubstringFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() < 1 || params.length() > 2 {
         return fnError("substring", "1 or 2 parameters", params.length());

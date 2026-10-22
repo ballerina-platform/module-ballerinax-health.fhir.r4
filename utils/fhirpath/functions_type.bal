@@ -90,6 +90,46 @@ isolated function applyToIntegerFunction(FhirPathItem[] collection, Expr[] param
     return [];
 }
 
+isolated function applyToLongFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 0 {
+        return fnError("toLong", "0 parameters", params.length());
+    }
+    FhirPathItem? input = check singleInput(collection, "toLong");
+    if input is () {
+        return [];
+    }
+    int? converted = toLongValue(input);
+    return (converted is int) ? [systemItem("Long", converted)] : [];
+}
+
+isolated function applyConvertsToLongFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 0 {
+        return fnError("convertsToLong", "0 parameters", params.length());
+    }
+    FhirPathItem? input = check singleInput(collection, "convertsToLong");
+    if input is () {
+        return [];
+    }
+    return [toLongValue(input) is int];
+}
+
+// Long conversion: Integer/Long values, Booleans (1/0) and strings matching (\+|-)?\d+ within 64 bits
+isolated function toLongValue(FhirPathItem item) returns int? {
+    string kind = systemTypeOf(item);
+    json val = valueOf(item);
+    if (kind == "Integer" || kind == "Long") && val is int {
+        return val;
+    }
+    if val is boolean {
+        return val ? 1 : 0;
+    }
+    if kind == "String" && val is string && re `(\+|-)?[0-9]+`.isFullMatch(val) {
+        int|error parsed = int:fromString(val.startsWith("+") ? val.substring(1) : val);
+        return parsed is int ? parsed : ();
+    }
+    return ();
+}
+
 isolated function applyToDecimalFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("toDecimal", "0 parameters", params.length());
@@ -425,6 +465,29 @@ isolated function applyIifFunction(FhirPathItem[] collection, Expr[] params, Fhi
         return check evaluate(params[2], context, env);
     }
     return [];
+}
+
+isolated function applyPathnameFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env)
+        returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() > 1 {
+        return fnError("pathname", "0 or 1 parameter", params.length());
+    }
+    boolean short = false;
+    if params.length() == 1 {
+        FhirPathItem[] shortResult = check evaluate(params[0], context, env);
+        short = shortResult.length() > 0 && valueOf(shortResult[0]) == true;
+    }
+    FhirPathItem[] result = [];
+    foreach FhirPathItem item in collection {
+        // Only navigated items have a location; computed values are excluded
+        if item is TypedValue {
+            string? path = short ? item.shortPath : item.path;
+            if path is string {
+                result.push(path);
+            }
+        }
+    }
+    return result;
 }
 
 isolated function applyTraceFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {

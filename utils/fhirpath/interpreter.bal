@@ -999,11 +999,17 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
     if name == "exists" { return applyExistsFunction(targetResults, params, context, env); }
     if name == "not" { return applyNotFunction(targetResults, params); }
     if name == "hasValue" { return applyHasValueFunction(targetResults, params); }
+    if name == "allTrue" { return applyBooleanAggregate(targetResults, params, name, true, false); }
+    if name == "anyTrue" { return applyBooleanAggregate(targetResults, params, name, true, true); }
+    if name == "allFalse" { return applyBooleanAggregate(targetResults, params, name, false, false); }
+    if name == "anyFalse" { return applyBooleanAggregate(targetResults, params, name, false, true); }
 
     // ---- Navigation ----
     if name == "where" { return applyWhereFunction(targetResults, params, context, env); }
     if name == "select" { return applySelectFunction(targetResults, params, context, env); }
     if name == "repeat" { return applyRepeatFunction(targetResults, params, context, env); }
+    if name == "repeatAll" { return applyRepeatAllFunction(targetResults, params, env); }
+    if name == "coalesce" { return applyCoalesceFunction(targetResults, params, context, env); }
     if name == "children" { return applyChildrenFunction(targetResults, params); }
     if name == "descendants" { return applyDescendantsFunction(targetResults, params); }
 
@@ -1043,6 +1049,8 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
     if name == "all" { return applyAllFunction(targetResults, params, context, env); }
     if name == "aggregate" { return applyAggregateFunction(targetResults, params, context, env); }
     if name == "sum" { return applySumFunction(targetResults, params); }
+    if name == "min" || name == "max" { return applyMinMaxFunction(targetResults, params, name); }
+    if name == "avg" { return applyAvgFunction(targetResults, params); }
 
     // ---- Combining ----
     if name == "combine" { return applyCombineFunction(targetResults, params, context, env); }
@@ -1084,6 +1092,7 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
         return fnError("contains", "1 parameter", params.length());
     }
     if name == "indexOf" { return applyIndexOfFunction(targetResults, params, context, env); }
+    if name == "lastIndexOf" { return applyLastIndexOfFunction(targetResults, params, context, env); }
     if name == "substring" { return applySubstringFunction(targetResults, params, context, env); }
     if name == "replace" { return applyReplaceFunction(targetResults, params, context, env); }
     if name == "matches" { return applyMatchesFunction(targetResults, params, context, env); }
@@ -1098,6 +1107,8 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
 
     // ---- Type conversion ----
     if name == "toInteger" { return applyToIntegerFunction(targetResults, params); }
+    if name == "toLong" { return applyToLongFunction(targetResults, params); }
+    if name == "convertsToLong" { return applyConvertsToLongFunction(targetResults, params); }
     if name == "toDecimal" { return applyToDecimalFunction(targetResults, params); }
     if name == "toString" { return applyToStringFunction(targetResults, params); }
     if name == "toBoolean" { return applyToBooleanFunction(targetResults, params); }
@@ -1124,6 +1135,12 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
     // ---- Date/time ----
     if name == "today" { return typedResults(check applyTodayFunction(targetResults, params)); }
     if name == "now" { return typedResults(check applyNowFunction(targetResults, params)); }
+    if name == "timeOfDay" { return applyTimeOfDayFunction(targetResults, params); }
+    if name == "yearOf" || name == "monthOf" || name == "dayOf" || name == "hourOf" || name == "minuteOf"
+            || name == "secondOf" || name == "millisecondOf" || name == "timezoneOffsetOf" || name == "dateOf"
+            || name == "timeOf" {
+        return applyDateTimeComponentFunction(targetResults, params, name);
+    }
     if name == "lowBoundary" { return typedResults(check applyLowBoundaryFunction(targetResults, params, context, env)); }
     if name == "highBoundary" { return typedResults(check applyHighBoundaryFunction(targetResults, params, context, env)); }
     if name == "precision" { return applyPrecisionFunction(targetResults, params); }
@@ -1137,6 +1154,7 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
 
     // ---- Utility ----
     if name == "trace" { return applyTraceFunction(targetResults, params, context, env); }
+    if name == "pathname" { return applyPathnameFunction(targetResults, params, context, env); }
     if name == "defineVariable" { return applyDefineVariableFunction(targetResults, params, context, env); }
 
     return error FHIRPathInterpreterError(string `Unknown function '${name}'`,
@@ -1214,24 +1232,6 @@ isolated function applyFirstFunction(FhirPathItem[] collection, Expr[] params) r
         return [];
     }
     return [collection[0]];
-}
-
-isolated function applySumFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if collection.length() == 0 {
-        return [0];
-    }
-    decimal sum = 0d;
-    boolean hasDecimal = false;
-    foreach FhirPathItem entry in collection {
-        json item = valueOf(entry);
-        if item is int { sum += <decimal>item; }
-        else if item is decimal { sum += item; hasDecimal = true; }
-        else if item is float { sum += <decimal>item; hasDecimal = true; }
-    }
-    if hasDecimal {
-        return [sum];
-    }
-    return [<int>sum];
 }
 
 isolated function applyDefineVariableFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {

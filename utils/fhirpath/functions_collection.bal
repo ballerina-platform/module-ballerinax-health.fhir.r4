@@ -441,6 +441,198 @@ isolated function collectDescendants(FhirPathItem item, FhirPathItem[] result) {
     }
 }
 
+// Shared by allTrue(), anyTrue(), allFalse() and anyFalse(): `target` is the value looked for and
+// `matchAny` selects "any item matches" instead of "all items match"
+isolated function applyBooleanAggregate(FhirPathItem[] collection, Expr[] params, string name, boolean target, boolean matchAny)
+        returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 0 {
+        return fnError(name, "0 parameters", params.length());
+    }
+    boolean found = false;
+    boolean allMatch = true;
+    foreach FhirPathItem item in collection {
+        json val = valueOf(item);
+        if val !is boolean {
+            return error FHIRPathInterpreterError(string `${name}() requires a collection of Boolean values`,
+                token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+        }
+        if val == target {
+            found = true;
+        } else {
+            allMatch = false;
+        }
+    }
+    return [matchAny ? found : allMatch];
+}
+
+isolated function applyCoalesceFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env)
+        returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() == 0 {
+        return fnError("coalesce", "at least 1 parameter", 0);
+    }
+    FhirPathItem? input = check singleInput(collection, "coalesce");
+    // Arguments are evaluated lazily against the input item; evaluation stops at the first non-empty one
+    foreach Expr param in params {
+        FhirPathItem[] result = check evaluate(param, input, {index: 0, total: env?.total, scope: env.scope.childScope()});
+        if result.length() > 0 {
+            return result;
+        }
+    }
+    return [];
+}
+
+const REPEAT_ALL_MAX_ITEMS = 100000;
+
+isolated function applyRepeatAllFunction(FhirPathItem[] collection, Expr[] params, FhirPathEnv env)
+        returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 1 {
+        return fnError("repeatAll", "1 parameter", params.length());
+    }
+    FhirPathItem[] result = [];
+    FhirPathItem[] queue = collection;
+    while queue.length() > 0 {
+        FhirPathItem[] next = [];
+        foreach FhirPathItem item in queue {
+            // $index is undefined for repeatAll()
+            FhirPathItem[] itemResult = check evaluate(params[0], item, {total: env?.total, scope: env.scope.childScope()});
+            result.push(...itemResult);
+            next.push(...itemResult);
+        }
+        if result.length() > REPEAT_ALL_MAX_ITEMS {
+            return error FHIRPathInterpreterError(
+                string `repeatAll() produced more than ${REPEAT_ALL_MAX_ITEMS} items; the projection probably does not terminate`,
+                token = {tokenType: IDENTIFIER, lexeme: "repeatAll", literal: (), position: 0});
+        }
+        queue = next;
+    }
+    return result;
+}
+
+// ========================================
+// AGGREGATES
+// ========================================
+
+isolated function applySumFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 0 {
+        return fnError("sum", "0 parameters", params.length());
+    }
+    if collection.length() == 0 {
+        return [];
+    }
+    string kind = check aggregateKind(collection, "sum", ["Integer", "Long", "Decimal", "Quantity"]);
+    if kind == "Quantity" {
+        [decimal, string] [total, unit] = check sumQuantities(collection, "sum");
+        return [quantityItem(total, unit)];
+    }
+    decimal total = 0d;
+    foreach FhirPathItem item in collection {
+        total += toDecimalValue(valueOf(item));
+    }
+    if kind == "Decimal" {
+        return [total];
+    }
+    int intTotal = <int>total;
+    return [kind == "Long" ? systemItem("Long", intTotal) : intTotal];
+}
+
+isolated function applyMinMaxFunction(FhirPathItem[] collection, Expr[] params, string name) returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 0 {
+        return fnError(name, "0 parameters", params.length());
+    }
+    if collection.length() == 0 {
+        return [];
+    }
+    _ = check aggregateKind(collection, name, ["Integer", "Long", "Decimal", "Quantity", "Date", "DateTime", "Time", "String"]);
+    string op = name == "min" ? "<" : ">";
+    FhirPathItem best = collection[0];
+    foreach FhirPathItem item in collection.slice(1) {
+        FhirPathItem[] better = check applyComparisonOperator([item], [best], op);
+        if better.length() == 0 {
+            // Values of different precision cannot be ordered
+            return [];
+        }
+        if valueOf(better[0]) == true {
+            best = item;
+        }
+    }
+    return [best];
+}
+
+isolated function applyAvgFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 0 {
+        return fnError("avg", "0 parameters", params.length());
+    }
+    if collection.length() == 0 {
+        return [];
+    }
+    string kind = check aggregateKind(collection, "avg", ["Integer", "Long", "Decimal", "Quantity"]);
+    decimal count = <decimal>collection.length();
+    if kind == "Quantity" {
+        [decimal, string] [total, unit] = check sumQuantities(collection, "avg");
+        return [quantityItem(total / count, unit)];
+    }
+    decimal total = 0d;
+    foreach FhirPathItem item in collection {
+        total += toDecimalValue(valueOf(item));
+    }
+    return [total / count];
+}
+
+// Checks that all items have the same (System) type, one of `allowed`, and returns it.
+// Integer, Long and Decimal items may be mixed; the result is then the widest of them.
+isolated function aggregateKind(FhirPathItem[] collection, string name, string[] allowed) returns string|FHIRPathInterpreterError {
+    string kind = "";
+    foreach FhirPathItem item in collection {
+        string itemKind = systemTypeOf(item);
+        if allowed.indexOf(itemKind) is () {
+            return error FHIRPathInterpreterError(string `${name}() does not accept items of type ${itemKind}`,
+                token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+        }
+        if kind == "" || kind == itemKind {
+            kind = itemKind;
+        } else if isNumericKind(kind) && isNumericKind(itemKind) {
+            kind = kind == "Decimal" || itemKind == "Decimal" ? "Decimal" : "Long";
+        } else {
+            return error FHIRPathInterpreterError(string `${name}() requires items of the same type, found ${kind} and ${itemKind}`,
+                token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+        }
+    }
+    return kind;
+}
+
+isolated function isNumericKind(string kind) returns boolean {
+    return kind == "Integer" || kind == "Long" || kind == "Decimal";
+}
+
+// Sums quantities that share a unit (unit conversion is not supported yet)
+isolated function sumQuantities(FhirPathItem[] collection, string name) returns [decimal, string]|FHIRPathInterpreterError {
+    decimal total = 0d;
+    string? unit = ();
+    foreach FhirPathItem item in collection {
+        json q = valueOf(item);
+        if q !is map<json> {
+            continue;
+        }
+        json code = q["code"];
+        json unitJson = q["unit"];
+        string itemUnit = code is string ? code : (unitJson is string ? unitJson : "1");
+        if unit is string && unit != itemUnit {
+            return error FHIRPathInterpreterError(string `${name}() requires quantities with the same unit, found '${unit}' and '${itemUnit}'`,
+                token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+        }
+        unit = itemUnit;
+        total += toDecimalValue(q["value"]);
+    }
+    return [total, unit ?: "1"];
+}
+
+isolated function toDecimalValue(json val) returns decimal {
+    if val is decimal { return val; }
+    if val is int { return <decimal>val; }
+    if val is float { return <decimal>val; }
+    return 0d;
+}
+
 // ========================================
 // COLLECTION HELPERS
 // ========================================
