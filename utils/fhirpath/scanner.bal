@@ -155,11 +155,10 @@ isolated function scanToken(ScannerState state) returns FHIRPathScannerError|Sca
                 newState = blockResult[1];
                 if blockChar == "*" && peekScanner(newState) == "/" {
                     [string, ScannerState] closeResult = advanceScanner(newState);
-                    newState = closeResult[1];
-                    break;
+                    return closeResult[1];
                 }
             }
-            return newState;
+            return error FHIRPathScannerError("Unterminated block comment", position = state.current);
         }
         return addToken(newState, SLASH);
     } else if c == "&" {

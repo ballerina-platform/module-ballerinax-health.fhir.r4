@@ -318,9 +318,7 @@ function getArithmeticTestCases() returns FHIRPathTestCase[] {
             expression: "'a'-'b' = 'ab'",
             resourceKey: "patient",
             expected: [],
-            expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: true
         },
         {
             name: "test_testMinus5",
@@ -544,9 +542,7 @@ function getArithmeticTestCases() returns FHIRPathTestCase[] {
             expression: "-5.5 div 2 = -2",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testDivEmpty1",

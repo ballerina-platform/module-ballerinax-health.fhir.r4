@@ -237,6 +237,10 @@ isolated function visitUnaryExpr(UnaryExpr expr, FhirPathItem context, FhirPathE
     FhirPathItem item = operandResults[0];
     json val = valueOf(item);
     if expr.operator.tokenType == MINUS {
+        if systemTypeOf(item) == "Quantity" && val is map<json> {
+            [decimal, string] [qValue, unit] = quantityParts(val);
+            return [quantityItem(-qValue, unit)];
+        }
         FhirPathItem negated;
         if val is int { negated = -val; }
         else if val is decimal { negated = -val; }
@@ -506,6 +510,7 @@ isolated function applyImpliesOperator(FhirPathItem[] left, FhirPathItem[] right
 }
 
 isolated function applyComparisonOperator(FhirPathItem[] left, FhirPathItem[] right, string op) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check singletonOperands(left, right, op);
     if left.length() == 0 || right.length() == 0 {
         return [];
     }
@@ -608,6 +613,7 @@ isolated function applyComparisonOperator(FhirPathItem[] left, FhirPathItem[] ri
 }
 
 isolated function applyAdditiveOperator(FhirPathItem[] left, FhirPathItem[] right, string op) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check singletonOperands(left, right, op);
     if left.length() == 0 || right.length() == 0 {
         return [];
     }
@@ -615,7 +621,7 @@ isolated function applyAdditiveOperator(FhirPathItem[] left, FhirPathItem[] righ
     json r = systemValueOf(right[0]);
 
     if op == "+" {
-        if l is string && r is string {
+        if l is string && r is string && systemTypeOf(left[0]) == "String" && systemTypeOf(right[0]) == "String" {
             return [l + r];
         }
         if (l is int || l is decimal || l is float) && (r is int || r is decimal || r is float) {
@@ -637,7 +643,7 @@ isolated function applyAdditiveOperator(FhirPathItem[] left, FhirPathItem[] righ
             return typedResults(check addDateTimeQuantity(l, r, "-"));
         }
     }
-    return [];
+    return checkPrimitiveOperands(left[0], right[0], op);
 }
 
 isolated function addDateTimeQuantity(string dateTimeStr, map<json> qty, string op) returns FHIRPathInterpreterError|FhirPathItem[] {
@@ -923,14 +929,16 @@ isolated function addQuantityToDateTimeStr(string s, int tIdx, string unit, deci
     return ["@" + newDatePart + "T" + newTimePart + tzSuffix];
 }
 
-isolated function applyConcatenateOperator(FhirPathItem[] left, FhirPathItem[] right) returns FhirPathItem[] {
+isolated function applyConcatenateOperator(FhirPathItem[] left, FhirPathItem[] right) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check singletonOperands(left, right, "&");
     // & always concatenates strings; empty collection treated as ""
     string lStr = left.length() > 0 ? jsonToString(left[0]) : "";
     string rStr = right.length() > 0 ? jsonToString(right[0]) : "";
     return [lStr + rStr];
 }
 
-isolated function applyMultiplicativeOperator(FhirPathItem[] left, FhirPathItem[] right, string op) returns FhirPathItem[] {
+isolated function applyMultiplicativeOperator(FhirPathItem[] left, FhirPathItem[] right, string op) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check singletonOperands(left, right, op);
     if left.length() == 0 || right.length() == 0 {
         return [];
     }
@@ -940,6 +948,28 @@ isolated function applyMultiplicativeOperator(FhirPathItem[] left, FhirPathItem[
     if (l is int || l is decimal || l is float) && (r is int || r is decimal || r is float) {
         return numericBinaryOp(l, r, op);
     }
+    return checkPrimitiveOperands(left[0], right[0], op);
+}
+
+// Operators require single-item operands (singleton evaluation)
+isolated function singletonOperands(FhirPathItem[] left, FhirPathItem[] right, string op) returns FHIRPathInterpreterError? {
+    if left.length() > 1 || right.length() > 1 {
+        return error FHIRPathInterpreterError(string `Operator '${op}' requires single-item operands`,
+            token = {tokenType: IDENTIFIER, lexeme: op, literal: (), position: 0});
+    }
+    return ();
+}
+
+// Result of an arithmetic operator no case applied to: an error for primitive operands of unsupported types,
+// empty for other operands (e.g. quantities whose units cannot be handled)
+isolated function checkPrimitiveOperands(FhirPathItem left, FhirPathItem right, string op) returns FHIRPathInterpreterError|FhirPathItem[] {
+    string[] primitives = ["String", "Boolean", "Integer", "Long", "Decimal"];
+    string leftType = systemTypeOf(left);
+    string rightType = systemTypeOf(right);
+    if primitives.indexOf(leftType) !is () && primitives.indexOf(rightType) !is () {
+        return error FHIRPathInterpreterError(string `Operator '${op}' cannot be applied to ${leftType} and ${rightType}`,
+            token = {tokenType: IDENTIFIER, lexeme: op, literal: (), position: 0});
+    }
     return [];
 }
 
@@ -948,9 +978,13 @@ isolated function applyUnionOperator(FhirPathItem[] left, FhirPathItem[] right) 
     return applyDistinctToItems(combined);
 }
 
-isolated function applyInOperator(FhirPathItem[] left, FhirPathItem[] right) returns FhirPathItem[] {
+isolated function applyInOperator(FhirPathItem[] left, FhirPathItem[] right) returns FHIRPathInterpreterError|FhirPathItem[] {
     if left.length() == 0 {
         return [];
+    }
+    if left.length() > 1 {
+        return error FHIRPathInterpreterError("Membership operators require a single item to look for",
+            token = {tokenType: IN, lexeme: "in", literal: (), position: 0});
     }
     if right.length() == 0 {
         return [false];
@@ -1146,8 +1180,8 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
             || name == "timeOf" {
         return applyDateTimeComponentFunction(targetResults, params, name);
     }
-    if name == "lowBoundary" { return typedResults(check applyLowBoundaryFunction(targetResults, params, context, env)); }
-    if name == "highBoundary" { return typedResults(check applyHighBoundaryFunction(targetResults, params, context, env)); }
+    if name == "lowBoundary" { return applyBoundaryFunction(targetResults, params, context, env, false); }
+    if name == "highBoundary" { return applyBoundaryFunction(targetResults, params, context, env, true); }
     if name == "precision" { return applyPrecisionFunction(targetResults, params); }
 
     // ---- FHIR-specific ----
@@ -1303,8 +1337,17 @@ isolated function wrapInCollection(FhirPathItem value) returns FhirPathItem[] {
 
 // Returns boolean? where () means "unknown" (e.g. incomparable datetime types)
 isolated function jsonValuesEqual(FhirPathItem left, FhirPathItem right) returns boolean? {
-    json a = systemValueOf(left);
-    json b = systemValueOf(right);
+    if isQuantityItem(left) || isQuantityItem(right) {
+        json a = systemValueOf(left);
+        json b = systemValueOf(right);
+        map<json>? qa = a is map<json> ? a : (a is string ? parseQuantityFromString(a) : ());
+        map<json>? qb = b is map<json> ? b : (b is string ? parseQuantityFromString(b) : ());
+        return qa is map<json> && qb is map<json> ? compareQuantityValues(qa, qb) : ();
+    }
+    return payloadsEqual(systemValueOf(left), systemValueOf(right));
+}
+
+isolated function payloadsEqual(json a, json b) returns boolean? {
     if a is () && b is () { return true; }
     if a is () || b is () { return false; }
     if a is boolean && b is boolean { return a == b; }
@@ -1315,28 +1358,48 @@ isolated function jsonValuesEqual(FhirPathItem left, FhirPathItem right) returns
         return a == b;
     }
     if (a is int || a is decimal || a is float) && (b is int || b is decimal || b is float) {
-        return toFloat(a) == toFloat(b);
+        return toDecimalValue(a) == toDecimalValue(b);
     }
+    // Complex values are equal when all their child elements are equal, recursively
     if a is map<json> && b is map<json> {
-        return compareQuantityValues(a, b);
+        if a.keys().sort() != b.keys().sort() {
+            return false;
+        }
+        foreach string key in a.keys() {
+            boolean? eq = payloadsEqual(a[key], b[key]);
+            if eq != true {
+                return eq;
+            }
+        }
+        return true;
     }
-    // String vs quantity map (e.g., toQuantity() string result vs quantity literal map)
-    if a is string && b is map<json> {
-        map<json>? qa = parseQuantityFromString(a);
-        if qa is map<json> { return compareQuantityValues(qa, b); }
-        return ();
+    if a is json[] && b is json[] {
+        if a.length() != b.length() {
+            return false;
+        }
+        foreach int i in 0 ..< a.length() {
+            boolean? eq = payloadsEqual(a[i], b[i]);
+            if eq != true {
+                return eq;
+            }
+        }
+        return true;
     }
-    if a is map<json> && b is string {
-        map<json>? qb = parseQuantityFromString(b);
-        if qb is map<json> { return compareQuantityValues(a, qb); }
-        return ();
-    }
-    return a.toString() == b.toString();
+    return false;
 }
 
 isolated function jsonValuesEquivalent(FhirPathItem left, FhirPathItem right) returns boolean {
-    json a = systemValueOf(left);
-    json b = systemValueOf(right);
+    if isQuantityItem(left) || isQuantityItem(right) {
+        json a = systemValueOf(left);
+        json b = systemValueOf(right);
+        map<json>? qa = a is map<json> ? a : (a is string ? parseQuantityFromString(a) : ());
+        map<json>? qb = b is map<json> ? b : (b is string ? parseQuantityFromString(b) : ());
+        return qa is map<json> && qb is map<json> && compareQuantityValuesEquivalent(qa, qb);
+    }
+    return payloadsEquivalent(systemValueOf(left), systemValueOf(right));
+}
+
+isolated function payloadsEquivalent(json a, json b) returns boolean {
     if a is () && b is () { return true; }
     if a is () || b is () { return false; }
     if a is boolean && b is boolean { return a == b; }
@@ -1344,37 +1407,58 @@ isolated function jsonValuesEquivalent(FhirPathItem left, FhirPathItem right) re
         if a.startsWith("@") || b.startsWith("@") {
             return compareDateTimeEquivalent(a, b);
         }
-        return a.toLowerAscii() == b.toLowerAscii();
+        return normalizeForEquivalence(a) == normalizeForEquivalence(b);
     }
     if (a is int || a is decimal || a is float) && (b is int || b is decimal || b is float) {
-        if a is decimal || b is decimal {
-            decimal ad = a is decimal ? a : <decimal>toFloat(a);
-            decimal bd = b is decimal ? b : <decimal>toFloat(b);
-            return decimalsEquivalent(ad, bd);
-        }
-        return toFloat(a) == toFloat(b);
+        return decimalsEquivalent(a, b);
     }
+    // Complex values are equivalent when all their child elements are equivalent, recursively;
+    // repeating elements are compared regardless of order
     if a is map<json> && b is map<json> {
-        return compareQuantityValuesEquivalent(a, b);
-    }
-    // String vs quantity map
-    if a is string && b is map<json> {
-        map<json>? qa = parseQuantityFromString(a);
-        if qa is map<json> {
-            boolean? eq = compareQuantityValues(qa, b);
-            return eq == true;
+        if a.keys().sort() != b.keys().sort() {
+            return false;
         }
-        return false;
-    }
-    if a is map<json> && b is string {
-        map<json>? qb = parseQuantityFromString(b);
-        if qb is map<json> {
-            boolean? eq = compareQuantityValues(a, qb);
-            return eq == true;
+        foreach string key in a.keys() {
+            if !payloadsEquivalent(a[key], b[key]) {
+                return false;
+            }
         }
-        return false;
+        return true;
     }
-    return a.toString().toLowerAscii() == b.toString().toLowerAscii();
+    if a is json[] && b is json[] {
+        if a.length() != b.length() {
+            return false;
+        }
+        foreach json item in a {
+            boolean found = false;
+            foreach json other in b {
+                if payloadsEquivalent(item, other) {
+                    found = true;
+                    break;
+                }
+            }
+            if !found {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+// String equivalence ignores case and normalizes whitespace (runs of whitespace compare as a single space)
+isolated function normalizeForEquivalence(string s) returns string {
+    return re `\s+`.replaceAll(s.trim(), " ").toLowerAscii();
+}
+
+isolated function isQuantityItem(FhirPathItem item) returns boolean {
+    if systemTypeOf(item) == "Quantity" {
+        return true;
+    }
+    json val = valueOf(item);
+    // Untyped quantity maps (e.g. supplied through variables)
+    return item !is TypedValue && val is map<json> && val["resourceType"] is () && val["value"] !is ()
+        && (val["unit"] !is () || val["code"] !is ());
 }
 
 // ========================================
@@ -1558,27 +1642,31 @@ isolated function stripTimezone(string s) returns string {
 // DECIMAL EQUIVALENCE HELPER
 // ========================================
 
-isolated function countDecimalPlacesStr(string s) returns int {
-    int? dotIdx = s.indexOf(".");
-    if dotIdx is () { return 0; }
-    return s.length() - <int>dotIdx - 1;
+// Decimal equivalence: equal after rounding both to the precision of the least precise operand
+// (trailing zeros do not count towards precision)
+isolated function decimalsEquivalent(json a, json b) returns boolean {
+    int precision = int:min(significantScale(a), significantScale(b));
+    return roundHalfUp(toDecimalValue(a), precision) == roundHalfUp(toDecimalValue(b), precision);
 }
 
-isolated function decimalsEquivalent(decimal a, decimal b) returns boolean {
-    int precA = countDecimalPlacesStr(a.toString());
-    int precB = countDecimalPlacesStr(b.toString());
-    int prec = precA < precB ? precA : precB;
-    if prec == 0 {
-        return a == b;
+isolated function significantScale(json val) returns int {
+    string s = val.toString();
+    int? dotIdx = s.indexOf(".");
+    if dotIdx is () || s.includes("E") {
+        return 0;
     }
-    decimal factor = 1.0d;
-    foreach int i in 0 ..< prec {
-        factor *= 10.0d;
+    int end = s.length();
+    while end > dotIdx + 1 && s.substring(end - 1, end) == "0" {
+        end -= 1;
     }
-    // Round to `prec` decimal places using truncation-towards-zero after +0.5
-    decimal roundedA = <decimal>(<int>(a * factor + 0.5d)) / factor;
-    decimal roundedB = <decimal>(<int>(b * factor + 0.5d)) / factor;
-    return roundedA == roundedB;
+    return end - dotIdx - 1;
+}
+
+isolated function roundHalfUp(decimal value, int precision) returns decimal {
+    decimal factor = pow10(precision);
+    decimal scaled = value < 0d ? -value * factor : value * factor;
+    decimal rounded = (scaled + 0.5d).floor() / factor;
+    return value < 0d ? -rounded : rounded;
 }
 
 // ========================================
@@ -1699,7 +1787,7 @@ isolated function numericBinaryOp(json l, json r, string op) returns FhirPathIte
     }
     if op == "div" {
         if rd == 0d { return []; }
-        return [<int>(ld / rd)];
+        return [truncateDecimal(ld / rd)];
     }
     if op == "mod" {
         if rd == 0d { return []; }

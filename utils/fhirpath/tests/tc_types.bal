@@ -430,9 +430,7 @@ function getTypesTestCases() returns FHIRPathTestCase[] {
             expression: "'1.0'.convertsToInteger().not()",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testStringLiteralIsNotInteger",

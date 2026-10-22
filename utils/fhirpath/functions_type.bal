@@ -74,14 +74,13 @@ isolated function applyToIntegerFunction(FhirPathItem[] collection, Expr[] param
     json val = systemValueOf(collection[0]);
     if val is int {
         return [val];
-    } else if val is decimal {
-        return [<int>val];
-    } else if val is float {
-        return [<int>val];
     } else if val is boolean {
         return [val ? 1 : 0];
     } else if val is string {
-        int|error i = int:fromString(val);
+        if !re `(\+|-)?[0-9]+`.isFullMatch(val) {
+            return [];
+        }
+        int|error i = int:fromString(val.startsWith("+") ? val.substring(1) : val);
         if i is int {
             return [i];
         }
@@ -141,7 +140,9 @@ isolated function applyToDecimalFunction(FhirPathItem[] collection, Expr[] param
     if val is decimal {
         return [val];
     } else if val is int {
-        return [<decimal>val];
+        // fromString keeps the integer's scale (a numeric conversion would yield 1.0 for 1)
+        decimal|error d = decimal:fromString(val.toString());
+        return (d is decimal) ? [d] : [];
     } else if val is float {
         decimal|error d = decimal:fromString(val.toString());
         if d is decimal {
@@ -334,14 +335,10 @@ isolated function applyConvertsToIntegerFunction(FhirPathItem[] collection, Expr
         return [];
     }
     json val = systemValueOf(collection[0]);
-    if val is int { return [true]; }
-    if val is decimal || val is float { return [true]; }
-    if val is boolean { return [true]; }
+    // Integers, Booleans and strings matching (\+|-)?\d+ convert; Decimals do not
+    if val is int || val is boolean { return [true]; }
     if val is string {
-        int|error i = int:fromString(val);
-        if i is int { return [true]; }
-        decimal|error d = decimal:fromString(val);
-        return [d is decimal];
+        return [re `(\+|-)?[0-9]+`.isFullMatch(val)];
     }
     return [false];
 }
@@ -482,15 +479,23 @@ isolated function applyIifFunction(FhirPathItem[] collection, Expr[] params, Fhi
     if params.length() < 2 || params.length() > 3 {
         return fnError("iif", "2 or 3 parameters", params.length());
     }
-    FhirPathItem[] criterionResult = check evaluate(params[0], context, env);
-    boolean criterion = criterionResult.length() > 0 && isTruthyValue(criterionResult[0]);
-
-    if criterion {
-        return check evaluate(params[1], context, env);
-    } else if params.length() == 3 {
-        return check evaluate(params[2], context, env);
+    // iif() is scoped: the criterion and both results are evaluated with $this set to the input item
+    FhirPathItem? input = check singleInput(collection, "iif");
+    FhirPathEnv scopedEnv = {index: env?.index, total: env?.total, scope: env.scope.childScope()};
+    FhirPathItem[] criterionResult = check evaluate(params[0], input, scopedEnv);
+    if criterionResult.length() > 1 {
+        return error FHIRPathInterpreterError("iif() criterion must be a single Boolean, got a collection",
+            token = {tokenType: IDENTIFIER, lexeme: "iif", literal: (), position: 0});
     }
-    return [];
+    json criterion = criterionResult.length() == 1 ? valueOf(criterionResult[0]) : false;
+    if criterion !is boolean {
+        return error FHIRPathInterpreterError("iif() criterion must be a Boolean",
+            token = {tokenType: IDENTIFIER, lexeme: "iif", literal: (), position: 0});
+    }
+    if criterion {
+        return evaluate(params[1], input, scopedEnv);
+    }
+    return params.length() == 3 ? evaluate(params[2], input, scopedEnv) : [];
 }
 
 isolated function applyPathnameFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env)

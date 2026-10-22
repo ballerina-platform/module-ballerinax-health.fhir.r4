@@ -25,57 +25,45 @@ isolated function applyLengthFunction(FhirPathItem[] collection, Expr[] params) 
     if params.length() != 0 {
         return fnError("length", "0 parameters", params.length());
     }
-    if collection.length() == 0 {
+    string? val = check stringInput(collection, "length");
+    if val is () {
         return [];
     }
-    json val = valueOf(collection[0]);
-    if val is string {
-        return [val.length()];
-    }
-    return [];
+    return [val.length()];
 }
 
 isolated function applyTrimFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("trim", "0 parameters", params.length());
     }
-    if collection.length() == 0 {
+    string? val = check stringInput(collection, "trim");
+    if val is () {
         return [];
     }
-    json val = valueOf(collection[0]);
-    if val is string {
-        return [val.trim()];
-    }
-    return [];
+    return [val.trim()];
 }
 
 isolated function applyToCharsFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("toChars", "0 parameters", params.length());
     }
-    if collection.length() == 0 {
+    string? val = check stringInput(collection, "toChars");
+    if val is () {
         return [];
     }
-    json val = valueOf(collection[0]);
-    if val is string {
-        FhirPathItem[] chars = [];
-        foreach int i in 0 ..< val.length() {
-            chars.push(val.substring(i, i + 1));
-        }
-        return chars;
+    FhirPathItem[] chars = [];
+    foreach int i in 0 ..< val.length() {
+        chars.push(val.substring(i, i + 1));
     }
-    return [];
+    return chars;
 }
 
 isolated function applySplitFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("split", "1 parameter", params.length());
     }
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = valueOf(collection[0]);
-    if val !is string {
+    string? val = check stringInput(collection, "split");
+    if val is () {
         return [];
     }
     FhirPathItem[] sepResult = check evaluate(params[0], context, env);
@@ -128,16 +116,16 @@ isolated function applyStartsWithFunction(FhirPathItem[] collection, Expr[] para
     if params.length() != 1 {
         return fnError("startsWith", "1 parameter", params.length());
     }
-    if collection.length() == 0 {
+    string? val = check stringInput(collection, "startsWith");
+    if val is () {
         return [];
     }
     FhirPathItem[] prefResult = check evaluate(params[0], context, env);
     if prefResult.length() == 0 {
         return [];
     }
-    json val = valueOf(collection[0]);
     json pref = valueOf(prefResult[0]);
-    if val is string && pref is string {
+    if pref is string {
         return [val.startsWith(pref)];
     }
     return [];
@@ -147,16 +135,16 @@ isolated function applyEndsWithFunction(FhirPathItem[] collection, Expr[] params
     if params.length() != 1 {
         return fnError("endsWith", "1 parameter", params.length());
     }
-    if collection.length() == 0 {
+    string? val = check stringInput(collection, "endsWith");
+    if val is () {
         return [];
     }
     FhirPathItem[] suffResult = check evaluate(params[0], context, env);
     if suffResult.length() == 0 {
         return [];
     }
-    json val = valueOf(collection[0]);
     json suff = valueOf(suffResult[0]);
-    if val is string && suff is string {
+    if suff is string {
         return [val.endsWith(suff)];
     }
     return [];
@@ -166,13 +154,9 @@ isolated function applyContainsStringFunction(FhirPathItem[] collection, Expr[] 
     if params.length() != 1 {
         return fnError("contains", "1 parameter", params.length());
     }
-    if collection.length() == 0 {
+    string? val = check stringInput(collection, "contains");
+    if val is () {
         return [];
-    }
-    json val = valueOf(collection[0]);
-    if val !is string {
-        return error FHIRPathInterpreterError("contains() requires a String input, got non-string value",
-            token = {tokenType: IDENTIFIER, lexeme: "contains", literal: (), position: 0});
     }
     FhirPathItem[] subResult = check evaluate(params[0], context, env);
     if subResult.length() == 0 {
@@ -191,16 +175,16 @@ isolated function applyIndexOfFunction(FhirPathItem[] collection, Expr[] params,
     if params.length() != 1 {
         return fnError("indexOf", "1 parameter", params.length());
     }
-    if collection.length() == 0 {
+    string? val = check stringInput(collection, "indexOf");
+    if val is () {
         return [];
     }
     FhirPathItem[] subResult = check evaluate(params[0], context, env);
     if subResult.length() == 0 {
         return [];
     }
-    json val = valueOf(collection[0]);
     json sub = valueOf(subResult[0]);
-    if val is string && sub is string {
+    if sub is string {
         int? idx = val.indexOf(sub);
         return [idx is int ? idx : -1];
     }
@@ -211,17 +195,16 @@ isolated function applyLastIndexOfFunction(FhirPathItem[] collection, Expr[] par
     if params.length() != 1 {
         return fnError("lastIndexOf", "1 parameter", params.length());
     }
-    FhirPathItem? input = check singleInput(collection, "lastIndexOf");
-    if input is () {
+    string? val = check stringInput(collection, "lastIndexOf");
+    if val is () {
         return [];
     }
     FhirPathItem[] subResult = check evaluate(params[0], context, env);
     if subResult.length() == 0 {
         return [];
     }
-    json val = valueOf(input);
     json sub = valueOf(subResult[0]);
-    if val is string && sub is string {
+    if sub is string {
         if sub == "" {
             return [val.length()];
         }
@@ -235,11 +218,8 @@ isolated function applySubstringFunction(FhirPathItem[] collection, Expr[] param
     if params.length() < 1 || params.length() > 2 {
         return fnError("substring", "1 or 2 parameters", params.length());
     }
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = valueOf(collection[0]);
-    if val !is string {
+    string? val = check stringInput(collection, "substring");
+    if val is () {
         return [];
     }
     FhirPathItem[] startResult = check evaluate(params[0], context, env);
@@ -247,26 +227,21 @@ isolated function applySubstringFunction(FhirPathItem[] collection, Expr[] param
         return [];
     }
     int startIdx = toInt(startResult[0]);
-    if startIdx < 0 {
-        startIdx = 0;
+    // A start outside the string gives empty
+    if startIdx < 0 || startIdx >= val.length() {
+        return [];
     }
     if params.length() == 2 {
         FhirPathItem[] lenResult = check evaluate(params[1], context, env);
-        if lenResult.length() == 0 {
-            return [];
+        // An empty length behaves as if no length was given
+        if lenResult.length() > 0 {
+            int len = toInt(lenResult[0]);
+            if len <= 0 {
+                return [""];
+            }
+            int endIdx = startIdx + len;
+            return [val.substring(startIdx, endIdx > val.length() ? val.length() : endIdx)];
         }
-        int len = toInt(lenResult[0]);
-        int endIdx = startIdx + len;
-        if startIdx >= val.length() {
-            return [""];
-        }
-        if endIdx > val.length() {
-            endIdx = val.length();
-        }
-        return [val.substring(startIdx, endIdx)];
-    }
-    if startIdx >= val.length() {
-        return [""];
     }
     return [val.substring(startIdx)];
 }
@@ -275,11 +250,8 @@ isolated function applyReplaceFunction(FhirPathItem[] collection, Expr[] params,
     if params.length() != 2 {
         return fnError("replace", "2 parameters", params.length());
     }
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = valueOf(collection[0]);
-    if val !is string {
+    string? val = check stringInput(collection, "replace");
+    if val is () {
         return [];
     }
     FhirPathItem[] patResult = check evaluate(params[0], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
@@ -327,12 +299,8 @@ isolated function applyRegexMatch(FhirPathItem[] collection, Expr[] params, Fhir
     if params.length() < 1 || params.length() > 2 {
         return fnError(name, "1 or 2 parameters", params.length());
     }
-    FhirPathItem? input = check singleInput(collection, name);
-    if input is () {
-        return [];
-    }
-    json val = valueOf(input);
-    if val !is string {
+    string? val = check stringInput(collection, name);
+    if val is () {
         return [];
     }
     string? pattern = check stringParam(params[0], context, env);
@@ -354,12 +322,8 @@ isolated function applyReplaceMatchesFunction(FhirPathItem[] collection, Expr[] 
     if params.length() < 2 || params.length() > 3 {
         return fnError("replaceMatches", "2 or 3 parameters", params.length());
     }
-    FhirPathItem? input = check singleInput(collection, "replaceMatches");
-    if input is () {
-        return [];
-    }
-    json val = valueOf(input);
-    if val !is string {
+    string? val = check stringInput(collection, "replaceMatches");
+    if val is () {
         return [];
     }
     string? pattern = check stringParam(params[0], context, env);
@@ -457,6 +421,24 @@ isolated function captureGroupIndexes(string pattern) returns map<int> {
     return indexes;
 }
 
+// The single String input of a string function: () for an empty input; an error for several items or a
+// non-String item. FHIR primitives held as JSON strings (code, uri, date, ...) are accepted.
+isolated function stringInput(FhirPathItem[] collection, string name) returns string?|FHIRPathInterpreterError {
+    FhirPathItem? input = check singleInput(collection, name);
+    if input is () {
+        return ();
+    }
+    json val = valueOf(input);
+    if val is () {
+        return ();
+    }
+    if val is string && (input !is TypedValue || input.namespace == FHIR_NS || input.name == "String") {
+        return val;
+    }
+    return error FHIRPathInterpreterError(string `${name}() requires a String input`,
+        token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+}
+
 // Inline flags for a FHIRPath regex: always single-line mode (s), plus i (case-insensitive) and m (multi-line)
 isolated function regexFlagPrefix(string flags, string name) returns string|FHIRPathInterpreterError {
     string inline = "s";
@@ -486,11 +468,8 @@ isolated function applyEncodeDecodeFunction(string funcName, FhirPathItem[] coll
     if params.length() != 1 {
         return fnError(funcName, "1 parameter", params.length());
     }
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = valueOf(collection[0]);
-    if val !is string {
+    string? val = check stringInput(collection, funcName);
+    if val is () {
         return [];
     }
     FhirPathItem[] fmtResult = check evaluate(params[0], context, env);
@@ -529,10 +508,28 @@ isolated function applyEncodeDecodeFunction(string funcName, FhirPathItem[] coll
         }
     } else if fmt == "urlbase64" {
         if funcName == "encode" {
-            string b64 = val.toBytes().toBase64();
-            string urlSafe = strReplaceAll(strReplaceAll(strReplaceAll(b64, "+", "-"), "/", "_"), "=", "");
-            return [urlSafe];
+            // RFC 4648 base64url alphabet, padded with '='
+            return [strReplaceAll(strReplaceAll(val.toBytes().toBase64(), "+", "-"), "/", "_")];
         }
+        string b64 = strReplaceAll(strReplaceAll(val, "-", "+"), "_", "/");
+        while b64.length() % 4 != 0 {
+            b64 += "=";
+        }
+        byte[]|error bytes = langArray:fromBase64(b64);
+        if bytes is byte[] {
+            string|error decoded = string:fromBytes(bytes);
+            if decoded is string {
+                return [decoded];
+            }
+        }
+        return [];
+    } else if fmt == "ascii" && funcName == "encode" {
+        // Lossy: characters above code point 127 become '?'
+        string result = "";
+        foreach string ch in val {
+            result += ch.toCodePointInt() > 127 ? "?" : ch;
+        }
+        return [result];
     }
     return [];
 }
@@ -541,11 +538,8 @@ isolated function applyEscapeUnescapeFunction(string funcName, FhirPathItem[] co
     if params.length() != 1 {
         return fnError(funcName, "1 parameter", params.length());
     }
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = valueOf(collection[0]);
-    if val !is string {
+    string? val = check stringInput(collection, funcName);
+    if val is () {
         return [];
     }
     FhirPathItem[] fmtResult = check evaluate(params[0], context, env);
@@ -556,16 +550,84 @@ isolated function applyEscapeUnescapeFunction(string funcName, FhirPathItem[] co
     if fmt !is string {
         return [];
     }
-    if fmt == "json" || fmt == "html" {
-        if funcName == "escape" {
-            string result = strReplaceAll(strReplaceAll(strReplaceAll(strReplaceAll(val, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;");
-            return [result];
-        } else {
-            string result = strReplaceAll(strReplaceAll(strReplaceAll(strReplaceAll(val, "&amp;", "&"), "&lt;", "<"), "&gt;", ">"), "&quot;", "\"");
-            return [result];
+    if fmt == "html" {
+        return [funcName == "escape" ? escapeHtml(val) : unescapeHtml(val)];
+    }
+    if fmt == "json" {
+        return [funcName == "escape" ? escapeJsonString(val) : unescapeJsonString(val)];
+    }
+    return [];
+}
+
+isolated function escapeHtml(string val) returns string {
+    return strReplaceAll(strReplaceAll(strReplaceAll(strReplaceAll(strReplaceAll(val, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"),
+        "\"", "&quot;"), "'", "&#39;");
+}
+
+isolated function unescapeHtml(string val) returns string {
+    return strReplaceAll(strReplaceAll(strReplaceAll(strReplaceAll(strReplaceAll(strReplaceAll(val, "&lt;", "<"), "&gt;", ">"),
+        "&quot;", "\""), "&#39;", "'"), "&apos;", "'"), "&amp;", "&");
+}
+
+// Escapes a string for use inside a JSON string literal
+isolated function escapeJsonString(string val) returns string {
+    string result = "";
+    foreach string ch in val {
+        match ch {
+            "\"" => { result += "\\\""; }
+            "\\" => { result += "\\\\"; }
+            "\n" => { result += "\\n"; }
+            "\r" => { result += "\\r"; }
+            "\t" => { result += "\\t"; }
+            "\u{0C}" => { result += "\\f"; }
+            _ => {
+                int cp = ch.toCodePointInt();
+                result += cp < 32 ? "\\u" + zeroPadHex4(cp) : ch;
+            }
         }
     }
-    return [val];
+    return result;
+}
+
+isolated function unescapeJsonString(string val) returns string {
+    string result = "";
+    int i = 0;
+    while i < val.length() {
+        string ch = val.substring(i, i + 1);
+        if ch == "\\" && i + 1 < val.length() {
+            string next = val.substring(i + 1, i + 2);
+            match next {
+                "n" => { result += "\n"; }
+                "r" => { result += "\r"; }
+                "t" => { result += "\t"; }
+                "f" => { result += "\u{0C}"; }
+                "u" => {
+                    int|error cp = i + 6 <= val.length() ? int:fromHexString(val.substring(i + 2, i + 6)) : error("short");
+                    string:Char|error decoded = cp is int ? string:fromCodePointInt(cp) : cp;
+                    if decoded is string:Char {
+                        result += decoded;
+                        i += 6;
+                        continue;
+                    }
+                    result += next;
+                }
+                _ => { result += next; }
+            }
+            i += 2;
+            continue;
+        }
+        result += ch;
+        i += 1;
+    }
+    return result;
+}
+
+isolated function zeroPadHex4(int n) returns string {
+    string hex = n.toHexString();
+    while hex.length() < 4 {
+        hex = "0" + hex;
+    }
+    return hex;
 }
 
 // ========================================
@@ -652,26 +714,20 @@ isolated function applyUpperFunction(FhirPathItem[] collection, Expr[] params) r
     if params.length() != 0 {
         return fnError("upper", "0 parameters", params.length());
     }
-    if collection.length() == 0 {
+    string? val = check stringInput(collection, "upper");
+    if val is () {
         return [];
     }
-    json val = valueOf(collection[0]);
-    if val is string {
-        return [val.toUpperAscii()];
-    }
-    return [];
+    return [val.toUpperAscii()];
 }
 
 isolated function applyLowerFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("lower", "0 parameters", params.length());
     }
-    if collection.length() == 0 {
+    string? val = check stringInput(collection, "lower");
+    if val is () {
         return [];
     }
-    json val = valueOf(collection[0]);
-    if val is string {
-        return [val.toLowerAscii()];
-    }
-    return [];
+    return [val.toLowerAscii()];
 }

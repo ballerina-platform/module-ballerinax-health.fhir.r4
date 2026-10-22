@@ -19,6 +19,7 @@
 // ========================================
 
 isolated function applyAbsFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "abs");
     if params.length() != 0 {
         return fnError("abs", "0 parameters", params.length());
     }
@@ -26,6 +27,10 @@ isolated function applyAbsFunction(FhirPathItem[] collection, Expr[] params) ret
         return [];
     }
     json val = systemValueOf(collection[0]);
+    if systemTypeOf(collection[0]) == "Quantity" && val is map<json> {
+        [decimal, string] [qValue, unit] = quantityParts(val);
+        return [quantityItem(qValue < 0d ? -qValue : qValue, unit)];
+    }
     if val is int {
         return [val < 0 ? -val : val];
     } else if val is decimal {
@@ -37,6 +42,7 @@ isolated function applyAbsFunction(FhirPathItem[] collection, Expr[] params) ret
 }
 
 isolated function applyCeilingFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "ceiling");
     if params.length() != 0 {
         return fnError("ceiling", "0 parameters", params.length());
     }
@@ -57,6 +63,7 @@ isolated function applyCeilingFunction(FhirPathItem[] collection, Expr[] params)
 }
 
 isolated function applyFloorFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "floor");
     if params.length() != 0 {
         return fnError("floor", "0 parameters", params.length());
     }
@@ -77,6 +84,7 @@ isolated function applyFloorFunction(FhirPathItem[] collection, Expr[] params) r
 }
 
 isolated function applyTruncateFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "truncate");
     if params.length() != 0 {
         return fnError("truncate", "0 parameters", params.length());
     }
@@ -87,14 +95,15 @@ isolated function applyTruncateFunction(FhirPathItem[] collection, Expr[] params
     if val is int {
         return [val];
     } else if val is decimal {
-        return [<int>val];
+        return [truncateDecimal(val)];
     } else if val is float {
-        return [<int>val];
+        return [truncateDecimal(<decimal>val)];
     }
     return [];
 }
 
 isolated function applyRoundFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "round");
     if collection.length() == 0 {
         return [];
     }
@@ -136,6 +145,7 @@ isolated function applyRoundFunction(FhirPathItem[] collection, Expr[] params, F
 }
 
 isolated function applySqrtFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "sqrt");
     if params.length() != 0 {
         return fnError("sqrt", "0 parameters", params.length());
     }
@@ -156,6 +166,7 @@ isolated function applySqrtFunction(FhirPathItem[] collection, Expr[] params) re
 }
 
 isolated function applyPowerFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "power");
     if params.length() != 1 {
         return fnError("power", "1 parameter", params.length());
     }
@@ -183,6 +194,7 @@ isolated function applyPowerFunction(FhirPathItem[] collection, Expr[] params, F
 }
 
 isolated function applyExpFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "exp");
     if params.length() != 0 {
         return fnError("exp", "0 parameters", params.length());
     }
@@ -198,6 +210,7 @@ isolated function applyExpFunction(FhirPathItem[] collection, Expr[] params) ret
 }
 
 isolated function applyLnFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "ln");
     if params.length() != 0 {
         return fnError("ln", "0 parameters", params.length());
     }
@@ -217,6 +230,7 @@ isolated function applyLnFunction(FhirPathItem[] collection, Expr[] params) retu
 }
 
 isolated function applyLogFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    check mathInput(collection, "log");
     if params.length() != 1 {
         return fnError("log", "1 parameter", params.length());
     }
@@ -257,6 +271,32 @@ isolated function toFloat(FhirPathItem item) returns float {
         return f is float ? f : 0.0;
     }
     return 0.0;
+}
+
+// Math functions take a single Integer, Long, Decimal or Quantity
+isolated function mathInput(FhirPathItem[] collection, string name) returns FHIRPathInterpreterError? {
+    FhirPathItem? input = check singleInput(collection, name);
+    if input is () {
+        return ();
+    }
+    string kind = systemTypeOf(input);
+    if kind != "Integer" && kind != "Long" && kind != "Decimal" && kind != "Quantity" {
+        return error FHIRPathInterpreterError(string `${name}() requires a numeric input, got ${kind}`,
+            token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+    }
+    return ();
+}
+
+// Integer part of a decimal, truncated toward zero (a numeric cast would round)
+isolated function truncateDecimal(decimal d) returns int {
+    return <int>(d < 0d ? d.ceiling() : d.floor());
+}
+
+// [value, unit] of a quantity payload (FHIR Quantity code preferred over its display unit)
+isolated function quantityParts(map<json> quantity) returns [decimal, string] {
+    json code = quantity["code"];
+    json unit = quantity["unit"];
+    return [toDecimalValue(quantity["value"]), code is string ? code : (unit is string ? unit : "1")];
 }
 
 // Returns the single input item, () for an empty input, or an error when the input has several items

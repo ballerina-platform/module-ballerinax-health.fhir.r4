@@ -459,11 +459,8 @@ isolated function applyNotFunction(FhirPathItem[] collection, Expr[] params) ret
             token = {tokenType: IDENTIFIER, lexeme: "not", literal: (), position: 0});
     }
     json val = systemValueOf(collection[0]);
-    if val is boolean {
-        return [!val];
-    }
-    return error FHIRPathInterpreterError("not() requires a boolean value",
-        token = {tokenType: IDENTIFIER, lexeme: "not", literal: (), position: 0});
+    // Singleton evaluation: a single non-Boolean item counts as true
+    return [val is boolean ? !val : false];
 }
 
 isolated function applyChildrenFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {

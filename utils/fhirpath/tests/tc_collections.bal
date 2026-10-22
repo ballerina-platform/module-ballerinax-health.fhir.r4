@@ -430,9 +430,7 @@ function getCollectionsTestCases() returns FHIRPathTestCase[] {
             expression: "('a' | 'c' | 'd') in 'b'",
             resourceKey: "patient",
             expected: [],
-            expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: true
         },
         {
             name: "test_testInEmptyCollection",

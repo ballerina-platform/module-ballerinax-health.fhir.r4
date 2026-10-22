@@ -214,9 +214,7 @@ function getEqualityTestCases() returns FHIRPathTestCase[] {
             expression: "name = name",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testEquality26",
@@ -224,9 +222,7 @@ function getEqualityTestCases() returns FHIRPathTestCase[] {
             expression: "name.take(2) = name.take(2).first() | name.take(2).last()",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testEquality27",
@@ -234,9 +230,7 @@ function getEqualityTestCases() returns FHIRPathTestCase[] {
             expression: "name.take(2) = name.take(2).last() | name.take(2).first()",
             resourceKey: "patient",
             expected: [false],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testEquality28",
@@ -396,9 +390,7 @@ function getEqualityTestCases() returns FHIRPathTestCase[] {
             expression: "name != name",
             resourceKey: "patient",
             expected: [false],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testNEquality20",
@@ -406,9 +398,7 @@ function getEqualityTestCases() returns FHIRPathTestCase[] {
             expression: "name.take(2) != name.take(2).first() | name.take(2).last()",
             resourceKey: "patient",
             expected: [false],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testNEquality21",
@@ -416,9 +406,7 @@ function getEqualityTestCases() returns FHIRPathTestCase[] {
             expression: "name.take(2) != name.take(2).last() | name.take(2).first()",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testNEquality22",

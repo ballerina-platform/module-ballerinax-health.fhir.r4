@@ -125,97 +125,86 @@ isolated function componentAt(string s, int startIndex, int endIndex) returns Fh
     return (component is int) ? [component] : [];
 }
 
-isolated function applyLowBoundaryFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+isolated function applyBoundaryFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env,
+        boolean high) returns FHIRPathInterpreterError|FhirPathItem[] {
+    string name = high ? "highBoundary" : "lowBoundary";
     if params.length() > 1 {
-        return fnError("lowBoundary", "0 or 1 parameter", params.length());
+        return fnError(name, "0 or 1 parameter", params.length());
     }
-    if collection.length() == 0 {
+    FhirPathItem? input = check singleInput(collection, name);
+    if input is () {
         return [];
     }
-    json val = systemValueOf(collection[0]);
-
-    // Default precision: the maximum precision of a date/time type, 8 for numbers
-    int precision = 8;
-    if val is string && params.length() == 0 {
-        precision = defaultBoundaryPrecision(collection[0], val);
-    }
+    int? precision = ();
     if params.length() == 1 {
         FhirPathItem[] precResult = check evaluate(params[0], context, env);
         json precVal = precResult.length() > 0 ? valueOf(precResult[0]) : ();
-        if precVal is int {
-            precision = precVal;
+        if precVal !is int {
+            return [];
         }
+        precision = precVal;
     }
+    string kind = systemTypeOf(input);
+    json val = systemValueOf(input);
 
-    if val is decimal {
-        if precision < 0 || precision > 28 {
-            return [];
-        }
-        decimal half = computeHalfUlp(val, precision);
-        return [val - half];
-    } else if val is float {
-        if precision < 0 || precision > 28 {
-            return [];
-        }
-        decimal dval = <decimal>val;
-        decimal half = computeHalfUlp(dval, precision);
-        return [dval - half];
-    } else if val is int {
-        if precision < 0 || precision > 28 {
-            return [];
-        }
-        return [val];
+    if kind == "Integer" || kind == "Long" || kind == "Decimal" {
+        decimal? bound = decimalBoundary(toDecimalValue(val), decimalScale(val), precision ?: 8, high);
+        return (bound is decimal) ? [bound] : [];
     }
-    if val is string {
-        return [dateTimeLowBoundary(val, precision)];
+    if kind == "Quantity" && val is map<json> {
+        json qValue = val["value"];
+        json code = val["code"];
+        json unit = val["unit"];
+        decimal? bound = decimalBoundary(toDecimalValue(qValue), decimalScale(qValue), precision ?: 8, high);
+        return (bound is decimal) ? [quantityItem(bound, code is string ? code : (unit is string ? unit : "1"))] : [];
+    }
+    if val is string && (kind == "Date" || kind == "DateTime" || kind == "Time") {
+        int targetPrecision = precision ?: defaultBoundaryPrecision(input, val);
+        string bound = high ? check dateTimeHighBoundary(val, targetPrecision) : dateTimeLowBoundary(val, targetPrecision);
+        return typedResults([bound]);
     }
     return [];
 }
 
-isolated function applyHighBoundaryFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if params.length() > 1 {
-        return fnError("highBoundary", "0 or 1 parameter", params.length());
-    }
-    if collection.length() == 0 {
-        return [];
-    }
-    json val = systemValueOf(collection[0]);
+// Largest precision (digits after the decimal point) supported for decimal boundaries
+const MAX_DECIMAL_PRECISION = 28;
 
-    int precision = 8;
-    if val is string && params.length() == 0 {
-        precision = defaultBoundaryPrecision(collection[0], val);
+// Boundary of a decimal with `scale` significant fractional digits, expressed with `precision` fractional
+// digits: the value is uncertain by half a unit in its last digit; the low boundary is truncated and the high
+// boundary rounded half-up to the target precision. Negative values mirror the positive ones.
+isolated function decimalBoundary(decimal value, int scale, int precision, boolean high) returns decimal? {
+    if precision < 0 || precision > MAX_DECIMAL_PRECISION {
+        return ();
     }
-    if params.length() == 1 {
-        FhirPathItem[] precResult = check evaluate(params[0], context, env);
-        json precVal = precResult.length() > 0 ? valueOf(precResult[0]) : ();
-        if precVal is int {
-            precision = precVal;
-        }
+    if value < 0d {
+        decimal? mirrored = decimalBoundary(-value, scale, precision, !high);
+        return (mirrored is decimal) ? -mirrored : ();
     }
+    decimal halfUnit = 5d / pow10(scale + 1);
+    decimal bound = high ? value + halfUnit : value - halfUnit;
+    if precision > scale {
+        return bound;
+    }
+    decimal factor = pow10(precision);
+    return high ? (bound * factor + 0.5d).floor() / factor : (bound * factor).floor() / factor;
+}
 
-    if val is decimal {
-        if precision < 0 || precision > 28 {
-            return [];
-        }
-        decimal half = computeHalfUlp(val, precision);
-        return [val + half];
-    } else if val is float {
-        if precision < 0 || precision > 28 {
-            return [];
-        }
-        decimal dval = <decimal>val;
-        decimal half = computeHalfUlp(dval, precision);
-        return [dval + half];
-    } else if val is int {
-        if precision < 0 || precision > 28 {
-            return [];
-        }
-        return [val];
+// Number of fractional digits of a numeric JSON value as written (0 for integers)
+isolated function decimalScale(json val) returns int {
+    if val !is decimal && val !is float {
+        return 0;
     }
-    if val is string {
-        return [check dateTimeHighBoundary(val, precision)];
+    string s = val.toString();
+    int? dotIdx = s.indexOf(".");
+    return dotIdx is int ? s.length() - dotIdx - 1 : 0;
+}
+
+isolated function pow10(int exponent) returns decimal {
+    decimal result = 1d;
+    foreach int i in 0 ..< exponent {
+        result *= 10d;
     }
-    return [];
+    return result;
 }
 
 isolated function applyPrecisionFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
@@ -573,15 +562,6 @@ isolated function addYearsToDateParts(int year, int month, int day, int n) retur
         d = maxDay;
     }
     return [y, month, d];
-}
-
-isolated function computeHalfUlp(decimal val, int precision) returns decimal {
-    // half unit in the last place = 5 * 10^-(precision+1)
-    decimal factor = 5d;
-    foreach int i in 0 ..< precision + 1 {
-        factor = factor / 10d;
-    }
-    return factor;
 }
 
 isolated function lastDayOfMonth(int year, int month) returns int {

@@ -94,9 +94,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "2 + 2 /* not finished",
             resourceKey: "patient",
             expected: [],
-            expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: true
         },
         {
             name: "test_testComment9",
@@ -200,9 +198,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "iif('non boolean criteria', 'true-result', 'false-result')",
             resourceKey: "patient",
             expected: [],
-            expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: true
         },
         {
             name: "test_testIif7",
@@ -226,9 +222,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "('context').iif(true, select($this), 'false-result')",
             resourceKey: "patient",
             expected: ["context"],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testIif10",
@@ -236,9 +230,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "('item1' | 'item2').iif(true, 'true-result', 'false-result')",
             resourceKey: "patient",
             expected: [],
-            expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: true
         },
         {
             name: "test_testIif11",
@@ -246,9 +238,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "('context').iif($this = 'context','true-result', 'false-result')",
             resourceKey: "patient",
             expected: ["true-result"],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testIif12",
@@ -256,9 +246,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.name.first().iif(text.exists(), text, family+given.first())",
             resourceKey: "patient_name",
             expected: ["Pater J Chalmers"],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testSort1",

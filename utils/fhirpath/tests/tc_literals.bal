@@ -654,9 +654,7 @@ function getLiteralsTestCases() returns FHIRPathTestCase[] {
             expression: "(0).not() = false",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testIntegerBooleanNotFalse",
@@ -664,9 +662,7 @@ function getLiteralsTestCases() returns FHIRPathTestCase[] {
             expression: "(1).not() = false",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testNotInvalid",
