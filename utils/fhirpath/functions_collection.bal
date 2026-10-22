@@ -705,25 +705,6 @@ isolated function applyDistinctToItems(FhirPathItem[] items) returns FhirPathIte
     return result;
 }
 
-isolated function sortCollection(FhirPathItem[] collection) returns FhirPathItem[] {
-    if collection.length() <= 1 {
-        return collection;
-    }
-    FhirPathItem[] result = [...collection];
-    int n = result.length();
-    // Insertion sort
-    foreach int i in 1 ..< n {
-        FhirPathItem current = result[i];
-        int j = i - 1;
-        while j >= 0 && compareJsonValues(result[j], current) > 0 {
-            result[j + 1] = result[j];
-            j -= 1;
-        }
-        result[j + 1] = current;
-    }
-    return result;
-}
-
 isolated function jsonTypeOrder(json v) returns int {
     if v is () { return 0; }
     if v is boolean { return 1; }

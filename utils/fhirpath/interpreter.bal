@@ -421,13 +421,20 @@ isolated function applyEquivalenceOperator(FhirPathItem[] left, FhirPathItem[] r
     if left.length() != right.length() {
         return [!checkEquivalent];
     }
+    if left.length() == 1 {
+        boolean? equivalent = jsonValuesEquivalent(left[0], right[0]);
+        if equivalent is () {
+            return [];
+        }
+        return [checkEquivalent ? equivalent : !equivalent];
+    }
     // Multi-element equivalence is set-based (order-independent):
     // every element in left must have an equivalent in right, and vice versa.
     boolean allLeftInRight = true;
     foreach FhirPathItem lItem in left {
         boolean found = false;
         foreach FhirPathItem rItem in right {
-            if jsonValuesEquivalent(lItem, rItem) {
+            if jsonValuesEquivalent(lItem, rItem) == true {
                 found = true;
                 break;
             }
@@ -442,7 +449,7 @@ isolated function applyEquivalenceOperator(FhirPathItem[] left, FhirPathItem[] r
         foreach FhirPathItem rItem in right {
             boolean found = false;
             foreach FhirPathItem lItem in left {
-                if jsonValuesEquivalent(rItem, lItem) {
+                if jsonValuesEquivalent(rItem, lItem) == true {
                     found = true;
                     break;
                 }
@@ -517,6 +524,19 @@ isolated function applyComparisonOperator(FhirPathItem[] left, FhirPathItem[] ri
     json l = systemValueOf(left[0]);
     json r = systemValueOf(right[0]);
 
+    // Quantity comparison, converting to a common unit
+    if isQuantityItem(left[0]) || isQuantityItem(right[0]) {
+        [decimal, decimal]? aligned = alignQuantityItems(left[0], right[0], false);
+        if aligned is () {
+            return [];
+        }
+        [decimal, decimal] [lv, rv] = aligned;
+        if op == "<" { return [lv < rv]; }
+        if op == ">" { return [lv > rv]; }
+        if op == "<=" { return [lv <= rv]; }
+        return [lv >= rv];
+    }
+
     // Numeric comparison
     if (l is int || l is decimal || l is float) && (r is int || r is decimal || r is float) {
         float lf = toFloat(l);
@@ -573,42 +593,6 @@ isolated function applyComparisonOperator(FhirPathItem[] left, FhirPathItem[] ri
         if op == ">=" { return [l >= r]; }
     }
 
-    // Quantity comparison (FHIR Quantity map vs map or map vs string literal)
-    if l is map<json> || r is map<json> {
-        map<json>? lq = l is map<json> ? <map<json>>l : (l is string ? parseQuantityFromString(<string>l) : ());
-        map<json>? rq = r is map<json> ? <map<json>>r : (r is string ? parseQuantityFromString(<string>r) : ());
-        if lq is map<json> && rq is map<json> {
-            json lv = lq["value"];
-            json rv = rq["value"];
-            if (lv is int || lv is decimal || lv is float) && (rv is int || rv is decimal || rv is float) {
-                string? lu = lq["unit"] is string ? <string>lq["unit"] : ();
-                string? lc = lq["code"] is string ? <string>lq["code"] : ();
-                string? ru = rq["unit"] is string ? <string>rq["unit"] : ();
-                string? rc = rq["code"] is string ? <string>rq["code"] : ();
-                if unitsMatch(lu, lc, ru, rc) {
-                    float lf = toFloat(lv);
-                    float rf = toFloat(rv);
-                    if op == "<" { return [lf < rf]; }
-                    if op == ">" { return [lf > rf]; }
-                    if op == "<=" { return [lf <= rf]; }
-                    if op == ">=" { return [lf >= rf]; }
-                }
-                string effectiveL = (lu ?: lc) ?: "";
-                string effectiveR = (ru ?: rc) ?: "";
-                string? normLU = quantityUnitCanonical(effectiveL);
-                string? normRU = quantityUnitCanonical(effectiveR);
-                if normLU is string && normRU is string && normLU == normRU {
-                    float lf = toFloat(lv);
-                    float rf = toFloat(rv);
-                    if op == "<" { return [lf < rf]; }
-                    if op == ">" { return [lf > rf]; }
-                    if op == "<=" { return [lf <= rf]; }
-                    if op == ">=" { return [lf >= rf]; }
-                }
-            }
-        }
-    }
-
     return [];
 }
 
@@ -619,6 +603,14 @@ isolated function applyAdditiveOperator(FhirPathItem[] left, FhirPathItem[] righ
     }
     json l = systemValueOf(left[0]);
     json r = systemValueOf(right[0]);
+
+    // Quantity arithmetic (date/time + quantity is handled below)
+    if (isQuantityItem(left[0]) || isQuantityItem(right[0])) && dateTimeKind(l) is () {
+        QuantityValue? qa = quantityOf(left[0]);
+        QuantityValue? qb = quantityOf(right[0]);
+        QuantityValue? result = qa is QuantityValue && qb is QuantityValue ? addQuantities(qa, qb, op == "+" ? 1d : -1d) : ();
+        return (result is QuantityValue) ? [quantityItem(result.value, result.unit)] : [];
+    }
 
     if op == "+" {
         if l is string && r is string && systemTypeOf(left[0]) == "String" && systemTypeOf(right[0]) == "String" {
@@ -682,6 +674,17 @@ isolated function addDateTimeQuantity(string dateTimeStr, map<json> qty, string 
             token = {tokenType: IDENTIFIER, lexeme: unit, literal: (), position: 0});
     }
 
+    // A quantity more precise than the date/time value is first converted to the value's precision, dropping
+    // any fraction (e.g. @2014 + 24 months = @2016, @2014 + 11 months = @2014)
+    string precisionUnit = dateTimePrecisionUnit(dateTimeStr);
+    if CALENDAR_UNIT_ORDER.indexOf(canonicalUnit) > CALENDAR_UNIT_ORDER.indexOf(precisionUnit) {
+        decimal? converted = convertQuantity(value, canonicalUnit, precisionUnit);
+        if converted is decimal {
+            value = <decimal>truncateDecimal(converted);
+            canonicalUnit = precisionUnit;
+        }
+    }
+
     string s = dateTimeStr.substring(1);
     if s.startsWith("T") {
         return addQuantityToTimeOnly(s.substring(1), canonicalUnit, value);
@@ -691,6 +694,28 @@ isolated function addDateTimeQuantity(string dateTimeStr, map<json> qty, string 
         return addQuantityToDateOnly(s, canonicalUnit, value);
     }
     return addQuantityToDateTimeStr(s, tIdx, canonicalUnit, value);
+}
+
+// Calendar units from the least to the most precise
+final readonly & string[] CALENDAR_UNIT_ORDER = ["year", "month", "week", "day", "hour", "minute", "second", "millisecond"];
+
+// The precision of an '@' date/time value as a calendar unit (e.g. @2014 → year, @2014-01-01T10:30 → minute)
+isolated function dateTimePrecisionUnit(string value) returns string {
+    string s = value.startsWith("@") ? value.substring(1) : value;
+    string timePart;
+    if s.startsWith("T") {
+        timePart = s.substring(1);
+    } else {
+        int? tIdx = s.indexOf("T");
+        string datePart = tIdx is int ? s.substring(0, tIdx) : s;
+        if tIdx is () || datePart.length() < 10 {
+            return datePart.length() <= 4 ? "year" : (datePart.length() <= 7 ? "month" : "day");
+        }
+        timePart = s.substring(tIdx + 1);
+    }
+    [string, string] [timeNoTz, _] = extractTzFromTime(timePart);
+    int len = timeNoTz.length();
+    return len == 0 ? "day" : (len <= 2 ? "hour" : (len <= 5 ? "minute" : (len <= 8 ? "second" : "millisecond")));
 }
 
 isolated function addQuantityToTimeOnly(string timeStr, string unit, decimal value) returns FHIRPathInterpreterError|FhirPathItem[] {
@@ -766,8 +791,7 @@ isolated function addQuantityToDateOnly(string dateStr, string unit, decimal val
     if unit == "hour" || unit == "minute" || unit == "second" || unit == "millisecond" {
         return [];
     }
-    int i = <int>value;
-    int intVal = value < <decimal>i ? i - 1 : i;
+    int intVal = truncateDecimal(value);
 
     if dateStr.length() == 4 {
         int|error yearParse = int:fromString(dateStr);
@@ -894,8 +918,7 @@ isolated function addQuantityToDateTimeStr(string s, int tIdx, string unit, deci
         hour = ((totalH % 24) + 24) % 24;
         extraDays = totalH / 24;
     } else {
-        int i = <int>value;
-        int intVal = value < <decimal>i ? i - 1 : i;
+        int intVal = truncateDecimal(value);
         int newYear;
         int newMonth;
         int newDay;
@@ -945,6 +968,15 @@ isolated function applyMultiplicativeOperator(FhirPathItem[] left, FhirPathItem[
     json l = systemValueOf(left[0]);
     json r = systemValueOf(right[0]);
 
+    if isQuantityItem(left[0]) || isQuantityItem(right[0]) {
+        QuantityValue? qa = quantityOf(left[0]);
+        QuantityValue? qb = quantityOf(right[0]);
+        if qa is () || qb is () || (op != "*" && op != "/") {
+            return [];
+        }
+        QuantityValue? result = multiplyQuantities(qa, qb, op == "/");
+        return (result is QuantityValue) ? [quantityItem(result.value, result.unit)] : [];
+    }
     if (l is int || l is decimal || l is float) && (r is int || r is decimal || r is float) {
         return numericBinaryOp(l, r, op);
     }
@@ -1154,6 +1186,7 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
     if name == "toDate" { return applyToDateFunction(targetResults, params, context, env); }
     if name == "toDateTime" { return applyToDateTimeFunction(targetResults, params, context, env); }
     if name == "toTime" { return applyToTimeFunction(targetResults, params); }
+    if name == "comparable" { return applyComparableFunction(targetResults, params, context, env); }
     if name == "toQuantity" { return applyToQuantityFunction(targetResults, params, context, env); }
     if name == "convertsToInteger" { return applyConvertsToIntegerFunction(targetResults, params); }
     if name == "convertsToDecimal" { return applyConvertsToDecimalFunction(targetResults, params); }
@@ -1175,6 +1208,8 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
     if name == "today" { return typedResults(check applyTodayFunction(targetResults, params)); }
     if name == "now" { return typedResults(check applyNowFunction(targetResults, params)); }
     if name == "timeOfDay" { return applyTimeOfDayFunction(targetResults, params); }
+    if name == "duration" { return applyIntervalFunction(targetResults, params, context, env, false); }
+    if name == "difference" { return applyIntervalFunction(targetResults, params, context, env, true); }
     if name == "yearOf" || name == "monthOf" || name == "dayOf" || name == "hourOf" || name == "minuteOf"
             || name == "secondOf" || name == "millisecondOf" || name == "timezoneOffsetOf" || name == "dateOf"
             || name == "timeOf" {
@@ -1338,11 +1373,8 @@ isolated function wrapInCollection(FhirPathItem value) returns FhirPathItem[] {
 // Returns boolean? where () means "unknown" (e.g. incomparable datetime types)
 isolated function jsonValuesEqual(FhirPathItem left, FhirPathItem right) returns boolean? {
     if isQuantityItem(left) || isQuantityItem(right) {
-        json a = systemValueOf(left);
-        json b = systemValueOf(right);
-        map<json>? qa = a is map<json> ? a : (a is string ? parseQuantityFromString(a) : ());
-        map<json>? qb = b is map<json> ? b : (b is string ? parseQuantityFromString(b) : ());
-        return qa is map<json> && qb is map<json> ? compareQuantityValues(qa, qb) : ();
+        [decimal, decimal]? aligned = alignQuantityItems(left, right, false);
+        return (aligned is [decimal, decimal]) ? aligned[0] == aligned[1] : ();
     }
     return payloadsEqual(systemValueOf(left), systemValueOf(right));
 }
@@ -1388,13 +1420,11 @@ isolated function payloadsEqual(json a, json b) returns boolean? {
     return false;
 }
 
-isolated function jsonValuesEquivalent(FhirPathItem left, FhirPathItem right) returns boolean {
+// Returns () when quantities are not commensurable
+isolated function jsonValuesEquivalent(FhirPathItem left, FhirPathItem right) returns boolean? {
     if isQuantityItem(left) || isQuantityItem(right) {
-        json a = systemValueOf(left);
-        json b = systemValueOf(right);
-        map<json>? qa = a is map<json> ? a : (a is string ? parseQuantityFromString(a) : ());
-        map<json>? qb = b is map<json> ? b : (b is string ? parseQuantityFromString(b) : ());
-        return qa is map<json> && qb is map<json> && compareQuantityValuesEquivalent(qa, qb);
+        [decimal, decimal]? aligned = alignQuantityItems(left, right, true);
+        return (aligned is [decimal, decimal]) ? decimalsEquivalent(aligned[0], aligned[1]) : ();
     }
     return payloadsEquivalent(systemValueOf(left), systemValueOf(right));
 }
@@ -1670,66 +1700,53 @@ isolated function roundHalfUp(decimal value, int precision) returns decimal {
 }
 
 // ========================================
-// QUANTITY COMPARISON HELPERS
+// QUANTITY OPERANDS
 // ========================================
 
-// Compares two JSON quantity maps for equality (= operator)
-// FHIRPath quantity literal: {"value": N, "unit": "U"}
-// FHIR resource quantity:    {"value": N, "unit": "display", "code": "U", ...}
-isolated function compareQuantityValues(map<json> a, map<json> b) returns boolean? {
-    json aVal = a["value"];
-    json bVal = b["value"];
-    if aVal is () || bVal is () { return (); }
-    if !((aVal is int || aVal is decimal || aVal is float) && (bVal is int || bVal is decimal || bVal is float)) {
+// The quantity an operand denotes: a Quantity, or a number with the default unit '1'
+isolated function quantityOf(FhirPathItem item) returns QuantityValue? {
+    string kind = systemTypeOf(item);
+    json val = valueOf(item);
+    if (kind == "Integer" || kind == "Long" || kind == "Decimal") && (val is int || val is decimal || val is float) {
+        return {value: toDecimalValue(val), unit: "1"};
+    }
+    if isQuantityItem(item) && val is map<json> && val["value"] !is () {
+        [decimal, string] [value, unit] = quantityParts(val);
+        return {value, unit};
+    }
+    return ();
+}
+
+// Values of two quantity operands in a common unit. A FHIR Quantity is matched on its code first and on its
+// display unit when the code does not apply.
+isolated function alignQuantityItems(FhirPathItem left, FhirPathItem right, boolean equivalence) returns [decimal, decimal]? {
+    QuantityValue? a = quantityOf(left);
+    QuantityValue? b = quantityOf(right);
+    if a is () || b is () {
         return ();
     }
-    if toFloat(aVal) != toFloat(bVal) { return false; }
-    // Unit comparison: check "unit" and "code" fields cross-ways
-    string? aUnit = a["unit"] is string ? <string>a["unit"] : ();
-    string? aCode = a["code"] is string ? <string>a["code"] : ();
-    string? bUnit = b["unit"] is string ? <string>b["unit"] : ();
-    string? bCode = b["code"] is string ? <string>b["code"] : ();
-    if unitsMatch(aUnit, aCode, bUnit, bCode) { return true; }
-    // Cross-system normalization (UCUM↔calendar equivalences like d↔day, wk↔week)
-    string effectiveA = (aUnit ?: aCode) ?: "";
-    string effectiveB = (bUnit ?: bCode) ?: "";
-    string? normA = quantityUnitCanonical(effectiveA);
-    string? normB = quantityUnitCanonical(effectiveB);
-    if normA is () || normB is () { return (); }
-    return normA == normB;
-}
-
-isolated function quantityUnitCanonical(string unit) returns string? {
-    string lower = unit.toLowerAscii();
-    if lower == "d" || lower == "day" || lower == "days" { return "d"; }
-    if lower == "wk" || lower == "week" || lower == "weeks" { return "wk"; }
-    if lower == "h" || lower == "hour" || lower == "hours" { return "h"; }
-    if lower == "min" || lower == "minute" || lower == "minutes" { return "min"; }
-    if lower == "s" || lower == "second" || lower == "seconds" { return "s"; }
-    if lower == "ms" || lower == "millisecond" || lower == "milliseconds" { return "ms"; }
-    if lower == "mo" || lower == "month" || lower == "months" { return (); }
-    if lower == "a" || lower == "year" || lower == "years" { return (); }
-    return lower;
-}
-
-isolated function compareQuantityValuesEquivalent(map<json> a, map<json> b) returns boolean {
-    boolean? eq = compareQuantityValues(a, b);
-    if eq is () { return false; }
-    return eq;
-}
-
-isolated function unitsMatch(string? aUnit, string? aCode, string? bUnit, string? bCode) returns boolean {
-    // Try all combinations: compare case-insensitively
-    string?[] aOptions = [aUnit, aCode];
-    string?[] bOptions = [bUnit, bCode];
-    foreach string? ao in aOptions {
-        if ao is () { continue; }
-        foreach string? bo in bOptions {
-            if bo is () { continue; }
-            if ao.toLowerAscii() == bo.toLowerAscii() { return true; }
-        }
+    [decimal, decimal]? aligned = alignQuantities(a, b, equivalence);
+    if aligned is [decimal, decimal] {
+        return aligned;
     }
-    return false;
+    string? displayA = displayUnitOf(left);
+    string? displayB = displayUnitOf(right);
+    if displayA is string {
+        aligned = alignQuantities({value: a.value, unit: displayA}, b, equivalence);
+    }
+    if aligned is () && displayB is string {
+        aligned = alignQuantities(a, {value: b.value, unit: displayB}, equivalence);
+    }
+    return aligned;
+}
+
+// The display unit of a FHIR Quantity when it differs from its code
+isolated function displayUnitOf(FhirPathItem item) returns string? {
+    json val = valueOf(item);
+    if val is map<json> && val["code"] is string && val["unit"] is string && val["code"] != val["unit"] {
+        return <string>val["unit"];
+    }
+    return ();
 }
 
 isolated function isEqual(anydata a, anydata b) returns boolean {

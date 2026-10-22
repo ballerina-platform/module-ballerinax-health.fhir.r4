@@ -498,6 +498,19 @@ isolated function applyIifFunction(FhirPathItem[] collection, Expr[] params, Fhi
     return params.length() == 3 ? evaluate(params[2], input, scopedEnv) : [];
 }
 
+isolated function applyComparableFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env)
+        returns FHIRPathInterpreterError|FhirPathItem[] {
+    if params.length() != 1 {
+        return fnError("comparable", "1 parameter", params.length());
+    }
+    FhirPathItem[] other = check evaluate(params[0], context, env);
+    // Empty unless both sides are single quantities (numbers implicitly convert with the unit '1')
+    if collection.length() != 1 || other.length() != 1 || quantityOf(collection[0]) is () || quantityOf(other[0]) is () {
+        return [];
+    }
+    return [alignQuantityItems(collection[0], other[0], false) is [decimal, decimal]];
+}
+
 isolated function applyPathnameFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env)
         returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() > 1 {
@@ -579,23 +592,9 @@ isolated function applyAsType(FhirPathItem[] collection, string typeName, string
 // FORMAT HELPERS
 // ========================================
 
-isolated function isDateFormat(string s) returns boolean {
-    // YYYY or YYYY-MM or YYYY-MM-DD
-    return re `[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?`.isFullMatch(s);
-}
-
 isolated function isTimeFormat(string s) returns boolean {
     // HH or HH:MM or HH:MM:SS or HH:MM:SS.fff
     return re `[0-9]{2}(:[0-9]{2}(:[0-9]{2}(\.[0-9]+)?)?)?`.isFullMatch(s);
-}
-
-isolated function isDigits(string s) returns boolean {
-    foreach int i in 0 ..< s.length() {
-        string ch = s.substring(i, i + 1);
-        int|error cp = int:fromString(ch);
-        if cp is error { return false; }
-    }
-    return true;
 }
 
 // ========================================
@@ -664,6 +663,3 @@ isolated function parseQuantityFromString(string s) returns map<json>? {
     return {"value": d, "unit": unit};
 }
 
-isolated function isValidQuantityString(string s) returns boolean {
-    return parseQuantityFromString(s) !is ();
-}

@@ -125,6 +125,184 @@ isolated function componentAt(string s, int startIndex, int endIndex) returns Fh
     return (component is int) ? [component] : [];
 }
 
+// ---- Date and time intervals: duration() and difference() ----
+
+final readonly & string[] DATE_INTERVAL_PRECISIONS = ["year", "month", "week", "day"];
+final readonly & string[] TIME_INTERVAL_PRECISIONS = ["hour", "minute", "second", "millisecond"];
+
+// duration() counts whole calendar periods; difference() counts the period boundaries crossed
+isolated function applyIntervalFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env,
+        boolean boundaries) returns FHIRPathInterpreterError|FhirPathItem[] {
+    string name = boundaries ? "difference" : "duration";
+    if params.length() != 2 {
+        return fnError(name, "2 parameters", params.length());
+    }
+    FhirPathItem? input = check singleInput(collection, name);
+    FhirPathItem[] otherResult = check evaluate(params[0], context, env);
+    string? precisionParam = check stringParam(params[1], context, env);
+    if input is () || otherResult.length() == 0 || precisionParam is () {
+        return [];
+    }
+    FhirPathItem? other = check singleInput(otherResult, name);
+    if other is () {
+        return [];
+    }
+    string precision = normalizeCalendarUnit(precisionParam);
+    string kindA = systemTypeOf(input);
+    string kindB = systemTypeOf(other);
+    boolean isTime = kindA == "Time";
+    boolean validKinds = isTime ? kindB == "Time"
+        : (kindA == "Date" || kindA == "DateTime") && (kindB == "Date" || kindB == "DateTime");
+    if !validKinds {
+        return error FHIRPathInterpreterError(string `${name}() requires two Date, DateTime or Time values of the same kind`,
+            token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+    }
+    boolean bothDates = kindA == "Date" && kindB == "Date";
+    boolean validPrecision = isTime ? TIME_INTERVAL_PRECISIONS.indexOf(precision) !is ()
+        : (DATE_INTERVAL_PRECISIONS.indexOf(precision) !is () || (!bothDates && TIME_INTERVAL_PRECISIONS.indexOf(precision) !is ()));
+    if !validPrecision {
+        return error FHIRPathInterpreterError(string `${name}(): invalid precision '${precisionParam}'`,
+            token = {tokenType: IDENTIFIER, lexeme: name, literal: (), position: 0});
+    }
+    DateTimeParts? a = intervalParts(<string>systemValueOf(input));
+    DateTimeParts? b = intervalParts(<string>systemValueOf(other));
+    if a is () || b is () || !hasPrecision(a, precision) || !hasPrecision(b, precision) {
+        return [];
+    }
+    return [boundaries ? boundariesCrossed(a, b, precision) : wholePeriods(a, b, precision)];
+}
+
+// Components of an '@' date/time value; Time values have year 0
+isolated function intervalParts(string value) returns DateTimeParts? {
+    string s = value.substring(1);
+    if !s.startsWith("T") {
+        return parseIsoDateTime(s.endsWith("T") ? s.substring(0, s.length() - 1) : s);
+    }
+    [string, string] [timePart, _] = extractTzFromTime(s.substring(1));
+    if !isTimeFormat(timePart) {
+        return ();
+    }
+    return {
+        year: 0,
+        hour: digitsToInt(timePart.substring(0, 2)),
+        minute: timePart.length() >= 5 ? digitsToInt(timePart.substring(3, 5)) : (),
+        second: timePart.length() >= 8 ? digitsToInt(timePart.substring(6, 8)) : (),
+        fraction: timePart.length() > 9 ? timePart.substring(9) : ()
+    };
+}
+
+isolated function hasPrecision(DateTimeParts parts, string precision) returns boolean {
+    match precision {
+        "year" => { return true; }
+        "month" => { return parts.month !is (); }
+        "week"|"day" => { return parts.day !is (); }
+        "hour" => { return parts.hour !is (); }
+        "minute" => { return parts.minute !is (); }
+        "second" => { return parts.second !is (); }
+    }
+    return parts.fraction !is ();
+}
+
+// Number of whole periods from a to b (negative when a is after b)
+isolated function wholePeriods(DateTimeParts a, DateTimeParts b, string precision) returns int {
+    if TIME_INTERVAL_PRECISIONS.indexOf(precision) !is () {
+        int diff = absoluteMillis(b, true) - absoluteMillis(a, true);
+        return diff / unitMillis(precision);
+    }
+    if compareParts(a, b) > 0 {
+        return -wholePeriods(b, a, precision);
+    }
+    if precision == "year" || precision == "month" {
+        int months = (b.year - a.year) * 12 + ((b.month ?: 1) - (a.month ?: 1));
+        // A period is only complete once the remaining components of b reach those of a
+        if (a.day is int && b.day is int && ((b.day ?: 1) < (a.day ?: 1)
+                || ((b.day ?: 1) == (a.day ?: 1) && millisOfDay(b) < millisOfDay(a)))) {
+            months -= 1;
+        }
+        if precision == "month" {
+            return months;
+        }
+        int years = b.year - a.year;
+        if b.month is int && a.month is int && months < years * 12 {
+            years -= 1;
+        }
+        return years;
+    }
+    int days = daysFromCivil(b) - daysFromCivil(a);
+    if millisOfDay(b) < millisOfDay(a) {
+        days -= 1;
+    }
+    return precision == "week" ? days / 7 : days;
+}
+
+// Number of period boundaries crossed from a to b (weeks start on Sunday)
+isolated function boundariesCrossed(DateTimeParts a, DateTimeParts b, string precision) returns int {
+    match precision {
+        "year" => { return b.year - a.year; }
+        "month" => { return (b.year - a.year) * 12 + ((b.month ?: 1) - (a.month ?: 1)); }
+        "day" => { return daysFromCivil(b) - daysFromCivil(a); }
+        "week" => {
+            // 1970-01-04 (day 3) was a Sunday
+            return floorDiv(daysFromCivil(b) - 3, 7) - floorDiv(daysFromCivil(a) - 3, 7);
+        }
+    }
+    int unit = unitMillis(precision);
+    return floorDiv(absoluteMillis(b, true), unit) - floorDiv(absoluteMillis(a, true), unit);
+}
+
+isolated function compareParts(DateTimeParts a, DateTimeParts b) returns int {
+    int dayDiff = daysFromCivil(a) - daysFromCivil(b);
+    if dayDiff != 0 {
+        return dayDiff;
+    }
+    return millisOfDay(a) - millisOfDay(b);
+}
+
+// Milliseconds since 1970-01-01T00:00Z (Time values: since midnight); `normalize` applies the timezone offset
+isolated function absoluteMillis(DateTimeParts parts, boolean normalize) returns int {
+    int millis = (parts.year == 0 && parts.month is () ? 0 : daysFromCivil(parts) * 86400000) + millisOfDay(parts);
+    string? timezone = parts.timezone;
+    if normalize && timezone is string && timezone != "Z" {
+        int offsetMinutes = digitsToInt(timezone.substring(1, 3)) * 60 + digitsToInt(timezone.substring(4, 6));
+        millis -= (timezone.startsWith("-") ? -offsetMinutes : offsetMinutes) * 60000;
+    }
+    return millis;
+}
+
+isolated function millisOfDay(DateTimeParts parts) returns int {
+    string fraction = parts.fraction ?: "0";
+    while fraction.length() < 3 {
+        fraction += "0";
+    }
+    return (((parts.hour ?: 0) * 60 + (parts.minute ?: 0)) * 60 + (parts.second ?: 0)) * 1000 + digitsToInt(fraction.substring(0, 3));
+}
+
+isolated function unitMillis(string precision) returns int {
+    match precision {
+        "hour" => { return 3600000; }
+        "minute" => { return 60000; }
+        "second" => { return 1000; }
+    }
+    return 1;
+}
+
+// Days since 1970-01-01 of the (proleptic Gregorian) date in `parts`
+isolated function daysFromCivil(DateTimeParts parts) returns int {
+    int m = parts.month ?: 1;
+    int d = parts.day ?: 1;
+    int y = parts.year - (m <= 2 ? 1 : 0);
+    int era = (y >= 0 ? y : y - 399) / 400;
+    int yoe = y - era * 400;
+    int doy = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1;
+    int doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    return era * 146097 + doe - 719468;
+}
+
+isolated function floorDiv(int a, int b) returns int {
+    int q = a / b;
+    return (a % b != 0 && ((a < 0) != (b < 0))) ? q - 1 : q;
+}
+
 isolated function applyBoundaryFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env,
         boolean high) returns FHIRPathInterpreterError|FhirPathItem[] {
     string name = high ? "highBoundary" : "lowBoundary";

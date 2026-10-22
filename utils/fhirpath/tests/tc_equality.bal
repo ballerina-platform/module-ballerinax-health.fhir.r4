@@ -438,9 +438,7 @@ function getEqualityTestCases() returns FHIRPathTestCase[] {
             expression: "1 'cm'.comparable(1 '[in_i]')",
             resourceKey: "empty",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_Comparable2",
@@ -448,9 +446,7 @@ function getEqualityTestCases() returns FHIRPathTestCase[] {
             expression: "1 'cm'.comparable(1 '[s]')",
             resourceKey: "empty",
             expected: [false],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_Comparable3",
@@ -458,9 +454,7 @@ function getEqualityTestCases() returns FHIRPathTestCase[] {
             expression: "1 'cm'.comparable(1 's')",
             resourceKey: "empty",
             expected: [false],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         }
     ];
 }

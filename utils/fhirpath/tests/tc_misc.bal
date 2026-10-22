@@ -336,9 +336,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "4.0000 'g' = 4000.0 'mg'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity2",
@@ -346,9 +344,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "4 'g' ~ 4000 'mg'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity3",
@@ -364,9 +360,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "4 'g' ~ 4040 'mg'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity5",
@@ -374,9 +368,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "7 days = 1 week",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity6",
@@ -384,9 +376,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "7 days = 1 'wk'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity7",
@@ -394,9 +384,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "6 days < 1 week",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity8",
@@ -404,9 +392,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "8 days > 1 week",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity9",
@@ -414,9 +400,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "2.0 'cm' * 2.0 'm' = 0.040 'm2'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity10",
@@ -424,9 +408,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "4.0 'g' / 2.0 'm' = 2 'g/m'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity11",
@@ -434,9 +416,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "1.0 'm' / 1.0 'm' = 1 '1'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         }
     ];
 }
