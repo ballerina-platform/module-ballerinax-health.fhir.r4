@@ -18,20 +18,20 @@
 // COLLECTION FUNCTIONS
 // ========================================
 
-isolated function applyCountFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyCountFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("count", "0 parameters", params.length());
     }
     return [collection.length()];
 }
 
-isolated function applyIsDistinctFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyIsDistinctFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("isDistinct", "0 parameters", params.length());
     }
-    json[] seen = [];
-    foreach json item in collection {
-        foreach json existing in seen {
+    FhirPathItem[] seen = [];
+    foreach FhirPathItem item in collection {
+        foreach FhirPathItem existing in seen {
             if isJsonEqual(item, existing) {
                 return [false];
             }
@@ -41,14 +41,14 @@ isolated function applyIsDistinctFunction(json[] collection, Expr[] params) retu
     return [true];
 }
 
-isolated function applyDistinctFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyDistinctFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("distinct", "0 parameters", params.length());
     }
-    json[] result = [];
-    foreach json item in collection {
+    FhirPathItem[] result = [];
+    foreach FhirPathItem item in collection {
         boolean found = false;
-        foreach json existing in result {
+        foreach FhirPathItem existing in result {
             if isJsonEqual(item, existing) {
                 found = true;
                 break;
@@ -61,7 +61,7 @@ isolated function applyDistinctFunction(json[] collection, Expr[] params) return
     return result;
 }
 
-isolated function applyLastFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyLastFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("last", "0 parameters", params.length());
     }
@@ -71,7 +71,7 @@ isolated function applyLastFunction(json[] collection, Expr[] params) returns FH
     return [collection[collection.length() - 1]];
 }
 
-isolated function applyTailFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyTailFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("tail", "0 parameters", params.length());
     }
@@ -81,11 +81,11 @@ isolated function applyTailFunction(json[] collection, Expr[] params) returns FH
     return collection.slice(1);
 }
 
-isolated function applySkipFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applySkipFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("skip", "1 parameter", params.length());
     }
-    json[] nResult = check evaluate(params[0], context, env);
+    FhirPathItem[] nResult = check evaluate(params[0], context, env);
     if nResult.length() == 0 {
         return [];
     }
@@ -99,11 +99,11 @@ isolated function applySkipFunction(json[] collection, Expr[] params, json conte
     return collection.slice(n);
 }
 
-isolated function applyTakeFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyTakeFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("take", "1 parameter", params.length());
     }
-    json[] nResult = check evaluate(params[0], context, env);
+    FhirPathItem[] nResult = check evaluate(params[0], context, env);
     if nResult.length() == 0 {
         return [];
     }
@@ -117,7 +117,7 @@ isolated function applyTakeFunction(json[] collection, Expr[] params, json conte
     return collection.slice(0, n);
 }
 
-isolated function applySingleFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applySingleFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("single", "0 parameters", params.length());
     }
@@ -131,33 +131,33 @@ isolated function applySingleFunction(json[] collection, Expr[] params) returns 
         token = {tokenType: IDENTIFIER, lexeme: "single", literal: (), position: 0});
 }
 
-isolated function applyCombineFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyCombineFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("combine", "1 parameter", params.length());
     }
-    json[] otherResult = check evaluate(params[0], context, env);
-    json[] result = [...collection, ...otherResult];
+    FhirPathItem[] otherResult = check evaluate(params[0], context, env);
+    FhirPathItem[] result = [...collection, ...otherResult];
     return result;
 }
 
-isolated function applyUnionFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyUnionFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("union", "1 parameter", params.length());
     }
-    json[] otherResult = check evaluate(params[0], context, env);
-    json[] combined = [...collection, ...otherResult];
+    FhirPathItem[] otherResult = check evaluate(params[0], context, env);
+    FhirPathItem[] combined = [...collection, ...otherResult];
     return applyDistinctToItems(combined);
 }
 
-isolated function applyIntersectFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyIntersectFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("intersect", "1 parameter", params.length());
     }
-    json[] otherResult = check evaluate(params[0], context, env);
-    json[] result = [];
-    foreach json item in collection {
+    FhirPathItem[] otherResult = check evaluate(params[0], context, env);
+    FhirPathItem[] result = [];
+    foreach FhirPathItem item in collection {
         boolean inOther = false;
-        foreach json otherItem in otherResult {
+        foreach FhirPathItem otherItem in otherResult {
             if isJsonEqual(item, otherItem) {
                 inOther = true;
                 break;
@@ -165,7 +165,7 @@ isolated function applyIntersectFunction(json[] collection, Expr[] params, json 
         }
         if inOther {
             boolean alreadyAdded = false;
-            foreach json existing in result {
+            foreach FhirPathItem existing in result {
                 if isJsonEqual(item, existing) {
                     alreadyAdded = true;
                     break;
@@ -179,15 +179,15 @@ isolated function applyIntersectFunction(json[] collection, Expr[] params, json 
     return result;
 }
 
-isolated function applyExcludeFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyExcludeFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("exclude", "1 parameter", params.length());
     }
-    json[] otherResult = check evaluate(params[0], context, env);
-    json[] result = [];
-    foreach json item in collection {
+    FhirPathItem[] otherResult = check evaluate(params[0], context, env);
+    FhirPathItem[] result = [];
+    foreach FhirPathItem item in collection {
         boolean inOther = false;
-        foreach json otherItem in otherResult {
+        foreach FhirPathItem otherItem in otherResult {
             if isJsonEqual(item, otherItem) {
                 inOther = true;
                 break;
@@ -200,17 +200,17 @@ isolated function applyExcludeFunction(json[] collection, Expr[] params, json co
     return result;
 }
 
-isolated function applySelectFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applySelectFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("select", "1 parameter", params.length());
     }
     Expr criteriaExpr = params[0];
-    json[] results = [];
+    FhirPathItem[] results = [];
     int i = 0;
-    foreach json item in collection {
+    foreach FhirPathItem item in collection {
         FhirPathEnv itemEnv = {index: i, total: env?.total, scope: env.scope.childScope()};
-        json[] itemResult = check evaluate(criteriaExpr, item, itemEnv);
-        foreach json val in itemResult {
+        FhirPathItem[] itemResult = check evaluate(criteriaExpr, item, itemEnv);
+        foreach FhirPathItem val in itemResult {
             results.push(val);
         }
         i += 1;
@@ -218,7 +218,7 @@ isolated function applySelectFunction(json[] collection, Expr[] params, json con
     return results;
 }
 
-isolated function applySortFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applySortFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if collection.length() <= 1 {
         return collection;
     }
@@ -232,18 +232,19 @@ isolated function applySortFunction(json[] collection, Expr[] params, json conte
     }
     // With criteria: evaluate criteria for each item and sort by result
     Expr criteria = params[0];
-    json[][] keyedItems = [];
+    [FhirPathItem, FhirPathItem][] keyedItems = [];
     int idx = 0;
-    foreach json item in collection {
+    foreach FhirPathItem item in collection {
         FhirPathEnv itemEnv = {index: idx, total: env?.total, scope: env.scope.childScope()};
-        json[] keyResult = check evaluate(criteria, item, itemEnv);
-        keyedItems.push([item, keyResult.length() > 0 ? keyResult[0] : ()]);
+        FhirPathItem[] keyResult = check evaluate(criteria, item, itemEnv);
+        FhirPathItem sortKey = keyResult.length() > 0 ? keyResult[0] : ();
+        keyedItems.push([item, sortKey]);
         idx += 1;
     }
     // Simple insertion sort by key
     int n = keyedItems.length();
     foreach int i in 1 ..< n {
-        json[] current = keyedItems[i];
+        [FhirPathItem, FhirPathItem] current = keyedItems[i];
         int j = i - 1;
         while j >= 0 && compareJsonValues(keyedItems[j][1], current[1]) > 0 {
             keyedItems[j + 1] = keyedItems[j];
@@ -251,17 +252,17 @@ isolated function applySortFunction(json[] collection, Expr[] params, json conte
         }
         keyedItems[j + 1] = current;
     }
-    json[] result = [];
-    foreach json[] pair in keyedItems {
+    FhirPathItem[] result = [];
+    foreach [FhirPathItem, FhirPathItem] pair in keyedItems {
         result.push(pair[0]);
     }
     return result;
 }
 
-isolated function applyAllFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyAllFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() == 0 {
         // all() with no args: all items must be truthy
-        foreach json item in collection {
+        foreach FhirPathItem item in collection {
             if !isTruthyValue(item) {
                 return [false];
             }
@@ -273,9 +274,9 @@ isolated function applyAllFunction(json[] collection, Expr[] params, json contex
     }
     Expr criteriaExpr = params[0];
     int i = 0;
-    foreach json item in collection {
+    foreach FhirPathItem item in collection {
         FhirPathEnv itemEnv = {index: i, total: env?.total, scope: env.scope.childScope()};
-        json[] criteriaResult = check evaluate(criteriaExpr, item, itemEnv);
+        FhirPathItem[] criteriaResult = check evaluate(criteriaExpr, item, itemEnv);
         if criteriaResult.length() == 0 || !isTruthyValue(criteriaResult[0]) {
             return [false];
         }
@@ -284,29 +285,29 @@ isolated function applyAllFunction(json[] collection, Expr[] params, json contex
     return [true];
 }
 
-isolated function applyRepeatFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyRepeatFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("repeat", "1 parameter", params.length());
     }
     Expr criteriaExpr = params[0];
-    json[] result = [];
-    json[] current = collection;
+    FhirPathItem[] result = [];
+    FhirPathItem[] current = collection;
     // Keep applying criteria until no new items are produced
     boolean changed = true;
     // Track visited items to avoid infinite loops
-    json[] visited = [...collection];
+    FhirPathItem[] visited = [...collection];
 
     while changed {
         changed = false;
-        json[] nextBatch = [];
+        FhirPathItem[] nextBatch = [];
         int idx = 0;
-        foreach json item in current {
+        foreach FhirPathItem item in current {
             FhirPathEnv itemEnv = {index: idx, total: env?.total, scope: env.scope.childScope()};
-            json[] itemResult = check evaluate(criteriaExpr, item, itemEnv);
+            FhirPathItem[] itemResult = check evaluate(criteriaExpr, item, itemEnv);
             idx += 1;
-            foreach json newItem in itemResult {
+            foreach FhirPathItem newItem in itemResult {
                 boolean alreadyVisited = false;
-                foreach json v in visited {
+                foreach FhirPathItem v in visited {
                     if isJsonEqual(newItem, v) {
                         alreadyVisited = true;
                         break;
@@ -325,22 +326,22 @@ isolated function applyRepeatFunction(json[] collection, Expr[] params, json con
     return result;
 }
 
-isolated function applyAggregateFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyAggregateFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() < 1 || params.length() > 2 {
         return fnError("aggregate", "1 or 2 parameters", params.length());
     }
     Expr aggregatorExpr = params[0];
-    json total = ();
+    FhirPathItem total = ();
     if params.length() == 2 {
-        json[] initResult = check evaluate(params[1], context, env);
+        FhirPathItem[] initResult = check evaluate(params[1], context, env);
         if initResult.length() > 0 {
             total = initResult[0];
         }
     }
     int i = 0;
-    foreach json item in collection {
+    foreach FhirPathItem item in collection {
         FhirPathEnv itemEnv = {index: i, total: total, scope: env.scope.childScope()};
-        json[] aggResult = check evaluate(aggregatorExpr, item, itemEnv);
+        FhirPathItem[] aggResult = check evaluate(aggregatorExpr, item, itemEnv);
         if aggResult.length() > 0 {
             total = aggResult[0];
         }
@@ -352,14 +353,14 @@ isolated function applyAggregateFunction(json[] collection, Expr[] params, json 
     return [total];
 }
 
-isolated function applySubsetOfFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applySubsetOfFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("subsetOf", "1 parameter", params.length());
     }
-    json[] otherResult = check evaluate(params[0], context, env);
-    foreach json item in collection {
+    FhirPathItem[] otherResult = check evaluate(params[0], context, env);
+    foreach FhirPathItem item in collection {
         boolean found = false;
-        foreach json otherItem in otherResult {
+        foreach FhirPathItem otherItem in otherResult {
             if isJsonEqual(item, otherItem) {
                 found = true;
                 break;
@@ -372,14 +373,14 @@ isolated function applySubsetOfFunction(json[] collection, Expr[] params, json c
     return [true];
 }
 
-isolated function applySupersetOfFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applySupersetOfFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("supersetOf", "1 parameter", params.length());
     }
-    json[] otherResult = check evaluate(params[0], context, env);
-    foreach json item in otherResult {
+    FhirPathItem[] otherResult = check evaluate(params[0], context, env);
+    foreach FhirPathItem item in otherResult {
         boolean found = false;
-        foreach json selfItem in collection {
+        foreach FhirPathItem selfItem in collection {
             if isJsonEqual(item, selfItem) {
                 found = true;
                 break;
@@ -392,7 +393,7 @@ isolated function applySupersetOfFunction(json[] collection, Expr[] params, json
     return [true];
 }
 
-isolated function applyNotFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyNotFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("not", "0 parameters", params.length());
     }
@@ -403,7 +404,7 @@ isolated function applyNotFunction(json[] collection, Expr[] params) returns FHI
         return error FHIRPathInterpreterError("not() requires at most one item in the collection",
             token = {tokenType: IDENTIFIER, lexeme: "not", literal: (), position: 0});
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
     if val is boolean {
         return [!val];
     }
@@ -411,60 +412,32 @@ isolated function applyNotFunction(json[] collection, Expr[] params) returns FHI
         token = {tokenType: IDENTIFIER, lexeme: "not", literal: (), position: 0});
 }
 
-isolated function applyChildrenFunction(json[] collection, Expr[] params, json context) returns FHIRPathInterpreterError|json[] {
+isolated function applyChildrenFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("children", "0 parameters", params.length());
     }
-    json[] result = [];
-    foreach json item in collection {
-        if item is map<json> {
-            foreach var [_, v] in item.entries() {
-                if v is json[] {
-                    foreach json elem in v {
-                        result.push(elem);
-                    }
-                } else {
-                    result.push(v);
-                }
-            }
-        } else if item is json[] {
-            foreach json elem in item {
-                result.push(elem);
-            }
-        }
+    FhirPathItem[] result = [];
+    foreach FhirPathItem item in collection {
+        result.push(...allChildItems(item));
     }
     return result;
 }
 
-isolated function applyDescendantsFunction(json[] collection, Expr[] params, json context) returns FHIRPathInterpreterError|json[] {
+isolated function applyDescendantsFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("descendants", "0 parameters", params.length());
     }
-    json[] result = [];
-    foreach json item in collection {
+    FhirPathItem[] result = [];
+    foreach FhirPathItem item in collection {
         collectDescendants(item, result);
     }
     return result;
 }
 
-isolated function collectDescendants(json item, json[] result) {
-    if item is map<json> {
-        foreach var [_, v] in item.entries() {
-            if v is json[] {
-                foreach json elem in v {
-                    result.push(elem);
-                    collectDescendants(elem, result);
-                }
-            } else if v !is () {
-                result.push(v);
-                collectDescendants(v, result);
-            }
-        }
-    } else if item is json[] {
-        foreach json elem in item {
-            result.push(elem);
-            collectDescendants(elem, result);
-        }
+isolated function collectDescendants(FhirPathItem item, FhirPathItem[] result) {
+    foreach FhirPathItem child in allChildItems(item) {
+        result.push(child);
+        collectDescendants(child, result);
     }
 }
 
@@ -472,11 +445,11 @@ isolated function collectDescendants(json item, json[] result) {
 // COLLECTION HELPERS
 // ========================================
 
-isolated function applyDistinctToItems(json[] items) returns json[] {
-    json[] result = [];
-    foreach json item in items {
+isolated function applyDistinctToItems(FhirPathItem[] items) returns FhirPathItem[] {
+    FhirPathItem[] result = [];
+    foreach FhirPathItem item in items {
         boolean found = false;
-        foreach json existing in result {
+        foreach FhirPathItem existing in result {
             if isJsonEqual(item, existing) {
                 found = true;
                 break;
@@ -489,15 +462,15 @@ isolated function applyDistinctToItems(json[] items) returns json[] {
     return result;
 }
 
-isolated function sortCollection(json[] collection) returns json[] {
+isolated function sortCollection(FhirPathItem[] collection) returns FhirPathItem[] {
     if collection.length() <= 1 {
         return collection;
     }
-    json[] result = [...collection];
+    FhirPathItem[] result = [...collection];
     int n = result.length();
     // Insertion sort
     foreach int i in 1 ..< n {
-        json current = result[i];
+        FhirPathItem current = result[i];
         int j = i - 1;
         while j >= 0 && compareJsonValues(result[j], current) > 0 {
             result[j + 1] = result[j];
@@ -517,7 +490,11 @@ isolated function jsonTypeOrder(json v) returns int {
     return 5; // map<json>
 }
 
-isolated function compareJsonValues(json a, json b) returns int {
+isolated function compareJsonValues(FhirPathItem a, FhirPathItem b) returns int {
+    return compareJsonPayloads(systemValueOf(a), systemValueOf(b));
+}
+
+isolated function compareJsonPayloads(json a, json b) returns int {
     int ta = jsonTypeOrder(a);
     int tb = jsonTypeOrder(b);
     if ta != tb {
@@ -543,7 +520,7 @@ isolated function compareJsonValues(json a, json b) returns int {
     if a is json[] && b is json[] {
         int lenCmp = a.length() < b.length() ? a.length() : b.length();
         foreach int i in 0 ..< lenCmp {
-            int c = compareJsonValues(a[i], b[i]);
+            int c = compareJsonPayloads(a[i], b[i]);
             if c != 0 { return c; }
         }
         if a.length() < b.length() { return -1; }
@@ -559,7 +536,7 @@ isolated function compareJsonValues(json a, json b) returns int {
             if keysA[i] > keysB[i] { return 1; }
             json valA = a[keysA[i]] ?: ();
             json valB = b[keysB[i]] ?: ();
-            int c = compareJsonValues(valA, valB);
+            int c = compareJsonPayloads(valA, valB);
             if c != 0 { return c; }
         }
         if keysA.length() < keysB.length() { return -1; }
@@ -569,7 +546,11 @@ isolated function compareJsonValues(json a, json b) returns int {
     return 0;
 }
 
-isolated function isJsonEqual(json a, json b) returns boolean {
+isolated function isJsonEqual(FhirPathItem a, FhirPathItem b) returns boolean {
+    return isJsonPayloadEqual(systemValueOf(a), systemValueOf(b));
+}
+
+isolated function isJsonPayloadEqual(json a, json b) returns boolean {
     if a is () && b is () { return true; }
     if a is () || b is () { return false; }
     if a is boolean && b is boolean { return a == b; }
@@ -580,7 +561,7 @@ isolated function isJsonEqual(json a, json b) returns boolean {
     if a is json[] && b is json[] {
         if a.length() != b.length() { return false; }
         foreach int i in 0 ..< a.length() {
-            if !isJsonEqual(a[i], b[i]) { return false; }
+            if !isJsonPayloadEqual(a[i], b[i]) { return false; }
         }
         return true;
     }
@@ -592,14 +573,15 @@ isolated function isJsonEqual(json a, json b) returns boolean {
             if keysA[i] != keysB[i] { return false; }
             json valA = a[keysA[i]] ?: ();
             json valB = b[keysA[i]] ?: ();
-            if !isJsonEqual(valA, valB) { return false; }
+            if !isJsonPayloadEqual(valA, valB) { return false; }
         }
         return true;
     }
     return false;
 }
 
-isolated function isTruthyValue(json val) returns boolean {
+isolated function isTruthyValue(FhirPathItem item) returns boolean {
+    json val = valueOf(item);
     if val is boolean { return val; }
     if val is () { return false; }
     return true;

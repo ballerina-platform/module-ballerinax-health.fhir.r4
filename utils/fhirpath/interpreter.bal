@@ -29,41 +29,36 @@ type InterpreterError record {|
 # Error type for FHIRPath interpreter runtime errors.
 type FHIRPathInterpreterError distinct error<InterpreterError>;
 
-isolated class VariableScope {
-    private map<json & readonly> vars = {};
+# Named variables visible to an expression. Each variable holds a collection.
+class VariableScope {
+    private map<FhirPathItem[]> vars = {};
     private map<boolean> localDefs = {};
 
-    isolated function define(string name, json value) returns boolean {
-        lock {
-            if self.localDefs.hasKey(name) { return false; }
-            self.vars[name] = value.cloneReadOnly();
-            self.localDefs[name] = true;
-        }
+    isolated function define(string name, FhirPathItem[] value) returns boolean {
+        if self.localDefs.hasKey(name) { return false; }
+        self.vars[name] = value;
+        self.localDefs[name] = true;
         return true;
     }
 
-    isolated function get(string name) returns (json & readonly)? {
-        lock { return self.vars[name]; }
+    isolated function get(string name) returns FhirPathItem[]? {
+        return self.vars[name];
     }
 
     isolated function hasKey(string name) returns boolean {
-        lock { return self.vars.hasKey(name); }
-    }
-
-    private isolated function inherit(map<json & readonly> & readonly snapshot) {
-        lock {
-            foreach var [k, v] in snapshot.entries() {
-                self.vars[k] = v;
-            }
-        }
+        return self.vars.hasKey(name);
     }
 
     isolated function childScope() returns VariableScope {
-        map<json & readonly> & readonly snapshot;
-        lock { snapshot = self.vars.cloneReadOnly(); }
         VariableScope child = new VariableScope();
-        child.inherit(snapshot);
+        foreach var [k, v] in self.vars.entries() {
+            child.inherit(k, v);
+        }
         return child;
+    }
+
+    private isolated function inherit(string name, FhirPathItem[] value) {
+        self.vars[name] = value;
     }
 }
 
@@ -74,7 +69,7 @@ isolated class VariableScope {
 # + scope - Named variables defined via defineVariable()
 type FhirPathEnv record {|
     int index?;
-    json total?;
+    FhirPathItem total?;
     VariableScope scope;
 |};
 
@@ -92,11 +87,12 @@ isolated function interpret(Expr expression, json context, map<json>? variables 
     VariableScope scope = new VariableScope();
     if variables is map<json> {
         foreach var [k, v] in variables.entries() {
-            _ = scope.define(k, v);
+            _ = scope.define(k, toCollection(v));
         }
     }
     FhirPathEnv env = {scope: scope};
-    return evaluate(expression, context, env);
+    FhirPathItem[] results = check evaluate(expression, rootItem(context), env);
+    return toOutputJson(results);
 }
 
 # Evaluates a FHIRPath expression node against a context.
@@ -106,7 +102,7 @@ isolated function interpret(Expr expression, json context, map<json>? variables 
 # + context - The current evaluation context (JSON value, serves as $this)
 # + env - The evaluation environment ($index, $total, variables)
 # + return - A collection of JSON results, or a FhirpathInterpreterError if evaluation fails
-isolated function evaluate(Expr expr, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function evaluate(Expr expr, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     match expr.kind {
         "Literal" => {
             return visitLiteralExpr(<LiteralExpr>expr, context);
@@ -143,15 +139,19 @@ isolated function evaluate(Expr expr, json context, FhirPathEnv env) returns FHI
 // VISITOR FUNCTIONS
 // ========================================
 
-isolated function visitLiteralExpr(LiteralExpr expr, json context) returns json[] {
+isolated function visitLiteralExpr(LiteralExpr expr, FhirPathItem context) returns FhirPathItem[] {
     json value = <json>expr.value;
     if value is () {
         return [];
     }
+    string? systemType = expr.systemType;
+    if systemType is string {
+        return [systemItem(systemType, value)];
+    }
     return [value];
 }
 
-isolated function visitIdentifierExpr(IdentifierExpr expr, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function visitIdentifierExpr(IdentifierExpr expr, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     // Special variables
     if expr.name == "$this" {
         return wrapInCollection(context);
@@ -160,7 +160,7 @@ isolated function visitIdentifierExpr(IdentifierExpr expr, json context, FhirPat
         return [env.index ?: 0];
     }
     if expr.name == "$total" {
-        json? total = env?.total;
+        FhirPathItem? total = env?.total;
         if total is () {
             return [];
         }
@@ -168,118 +168,42 @@ isolated function visitIdentifierExpr(IdentifierExpr expr, json context, FhirPat
     }
 
     // Named variables defined by defineVariable()
-    if env.scope.hasKey(expr.name) {
-        return wrapInCollection(env.scope.get(expr.name));
+    FhirPathItem[]? variable = env.scope.get(expr.name);
+    if variable is FhirPathItem[] {
+        return variable;
     }
 
-    if context is () {
+    json contextValue = valueOf(context);
+    if contextValue is () {
         return [];
     }
 
-    if context is map<json> {
-        string fieldName = expr.name;
-
-        // Check resource type match
-        json|error resourceTypeValue = context.resourceType;
-        if resourceTypeValue !is error && resourceTypeValue is string {
-            if fieldName == resourceTypeValue {
-                return [context];
-            }
-        }
-
-        if context.hasKey(fieldName) {
-            json fieldValue = context[fieldName];
-            return wrapInCollection(fieldValue);
-        }
-        // FHIR polymorphic type access: "value" matches "valueQuantity", "valueString", etc.
-        json[] polyResults = fhirPolymorphicAccess(context, fieldName);
-        if polyResults.length() > 0 {
-            return polyResults;
-        }
-        return [];
+    // A type name matching the context's resource type selects the context itself (e.g. "Patient")
+    if contextValue is map<json> && contextValue["resourceType"] == expr.name {
+        return [context];
     }
-
-    return [];
+    return childItems(context, expr.name);
 }
 
-isolated function visitMemberAccessExpr(MemberAccessExpr expr, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
-    json[] targetResults = check evaluate(expr.target, context, env);
+isolated function visitMemberAccessExpr(MemberAccessExpr expr, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    FhirPathItem[] targetResults = check evaluate(expr.target, context, env);
 
-    json[] results = [];
-    foreach json item in targetResults {
-        json[] memberResults = check accessMember(item, expr.member);
-        foreach json memberValue in memberResults {
-            results.push(memberValue);
-        }
-    }
-
-    return results;
-}
-
-isolated function accessMember(json item, string memberName) returns FHIRPathInterpreterError|json[] {
-    if item is () {
-        return [];
-    }
-    if item is map<json> {
-        if item.hasKey(memberName) {
-            json fieldValue = item[memberName];
-            return wrapInCollection(fieldValue);
-        }
-        // FHIR polymorphic type access: "value" matches "valueQuantity", etc.
-        json[] polyResults = fhirPolymorphicAccess(item, memberName);
-        if polyResults.length() > 0 {
-            return polyResults;
-        }
-        return [];
-    }
-    if item is json[] {
-        json[] results = [];
-        foreach json element in item {
-            json[] elementResults = check accessMember(element, memberName);
-            foreach json value in elementResults {
-                results.push(value);
-            }
-        }
-        return results;
-    }
-    return [];
-}
-
-// Returns values matching FHIR choice-type fields (e.g. "value" matches "valueQuantity")
-isolated function fhirPolymorphicAccess(map<json> obj, string fieldName) returns json[] {
-    json[] results = [];
-    string prefix = fieldName;
-    foreach string key in obj.keys() {
-        if key.length() > prefix.length() && key.startsWith(prefix) {
-            string suffix = key.substring(prefix.length());
-            string nextChar = suffix.substring(0, 1);
-            if nextChar >= "A" && nextChar <= "Z" {
-                json val = obj[key];
-                if val is map<json> {
-                    map<json> annotated = {};
-                    foreach [string, json] [k, v] in val.entries() {
-                        annotated[k] = v;
-                    }
-                    annotated["__fhirType"] = suffix;
-                    results.push(annotated);
-                } else {
-                    results.push(val);
-                }
-            }
-        }
+    FhirPathItem[] results = [];
+    foreach FhirPathItem item in targetResults {
+        results.push(...childItems(item, expr.member));
     }
     return results;
 }
 
-isolated function visitIndexerExpr(IndexerExpr expr, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
-    json[] targetResults = check evaluate(expr.target, context, env);
-    json[] indexResults = check evaluate(expr.index, context, env);
+isolated function visitIndexerExpr(IndexerExpr expr, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    FhirPathItem[] targetResults = check evaluate(expr.target, context, env);
+    FhirPathItem[] indexResults = check evaluate(expr.index, context, env);
 
     if indexResults.length() != 1 {
         return [];
     }
 
-    json indexValue = indexResults[0];
+    json indexValue = valueOf(indexResults[0]);
     int index;
     if indexValue is int {
         index = indexValue;
@@ -297,30 +221,40 @@ isolated function visitIndexerExpr(IndexerExpr expr, json context, FhirPathEnv e
     if index < 0 || index >= targetResults.length() {
         return [];
     }
-    return wrapInCollection(targetResults[index]);
+    return [targetResults[index]];
 }
 
-isolated function visitUnaryExpr(UnaryExpr expr, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
-    json[] operandResults = check evaluate(expr.operand, context, env);
+isolated function visitUnaryExpr(UnaryExpr expr, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    FhirPathItem[] operandResults = check evaluate(expr.operand, context, env);
     if operandResults.length() == 0 {
         return [];
     }
-    json val = operandResults[0];
+    FhirPathItem item = operandResults[0];
+    json val = valueOf(item);
     if expr.operator.tokenType == MINUS {
-        if val is int { return [-val]; }
-        if val is decimal { return [-val]; }
-        if val is float { return [-val]; }
-        return error FHIRPathInterpreterError(
-            "Unary minus cannot be applied to a non-numeric value",
-            token = expr.operator);
+        FhirPathItem negated;
+        if val is int { negated = -val; }
+        else if val is decimal { negated = -val; }
+        else if val is float { negated = -val; }
+        else {
+            return error FHIRPathInterpreterError(
+                "Unary minus cannot be applied to a non-numeric value",
+                token = expr.operator);
+        }
+        // Keep the operand's type (e.g. Long) for the negated value
+        if item is TypedValue && item.namespace == SYSTEM_NS {
+            return [new TypedValue(valueOf(negated), item.namespace, item.name)];
+        }
+        return [negated];
     }
     // PLUS is a no-op
-    return [val];
+    return [item];
 }
 
-isolated function visitExternalConstantExpr(ExternalConstantExpr expr, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
-    if env.scope.hasKey(expr.name) {
-        return wrapInCollection(env.scope.get(expr.name));
+isolated function visitExternalConstantExpr(ExternalConstantExpr expr, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    FhirPathItem[]? variable = env.scope.get(expr.name);
+    if variable is FhirPathItem[] {
+        return variable;
     }
     match expr.name {
         "sct" => { return ["http://snomed.info/sct"]; }
@@ -337,81 +271,62 @@ isolated function visitExternalConstantExpr(ExternalConstantExpr expr, FhirPathE
     return error FHIRPathInterpreterError("Undefined constant: %" + expr.name, token = dummyToken);
 }
 
-isolated function visitQuantityLiteralExpr(QuantityLiteralExpr expr) returns json[] {
-    // Represent as a map with value and unit for quantity arithmetic
-    return [{"value": expr.value, "unit": expr.unit}];
+isolated function visitQuantityLiteralExpr(QuantityLiteralExpr expr) returns FhirPathItem[] {
+    return [quantityItem(expr.value, expr.unit)];
 }
 
 // ========================================
 // BINARY EXPRESSION
 // ========================================
 
-isolated function visitBinaryExpr(BinaryExpr expr, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function visitBinaryExpr(BinaryExpr expr, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     TokenType operatorType = expr.operator.tokenType;
 
     // IS and AS: don't evaluate the right side as a value; it's a type name
     if operatorType == IS {
-        json[] leftResults = check evaluate(expr.left, context, env);
-        string typeName = extractTypeName(expr.right);
-        if leftResults.length() == 0 { return [false]; }
-        return [matchesFhirType(leftResults[0], typeName, isSystemSourceExpr(expr.left), getDeclaredFhirType(expr.left))];
+        FhirPathItem[] leftResults = check evaluate(expr.left, context, env);
+        return applyIsType(leftResults, extractTypeName(expr.right));
     }
     if operatorType == AS {
-        json[] leftResults = check evaluate(expr.left, context, env);
-        string typeName = extractTypeName(expr.right);
-        if !isKnownFhirType(typeName) {
-            return error FHIRPathInterpreterError(string `as: unknown type '${typeName}'`,
-                token = expr.operator);
-        }
-        if leftResults.length() > 1 {
-            return error FHIRPathInterpreterError("as: cannot cast a collection with more than 1 item",
-                token = expr.operator);
-        }
-        string? declaredType = getDeclaredFhirType(expr.left);
-        json[] result = [];
-        foreach json item in leftResults {
-            if exactFhirTypeMatch(item, typeName, declaredType) {
-                result.push(item);
-            }
-        }
-        return result;
+        FhirPathItem[] leftResults = check evaluate(expr.left, context, env);
+        return applyAsType(leftResults, extractTypeName(expr.right), "as");
     }
 
     // Short-circuit evaluation for logical operators
     if operatorType == AND {
-        json[] leftResults = check evaluate(expr.left, context, env);
+        FhirPathItem[] leftResults = check evaluate(expr.left, context, env);
         if leftResults.length() > 0 && !isTruthy(leftResults) {
             return [false];
         }
-        json[] rightResults = check evaluate(expr.right, context, env);
+        FhirPathItem[] rightResults = check evaluate(expr.right, context, env);
         return applyAndOperator(leftResults, rightResults);
     }
     if operatorType == OR {
-        json[] leftResults = check evaluate(expr.left, context, env);
+        FhirPathItem[] leftResults = check evaluate(expr.left, context, env);
         if leftResults.length() > 0 && isTruthy(leftResults) {
             return [true];
         }
-        json[] rightResults = check evaluate(expr.right, context, env);
+        FhirPathItem[] rightResults = check evaluate(expr.right, context, env);
         return applyOrOperator(leftResults, rightResults);
     }
     if operatorType == IMPLIES {
-        json[] leftResults = check evaluate(expr.left, context, env);
+        FhirPathItem[] leftResults = check evaluate(expr.left, context, env);
         // false implies X = true; empty implies X = unknown
         if leftResults.length() > 0 && !isTruthy(leftResults) {
             return [true];
         }
-        json[] rightResults = check evaluate(expr.right, context, env);
+        FhirPathItem[] rightResults = check evaluate(expr.right, context, env);
         return applyImpliesOperator(leftResults, rightResults);
     }
 
     if operatorType == PIPE {
-        json[] leftResults = check evaluate(expr.left, context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
-        json[] rightResults = check evaluate(expr.right, context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
+        FhirPathItem[] leftResults = check evaluate(expr.left, context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
+        FhirPathItem[] rightResults = check evaluate(expr.right, context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
         return applyUnionOperator(leftResults, rightResults);
     }
 
-    json[] leftResults = check evaluate(expr.left, context, env);
-    json[] rightResults = check evaluate(expr.right, context, env);
+    FhirPathItem[] leftResults = check evaluate(expr.left, context, env);
+    FhirPathItem[] rightResults = check evaluate(expr.right, context, env);
 
     match operatorType {
         EQUAL => { return applyEqualityOperator(leftResults, rightResults, true); }
@@ -463,7 +378,7 @@ isolated function extractTypeName(Expr expr) returns string {
 // OPERATOR IMPLEMENTATIONS
 // ========================================
 
-isolated function applyEqualityOperator(json[] left, json[] right, boolean checkEqual) returns json[] {
+isolated function applyEqualityOperator(FhirPathItem[] left, FhirPathItem[] right, boolean checkEqual) returns FhirPathItem[] {
     if left.length() == 0 || right.length() == 0 {
         return [];
     }
@@ -487,7 +402,7 @@ isolated function applyEqualityOperator(json[] left, json[] right, boolean check
     return [!checkEqual];
 }
 
-isolated function applyEquivalenceOperator(json[] left, json[] right, boolean checkEquivalent) returns json[] {
+isolated function applyEquivalenceOperator(FhirPathItem[] left, FhirPathItem[] right, boolean checkEquivalent) returns FhirPathItem[] {
     if left.length() == 0 && right.length() == 0 {
         return [checkEquivalent];
     }
@@ -500,9 +415,9 @@ isolated function applyEquivalenceOperator(json[] left, json[] right, boolean ch
     // Multi-element equivalence is set-based (order-independent):
     // every element in left must have an equivalent in right, and vice versa.
     boolean allLeftInRight = true;
-    foreach json lItem in left {
+    foreach FhirPathItem lItem in left {
         boolean found = false;
-        foreach json rItem in right {
+        foreach FhirPathItem rItem in right {
             if jsonValuesEquivalent(lItem, rItem) {
                 found = true;
                 break;
@@ -515,9 +430,9 @@ isolated function applyEquivalenceOperator(json[] left, json[] right, boolean ch
     }
     boolean allRightInLeft = true;
     if allLeftInRight {
-        foreach json rItem in right {
+        foreach FhirPathItem rItem in right {
             boolean found = false;
-            foreach json lItem in left {
+            foreach FhirPathItem lItem in left {
                 if jsonValuesEquivalent(rItem, lItem) {
                     found = true;
                     break;
@@ -533,7 +448,7 @@ isolated function applyEquivalenceOperator(json[] left, json[] right, boolean ch
     return checkEquivalent ? [equiv] : [!equiv];
 }
 
-isolated function applyAndOperator(json[] left, json[] right) returns json[] {
+isolated function applyAndOperator(FhirPathItem[] left, FhirPathItem[] right) returns FhirPathItem[] {
     boolean leftEmpty = left.length() == 0;
     boolean rightEmpty = right.length() == 0;
 
@@ -546,7 +461,7 @@ isolated function applyAndOperator(json[] left, json[] right) returns json[] {
     return [true];
 }
 
-isolated function applyOrOperator(json[] left, json[] right) returns json[] {
+isolated function applyOrOperator(FhirPathItem[] left, FhirPathItem[] right) returns FhirPathItem[] {
     boolean leftEmpty = left.length() == 0;
     boolean rightEmpty = right.length() == 0;
 
@@ -559,14 +474,14 @@ isolated function applyOrOperator(json[] left, json[] right) returns json[] {
     return [false];
 }
 
-isolated function applyXorOperator(json[] left, json[] right) returns json[] {
+isolated function applyXorOperator(FhirPathItem[] left, FhirPathItem[] right) returns FhirPathItem[] {
     if left.length() == 0 || right.length() == 0 {
         return [];
     }
     return [isTruthy(left) != isTruthy(right)];
 }
 
-isolated function applyImpliesOperator(json[] left, json[] right) returns json[] {
+isolated function applyImpliesOperator(FhirPathItem[] left, FhirPathItem[] right) returns FhirPathItem[] {
     boolean leftEmpty = left.length() == 0;
     boolean rightEmpty = right.length() == 0;
 
@@ -585,12 +500,12 @@ isolated function applyImpliesOperator(json[] left, json[] right) returns json[]
     return [isTruthy(right)];
 }
 
-isolated function applyComparisonOperator(json[] left, json[] right, string op) returns FHIRPathInterpreterError|json[] {
+isolated function applyComparisonOperator(FhirPathItem[] left, FhirPathItem[] right, string op) returns FHIRPathInterpreterError|FhirPathItem[] {
     if left.length() == 0 || right.length() == 0 {
         return [];
     }
-    json l = left[0];
-    json r = right[0];
+    json l = systemValueOf(left[0]);
+    json r = systemValueOf(right[0]);
 
     // Numeric comparison
     if (l is int || l is decimal || l is float) && (r is int || r is decimal || r is float) {
@@ -626,7 +541,14 @@ isolated function applyComparisonOperator(json[] left, json[] right, string op) 
             // Precision-aware comparison: incompatible precision → uncertain → empty
             string kindL = fhirDateType(l);
             string kindR = fhirDateType(r);
-            if kindL != kindR { return []; }
+            if kindL != kindR {
+                int? cmp = (kindL == "time" || kindR == "time") ? () : compareDateComponents(l, r);
+                if cmp is () { return []; }
+                if op == "<" { return [cmp < 0]; }
+                if op == ">" { return [cmp > 0]; }
+                if op == "<=" { return [cmp <= 0]; }
+                return [cmp >= 0];
+            }
             string normL = normalizeDateTimeNoTz(stripTimezone(l));
             string normR = normalizeDateTimeNoTz(stripTimezone(r));
             if normL.length() != normR.length() { return []; }
@@ -680,12 +602,12 @@ isolated function applyComparisonOperator(json[] left, json[] right, string op) 
     return [];
 }
 
-isolated function applyAdditiveOperator(json[] left, json[] right, string op) returns FHIRPathInterpreterError|json[] {
+isolated function applyAdditiveOperator(FhirPathItem[] left, FhirPathItem[] right, string op) returns FHIRPathInterpreterError|FhirPathItem[] {
     if left.length() == 0 || right.length() == 0 {
         return [];
     }
-    json l = left[0];
-    json r = right[0];
+    json l = systemValueOf(left[0]);
+    json r = systemValueOf(right[0]);
 
     if op == "+" {
         if l is string && r is string {
@@ -695,7 +617,7 @@ isolated function applyAdditiveOperator(json[] left, json[] right, string op) re
             return numericBinaryOp(l, r, "+");
         }
         if l is string && l.startsWith("@") && r is map<json> {
-            return addDateTimeQuantity(l, r, "+");
+            return typedResults(check addDateTimeQuantity(l, r, "+"));
         }
         if l is string && l.startsWith("@") && (r is int || r is decimal || r is float) {
             return error FHIRPathInterpreterError(
@@ -707,13 +629,13 @@ isolated function applyAdditiveOperator(json[] left, json[] right, string op) re
             return numericBinaryOp(l, r, "-");
         }
         if l is string && l.startsWith("@") && r is map<json> {
-            return addDateTimeQuantity(l, r, "-");
+            return typedResults(check addDateTimeQuantity(l, r, "-"));
         }
     }
     return [];
 }
 
-isolated function addDateTimeQuantity(string dateTimeStr, map<json> qty, string op) returns FHIRPathInterpreterError|json[] {
+isolated function addDateTimeQuantity(string dateTimeStr, map<json> qty, string op) returns FHIRPathInterpreterError|FhirPathItem[] {
     json qVal = qty["value"];
     json qUnit = qty["unit"];
     if !(qVal is decimal || qVal is int || qVal is float) || !(qUnit is string) {
@@ -760,7 +682,7 @@ isolated function addDateTimeQuantity(string dateTimeStr, map<json> qty, string 
     return addQuantityToDateTimeStr(s, tIdx, canonicalUnit, value);
 }
 
-isolated function addQuantityToTimeOnly(string timeStr, string unit, decimal value) returns FHIRPathInterpreterError|json[] {
+isolated function addQuantityToTimeOnly(string timeStr, string unit, decimal value) returns FHIRPathInterpreterError|FhirPathItem[] {
     if unit == "day" || unit == "week" || unit == "month" || unit == "year" {
         return error FHIRPathInterpreterError(
             string `Cannot add ${unit}s to a time-only value`,
@@ -829,7 +751,7 @@ isolated function addQuantityToTimeOnly(string timeStr, string unit, decimal val
     return [result];
 }
 
-isolated function addQuantityToDateOnly(string dateStr, string unit, decimal value) returns FHIRPathInterpreterError|json[] {
+isolated function addQuantityToDateOnly(string dateStr, string unit, decimal value) returns FHIRPathInterpreterError|FhirPathItem[] {
     if unit == "hour" || unit == "minute" || unit == "second" || unit == "millisecond" {
         return [];
     }
@@ -890,7 +812,7 @@ isolated function addQuantityToDateOnly(string dateStr, string unit, decimal val
     return ["@" + newYear.toString() + "-" + zeroPad(newMonth) + "-" + zeroPad(newDay)];
 }
 
-isolated function addQuantityToDateTimeStr(string s, int tIdx, string unit, decimal value) returns FHIRPathInterpreterError|json[] {
+isolated function addQuantityToDateTimeStr(string s, int tIdx, string unit, decimal value) returns FHIRPathInterpreterError|FhirPathItem[] {
     string datePart = s.substring(0, tIdx);
     string afterT = s.substring(tIdx + 1);
     [string, string] [timeNoTz, tzSuffix] = extractTzFromTime(afterT);
@@ -996,19 +918,19 @@ isolated function addQuantityToDateTimeStr(string s, int tIdx, string unit, deci
     return ["@" + newDatePart + "T" + newTimePart + tzSuffix];
 }
 
-isolated function applyConcatenateOperator(json[] left, json[] right) returns json[] {
+isolated function applyConcatenateOperator(FhirPathItem[] left, FhirPathItem[] right) returns FhirPathItem[] {
     // & always concatenates strings; empty collection treated as ""
     string lStr = left.length() > 0 ? jsonToString(left[0]) : "";
     string rStr = right.length() > 0 ? jsonToString(right[0]) : "";
     return [lStr + rStr];
 }
 
-isolated function applyMultiplicativeOperator(json[] left, json[] right, string op) returns json[] {
+isolated function applyMultiplicativeOperator(FhirPathItem[] left, FhirPathItem[] right, string op) returns FhirPathItem[] {
     if left.length() == 0 || right.length() == 0 {
         return [];
     }
-    json l = left[0];
-    json r = right[0];
+    json l = systemValueOf(left[0]);
+    json r = systemValueOf(right[0]);
 
     if (l is int || l is decimal || l is float) && (r is int || r is decimal || r is float) {
         return numericBinaryOp(l, r, op);
@@ -1016,12 +938,12 @@ isolated function applyMultiplicativeOperator(json[] left, json[] right, string 
     return [];
 }
 
-isolated function applyUnionOperator(json[] left, json[] right) returns json[] {
-    json[] combined = [...left, ...right];
+isolated function applyUnionOperator(FhirPathItem[] left, FhirPathItem[] right) returns FhirPathItem[] {
+    FhirPathItem[] combined = [...left, ...right];
     return applyDistinctToItems(combined);
 }
 
-isolated function applyInOperator(json[] left, json[] right) returns json[] {
+isolated function applyInOperator(FhirPathItem[] left, FhirPathItem[] right) returns FhirPathItem[] {
     if left.length() == 0 {
         return [];
     }
@@ -1031,7 +953,7 @@ isolated function applyInOperator(json[] left, json[] right) returns json[] {
     // Each element of left must be in right
     // For single-element left: true if left[0] is in right
     if left.length() == 1 {
-        foreach json item in right {
+        foreach FhirPathItem item in right {
             boolean? eq = jsonValuesEqual(left[0], item);
             if eq == true {
                 return [true];
@@ -1040,9 +962,9 @@ isolated function applyInOperator(json[] left, json[] right) returns json[] {
         return [false];
     }
     // For multi-element left: check if all elements are in right
-    foreach json leftItem in left {
+    foreach FhirPathItem leftItem in left {
         boolean found = false;
-        foreach json rightItem in right {
+        foreach FhirPathItem rightItem in right {
             boolean? eq = jsonValuesEqual(leftItem, rightItem);
             if eq == true {
                 found = true;
@@ -1060,8 +982,8 @@ isolated function applyInOperator(json[] left, json[] right) returns json[] {
 // FUNCTION CALL DISPATCHER
 // ========================================
 
-isolated function visitFunctionExpr(FunctionExpr expr, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
-    json[] targetResults;
+isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    FhirPathItem[] targetResults;
     Expr? targetExpr = expr.target;
     if targetExpr is Expr {
         targetResults = check evaluate(targetExpr, context, env);
@@ -1082,8 +1004,8 @@ isolated function visitFunctionExpr(FunctionExpr expr, json context, FhirPathEnv
     if name == "where" { return applyWhereFunction(targetResults, params, context, env); }
     if name == "select" { return applySelectFunction(targetResults, params, context, env); }
     if name == "repeat" { return applyRepeatFunction(targetResults, params, context, env); }
-    if name == "children" { return applyChildrenFunction(targetResults, params, context); }
-    if name == "descendants" { return applyDescendantsFunction(targetResults, params, context); }
+    if name == "children" { return applyChildrenFunction(targetResults, params); }
+    if name == "descendants" { return applyDescendantsFunction(targetResults, params); }
 
     // ---- Subsetting ----
     if name == "first" { return applyFirstFunction(targetResults, params); }
@@ -1179,10 +1101,10 @@ isolated function visitFunctionExpr(FunctionExpr expr, json context, FhirPathEnv
     if name == "toDecimal" { return applyToDecimalFunction(targetResults, params); }
     if name == "toString" { return applyToStringFunction(targetResults, params); }
     if name == "toBoolean" { return applyToBooleanFunction(targetResults, params); }
-    if name == "toDate" { return applyToDateFunction(targetResults, params); }
-    if name == "toDateTime" { return applyToDateTimeFunction(targetResults, params); }
-    if name == "toTime" { return applyToTimeFunction(targetResults, params); }
-    if name == "toQuantity" { return applyToQuantityFunction(targetResults, params); }
+    if name == "toDate" { return typedResults(check applyToDateFunction(targetResults, params)); }
+    if name == "toDateTime" { return typedResults(check applyToDateTimeFunction(targetResults, params)); }
+    if name == "toTime" { return typedResults(check applyToTimeFunction(targetResults, params)); }
+    if name == "toQuantity" { return typedResults(check applyToQuantityFunction(targetResults, params)); }
     if name == "convertsToInteger" { return applyConvertsToIntegerFunction(targetResults, params); }
     if name == "convertsToDecimal" { return applyConvertsToDecimalFunction(targetResults, params); }
     if name == "convertsToString" { return applyConvertsToStringFunction(targetResults, params); }
@@ -1191,27 +1113,19 @@ isolated function visitFunctionExpr(FunctionExpr expr, json context, FhirPathEnv
     if name == "convertsToDateTime" { return applyConvertsToDateTimeFunction(targetResults, params); }
     if name == "convertsToTime" { return applyConvertsToTimeFunction(targetResults, params); }
     if name == "convertsToQuantity" { return applyConvertsToQuantityFunction(targetResults, params); }
-    if name == "type" { return applyTypeFunction(targetResults, params, targetExpr); }
-    if name == "ofType" { return applyOfTypeFunction(targetResults, params, context, env, targetExpr); }
-    if name == "is" {
-        if params.length() != 1 {
-            return fnError("is", "1 parameter", params.length());
-        }
-        string isTypeName = extractTypeName(params[0]);
-        if isTypeName.length() == 0 { return []; }
-        if targetResults.length() == 0 { return [false]; }
-        return [matchesFhirType(targetResults[0], isTypeName, isSystemSourceExpr(targetExpr), getDeclaredFhirType(targetExpr))];
-    }
-    if name == "as" { return applyAsTypeFunction(targetResults, params, context, env, targetExpr); }
+    if name == "type" { return applyTypeFunction(targetResults, params); }
+    if name == "ofType" { return applyOfTypeFunction(targetResults, params); }
+    if name == "is" { return applyIsTypeFunction(targetResults, params); }
+    if name == "as" { return applyAsTypeFunction(targetResults, params); }
 
     // ---- Logic ----
     if name == "iif" { return applyIifFunction(targetResults, params, context, env); }
 
     // ---- Date/time ----
-    if name == "today" { return applyTodayFunction(targetResults, params); }
-    if name == "now" { return applyNowFunction(targetResults, params); }
-    if name == "lowBoundary" { return applyLowBoundaryFunction(targetResults, params, context, env); }
-    if name == "highBoundary" { return applyHighBoundaryFunction(targetResults, params, context, env); }
+    if name == "today" { return typedResults(check applyTodayFunction(targetResults, params)); }
+    if name == "now" { return typedResults(check applyNowFunction(targetResults, params)); }
+    if name == "lowBoundary" { return typedResults(check applyLowBoundaryFunction(targetResults, params, context, env)); }
+    if name == "highBoundary" { return typedResults(check applyHighBoundaryFunction(targetResults, params, context, env)); }
     if name == "precision" { return applyPrecisionFunction(targetResults, params); }
 
     // ---- FHIR-specific ----
@@ -1233,7 +1147,7 @@ isolated function visitFunctionExpr(FunctionExpr expr, json context, FhirPathEnv
 // CORE FUNCTION IMPLEMENTATIONS
 // ========================================
 
-isolated function applyWhereFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyWhereFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return error FHIRPathInterpreterError(
             string `where() requires exactly 1 parameter, got ${params.length()}`,
@@ -1241,12 +1155,12 @@ isolated function applyWhereFunction(json[] collection, Expr[] params, json cont
     }
 
     Expr conditionExpr = params[0];
-    json[] results = [];
+    FhirPathItem[] results = [];
     int i = 0;
 
-    foreach json item in collection {
+    foreach FhirPathItem item in collection {
         FhirPathEnv itemEnv = {index: i, total: env?.total, scope: env.scope.childScope()};
-        json[] conditionResult = check evaluate(conditionExpr, item, itemEnv);
+        FhirPathItem[] conditionResult = check evaluate(conditionExpr, item, itemEnv);
         if isTruthy(conditionResult) {
             results.push(item);
         }
@@ -1256,7 +1170,7 @@ isolated function applyWhereFunction(json[] collection, Expr[] params, json cont
     return results;
 }
 
-isolated function applyEmptyFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyEmptyFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return error FHIRPathInterpreterError(
             string `empty() requires 0 parameters, got ${params.length()}`,
@@ -1265,7 +1179,7 @@ isolated function applyEmptyFunction(json[] collection, Expr[] params) returns F
     return [collection.length() == 0];
 }
 
-isolated function applyExistsFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyExistsFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() > 1 {
         return error FHIRPathInterpreterError(
             string `exists() requires 0 or 1 parameter, got ${params.length()}`,
@@ -1278,9 +1192,9 @@ isolated function applyExistsFunction(json[] collection, Expr[] params, json con
 
     Expr criteriaExpr = params[0];
     int i = 0;
-    foreach json item in collection {
+    foreach FhirPathItem item in collection {
         FhirPathEnv itemEnv = {index: i, total: env?.total, scope: env.scope.childScope()};
-        json[] criteriaResult = check evaluate(criteriaExpr, item, itemEnv);
+        FhirPathItem[] criteriaResult = check evaluate(criteriaExpr, item, itemEnv);
         if isTruthy(criteriaResult) {
             return [true];
         }
@@ -1290,7 +1204,7 @@ isolated function applyExistsFunction(json[] collection, Expr[] params, json con
     return [false];
 }
 
-isolated function applyFirstFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyFirstFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return error FHIRPathInterpreterError(
             string `first() requires 0 parameters, got ${params.length()}`,
@@ -1302,13 +1216,14 @@ isolated function applyFirstFunction(json[] collection, Expr[] params) returns F
     return [collection[0]];
 }
 
-isolated function applySumFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applySumFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if collection.length() == 0 {
         return [0];
     }
     decimal sum = 0d;
     boolean hasDecimal = false;
-    foreach json item in collection {
+    foreach FhirPathItem entry in collection {
+        json item = valueOf(entry);
         if item is int { sum += <decimal>item; }
         else if item is decimal { sum += item; hasDecimal = true; }
         else if item is float { sum += <decimal>item; hasDecimal = true; }
@@ -1319,15 +1234,15 @@ isolated function applySumFunction(json[] collection, Expr[] params) returns FHI
     return [<int>sum];
 }
 
-isolated function applyDefineVariableFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyDefineVariableFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() < 1 || params.length() > 2 {
         return fnError("defineVariable", "1 or 2 parameters", params.length());
     }
 
-    json[] nameResult = check evaluate(params[0], context,
+    FhirPathItem[] nameResult = check evaluate(params[0], context,
         {scope: env.scope.childScope(), index: env?.index, total: env?.total});
     if nameResult.length() == 0 { return collection; }
-    json nameVal = nameResult[0];
+    json nameVal = valueOf(nameResult[0]);
     if nameVal !is string || nameVal == "" { return collection; }
     string varName = nameVal;
 
@@ -1336,14 +1251,13 @@ isolated function applyDefineVariableFunction(json[] collection, Expr[] params, 
         return error FHIRPathInterpreterError("Cannot defineVariable with reserved name '" + varName + "'", token = tok);
     }
 
-    json varValue;
+    FhirPathItem[] varValue;
     if params.length() == 2 {
-        json valContext = collection.length() == 1 ? collection[0] : (collection.length() == 0 ? () : collection);
-        json[] valResult = check evaluate(params[1], valContext,
+        FhirPathItem valContext = collection.length() == 1 ? collection[0] : (collection.length() == 0 ? () : toOutputJson(collection));
+        varValue = check evaluate(params[1], valContext,
             {scope: env.scope.childScope(), index: env?.index, total: env?.total});
-        varValue = valResult.length() > 0 ? valResult[0] : ();
     } else {
-        varValue = context;
+        varValue = wrapInCollection(context);
     }
 
     boolean ok = env.scope.define(varName, varValue);
@@ -1359,28 +1273,33 @@ isolated function applyDefineVariableFunction(json[] collection, Expr[] params, 
 // UTILITY FUNCTIONS
 // ========================================
 
-isolated function isTruthy(json[] result) returns boolean {
+isolated function isTruthy(FhirPathItem[] result) returns boolean {
     if result.length() == 0 {
         return false;
     }
-    if result.length() == 1 && result[0] is boolean {
-        return <boolean>result[0];
+    if result.length() == 1 {
+        json value = valueOf(result[0]);
+        if value is boolean {
+            return value;
+        }
     }
     return true;
 }
 
-isolated function wrapInCollection(json value) returns json[] {
+isolated function wrapInCollection(FhirPathItem value) returns FhirPathItem[] {
     if value is () {
         return [];
     }
     if value is json[] {
-        return value;
+        return from json element in value where element !is () select element;
     }
     return [value];
 }
 
 // Returns boolean? where () means "unknown" (e.g. incomparable datetime types)
-isolated function jsonValuesEqual(json a, json b) returns boolean? {
+isolated function jsonValuesEqual(FhirPathItem left, FhirPathItem right) returns boolean? {
+    json a = systemValueOf(left);
+    json b = systemValueOf(right);
     if a is () && b is () { return true; }
     if a is () || b is () { return false; }
     if a is boolean && b is boolean { return a == b; }
@@ -1410,7 +1329,9 @@ isolated function jsonValuesEqual(json a, json b) returns boolean? {
     return a.toString() == b.toString();
 }
 
-isolated function jsonValuesEquivalent(json a, json b) returns boolean {
+isolated function jsonValuesEquivalent(FhirPathItem left, FhirPathItem right) returns boolean {
+    json a = systemValueOf(left);
+    json b = systemValueOf(right);
     if a is () && b is () { return true; }
     if a is () || b is () { return false; }
     if a is boolean && b is boolean { return a == b; }
@@ -1540,11 +1461,37 @@ isolated function datetimeToUTCMinutes(string s) returns int? {
     return total;
 }
 
+// Compares the year/month/day components a Date and a DateTime have in common.
+// Returns () when they are equal up to the shorter precision (the order is then unknown).
+isolated function compareDateComponents(string a, string b) returns int? {
+    string[] partsA = re `-`.split(datePartOf(a));
+    string[] partsB = re `-`.split(datePartOf(b));
+    int common = partsA.length() < partsB.length() ? partsA.length() : partsB.length();
+    foreach int i in 0 ..< common {
+        int|error x = int:fromString(partsA[i]);
+        int|error y = int:fromString(partsB[i]);
+        if x is error || y is error { return (); }
+        if x != y { return x < y ? -1 : 1; }
+    }
+    return ();
+}
+
+isolated function datePartOf(string s) returns string {
+    string t = s.startsWith("@") ? s.substring(1) : s;
+    int? tIdx = t.indexOf("T");
+    return tIdx is int ? t.substring(0, tIdx) : t;
+}
+
 // FHIRPath equality for date/time strings (returns () for unknown)
 isolated function compareDateTimeEqual(string a, string b) returns boolean? {
     string kindA = fhirDateType(a);
     string kindB = fhirDateType(b);
-    if kindA != kindB { return (); } // Different types → unknown
+    if kindA != kindB {
+        // A Time never equals a Date/DateTime; a Date and a DateTime are unequal when their common
+        // components differ and otherwise unknown (different precision)
+        if kindA == "time" || kindB == "time" || kindA == "other" || kindB == "other" { return false; }
+        return compareDateComponents(a, b) is int ? false : ();
+    }
 
     if kindA == "date" {
         return a == b;
@@ -1698,13 +1645,14 @@ isolated function isEqual(anydata a, anydata b) returns boolean {
     return a == b;
 }
 
-isolated function jsonToString(json val) returns string {
+isolated function jsonToString(FhirPathItem item) returns string {
+    json val = valueOf(item);
     if val is string { return val; }
     if val is () { return ""; }
     return val.toString();
 }
 
-isolated function numericBinaryOp(json l, json r, string op) returns json[] {
+isolated function numericBinaryOp(json l, json r, string op) returns FhirPathItem[] {
     boolean useDecimal = (l is decimal || r is decimal);
     boolean useInt = (l is int && r is int) && (op == "div" || op == "mod");
 
@@ -1833,7 +1781,7 @@ isolated function visitMemberAccessExprSet(MemberAccessExpr expr, map<json> cont
     Expr targetExpr = expr.target;
     string memberName = expr.member;
 
-    json[] targetResults = check evaluate(targetExpr, context, {scope: new VariableScope()});
+    json[] targetResults = toOutputJson(check evaluate(targetExpr, context, {scope: new VariableScope()}));
 
     if targetResults.length() > 0 {
         foreach json targetItem in targetResults {
@@ -1890,7 +1838,7 @@ isolated function visitMemberAccessExprSet(MemberAccessExpr expr, map<json> cont
 }
 
 isolated function visitIndexerExprSet(IndexerExpr expr, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FHIRPathInterpreterError|map<json> {
-    json[] indexResults = check evaluate(expr.index, context, {scope: new VariableScope()});
+    json[] indexResults = toOutputJson(check evaluate(expr.index, context, {scope: new VariableScope()}));
     if indexResults.length() != 1 {
         return error FHIRPathInterpreterError("Index must be a single value",
             token = {tokenType: EOF, lexeme: "", literal: (), position: 0});
@@ -1971,7 +1919,7 @@ isolated function setValueAtIndexedIdentifier(IdentifierExpr expr, int index, ma
 }
 
 isolated function setValueAtIndexedMemberAccess(MemberAccessExpr expr, int index, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FHIRPathInterpreterError|map<json> {
-    json[] targetResults = check evaluate(expr.target, context, {scope: new VariableScope()});
+    json[] targetResults = toOutputJson(check evaluate(expr.target, context, {scope: new VariableScope()}));
     string memberName = expr.member;
 
     if targetResults.length() == 0 {
@@ -2026,7 +1974,7 @@ isolated function setValueAtIndexedMemberAccess(MemberAccessExpr expr, int index
 }
 
 isolated function setValueAtNestedIndexer(IndexerExpr expr, int outerIndex, map<json> context, json newValue, boolean shouldRemove, ModificationFunction? modificationFunction) returns FHIRPathInterpreterError|map<json> {
-    json[] innerResults = check evaluate(expr, context, {scope: new VariableScope()});
+    json[] innerResults = toOutputJson(check evaluate(expr, context, {scope: new VariableScope()}));
 
     if innerResults.length() == 0 {
         if shouldRemove { return context; }
@@ -2082,13 +2030,4 @@ isolated function getModifiedValueInternal(json currentValue, ModificationFuncti
         return newValue;
     }
     return currentValue;
-}
-
-// Shared helper — used by both interpreter and function files
-isolated function applyIndex(json item, int index) returns FHIRPathInterpreterError|json[] {
-    if item is () { return []; }
-    if item !is json[] { return []; }
-    json[] arr = <json[]>item;
-    if index < 0 || index >= arr.length() { return []; }
-    return wrapInCollection(arr[index]);
 }

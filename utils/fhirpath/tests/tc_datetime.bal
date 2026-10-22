@@ -46,9 +46,7 @@ function getDatetimeTestCases() returns FHIRPathTestCase[] {
             expression: "today().toString().length() = 10",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testPeriodInvariantOld",
@@ -56,9 +54,7 @@ function getDatetimeTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.identifier.period.all(start.hasValue().not() or end.hasValue().not() or (start <= end))",
             resourceKey: "patient_period",
             expected: [false],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testPeriodInvariantNew",

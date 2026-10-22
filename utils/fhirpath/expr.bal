@@ -51,9 +51,11 @@ type BinaryExpr record {|
 #
 # + kind - The expression kind discriminator (always "Literal")
 # + value - The literal value (number, string, boolean, or nil)
+# + systemType - The System type for literals not typed by their value (Long, Date, DateTime, Time)
 type LiteralExpr record {|
     "Literal" kind;
     anydata? value;
+    string? systemType = ();
 |};
 
 # Represents an identifier expression (e.g., name, resourceType, given).
@@ -161,11 +163,13 @@ isolated function createBinaryExpr(Expr left, FhirPathToken operator, Expr right
 # Creates a literal expression node.
 #
 # + value - The literal value (number, string, boolean, or nil)
+# + systemType - The System type for literals not typed by their value (Long, Date, DateTime, Time)
 # + return - A new LiteralExpr node
-isolated function createLiteralExpr(anydata? value) returns LiteralExpr {
+isolated function createLiteralExpr(anydata? value, string? systemType = ()) returns LiteralExpr {
     return {
         kind: "Literal",
-        value: value
+        value: value,
+        systemType: systemType
     };
 }
 

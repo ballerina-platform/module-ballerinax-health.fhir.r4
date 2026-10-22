@@ -43,7 +43,17 @@ FHIRPath string → Scanner → Tokens → Parser → AST → Interpreter → Re
 | `interpreter.bal` | Tree-walking evaluator for both `get` and `set/remove` operations |
 | `fhir_path_processor.bal` | Public API: `getValuesFromFhirPath` and `setValuesToFhirPath` |
 | `functions_*.bal` | Built-in function implementations split by category (collection, string, math, datetime, type, FHIR-specific) |
+| `values.bal` | Typed collection items (`FhirPathItem = json\|TypedValue`), FHIR→System implicit conversion, model-aware navigation (`childItems`) and type tests (`itemIsOfType`) |
+| `model_info.bal` | **Generated** FHIR R4 model: type hierarchy (`FHIR_TYPE_BASE`) and element types (`FHIR_ELEMENT_TYPES`). Regenerate with `scripts/generate_model_info.py` (see its docstring); never edit by hand |
 | `grammar.g4` | ANTLR grammar from the HL7 FHIRPath spec — the authoritative reference for parser structure. ANTLR uses left-recursive rules; `parser.bal` manually converts these into top-down recursive-descent functions. |
+
+### Typed values
+
+Collections are `FhirPathItem[]`. A plain JSON primitive is a System value typed by its shape (boolean/int/decimal/string → Boolean/Integer/Decimal/String). Everything else is a `TypedValue` carrying a namespace and type name:
+- System `Long`, `Date`, `DateTime`, `Time`, `Quantity` (from literals or computations; wrap computed results with `typedResults`/`computedItem`)
+- every value navigated from a FHIR resource, typed from `model_info.bal` (choice types, content references and `_primitive` extension siblings are resolved during navigation)
+
+Payload conventions: System date/time payloads keep the `@` literal prefix (`"@2014-01-25"`, `"@T10:30"`); System Quantity payloads are `{"value", "unit"}` maps. Use `valueOf(item)` for the raw payload and `systemValueOf(item)` when the FHIR→System implicit conversion matters (operators, date/time functions). `interpret()` converts results back to plain JSON with `toOutputJson`, so the public API output format is unchanged.
 
 ### Public API (`fhir_path_processor.bal`)
 

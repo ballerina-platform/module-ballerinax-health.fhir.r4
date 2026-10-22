@@ -21,44 +21,44 @@ import ballerina/lang.'array as langArray;
 // STRING FUNCTIONS
 // ========================================
 
-isolated function applyLengthFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyLengthFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("length", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val is string {
         return [val.length()];
     }
     return [];
 }
 
-isolated function applyTrimFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyTrimFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("trim", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val is string {
         return [val.trim()];
     }
     return [];
 }
 
-isolated function applyToCharsFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyToCharsFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("toChars", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val is string {
-        json[] chars = [];
+        FhirPathItem[] chars = [];
         foreach int i in 0 ..< val.length() {
             chars.push(val.substring(i, i + 1));
         }
@@ -67,33 +67,33 @@ isolated function applyToCharsFunction(json[] collection, Expr[] params) returns
     return [];
 }
 
-isolated function applySplitFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applySplitFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("split", "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val !is string {
         return [];
     }
-    json[] sepResult = check evaluate(params[0], context, env);
+    FhirPathItem[] sepResult = check evaluate(params[0], context, env);
     if sepResult.length() == 0 {
         return [];
     }
-    json sep = sepResult[0];
+    json sep = valueOf(sepResult[0]);
     if sep !is string {
         return [];
     }
     if sep == "" {
-        json[] chars = [];
+        FhirPathItem[] chars = [];
         foreach int i in 0 ..< val.length() {
             chars.push(val.substring(i, i + 1));
         }
         return chars;
     }
-    json[] result = [];
+    FhirPathItem[] result = [];
     string remaining = val;
     while remaining.includes(sep) {
         int idx = remaining.indexOf(sep) ?: 0;
@@ -104,84 +104,82 @@ isolated function applySplitFunction(json[] collection, Expr[] params, json cont
     return result;
 }
 
-isolated function applyJoinFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyJoinFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() > 1 {
         return fnError("join", "0 or 1 parameter", params.length());
     }
     string sep = "";
     if params.length() == 1 {
-        json[] sepResult = check evaluate(params[0], context, env);
-        if sepResult.length() > 0 && sepResult[0] is string {
-            sep = <string>sepResult[0];
+        FhirPathItem[] sepResult = check evaluate(params[0], context, env);
+        json sepVal = sepResult.length() > 0 ? valueOf(sepResult[0]) : ();
+        if sepVal is string {
+            sep = sepVal;
         }
     }
     string[] parts = [];
-    foreach json item in collection {
-        if item is string {
-            parts.push(item);
-        } else {
-            parts.push(item.toString());
-        }
+    foreach FhirPathItem item in collection {
+        json val = valueOf(item);
+        parts.push(val is string ? val : val.toString());
     }
     return [string:'join(sep, ...parts)];
 }
 
-isolated function applyStartsWithFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyStartsWithFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("startsWith", "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json[] prefResult = check evaluate(params[0], context, env);
+    FhirPathItem[] prefResult = check evaluate(params[0], context, env);
     if prefResult.length() == 0 {
         return [];
     }
-    json val = collection[0];
-    json pref = prefResult[0];
+    json val = valueOf(collection[0]);
+    json pref = valueOf(prefResult[0]);
     if val is string && pref is string {
         return [val.startsWith(pref)];
     }
     return [];
 }
 
-isolated function applyEndsWithFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyEndsWithFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("endsWith", "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json[] suffResult = check evaluate(params[0], context, env);
+    FhirPathItem[] suffResult = check evaluate(params[0], context, env);
     if suffResult.length() == 0 {
         return [];
     }
-    json val = collection[0];
-    json suff = suffResult[0];
+    json val = valueOf(collection[0]);
+    json suff = valueOf(suffResult[0]);
     if val is string && suff is string {
         return [val.endsWith(suff)];
     }
     return [];
 }
 
-isolated function applyContainsStringFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyContainsStringFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("contains", "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val !is string {
         return error FHIRPathInterpreterError("contains() requires a String input, got non-string value",
             token = {tokenType: IDENTIFIER, lexeme: "contains", literal: (), position: 0});
     }
-    json[] subResult = check evaluate(params[0], context, env);
+    FhirPathItem[] subResult = check evaluate(params[0], context, env);
     if subResult.length() == 0 {
         return error FHIRPathInterpreterError("contains() substring parameter evaluated to empty",
             token = {tokenType: IDENTIFIER, lexeme: "contains", literal: (), position: 0});
     }
-    json sub = subResult[0];
+    json sub = valueOf(subResult[0]);
     if sub !is string {
         return error FHIRPathInterpreterError("contains() substring must be a String",
             token = {tokenType: IDENTIFIER, lexeme: "contains", literal: (), position: 0});
@@ -189,19 +187,19 @@ isolated function applyContainsStringFunction(json[] collection, Expr[] params, 
     return [val.includes(sub)];
 }
 
-isolated function applyIndexOfFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyIndexOfFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("indexOf", "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json[] subResult = check evaluate(params[0], context, env);
+    FhirPathItem[] subResult = check evaluate(params[0], context, env);
     if subResult.length() == 0 {
         return [];
     }
-    json val = collection[0];
-    json sub = subResult[0];
+    json val = valueOf(collection[0]);
+    json sub = valueOf(subResult[0]);
     if val is string && sub is string {
         int? idx = val.indexOf(sub);
         return [idx is int ? idx : -1];
@@ -209,18 +207,18 @@ isolated function applyIndexOfFunction(json[] collection, Expr[] params, json co
     return [];
 }
 
-isolated function applySubstringFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applySubstringFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() < 1 || params.length() > 2 {
         return fnError("substring", "1 or 2 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val !is string {
         return [];
     }
-    json[] startResult = check evaluate(params[0], context, env);
+    FhirPathItem[] startResult = check evaluate(params[0], context, env);
     if startResult.length() == 0 {
         return [];
     }
@@ -229,7 +227,7 @@ isolated function applySubstringFunction(json[] collection, Expr[] params, json 
         startIdx = 0;
     }
     if params.length() == 2 {
-        json[] lenResult = check evaluate(params[1], context, env);
+        FhirPathItem[] lenResult = check evaluate(params[1], context, env);
         if lenResult.length() == 0 {
             return [];
         }
@@ -249,24 +247,24 @@ isolated function applySubstringFunction(json[] collection, Expr[] params, json 
     return [val.substring(startIdx)];
 }
 
-isolated function applyReplaceFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyReplaceFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 2 {
         return fnError("replace", "2 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val !is string {
         return [];
     }
-    json[] patResult = check evaluate(params[0], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
-    json[] repResult = check evaluate(params[1], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
+    FhirPathItem[] patResult = check evaluate(params[0], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
+    FhirPathItem[] repResult = check evaluate(params[1], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
     if patResult.length() == 0 || repResult.length() == 0 {
         return [];
     }
-    json pat = patResult[0];
-    json rep = repResult[0];
+    json pat = valueOf(patResult[0]);
+    json rep = valueOf(repResult[0]);
     if pat is string && rep is string {
         if pat == "" {
             string buffer = rep;
@@ -291,22 +289,22 @@ isolated function applyReplaceFunction(json[] collection, Expr[] params, json co
     return [val];
 }
 
-isolated function applyMatchesFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyMatchesFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("matches", "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val !is string {
         return [];
     }
-    json[] regexResult = check evaluate(params[0], context, env);
+    FhirPathItem[] regexResult = check evaluate(params[0], context, env);
     if regexResult.length() == 0 {
         return [];
     }
-    json regexVal = regexResult[0];
+    json regexVal = valueOf(regexResult[0]);
     if regexVal !is string {
         return [];
     }
@@ -317,22 +315,22 @@ isolated function applyMatchesFunction(json[] collection, Expr[] params, json co
     return [false];
 }
 
-isolated function applyMatchesFullFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyMatchesFullFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("matchesFull", "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val !is string {
         return [];
     }
-    json[] regexResult = check evaluate(params[0], context, env);
+    FhirPathItem[] regexResult = check evaluate(params[0], context, env);
     if regexResult.length() == 0 {
         return [];
     }
-    json regexVal = regexResult[0];
+    json regexVal = valueOf(regexResult[0]);
     if regexVal !is string {
         return [];
     }
@@ -345,24 +343,24 @@ isolated function applyMatchesFullFunction(json[] collection, Expr[] params, jso
     return [false];
 }
 
-isolated function applyReplaceMatchesFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyReplaceMatchesFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 2 {
         return fnError("replaceMatches", "2 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val !is string {
         return [];
     }
-    json[] regexResult = check evaluate(params[0], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
-    json[] repResult = check evaluate(params[1], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
+    FhirPathItem[] regexResult = check evaluate(params[0], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
+    FhirPathItem[] repResult = check evaluate(params[1], context, {scope: env.scope.childScope(), index: env?.index, total: env?.total});
     if regexResult.length() == 0 || repResult.length() == 0 {
         return [];
     }
-    json regexVal = regexResult[0];
-    json rep = repResult[0];
+    json regexVal = valueOf(regexResult[0]);
+    json rep = valueOf(repResult[0]);
     if regexVal is string && rep is string {
         if regexVal == "" {
             return [val];
@@ -376,22 +374,22 @@ isolated function applyReplaceMatchesFunction(json[] collection, Expr[] params, 
     return [val];
 }
 
-isolated function applyEncodeDecodeFunction(string funcName, json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyEncodeDecodeFunction(string funcName, FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError(funcName, "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val !is string {
         return [];
     }
-    json[] fmtResult = check evaluate(params[0], context, env);
+    FhirPathItem[] fmtResult = check evaluate(params[0], context, env);
     if fmtResult.length() == 0 {
         return [];
     }
-    json fmt = fmtResult[0];
+    json fmt = valueOf(fmtResult[0]);
     if fmt !is string {
         return [];
     }
@@ -431,22 +429,22 @@ isolated function applyEncodeDecodeFunction(string funcName, json[] collection, 
     return [];
 }
 
-isolated function applyEscapeUnescapeFunction(string funcName, json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyEscapeUnescapeFunction(string funcName, FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError(funcName, "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val !is string {
         return [];
     }
-    json[] fmtResult = check evaluate(params[0], context, env);
+    FhirPathItem[] fmtResult = check evaluate(params[0], context, env);
     if fmtResult.length() == 0 {
         return [];
     }
-    json fmt = fmtResult[0];
+    json fmt = valueOf(fmtResult[0]);
     if fmt !is string {
         return [];
     }
@@ -484,7 +482,8 @@ isolated function strReplaceAll(string str, string needle, string replacement) r
     return buffer;
 }
 
-isolated function toInt(json val) returns int {
+isolated function toInt(FhirPathItem item) returns int {
+    json val = valueOf(item);
     if val is int {
         return val;
     } else if val is decimal {
@@ -541,28 +540,28 @@ isolated function hexCharToInt(string ch) returns int|error {
     return error("Invalid hex char: " + ch);
 }
 
-isolated function applyUpperFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyUpperFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("upper", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val is string {
         return [val.toUpperAscii()];
     }
     return [];
 }
 
-isolated function applyLowerFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyLowerFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("lower", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = valueOf(collection[0]);
     if val is string {
         return [val.toLowerAscii()];
     }

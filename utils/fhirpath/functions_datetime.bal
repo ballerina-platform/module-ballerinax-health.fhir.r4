@@ -20,7 +20,7 @@ import ballerina/time;
 // DATE/TIME FUNCTIONS
 // ========================================
 
-isolated function applyTodayFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyTodayFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("today", "0 parameters", params.length());
     }
@@ -29,7 +29,7 @@ isolated function applyTodayFunction(json[] collection, Expr[] params) returns F
     return [dateStr];
 }
 
-isolated function applyNowFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyNowFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("now", "0 parameters", params.length());
     }
@@ -41,25 +41,25 @@ isolated function applyNowFunction(json[] collection, Expr[] params) returns FHI
     return [dtStr];
 }
 
-isolated function applyLowBoundaryFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyLowBoundaryFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() > 1 {
         return fnError("lowBoundary", "0 or 1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
 
-    // Determine precision: for strings use value's own precision as default,
-    // numeric types default to 8
+    // Default precision: the maximum precision of a date/time type, 8 for numbers
     int precision = 8;
     if val is string && params.length() == 0 {
-        precision = dateTimePrecision(val);
+        precision = defaultBoundaryPrecision(collection[0], val);
     }
     if params.length() == 1 {
-        json[] precResult = check evaluate(params[0], context, env);
-        if precResult.length() > 0 && precResult[0] is int {
-            precision = <int>precResult[0];
+        FhirPathItem[] precResult = check evaluate(params[0], context, env);
+        json precVal = precResult.length() > 0 ? valueOf(precResult[0]) : ();
+        if precVal is int {
+            precision = precVal;
         }
     }
 
@@ -88,23 +88,24 @@ isolated function applyLowBoundaryFunction(json[] collection, Expr[] params, jso
     return [];
 }
 
-isolated function applyHighBoundaryFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyHighBoundaryFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() > 1 {
         return fnError("highBoundary", "0 or 1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
 
     int precision = 8;
     if val is string && params.length() == 0 {
-        precision = dateTimePrecision(val);
+        precision = defaultBoundaryPrecision(collection[0], val);
     }
     if params.length() == 1 {
-        json[] precResult = check evaluate(params[0], context, env);
-        if precResult.length() > 0 && precResult[0] is int {
-            precision = <int>precResult[0];
+        FhirPathItem[] precResult = check evaluate(params[0], context, env);
+        json precVal = precResult.length() > 0 ? valueOf(precResult[0]) : ();
+        if precVal is int {
+            precision = precVal;
         }
     }
 
@@ -133,14 +134,14 @@ isolated function applyHighBoundaryFunction(json[] collection, Expr[] params, js
     return [];
 }
 
-isolated function applyPrecisionFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyPrecisionFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("precision", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
     if val is decimal {
         string s = val.toString();
         int? dotIdx = s.indexOf(".");
@@ -160,6 +161,15 @@ isolated function applyPrecisionFunction(json[] collection, Expr[] params) retur
 // ========================================
 // HELPERS
 // ========================================
+
+// Maximum precision of the item's date/time type (Date 8, DateTime 17, Time 9)
+isolated function defaultBoundaryPrecision(FhirPathItem item, string val) returns int {
+    [string, string] [_, name] = typeOfItem(item);
+    if name == "Date" || name == "date" { return 8; }
+    if name == "DateTime" || name == "dateTime" || name == "instant" { return 17; }
+    if name == "Time" || name == "time" { return 9; }
+    return dateTimePrecision(val);
+}
 
 isolated function zeroPad(int n) returns string {
     string s = n.toString();
@@ -263,6 +273,9 @@ isolated function extractTzFromTime(string s) returns [string, string] {
 // Expand time part (no tz) to HH:MM:SS.sss for low boundary.
 // Bare "HH" (2 chars) is treated as HH:00 so only seconds/ms are uncertain.
 isolated function expandTimeLow(string timeNoTz) returns string {
+    if timeNoTz == "" {
+        return "00:00:00.000";
+    }
     string t = timeNoTz.length() == 2 ? timeNoTz + ":00" : timeNoTz;
     if t.length() <= 5 {
         t = t + ":00";
@@ -275,6 +288,9 @@ isolated function expandTimeLow(string timeNoTz) returns string {
 
 // Expand time part (no tz) to HH:MM:SS.sss for high boundary.
 isolated function expandTimeHigh(string timeNoTz) returns string {
+    if timeNoTz == "" {
+        return "23:59:59.999";
+    }
     string t = timeNoTz.length() == 2 ? timeNoTz + ":00" : timeNoTz;
     if t.length() <= 5 {
         t = t + ":59";

@@ -664,7 +664,7 @@ isolated function parsePrimary(ParserState state) returns FHIRPathParserError|Pa
     [boolean, ParserState] longMatch = matchToken(state, LONGNUMBER);
     if longMatch[0] {
         FhirPathToken longTok = previousparse(longMatch[1]);
-        return [createLiteralExpr(longTok.literal), longMatch[1]];
+        return [createLiteralExpr(longTok.literal, "Long"), longMatch[1]];
     }
 
     // ---- String literal ----
@@ -678,7 +678,8 @@ isolated function parsePrimary(ParserState state) returns FHIRPathParserError|Pa
     [boolean, ParserState] dateMatch = matchToken(state, DATE, DATETIME, TIME);
     if dateMatch[0] {
         FhirPathToken dateTok = previousparse(dateMatch[1]);
-        return [createLiteralExpr(dateTok.lexeme), dateMatch[1]];
+        string systemType = dateTok.tokenType == DATE ? "Date" : (dateTok.tokenType == TIME ? "Time" : "DateTime");
+        return [createLiteralExpr(dateTok.lexeme, systemType), dateMatch[1]];
     }
 
     // ---- $this / $index / $total ----

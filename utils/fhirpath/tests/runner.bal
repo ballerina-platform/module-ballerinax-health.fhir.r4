@@ -57,6 +57,7 @@ function getAllTestCases() returns FHIRPathTestCase[] {
     foreach FHIRPathTestCase tc in getDollarTestCases()      { all.push(tc); }
     foreach FHIRPathTestCase tc in getSpecialTestCases()     { all.push(tc); }
     foreach FHIRPathTestCase tc in getMiscTestCases()        { all.push(tc); }
+    foreach FHIRPathTestCase tc in getModelTypesTestCases()  { all.push(tc); }
     return all;
 }
 

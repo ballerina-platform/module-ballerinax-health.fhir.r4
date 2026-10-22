@@ -800,9 +800,7 @@ function getStringsTestCases() returns FHIRPathTestCase[] {
             expression: "@2014-12-14.toString() = '2014-12-14'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testSplit1",

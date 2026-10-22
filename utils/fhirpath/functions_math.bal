@@ -18,14 +18,14 @@
 // MATH FUNCTIONS
 // ========================================
 
-isolated function applyAbsFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyAbsFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("abs", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
     if val is int {
         return [val < 0 ? -val : val];
     } else if val is decimal {
@@ -36,14 +36,14 @@ isolated function applyAbsFunction(json[] collection, Expr[] params) returns FHI
     return [];
 }
 
-isolated function applyCeilingFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyCeilingFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("ceiling", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
     if val is int {
         return [val];
     } else if val is decimal {
@@ -56,14 +56,14 @@ isolated function applyCeilingFunction(json[] collection, Expr[] params) returns
     return [];
 }
 
-isolated function applyFloorFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyFloorFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("floor", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
     if val is int {
         return [val];
     } else if val is decimal {
@@ -76,14 +76,14 @@ isolated function applyFloorFunction(json[] collection, Expr[] params) returns F
     return [];
 }
 
-isolated function applyTruncateFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyTruncateFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("truncate", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
     if val is int {
         return [val];
     } else if val is decimal {
@@ -94,16 +94,16 @@ isolated function applyTruncateFunction(json[] collection, Expr[] params) return
     return [];
 }
 
-isolated function applyRoundFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyRoundFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
     int precision = 0;
     if params.length() >= 1 {
-        json[] precResult = check evaluate(params[0], context, env);
+        FhirPathItem[] precResult = check evaluate(params[0], context, env);
         if precResult.length() == 1 {
-            json p = precResult[0];
+            json p = systemValueOf(precResult[0]);
             if p is int {
                 precision = p;
             } else if p is decimal {
@@ -135,14 +135,14 @@ isolated function applyRoundFunction(json[] collection, Expr[] params, json cont
     return [rounded];
 }
 
-isolated function applySqrtFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applySqrtFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("sqrt", "0 parameters", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json val = collection[0];
+    json val = systemValueOf(collection[0]);
     float fVal = toFloat(val);
     if fVal < 0.0 {
         return [];
@@ -155,14 +155,14 @@ isolated function applySqrtFunction(json[] collection, Expr[] params) returns FH
     return [result];
 }
 
-isolated function applyPowerFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyPowerFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("power", "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json[] expResult = check evaluate(params[0], context, env);
+    FhirPathItem[] expResult = check evaluate(params[0], context, env);
     if expResult.length() == 0 {
         return [];
     }
@@ -182,7 +182,7 @@ isolated function applyPowerFunction(json[] collection, Expr[] params, json cont
     return [result];
 }
 
-isolated function applyExpFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyExpFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("exp", "0 parameters", params.length());
     }
@@ -197,7 +197,7 @@ isolated function applyExpFunction(json[] collection, Expr[] params) returns FHI
     return [result];
 }
 
-isolated function applyLnFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyLnFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("ln", "0 parameters", params.length());
     }
@@ -216,14 +216,14 @@ isolated function applyLnFunction(json[] collection, Expr[] params) returns FHIR
     return [result];
 }
 
-isolated function applyLogFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyLogFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("log", "1 parameter", params.length());
     }
     if collection.length() == 0 {
         return [];
     }
-    json[] baseResult = check evaluate(params[0], context, env);
+    FhirPathItem[] baseResult = check evaluate(params[0], context, env);
     if baseResult.length() == 0 {
         return [];
     }
@@ -244,7 +244,8 @@ isolated function applyLogFunction(json[] collection, Expr[] params, json contex
 // HELPERS
 // ========================================
 
-isolated function toFloat(json val) returns float {
+isolated function toFloat(FhirPathItem item) returns float {
+    json val = valueOf(item);
     if val is int {
         return <float>val;
     } else if val is decimal {
