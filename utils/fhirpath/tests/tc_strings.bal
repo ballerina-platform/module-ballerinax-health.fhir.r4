@@ -774,9 +774,7 @@ function getStringsTestCases() returns FHIRPathTestCase[] {
             expression: "0.0.toString() = '0.0'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // Ballerina decimals do not keep the scale of zero (0.0 is held as 0), so 0.0.toString() gives '0'
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testToString5",

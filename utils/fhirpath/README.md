@@ -233,7 +233,7 @@ public function main() {
 
 ### Strict Mode
 
-By default, evaluation is weakly typed as the FHIRPath specification requires: a path that refers to an element that does not exist simply returns an empty collection. Pass `strictMode = true` (or set `strictModeEvaluation = true` in `Config.toml` to change the default) to check the expression against the FHIR R4 model before it is evaluated. Navigation to elements the model does not define, type names that do not match the resource, and choice elements accessed by their expanded name are then reported as errors.
+By default, evaluation is weakly typed as the FHIRPath specification requires: a path that refers to an element that does not exist simply returns an empty collection. Pass `strictMode = true` (or set `strictModeEvaluation = true` in `Config.toml` to change the default) to check the expression against the FHIR R4 model before it is evaluated. Navigation to elements the model does not define, type names that do not match the resource, choice elements accessed by their expanded name, `toString()` on values that can only be complex types and `iif()` criteria that cannot be Boolean are then reported as errors. Type tests narrow the possible types of `$this` for the operand they guard (e.g. in `$this is dateTime implies $this.toString().length() > 10`).
 
 ```ballerina
 import ballerina/io;

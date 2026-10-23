@@ -52,10 +52,13 @@ type BinaryExpr record {|
 # + kind - The expression kind discriminator (always "Literal")
 # + value - The literal value (number, string, boolean, or nil)
 # + systemType - The System type for literals not typed by their value (Long, Date, DateTime, Time)
+# + text - The written form of a decimal zero literal
 type LiteralExpr record {|
     "Literal" kind;
     anydata? value;
     string? systemType = ();
+    // The written form of a decimal zero (e.g. "0.00"), whose scale a decimal value does not keep
+    string? text = ();
 |};
 
 # Represents an identifier expression (e.g., name, resourceType, given).

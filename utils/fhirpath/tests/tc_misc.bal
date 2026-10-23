@@ -198,10 +198,9 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "iif('non boolean criteria', 'true-result', 'false-result')",
             resourceKey: "patient",
             expected: [],
-            expectError: true,
-            // A static (semantic) check error in the official suite; at run time singleton evaluation makes a single
-            // non-Boolean criterion true, as the STU3 iif() text shows
-            disabled: true
+            // Static (semantic) check: the criterion cannot be a Boolean
+            strict: true,
+            expectError: true
         },
         {
             name: "test_testIif7",
@@ -329,9 +328,7 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.name.sort(-family, -given.first()).first().use = 'usual'",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // Conflicts with the STU3 sort() text: an empty key is lower than all values, so it sorts last when descending
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantity1",

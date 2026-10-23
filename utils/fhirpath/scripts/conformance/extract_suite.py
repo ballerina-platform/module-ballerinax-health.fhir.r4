@@ -57,8 +57,11 @@ def main(label, path, inputs_dir, prefix):
                 "group": group.get("name"),
                 "name": test.get("name"),
                 "expression": expression,
-                # The expression is evaluated with each node selected by `context` as its focus
-                "evaluated": f"({context}).select({expression})" if context else expression,
+                "evaluated": expression,
+                # The expression is evaluated with each node selected by `context` as its focus; `contextType`
+                # declares the focus type for static (semantic) checks
+                "context": context,
+                "contextType": test.get("contextType"),
                 "input": input_json,
                 "mode": mode,
                 "invalid": invalid,

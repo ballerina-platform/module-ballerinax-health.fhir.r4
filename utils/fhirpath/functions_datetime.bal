@@ -327,7 +327,7 @@ isolated function applyBoundaryFunction(FhirPathItem[] collection, Expr[] params
     json val = systemValueOf(input);
 
     if kind == "Integer" || kind == "Long" || kind == "Decimal" {
-        decimal? bound = decimalBoundary(toDecimalValue(val), decimalScale(val), precision ?: 8, high);
+        decimal? bound = decimalBoundary(toDecimalValue(val), itemDecimalScale(input), precision ?: 8, high);
         return (bound is decimal) ? [bound] : [];
     }
     if kind == "Quantity" && val is map<json> {
@@ -371,12 +371,23 @@ isolated function decimalBoundary(decimal value, int scale, int precision, boole
     return high ? (bound * factor + 0.5d).floor() / factor : (bound * factor).floor() / factor;
 }
 
+// Number of fractional digits of a numeric item, using the written form of a decimal zero literal
+isolated function itemDecimalScale(FhirPathItem item) returns int {
+    if item is TypedValue {
+        string? text = item.literalText;
+        if text is string {
+            return decimalScale(valueOf(item), text);
+        }
+    }
+    return decimalScale(valueOf(item));
+}
+
 // Number of fractional digits of a numeric JSON value as written (0 for integers)
-isolated function decimalScale(json val) returns int {
+isolated function decimalScale(json val, string? text = ()) returns int {
     if val !is decimal && val !is float {
         return 0;
     }
-    string s = val.toString().toUpperAscii();
+    string s = (text ?: val.toString()).toUpperAscii();
     // Exponent notation: the precision is that of the mantissa shifted by the exponent (9.5E+2 → tens)
     int exponent = 0;
     int? eIdx = s.indexOf("E");
@@ -407,12 +418,7 @@ isolated function applyPrecisionFunction(FhirPathItem[] collection, Expr[] param
     }
     json val = systemValueOf(collection[0]);
     if val is decimal {
-        string s = val.toString();
-        int? dotIdx = s.indexOf(".");
-        if dotIdx is int {
-            return [s.length() - dotIdx - 1];
-        }
-        return [0];
+        return [int:max(itemDecimalScale(collection[0]), 0)];
     } else if val is int {
         return [0];
     }

@@ -47,7 +47,11 @@ function runConformanceCases() returns error? {
         }
         string expression = <string>tc["evaluated"];
         boolean strict = <boolean>tc["strict"];
-        json[]|error result = trap getValuesFromFhirPath(inputResource.clone(), expression, false, strictMode = strict);
+        json context = tc["context"];
+        json contextType = tc["contextType"];
+        json[]|error result = context is string
+            ? trap getValuesWithContext(inputResource.clone(), context, contextType is string ? contextType : (), expression, strict)
+            : trap getValuesFromFhirPath(inputResource.clone(), expression, false, strictMode = strict);
         if result is FHIRPathError {
             results.push({name: tc["name"], suite: tc["suite"], status: "error", message: result.message()});
             continue;
@@ -58,8 +62,10 @@ function runConformanceCases() returns error? {
             continue;
         }
         // Result types, for checking against the expected output types
-        json[]|error types = trap getValuesFromFhirPath(inputResource.clone(),
-            string `(${expression}).select($this.type().namespace + '.' + $this.type().name)`, false);
+        string typeExpression = string `(${expression}).select($this.type().namespace + '.' + $this.type().name)`;
+        json[]|error types = context is string
+            ? trap getValuesWithContext(inputResource.clone(), context, (), typeExpression)
+            : trap getValuesFromFhirPath(inputResource.clone(), typeExpression, false);
         results.push({name: tc["name"], suite: tc["suite"], status: "ok", result, types: types is json[] ? types : ()});
     }
     check io:fileWriteJson(conformanceResults, results);

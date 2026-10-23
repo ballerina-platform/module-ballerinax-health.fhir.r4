@@ -68,6 +68,7 @@ function getAllTestCases() returns FHIRPathTestCase[] {
     foreach FHIRPathTestCase tc in getStrictModeTestCases()  { all.push(tc); }
     foreach FHIRPathTestCase tc in getOfficialR5AdditionsTestCases() { all.push(tc); }
     foreach FHIRPathTestCase tc in getSpecExamplesTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getSemanticChecksTestCases() { all.push(tc); }
     return all;
 }
 
@@ -99,7 +100,10 @@ function runCases(FHIRPathTestCase[] cases) returns TestReport {
             continue;
         }
 
-        json[]|FHIRPathError evalResult = getValuesFromFhirPath(resourceResult, tc.expression, false, strictMode = tc.strict);
+        string? context = tc.context;
+        json[]|FHIRPathError evalResult = context is string
+            ? getValuesWithContext(resourceResult, context, tc.contextType, tc.expression, tc.strict)
+            : getValuesFromFhirPath(resourceResult, tc.expression, false, strictMode = tc.strict);
 
         TestResult tr;
         if tc.expectError {

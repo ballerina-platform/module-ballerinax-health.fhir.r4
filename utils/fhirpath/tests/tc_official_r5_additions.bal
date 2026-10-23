@@ -533,9 +533,7 @@ function getOfficialR5AdditionsTestCases() returns FHIRPathTestCase[] {
             expression: "1 'x' ~ 1 year",
             resourceKey: "patient",
             expected: [false],
-            expectError: false,
-            // Conflicts with the STU3 Quantity Equivalence text: quantities that cannot be compared give an empty result,
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testEquivalent30",
@@ -543,9 +541,7 @@ function getOfficialR5AdditionsTestCases() returns FHIRPathTestCase[] {
             expression: "1 year ~ 1 'kg'",
             resourceKey: "patient",
             expected: [false],
-            expectError: false,
-            // Conflicts with the STU3 Quantity Equivalence text: quantities that cannot be compared give an empty result,
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testNotEquivalent23",
@@ -617,9 +613,7 @@ function getOfficialR5AdditionsTestCases() returns FHIRPathTestCase[] {
             expression: "Parameters.parameter[2].value ~ Parameters.parameter[0].value",
             resourceKey: "parameters_quantities",
             expected: [false],
-            expectError: false,
-            // Conflicts with the STU3 Quantity Equivalence text: quantities that cannot be compared give an empty result,
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testQuantityNoUnitVsUnitEquivalent",
@@ -627,9 +621,7 @@ function getOfficialR5AdditionsTestCases() returns FHIRPathTestCase[] {
             expression: "Parameters.parameter[0].value ~ Parameters.parameter[2].value",
             resourceKey: "parameters_quantities",
             expected: [false],
-            expectError: false,
-            // Conflicts with the STU3 Quantity Equivalence text: quantities that cannot be compared give an empty result,
-            disabled: true
+            expectError: false
         },
         {
             name: "test_LowBoundaryDecimalCarry1",

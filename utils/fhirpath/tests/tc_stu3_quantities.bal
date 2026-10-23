@@ -247,7 +247,7 @@ function getStu3QuantitiesTestCases() returns FHIRPathTestCase[] {
             group: "testQuantityEquivalence",
             expression: "1 'cm' ~ 1 's'",
             resourceKey: "patient",
-            expected: [],
+            expected: [false],
             expectError: false
         },
         {

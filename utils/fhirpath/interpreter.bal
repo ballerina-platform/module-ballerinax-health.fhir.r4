@@ -92,6 +92,29 @@ type FhirPathEnv record {|
 # + variables - optional map of variable bindings available in the expression
 # + return - A collection of JSON results, or a FhirpathInterpreterError if evaluation fails
 isolated function interpret(Expr expression, json context, map<json>? variables = ()) returns FHIRPathInterpreterError|json[] {
+    [FhirPathItem, FhirPathEnv] [root, env] = rootEnvironment(context, variables);
+    FhirPathItem[] results = check evaluate(expression, root, env);
+    return toOutputJson(results);
+}
+
+# Interprets a FHIRPath expression once for each node selected by a context expression, with that node as the
+# focus ($this) while %resource and %context remain the input resource.
+#
+# + contextExpression - The parsed expression selecting the focus nodes
+# + expression - The parsed expression to evaluate on each focus node
+# + inputResource - The input resource
+# + return - The combined results, or a FhirpathInterpreterError if evaluation fails
+isolated function interpretInContext(Expr contextExpression, Expr expression, json inputResource) returns FHIRPathInterpreterError|json[] {
+    [FhirPathItem, FhirPathEnv] [root, env] = rootEnvironment(inputResource, ());
+    FhirPathItem[] results = [];
+    foreach FhirPathItem focus in check evaluate(contextExpression, root, env) {
+        results.push(...check evaluate(expression, focus, {scope: env.scope.childScope()}));
+    }
+    return toOutputJson(results);
+}
+
+// The typed input and the evaluation environment (variables and environment variables) for an evaluation
+isolated function rootEnvironment(json context, map<json>? variables) returns [FhirPathItem, FhirPathEnv] {
     VariableScope scope = new VariableScope();
     if variables is map<json> {
         foreach var [k, v] in variables.entries() {
@@ -106,9 +129,7 @@ isolated function interpret(Expr expression, json context, map<json>? variables 
             _ = scope.define(name, wrapInCollection(root));
         }
     }
-    FhirPathEnv env = {scope: scope};
-    FhirPathItem[] results = check evaluate(expression, root, env);
-    return toOutputJson(results);
+    return [root, {scope: scope}];
 }
 
 # Evaluates a FHIRPath expression node against a context.
@@ -169,6 +190,10 @@ isolated function visitLiteralExpr(LiteralExpr expr, FhirPathItem context) retur
     string? systemType = expr.systemType;
     if systemType is string {
         return [systemItem(systemType, value)];
+    }
+    string? text = expr.text;
+    if text is string {
+        return [new TypedValue(value, SYSTEM_NS, "Decimal", (), (), (), (), text)];
     }
     return [value];
 }
@@ -737,6 +762,10 @@ isolated function addDateTimeQuantity(string dateTimeStr, map<json> qty, string 
         value = -value;
     }
     string unit = <string>qUnit;
+    if !isCalendarUnit(normalizeCalendarUnit(unit)) {
+        // UCUM definite-duration quantities are applied in whole units (+ 0.1 's' adds nothing)
+        value = <decimal>truncateDecimal(value);
+    }
     string lower = unit.toLowerAscii();
 
     string canonicalUnit;
@@ -1508,11 +1537,11 @@ isolated function payloadsEqual(json a, json b) returns boolean? {
     return false;
 }
 
-// Returns () when quantities are not commensurable
 isolated function jsonValuesEquivalent(FhirPathItem left, FhirPathItem right) returns boolean? {
     if isQuantityItem(left) || isQuantityItem(right) {
+        // Quantities that cannot be compared (units not commensurable) are not equivalent
         [decimal, decimal]? aligned = alignQuantityItems(left, right, true);
-        return (aligned is [decimal, decimal]) ? decimalsEquivalent(aligned[0], aligned[1]) : ();
+        return (aligned is [decimal, decimal]) && decimalsEquivalent(aligned[0], aligned[1]);
     }
     return payloadsEquivalent(systemValueOf(left), systemValueOf(right));
 }

@@ -50,9 +50,11 @@ class TypedValue {
     final string? path;
     # Location without the indexers of single-valued elements (e.g. "Patient.birthDate")
     final string? shortPath;
+    # The written form of a decimal literal whose scale the decimal value cannot hold (e.g. "0.0")
+    final string? literalText;
 
     isolated function init(json value, string namespace, string name, string? modelKey = (), json primitiveElement = (),
-            string? path = (), string? shortPath = ()) {
+            string? path = (), string? shortPath = (), string? literalText = ()) {
         self.value = value;
         self.namespace = namespace;
         self.name = name;
@@ -60,6 +62,7 @@ class TypedValue {
         self.primitiveElement = primitiveElement;
         self.path = path;
         self.shortPath = shortPath;
+        self.literalText = literalText;
     }
 }
 

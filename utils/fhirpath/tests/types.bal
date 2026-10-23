@@ -26,6 +26,10 @@ type FHIRPathTestCase record {|
     boolean strict = false;
     // Whether the result order matters
     boolean ordered = true;
+    // Evaluate the expression with each node selected by this expression as its focus
+    string? context = ();
+    // Declared type(s) of the focus for strict mode checks (e.g. "Period|Timing")
+    string? contextType = ();
 |};
 
 type TestResult record {|

@@ -83,11 +83,11 @@ function getStu3ParametersTestCases() returns FHIRPathTestCase[] {
             expectError: false
         },
         {
-            name: "test_sortEmptyKeyLastDesc",
+            name: "test_sortEmptyKeyFirstDesc",
             group: "testSortDirections",
             expression: "Patient.name.sort(family desc, given.first()).use",
             resourceKey: "patient",
-            expected: ["maiden", "official", "usual"],
+            expected: ["usual", "maiden", "official"],
             expectError: false
         },
         {

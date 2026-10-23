@@ -175,7 +175,11 @@ isolated function applyToStringFunction(FhirPathItem[] collection, Expr[] params
     if collection.length() == 0 {
         return [];
     }
-    json val = systemValueOf(collection[0]);
+    FhirPathItem input = collection[0];
+    if input is TypedValue && input.literalText is string {
+        return [<string>input.literalText];
+    }
+    json val = systemValueOf(input);
     if val is string {
         if dateTimeKind(val) is string {
             return [val.startsWith("@T") ? val.substring(2) : val.substring(1)];

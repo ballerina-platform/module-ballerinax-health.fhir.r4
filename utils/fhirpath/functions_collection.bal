@@ -269,7 +269,13 @@ isolated function compareSortEntries([FhirPathItem, FhirPathItem?[]] a, [FhirPat
         return compareSortValues(a[0], b[0]);
     }
     foreach int k in 0 ..< selectors.length() {
-        int c = check compareSortValues(a[1][k], b[1][k]);
+        FhirPathItem? keyA = a[1][k];
+        FhirPathItem? keyB = b[1][k];
+        // An empty key sorts first whatever the direction
+        if (keyA is ()) != (keyB is ()) {
+            return keyA is () ? -1 : 1;
+        }
+        int c = check compareSortValues(keyA, keyB);
         if c != 0 {
             return selectors[k][1] ? -c : c;
         }

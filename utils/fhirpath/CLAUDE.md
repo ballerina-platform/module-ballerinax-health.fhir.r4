@@ -60,7 +60,7 @@ Payload conventions: System date/time payloads keep the `@` literal prefix (`"@2
 ### Public API (`fhir_path_processor.bal`)
 
 - `getValuesFromFhirPath(fhirResource, expression, validateInput?, variables?, strictMode?)` → `json[]|FHIRPathError`
-  - `strictMode = true` (default from the `strictModeEvaluation` configurable) checks the expression against the FHIR model first
+  - `strictMode = true` (default from the `strictModeEvaluation` configurable) checks the expression against the FHIR model first (navigation, `is`-guard type narrowing, `toString()` on complex types, non-Boolean `iif` criteria)
 - `setValuesToFhirPath(fhirResource, expression, value|ModificationFunction, validateInput?, validateOutput?)` → `json|FHIRPathError`
   - Pass `()` as value to **remove** the element at the path
   - Pass an `isolated function(json) returns json|error` to transform the value
@@ -77,6 +77,7 @@ Tests use a data-driven pattern driven by an HTTP service in `tests/test_service
 - `tests/Config.toml` — sets `skipDisabledTests = true` (disabled tests are cases not yet fully implemented)
 - A test case with `strict: true` is evaluated in strict mode (used for the official semantic-validation tests)
 - A test case with `ordered: false` compares results regardless of order
+- A test case with `context` (and optionally `contextType`) is evaluated with each node selected by `context` as its focus, through the internal `getValuesWithContext` (used for the official semantic-check cases)
 - `tests/tc_official_r5_additions.bal` and `tests/tc_spec_examples.bal` hold official-suite cases and STU3 specification examples verified with the conformance tooling
 
 ### Conformance

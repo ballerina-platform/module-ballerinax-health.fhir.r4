@@ -657,7 +657,11 @@ isolated function parsePrimary(ParserState state) returns FHIRPathParserError|Pa
             return [createQuantityLiteralExpr(numVal, unitStr), newState];
         }
 
-        return [createLiteralExpr(numTok.literal), newState];
+        LiteralExpr literal = createLiteralExpr(numTok.literal);
+        if numTok.literal is decimal && numVal == 0d {
+            literal.text = numTok.lexeme;
+        }
+        return [literal, newState];
     }
 
     // ---- Long number ----
