@@ -126,6 +126,8 @@ isolated function scanToken(ScannerState state) returns FHIRPathScannerError|Sca
         return addToken(newState, RIGHT_BRACE);
     } else if c == "," {
         return addToken(newState, COMMA);
+    } else if c == ":" {
+        return addToken(newState, COLON);
     } else if c == "." {
         return addToken(newState, DOT);
     } else if c == "+" {

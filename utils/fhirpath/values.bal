@@ -212,6 +212,25 @@ isolated function rootItem(json value) returns FhirPathItem {
     return value;
 }
 
+# Converts an item to the JSON used in FHIR resources: System dates and times drop the '@' literal prefix and
+# other values keep their payload.
+#
+# + item - The collection item
+# + return - The FHIR JSON value
+isolated function fhirJsonOf(FhirPathItem item) returns json {
+    json value = valueOf(item);
+    if item is TypedValue && item.namespace == SYSTEM_NS && value is string {
+        if item.name == "Time" && value.startsWith("@T") {
+            return value.substring(2);
+        }
+        if (item.name == "Date" || item.name == "DateTime") && value.startsWith("@") {
+            string s = value.substring(1);
+            return s.endsWith("T") ? s.substring(0, s.length() - 1) : s;
+        }
+    }
+    return value;
+}
+
 # Converts a collection to the JSON returned by the public API.
 #
 # + items - The collection
@@ -383,7 +402,8 @@ isolated function resolveChildType(string? modelKey, string key, string name) re
     string? elementType = modelElementType(modelKey, name);
     if elementType is () && key == name {
         // A choice element addressed by its expanded name (e.g. "valueQuantity")
-        foreach [string, string] [baseName, types] in (FHIR_ELEMENT_TYPES[modelKey] ?: {}).entries() {
+        foreach string baseName in (FHIR_ELEMENT_TYPES[modelKey] ?: {}).keys() {
+            string types = modelElementType(modelKey, baseName) ?: "";
             if types.includes("|") && key.length() > baseName.length() && key.startsWith(baseName) {
                 string choiceType = choiceTypeFromSuffix(key.substring(baseName.length()), types);
                 return [choiceType, FHIR_ELEMENT_TYPES.hasKey(choiceType) ? choiceType : ()];
@@ -438,7 +458,15 @@ isolated function modelElementType(string? modelKey, string name) returns string
     if elements is () {
         return ();
     }
-    return elements[name];
+    string? elementType = elements[name];
+    // A trailing '*' marks a repeating element
+    return (elementType is string && elementType.endsWith("*")) ? elementType.substring(0, elementType.length() - 1) : elementType;
+}
+
+// Whether the element `name` of `modelKey` repeats (max cardinality > 1)
+isolated function modelElementRepeats(string modelKey, string name) returns boolean {
+    string? elementType = (FHIR_ELEMENT_TYPES[modelKey] ?: {})[name];
+    return elementType is string && elementType.endsWith("*");
 }
 
 // FHIR type of a value navigated without model information, inferred from its JSON shape.

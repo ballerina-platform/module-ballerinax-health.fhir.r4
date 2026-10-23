@@ -27,6 +27,7 @@ Element type encoding (values of the per-path element maps):
     "boolean|dateTime"         choice element (key is the name without [x])
     "System.String"            FHIRPath System type (e.g. Element.id, Extension.url)
     "#Questionnaire.item"      content reference to another element definition
+A trailing "*" marks a repeating element (max cardinality > 1), e.g. "Coding*".
 """
 
 import json
@@ -110,6 +111,8 @@ def main(paths):
                 value = "|".join(dict.fromkeys(types))
             if child.endswith("[x]"):
                 child = child[:-3]
+            if el.get("max", "1") not in ("0", "1"):
+                value += "*"
             maps.setdefault(parent, {})[child] = value
         if maps:
             element_maps[name] = maps

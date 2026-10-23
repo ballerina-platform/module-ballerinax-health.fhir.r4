@@ -27,7 +27,7 @@
 # Base expression type representing any FHIRPath expression node in the AST.
 # This is a union of all possible expression types.
 type Expr BinaryExpr|LiteralExpr|IdentifierExpr|FunctionExpr|MemberAccessExpr|IndexerExpr
-        |UnaryExpr|ExternalConstantExpr|QuantityLiteralExpr|SortArgumentExpr;
+        |UnaryExpr|ExternalConstantExpr|QuantityLiteralExpr|SortArgumentExpr|InstanceSelectorExpr;
 
 // ========================================
 // EXPRESSION NODE TYPES
@@ -148,6 +148,17 @@ type SortArgumentExpr record {|
     "SortArgument" kind;
     Expr key;
     boolean isDescending;
+|};
+
+# Represents an instance selector that creates an object (e.g., Coding { system: 'http://loinc.org', code: '1234-5' }).
+#
+# + kind - The expression kind discriminator (always "InstanceSelector")
+# + typeName - The (optionally namespace-qualified) name of the type to create
+# + elements - The element names with the expressions that give their values
+type InstanceSelectorExpr record {|
+    "InstanceSelector" kind;
+    string typeName;
+    [string, Expr][] elements;
 |};
 
 // ========================================
@@ -283,5 +294,18 @@ isolated function createSortArgumentExpr(Expr key, boolean isDescending) returns
         kind: "SortArgument",
         key: key,
         isDescending: isDescending
+    };
+}
+
+# Creates an instance selector node.
+#
+# + typeName - The (optionally namespace-qualified) name of the type to create
+# + elements - The element names with the expressions that give their values
+# + return - A new InstanceSelectorExpr node
+isolated function createInstanceSelectorExpr(string typeName, [string, Expr][] elements) returns InstanceSelectorExpr {
+    return {
+        kind: "InstanceSelector",
+        typeName: typeName,
+        elements: elements
     };
 }

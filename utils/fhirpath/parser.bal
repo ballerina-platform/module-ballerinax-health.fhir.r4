@@ -724,12 +724,89 @@ isolated function parsePrimary(ParserState state) returns FHIRPathParserError|Pa
             return [createFunctionExpr(name, (), params), newState];
         }
 
+        // instanceSelector: qualifiedIdentifier '{' (':' | instanceElementSelector (',' instanceElementSelector)*) '}'
+        ParseResult? selector = check parseInstanceSelector(name, newState);
+        if selector is ParseResult {
+            return selector;
+        }
+
         return [createIdentifierExpr(name), newState];
     }
 
     FhirPathToken token = peekparse(state);
     return error FHIRPathParserError("Expect expression.",
         token = token);
+}
+
+// ========================================
+// INSTANCE SELECTOR PARSING
+// ========================================
+
+# Parses an instance selector when the identifier just consumed (optionally followed by '.' identifier parts)
+# is followed by '{'.
+# Grammar: instanceSelector -> qualifiedIdentifier '{' (':' | instanceElementSelector (',' instanceElementSelector)*) '}'
+#          instanceElementSelector -> identifier ':' expression
+#
+# + firstName - The first identifier of the type name
+# + state - The parser state after the first identifier
+# + return - The parsed instance selector, () when the tokens do not form one, or an error
+isolated function parseInstanceSelector(string firstName, ParserState state) returns FHIRPathParserError|ParseResult? {
+    string typeName = firstName;
+    ParserState newState = state;
+    while checkToken(newState, DOT) && newState.current + 1 < newState.tokens.length()
+            && isIdentifierLikeToken(newState.tokens[newState.current + 1]) {
+        FhirPathToken part = newState.tokens[newState.current + 1];
+        typeName += "." + (part.tokenType == DELIMITED_IDENTIFIER && part.literal is string ? <string>part.literal : part.lexeme);
+        newState = {tokens: newState.tokens, current: newState.current + 2};
+    }
+    [boolean, ParserState] braceMatch = matchToken(newState, LEFT_BRACE);
+    if !braceMatch[0] {
+        return ();
+    }
+    newState = braceMatch[1];
+    [string, Expr][] elements = [];
+
+    // An empty object is written {:}
+    [boolean, ParserState] colonMatch = matchToken(newState, COLON);
+    if colonMatch[0] {
+        newState = colonMatch[1];
+    } else {
+        while true {
+            [boolean, ParserState] nameMatch = matchIdentifierOrKeyword(newState);
+            if !nameMatch[0] {
+                return error FHIRPathParserError("Expect element name in instance selector.", token = peekparse(newState));
+            }
+            newState = nameMatch[1];
+            FhirPathToken nameToken = previousparse(newState);
+            string elementName = nameToken.tokenType == DELIMITED_IDENTIFIER && nameToken.literal is string
+                ? <string>nameToken.literal : nameToken.lexeme;
+            ConsumeResult colonResult = check consumeparse(newState, COLON, "Expect ':' after element name in instance selector.");
+            if !colonResult[0] {
+                return [(), colonResult[1]];
+            }
+            ParseResult valueResult = check Expression(colonResult[1]);
+            Expr? valueExpr = valueResult[0];
+            newState = valueResult[1];
+            if valueExpr is () {
+                return error FHIRPathParserError("Expect expression after ':' in instance selector.", token = peekparse(newState));
+            }
+            elements.push([elementName, valueExpr]);
+            [boolean, ParserState] commaMatch = matchToken(newState, COMMA);
+            if !commaMatch[0] {
+                break;
+            }
+            newState = commaMatch[1];
+        }
+    }
+    ConsumeResult closeResult = check consumeparse(newState, RIGHT_BRACE, "Expect '}' after instance selector elements.");
+    if !closeResult[0] {
+        return [(), closeResult[1]];
+    }
+    return [createInstanceSelectorExpr(typeName, elements), closeResult[1]];
+}
+
+isolated function isIdentifierLikeToken(FhirPathToken token) returns boolean {
+    return token.tokenType == IDENTIFIER || token.tokenType == DELIMITED_IDENTIFIER;
 }
 
 // ========================================

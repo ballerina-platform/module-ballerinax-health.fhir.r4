@@ -142,6 +142,9 @@ isolated function evaluate(Expr expr, FhirPathItem context, FhirPathEnv env) ret
         "SortArgument" => {
             return evaluate((<SortArgumentExpr>expr).key, context, env);
         }
+        "InstanceSelector" => {
+            return visitInstanceSelectorExpr(<InstanceSelectorExpr>expr, context, env);
+        }
     }
     return [];
 }
@@ -278,6 +281,83 @@ isolated function visitExternalConstantExpr(ExternalConstantExpr expr, FhirPathE
     }
     FhirPathToken dummyToken = {tokenType: IDENTIFIER, lexeme: "%" + expr.name, literal: (), position: 0};
     return error FHIRPathInterpreterError("Undefined constant: %" + expr.name, token = dummyToken);
+}
+
+// Creates an object of a FHIR type from its element values (FHIRPath instance selector)
+isolated function visitInstanceSelectorExpr(InstanceSelectorExpr expr, FhirPathItem context, FhirPathEnv env)
+        returns FHIRPathInterpreterError|FhirPathItem[] {
+    FhirPathToken token = {tokenType: IDENTIFIER, lexeme: expr.typeName, literal: (), position: 0};
+    string typeName = expr.typeName.startsWith("FHIR.") ? expr.typeName.substring(5) : expr.typeName;
+    if !FHIR_TYPE_BASE.hasKey(typeName) {
+        return error FHIRPathInterpreterError(string `Instance selector: unknown FHIR type '${expr.typeName}'`, token = token);
+    }
+    map<json> created = {};
+    if typeName == "Resource" || fhirTypeDerivesFrom(typeName, "Resource") {
+        created["resourceType"] = typeName;
+    }
+    foreach [string, Expr] [elementName, valueExpr] in expr.elements {
+        FhirPathItem[] values = check evaluate(valueExpr, context, env);
+        if values.length() == 0 {
+            // Elements whose value is empty are not added
+            continue;
+        }
+        if isFhirPrimitiveType(typeName) {
+            // Primitive types are created through their special 'value' element
+            if elementName != "value" || values.length() > 1 {
+                return error FHIRPathInterpreterError(string `Instance selector: ${typeName} only accepts a single 'value'`, token = token);
+            }
+            return [new TypedValue(fhirJsonOf(values[0]), FHIR_NS, typeName, typeName)];
+        }
+        [string, boolean]? target = instanceElementKey(typeName, elementName, values[0]);
+        if target is () {
+            return error FHIRPathInterpreterError(string `Instance selector: '${elementName}' is not an element of ${typeName}`, token = token);
+        }
+        [string, boolean] [key, repeats] = target;
+        if !repeats && values.length() > 1 {
+            return error FHIRPathInterpreterError(string `Instance selector: element '${elementName}' of ${typeName} does not repeat`, token = token);
+        }
+        json[] jsonValues = from FhirPathItem value in values select fhirJsonOf(value);
+        created[key] = repeats ? jsonValues : jsonValues[0];
+    }
+    return [new TypedValue(created, FHIR_NS, typeName, typeName, (), (), ())];
+}
+
+// The JSON property and repetition of an instance selector element. Choice elements take the property name
+// from the value's type (e.g. value: 'x' on an Extension sets valueString).
+isolated function instanceElementKey(string typeName, string elementName, FhirPathItem value) returns [string, boolean]? {
+    string? elementType = modelElementType(typeName, elementName);
+    if elementType is () {
+        return ();
+    }
+    boolean repeats = modelElementRepeats(typeName, elementName);
+    if !elementType.includes("|") {
+        return [elementName, repeats];
+    }
+    string fhirType = fhirTypeForChoice(value);
+    foreach string choice in re `\|`.split(elementType) {
+        if choice == fhirType {
+            return [elementName + choice.substring(0, 1).toUpperAscii() + choice.substring(1), repeats];
+        }
+    }
+    return ();
+}
+
+// The FHIR type a value takes when stored in a choice element
+isolated function fhirTypeForChoice(FhirPathItem value) returns string {
+    [string, string] [namespace, name] = typeOfItem(value);
+    if namespace == FHIR_NS {
+        return name;
+    }
+    match name {
+        "Boolean" => { return "boolean"; }
+        "Integer" => { return "integer"; }
+        "Decimal" => { return "decimal"; }
+        "Date" => { return "date"; }
+        "DateTime" => { return "dateTime"; }
+        "Time" => { return "time"; }
+        "Quantity" => { return "Quantity"; }
+    }
+    return "string";
 }
 
 isolated function visitQuantityLiteralExpr(QuantityLiteralExpr expr) returns FhirPathItem[] {
@@ -617,7 +697,7 @@ isolated function applyAdditiveOperator(FhirPathItem[] left, FhirPathItem[] righ
             return [l + r];
         }
         if (l is int || l is decimal || l is float) && (r is int || r is decimal || r is float) {
-            return numericBinaryOp(l, r, "+");
+            return integerResult(numericBinaryOp(l, r, "+"), left[0], right[0]);
         }
         if l is string && l.startsWith("@") && r is map<json> {
             return typedResults(check addDateTimeQuantity(l, r, "+"));
@@ -629,7 +709,7 @@ isolated function applyAdditiveOperator(FhirPathItem[] left, FhirPathItem[] righ
         }
     } else if op == "-" {
         if (l is int || l is decimal || l is float) && (r is int || r is decimal || r is float) {
-            return numericBinaryOp(l, r, "-");
+            return integerResult(numericBinaryOp(l, r, "-"), left[0], right[0]);
         }
         if l is string && l.startsWith("@") && r is map<json> {
             return typedResults(check addDateTimeQuantity(l, r, "-"));
@@ -978,7 +1058,7 @@ isolated function applyMultiplicativeOperator(FhirPathItem[] left, FhirPathItem[
         return (result is QuantityValue) ? [quantityItem(result.value, result.unit)] : [];
     }
     if (l is int || l is decimal || l is float) && (r is int || r is decimal || r is float) {
-        return numericBinaryOp(l, r, op);
+        return integerResult(numericBinaryOp(l, r, op), left[0], right[0]);
     }
     return checkPrimitiveOperands(left[0], right[0], op);
 }
@@ -1762,6 +1842,19 @@ isolated function jsonToString(FhirPathItem item) returns string {
     return val.toString();
 }
 
+// Types an integral arithmetic result: Long when either operand is a Long, otherwise an Integer, which must fit
+// in 32 bits (overflow results in empty)
+isolated function integerResult(FhirPathItem[] results, FhirPathItem left, FhirPathItem right) returns FhirPathItem[] {
+    if results.length() != 1 || results[0] !is int {
+        return results;
+    }
+    int value = <int>results[0];
+    if systemTypeOf(left) == "Long" || systemTypeOf(right) == "Long" {
+        return [systemItem("Long", value)];
+    }
+    return value < -2147483648 || value > 2147483647 ? [] : [value];
+}
+
 isolated function numericBinaryOp(json l, json r, string op) returns FhirPathItem[] {
     boolean useDecimal = (l is decimal || r is decimal);
     boolean useInt = (l is int && r is int) && (op == "div" || op == "mod");
@@ -1780,9 +1873,10 @@ isolated function numericBinaryOp(json l, json r, string op) returns FhirPathIte
     }
 
     if l is int && r is int {
-        if op == "+" { return [l + r]; }
-        if op == "-" { return [l - r]; }
-        if op == "*" { return [l * r]; }
+        // 64-bit overflow results in empty
+        int|error integral = op == "+" ? trap (l + r) : (op == "-" ? trap (l - r) : (op == "*" ? trap (l * r) : 0));
+        if integral is error { return []; }
+        if op == "+" || op == "-" || op == "*" { return [integral]; }
         if op == "/" {
             if r == 0 { return []; }
             decimal result = <decimal>l / <decimal>r;

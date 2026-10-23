@@ -62,6 +62,7 @@ function getAllTestCases() returns FHIRPathTestCase[] {
     foreach FHIRPathTestCase tc in getStu3ParametersTestCases() { all.push(tc); }
     foreach FHIRPathTestCase tc in getStu3SemanticsTestCases() { all.push(tc); }
     foreach FHIRPathTestCase tc in getStu3QuantitiesTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getStu3SelectorsTestCases() { all.push(tc); }
     return all;
 }
 
