@@ -191,6 +191,22 @@ function getStu3SemanticsTestCases() returns FHIRPathTestCase[] {
             group: "testIifScoping",
             expression: "iif('x', 'yes', 'no')",
             resourceKey: "patient",
+            expected: ["yes"],
+            expectError: false
+        },
+        {
+            name: "test_iifZeroCriterion",
+            group: "testIifScoping",
+            expression: "iif(0, 'yes', 'no')",
+            resourceKey: "patient",
+            expected: ["yes"],
+            expectError: false
+        },
+        {
+            name: "test_iifMultipleCriterion",
+            group: "testIifScoping",
+            expression: "iif(1 | 2, 'yes', 'no')",
+            resourceKey: "patient",
             expected: [],
             expectError: true
         },
@@ -277,9 +293,17 @@ function getStu3SemanticsTestCases() returns FHIRPathTestCase[] {
         {
             name: "test_stringEquivalentWhitespace",
             group: "testEqualitySemantics",
-            expression: "'a  b\\tc' ~ 'A B C'",
+            expression: "'a b\\tc' ~ 'A B C'",
             resourceKey: "patient",
             expected: [true],
+            expectError: false
+        },
+        {
+            name: "test_stringEquivalentWhitespaceNotCollapsed",
+            group: "testEqualitySemantics",
+            expression: "'a     b' ~ 'a b'",
+            resourceKey: "patient",
+            expected: [false],
             expectError: false
         },
         {

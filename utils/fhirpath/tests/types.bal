@@ -24,6 +24,8 @@ type FHIRPathTestCase record {|
     boolean disabled = false;
     // Evaluate in strict mode (compile-time path checks against the FHIR model)
     boolean strict = false;
+    // Whether the result order matters
+    boolean ordered = true;
 |};
 
 type TestResult record {|

@@ -20,32 +20,33 @@ import ballerina/time;
 // DATE/TIME FUNCTIONS
 // ========================================
 
-isolated function applyTodayFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+isolated function applyTodayFunction(Expr[] params, time:Utc evaluationTime) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("today", "0 parameters", params.length());
     }
-    time:Civil civil = time:utcToCivil(time:utcNow());
+    time:Civil civil = time:utcToCivil(evaluationTime);
     string dateStr = string `@${civil.year}-${zeroPad(civil.month)}-${zeroPad(civil.day)}`;
     return [dateStr];
 }
 
-isolated function applyNowFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+isolated function applyNowFunction(Expr[] params, time:Utc evaluationTime) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("now", "0 parameters", params.length());
     }
-    time:Civil civil = time:utcToCivil(time:utcNow());
-    int hour = civil.hour;
-    int minute = civil.minute;
+    time:Civil civil = time:utcToCivil(evaluationTime);
     decimal second = civil.second ?: 0d;
-    string dtStr = string `@${civil.year}-${zeroPad(civil.month)}-${zeroPad(civil.day)}T${zeroPad(hour)}:${zeroPad(minute)}:${zeroPad(<int>second)}+00:00`;
+    int wholeSeconds = <int>second.floor();
+    int millis = <int>((second - <decimal>wholeSeconds) * 1000d).floor();
+    // Same instant and precision as timeOfDay() (timeOfDay() is now().timeOf())
+    string dtStr = string `@${civil.year}-${zeroPad(civil.month)}-${zeroPad(civil.day)}T${zeroPad(civil.hour)}:${zeroPad(civil.minute)}:${zeroPad(wholeSeconds)}.${zeroPad3(millis)}+00:00`;
     return [dtStr];
 }
 
-isolated function applyTimeOfDayFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
+isolated function applyTimeOfDayFunction(Expr[] params, time:Utc evaluationTime) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("timeOfDay", "0 parameters", params.length());
     }
-    time:Civil civil = time:utcToCivil(time:utcNow());
+    time:Civil civil = time:utcToCivil(evaluationTime);
     decimal second = civil.second ?: 0d;
     int wholeSeconds = <int>second.floor();
     int millis = <int>((second - <decimal>wholeSeconds) * 1000d).floor();
@@ -339,7 +340,10 @@ isolated function applyBoundaryFunction(FhirPathItem[] collection, Expr[] params
     if val is string && (kind == "Date" || kind == "DateTime" || kind == "Time") {
         int targetPrecision = precision ?: defaultBoundaryPrecision(input, val);
         string bound = high ? check dateTimeHighBoundary(val, targetPrecision) : dateTimeLowBoundary(val, targetPrecision);
-        return typedResults([bound]);
+        if kind == "DateTime" && !bound.substring(1).includes("T") {
+            bound += "T";
+        }
+        return [systemItem(kind, bound)];
     }
     return [];
 }
@@ -372,17 +376,26 @@ isolated function decimalScale(json val) returns int {
     if val !is decimal && val !is float {
         return 0;
     }
-    string s = val.toString();
+    string s = val.toString().toUpperAscii();
+    // Exponent notation: the precision is that of the mantissa shifted by the exponent (9.5E+2 → tens)
+    int exponent = 0;
+    int? eIdx = s.indexOf("E");
+    if eIdx is int {
+        string expText = s.substring(eIdx + 1);
+        exponent = digitsToInt(expText.startsWith("+") || expText.startsWith("-") ? expText.substring(1) : expText)
+            * (expText.startsWith("-") ? -1 : 1);
+        s = s.substring(0, eIdx);
+    }
     int? dotIdx = s.indexOf(".");
-    return dotIdx is int ? s.length() - dotIdx - 1 : 0;
+    return (dotIdx is int ? s.length() - dotIdx - 1 : 0) - exponent;
 }
 
 isolated function pow10(int exponent) returns decimal {
     decimal result = 1d;
-    foreach int i in 0 ..< exponent {
+    foreach int i in 0 ..< (exponent < 0 ? -exponent : exponent) {
         result *= 10d;
     }
-    return result;
+    return exponent < 0 ? 1d / result : result;
 }
 
 isolated function applyPrecisionFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {

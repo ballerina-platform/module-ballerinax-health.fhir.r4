@@ -555,6 +555,14 @@ function getStu3FunctionsTestCases() returns FHIRPathTestCase[] {
             expectError: false
         },
         {
+            name: "test_currentTimeDeterministic",
+            group: "testDateTimeComponents",
+            expression: "now() = now() and timeOfDay() = timeOfDay() and today() = today() and now().timeOf() = timeOfDay() and now().dateOf() = today()",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
+        },
+        {
             name: "test_timeOfDayFormat",
             group: "testDateTimeComponents",
             expression: "timeOfDay().toString().length() = 12",

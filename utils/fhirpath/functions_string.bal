@@ -96,6 +96,9 @@ isolated function applyJoinFunction(FhirPathItem[] collection, Expr[] params, Fh
     if params.length() > 1 {
         return fnError("join", "0 or 1 parameter", params.length());
     }
+    if collection.length() == 0 {
+        return [];
+    }
     string sep = "";
     if params.length() == 1 {
         FhirPathItem[] sepResult = check evaluate(params[0], context, env);

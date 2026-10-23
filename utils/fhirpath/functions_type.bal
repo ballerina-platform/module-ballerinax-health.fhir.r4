@@ -152,13 +152,20 @@ isolated function applyToDecimalFunction(FhirPathItem[] collection, Expr[] param
     } else if val is boolean {
         return [val ? 1d : 0d];
     } else if val is string {
-        decimal|error d = decimal:fromString(val);
-        if d is decimal {
-            return [d];
-        }
-        return [];
+        decimal? d = decimalFromString(val);
+        return (d is decimal) ? [d] : [];
     }
     return [];
+}
+
+// Decimal conversion of a string matching (\+|-)?\d+(\.\d+)?; an integer may carry a Long suffix ('42L')
+isolated function decimalFromString(string val) returns decimal? {
+    if !re `(\+|-)?[0-9]+((\.[0-9]+)|L)?`.isFullMatch(val) {
+        return ();
+    }
+    string digits = val.endsWith("L") ? val.substring(0, val.length() - 1) : val;
+    decimal|error d = decimal:fromString(digits.startsWith("+") ? digits.substring(1) : digits);
+    return d is decimal ? d : ();
 }
 
 isolated function applyToStringFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
@@ -351,8 +358,7 @@ isolated function applyConvertsToDecimalFunction(FhirPathItem[] collection, Expr
     if val is decimal || val is int || val is float { return [true]; }
     if val is boolean { return [true]; }
     if val is string {
-        decimal|error d = decimal:fromString(val);
-        return [d is decimal];
+        return [decimalFromString(val) is decimal];
     }
     return [false];
 }
@@ -487,11 +493,9 @@ isolated function applyIifFunction(FhirPathItem[] collection, Expr[] params, Fhi
         return error FHIRPathInterpreterError("iif() criterion must be a single Boolean, got a collection",
             token = {tokenType: IDENTIFIER, lexeme: "iif", literal: (), position: 0});
     }
-    json criterion = criterionResult.length() == 1 ? valueOf(criterionResult[0]) : false;
-    if criterion !is boolean {
-        return error FHIRPathInterpreterError("iif() criterion must be a Boolean",
-            token = {tokenType: IDENTIFIER, lexeme: "iif", literal: (), position: 0});
-    }
+    // Singleton evaluation: a single item that is not a Boolean counts as true (iif('hi', ...), iif(0, ...))
+    json criterionValue = criterionResult.length() == 1 ? valueOf(criterionResult[0]) : false;
+    boolean criterion = criterionValue is boolean ? criterionValue : true;
     if criterion {
         return evaluate(params[1], input, scopedEnv);
     }

@@ -32,6 +32,8 @@ function getResource(string key) returns json|error {
         "patient_name_ext" => { return getPatientNameExtResource(); }
         "questionnaire"    => { return getQuestionnaireResource(); }
         "valueset"         => { return getValuesetResource(); }
+        "parameters_decimals"   => { return getParametersDecimalsResource(); }
+        "parameters_quantities" => { return getParametersQuantitiesResource(); }
         _                  => { return error("Unknown resource key: " + key); }
     }
 }
@@ -64,6 +66,8 @@ function getAllTestCases() returns FHIRPathTestCase[] {
     foreach FHIRPathTestCase tc in getStu3QuantitiesTestCases() { all.push(tc); }
     foreach FHIRPathTestCase tc in getStu3SelectorsTestCases() { all.push(tc); }
     foreach FHIRPathTestCase tc in getStrictModeTestCases()  { all.push(tc); }
+    foreach FHIRPathTestCase tc in getOfficialR5AdditionsTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getSpecExamplesTestCases() { all.push(tc); }
     return all;
 }
 
@@ -115,7 +119,7 @@ function runCases(FHIRPathTestCase[] cases) returns TestReport {
                       failureReason: "Unexpected FHIRPathError: " + evalResult.message(),
                       actualResult: (), expectedResult: tc.expected};
                 failed += 1;
-            } else if jsonValuesMatch(evalResult, tc.expected) {
+            } else if tc.ordered ? jsonValuesMatch(evalResult, tc.expected) : unorderedMatch(evalResult, tc.expected) {
                 tr = {name: tc.name, group: tc.group, status: "pass",
                       failureReason: (), actualResult: (), expectedResult: ()};
                 passed += 1;
@@ -165,4 +169,26 @@ function jsonValuesMatch(json actual, json expected) returns boolean {
         return true;
     }
     return actual == expected;
+}
+
+// Matches two collections regardless of the order of their items
+function unorderedMatch(json[] actual, json[] expected) returns boolean {
+    if actual.length() != expected.length() {
+        return false;
+    }
+    json[] remaining = actual.clone();
+    foreach json item in expected {
+        int? index = ();
+        foreach int i in 0 ..< remaining.length() {
+            if jsonValuesMatch(remaining[i], item) {
+                index = i;
+                break;
+            }
+        }
+        if index is () {
+            return false;
+        }
+        _ = remaining.remove(index);
+    }
+    return true;
 }

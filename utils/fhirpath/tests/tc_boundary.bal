@@ -421,7 +421,8 @@ function getBoundaryTestCases() returns FHIRPathTestCase[] {
             group: "LowBoundary",
             expression: "@2014-01-01T08.lowBoundary(8)",
             resourceKey: "empty",
-            expected: ["@2014-01-01"],
+            // The boundary of a DateTime is a DateTime (date precision keeps the trailing T)
+            expected: ["@2014-01-01T"],
             expectError: false
         },
         {

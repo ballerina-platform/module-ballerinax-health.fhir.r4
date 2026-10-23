@@ -14,6 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/time;
+
 // ========================================
 // INTERPRETER FOR FHIRPATH EXPRESSIONS
 // ========================================
@@ -29,10 +31,16 @@ type InterpreterError record {|
 # Error type for FHIRPath interpreter runtime errors.
 type FHIRPathInterpreterError distinct error<InterpreterError>;
 
-# Named variables visible to an expression. Each variable holds a collection.
+# Named variables visible to an expression. Each variable holds a collection. The scope also carries the
+# evaluation time, so now(), today() and timeOfDay() are deterministic within an expression.
 class VariableScope {
     private map<FhirPathItem[]> vars = {};
     private map<boolean> localDefs = {};
+    final time:Utc evaluationTime;
+
+    isolated function init(time:Utc evaluationTime = time:utcNow()) {
+        self.evaluationTime = evaluationTime;
+    }
 
     isolated function define(string name, FhirPathItem[] value) returns boolean {
         if self.localDefs.hasKey(name) { return false; }
@@ -50,7 +58,7 @@ class VariableScope {
     }
 
     isolated function childScope() returns VariableScope {
-        VariableScope child = new VariableScope();
+        VariableScope child = new VariableScope(self.evaluationTime);
         foreach var [k, v] in self.vars.entries() {
             child.inherit(k, v);
         }
@@ -1285,9 +1293,9 @@ isolated function visitFunctionExpr(FunctionExpr expr, FhirPathItem context, Fhi
     if name == "iif" { return applyIifFunction(targetResults, params, context, env); }
 
     // ---- Date/time ----
-    if name == "today" { return typedResults(check applyTodayFunction(targetResults, params)); }
-    if name == "now" { return typedResults(check applyNowFunction(targetResults, params)); }
-    if name == "timeOfDay" { return applyTimeOfDayFunction(targetResults, params); }
+    if name == "today" { return typedResults(check applyTodayFunction(params, env.scope.evaluationTime)); }
+    if name == "now" { return typedResults(check applyNowFunction(params, env.scope.evaluationTime)); }
+    if name == "timeOfDay" { return applyTimeOfDayFunction(params, env.scope.evaluationTime); }
     if name == "duration" { return applyIntervalFunction(targetResults, params, context, env, false); }
     if name == "difference" { return applyIntervalFunction(targetResults, params, context, env, true); }
     if name == "yearOf" || name == "monthOf" || name == "dayOf" || name == "hourOf" || name == "minuteOf"
@@ -1556,9 +1564,10 @@ isolated function payloadsEquivalent(json a, json b) returns boolean {
     return false;
 }
 
-// String equivalence ignores case and normalizes whitespace (runs of whitespace compare as a single space)
+// String equivalence ignores case and normalizes whitespace: each whitespace character compares as a space
+// (sequences of whitespace are not collapsed, so 'a  b' is not equivalent to 'a b')
 isolated function normalizeForEquivalence(string s) returns string {
-    return re `\s+`.replaceAll(s.trim(), " ").toLowerAscii();
+    return re `\s`.replaceAll(s, " ").toLowerAscii();
 }
 
 isolated function isQuantityItem(FhirPathItem item) returns boolean {
@@ -1675,6 +1684,12 @@ isolated function compareDateComponents(string a, string b) returns int? {
     return ();
 }
 
+isolated function hasTimeComponents(string s) returns boolean {
+    string t = s.startsWith("@") ? s.substring(1) : s;
+    int? tIdx = t.indexOf("T");
+    return tIdx is int && tIdx + 1 < t.length();
+}
+
 isolated function datePartOf(string s) returns string {
     string t = s.startsWith("@") ? s.substring(1) : s;
     int? tIdx = t.indexOf("T");
@@ -1689,28 +1704,102 @@ isolated function compareDateTimeEqual(string a, string b) returns boolean? {
         // A Time never equals a Date/DateTime; a Date and a DateTime are unequal when their common
         // components differ and otherwise unknown (different precision)
         if kindA == "time" || kindB == "time" || kindA == "other" || kindB == "other" { return false; }
-        return compareDateComponents(a, b) is int ? false : ();
+        if compareDateComponents(a, b) is int { return false; }
+        // A DateTime without time components converts from (and so equals) a Date of the same precision
+        return datePartOf(a).length() == datePartOf(b).length() && !hasTimeComponents(a) && !hasTimeComponents(b) ? true : ();
     }
 
-    if kindA == "date" {
+    if kindA == "datetime" && datetimeHasTimezone(a) != datetimeHasTimezone(b) {
+        return (); // One has a timezone and the other does not → unknown
+    }
+    return compareTemporalPrecision(a, b);
+}
+
+// Equality of two Dates, DateTimes or Times component by component, from year down: a differing component gives
+// false, a component present in only one value gives empty (different precision). Seconds and milliseconds are a
+// single precision compared as decimals. DateTimes that both carry a timezone are compared in UTC.
+isolated function compareTemporalPrecision(string a, string b) returns boolean? {
+    DateTimeParts? pa = intervalParts(a);
+    DateTimeParts? pb = intervalParts(b);
+    if pa is () || pb is () {
         return a == b;
     }
-    if kindA == "datetime" {
-        boolean aTz = datetimeHasTimezone(a);
-        boolean bTz = datetimeHasTimezone(b);
-        if aTz != bTz { return (); } // One has TZ, other doesn't → unknown
-        if aTz && bTz {
-            int? aMin = datetimeToUTCMinutes(a);
-            int? bMin = datetimeToUTCMinutes(b);
-            if aMin is () || bMin is () { return (); }
-            return aMin == bMin;
+    DateTimeParts left = toUtcParts(pa);
+    DateTimeParts right = toUtcParts(pb);
+    int?[] componentsA = [left.year, left.month, left.day, left.hour, left.minute];
+    int?[] componentsB = [right.year, right.month, right.day, right.hour, right.minute];
+    // Times have no date components: compare from the hour
+    int first = a.startsWith("@T") ? 3 : 0;
+    foreach int i in first ..< componentsA.length() {
+        int? x = componentsA[i];
+        int? y = componentsB[i];
+        if x is () && y is () {
+            return true;
         }
-        return normalizeDateTimeNoTz(a) == normalizeDateTimeNoTz(b);
+        if x is () || y is () {
+            return ();
+        }
+        if x != y {
+            return false;
+        }
     }
-    if kindA == "time" {
-        return normalizeDateTimeNoTz(a) == normalizeDateTimeNoTz(b);
+    decimal? secondsA = secondsOf(left);
+    decimal? secondsB = secondsOf(right);
+    if secondsA is () && secondsB is () {
+        return true;
     }
-    return a == b;
+    if secondsA is () || secondsB is () {
+        return ();
+    }
+    return secondsA == secondsB;
+}
+
+isolated function secondsOf(DateTimeParts parts) returns decimal? {
+    int? second = parts.second;
+    if second is () {
+        return ();
+    }
+    decimal|error value = decimal:fromString(second.toString() + "." + (parts.fraction ?: "0"));
+    return value is decimal ? value : <decimal>second;
+}
+
+// The parts expressed in UTC when they carry a timezone offset and a time of day
+isolated function toUtcParts(DateTimeParts parts) returns DateTimeParts {
+    string? timezone = parts.timezone;
+    int? hour = parts.hour;
+    if timezone is () || hour is () || parts.day is () {
+        return parts;
+    }
+    int offset = timezone == "Z" ? 0 : (digitsToInt(timezone.substring(1, 3)) * 60 + digitsToInt(timezone.substring(4, 6)))
+        * (timezone.startsWith("-") ? -1 : 1);
+    int totalMinutes = daysFromCivil(parts) * 1440 + hour * 60 + (parts.minute ?: 0) - offset;
+    int days = floorDiv(totalMinutes, 1440);
+    int minuteOfDay = totalMinutes - days * 1440;
+    [int, int, int] [year, month, day] = civilFromDays(days);
+    DateTimeParts utc = parts.clone();
+    utc.year = year;
+    utc.month = month;
+    utc.day = day;
+    utc.hour = minuteOfDay / 60;
+    if parts.minute is int {
+        utc.minute = minuteOfDay % 60;
+    }
+    utc.timezone = "Z";
+    return utc;
+}
+
+// [year, month, day] of a day count since 1970-01-01 (inverse of daysFromCivil)
+isolated function civilFromDays(int days) returns [int, int, int] {
+    int z = days + 719468;
+    int era = (z >= 0 ? z : z - 146096) / 146097;
+    int doe = z - era * 146097;
+    int yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
+    int doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    int mp = (5 * doy + 2) / 153;
+    int day = doy - (153 * mp + 2) / 5 + 1;
+    int month = mp < 10 ? mp + 3 : mp - 9;
+    int year = yoe + era * 400 + (month <= 2 ? 1 : 0);
+    return [year, month, day];
 }
 
 // FHIRPath equivalence for date/time strings (returns false for different types, not unknown)

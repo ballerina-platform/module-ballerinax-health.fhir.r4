@@ -411,6 +411,13 @@ isolated function scanString(ScannerState state) returns FHIRPathScannerError|Sc
     ScannerState newState = state;
     while peekScanner(newState) != "'" && !isScannerAtEnd(newState) {
         if peekScanner(newState) == "\\" {
+            // A backslash before the final quote of the expression ('\') is ignored rather than escaping it
+            if newState.current + 1 < newState.sourceCode.length() && charAt(newState.sourceCode, newState.current + 1) == "'"
+                    && newState.sourceCode.indexOf("'", newState.current + 2) is () {
+                [string, ScannerState] skipResult = advanceScanner(newState);
+                newState = skipResult[1];
+                break;
+            }
             [string, ScannerState] escResult = advanceScanner(newState);
             newState = escResult[1];
             if !isScannerAtEnd(newState) {
@@ -437,8 +444,9 @@ isolated function scanString(ScannerState state) returns FHIRPathScannerError|Sc
     return addTokenWithLiteral(newState, STRING, value);
 }
 
-# Processes escape sequences in a raw string value.
-# Handles \\, \', \", \n, \r, \t, \f, \uXXXX sequences.
+# Processes escape sequences in a raw string value: \\ \' \" \` \/ \n \r \t \f and \uXXXX (a UTF-16
+# code unit; surrogate pairs combine into one character). A backslash that does not start one of these
+# sequences is ignored, so '\p' is 'p', '\u005' is 'u005' and a trailing backslash disappears.
 #
 # + raw - The raw string with potential escape sequences
 # + return - The processed string with escape sequences replaced
@@ -447,59 +455,65 @@ isolated function processStringEscapes(string raw) returns string {
     int i = 0;
     while i < raw.length() {
         string ch = raw.substring(i, i + 1);
-        if ch == "\\" && i + 1 < raw.length() {
-            string next = raw.substring(i + 1, i + 2);
-            if next == "n" {
-                result += "\n";
-                i += 2;
-            } else if next == "r" {
-                result += "\r";
-                i += 2;
-            } else if next == "t" {
-                result += "\t";
-                i += 2;
-            } else if next == "f" {
-                result += "\u{000C}";
-                i += 2;
-            } else if next == "\\" {
-                result += "\\";
-                i += 2;
-            } else if next == "'" {
-                result += "'";
-                i += 2;
-            } else if next == "\"" {
-                result += "\"";
-                i += 2;
-            } else if next == "`" {
-                result += "`";
-                i += 2;
-            } else if next == "/" {
-                result += "/";
-                i += 2;
-            } else if next == "u" && i + 6 <= raw.length() {
-                string hex = raw.substring(i + 2, i + 6);
-                int|error codePoint = int:fromHexString(hex);
-                if codePoint is int {
-                    string:Char|error ch2 = string:fromCodePointInt(codePoint);
-                    if ch2 is string:Char {
-                        result += ch2;
-                    } else {
-                        result += "\\u" + hex;
-                    }
-                } else {
-                    result += "\\u" + hex;
-                }
-                i += 6;
-            } else {
-                result += ch;
-                i += 1;
-            }
-        } else {
+        if ch != "\\" {
             result += ch;
             i += 1;
+            continue;
         }
+        if i + 1 >= raw.length() {
+            // A trailing backslash is ignored
+            break;
+        }
+        string next = raw.substring(i + 1, i + 2);
+        match next {
+            "n" => { result += "\n"; }
+            "r" => { result += "\r"; }
+            "t" => { result += "\t"; }
+            "f" => { result += "\u{000C}"; }
+            "u" => {
+                int? unit = hexCodeUnit(raw, i + 2);
+                if unit is int {
+                    int codePoint = unit;
+                    int consumed = 6;
+                    // A high surrogate followed by an escaped low surrogate forms one character
+                    if unit >= 0xD800 && unit <= 0xDBFF && raw.substring(i + 6).startsWith("\\u") {
+                        int? low = hexCodeUnit(raw, i + 8);
+                        if low is int && low >= 0xDC00 && low <= 0xDFFF {
+                            codePoint = 0x10000 + ((unit - 0xD800) << 10) + (low - 0xDC00);
+                            consumed = 12;
+                        }
+                    }
+                    string:Char|error decoded = string:fromCodePointInt(codePoint);
+                    if decoded is string:Char {
+                        result += decoded;
+                        i += consumed;
+                        continue;
+                    }
+                }
+                // Not a valid \uXXXX sequence: the backslash is ignored
+                result += next;
+            }
+            _ => {
+                // \\ \' \" \` \/ map to the character itself, as does any unrecognised escape
+                result += next;
+            }
+        }
+        i += 2;
     }
     return result;
+}
+
+// The UTF-16 code unit given by the 4 hex digits at `index`, if present
+isolated function hexCodeUnit(string raw, int index) returns int? {
+    if index + 4 > raw.length() {
+        return ();
+    }
+    string hex = raw.substring(index, index + 4);
+    if !re `[0-9A-Fa-f]{4}`.isFullMatch(hex) {
+        return ();
+    }
+    int|error unit = int:fromHexString(hex);
+    return unit is int ? unit : ();
 }
 
 // ========================================

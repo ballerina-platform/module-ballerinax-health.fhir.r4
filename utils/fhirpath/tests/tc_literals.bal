@@ -598,7 +598,8 @@ function getLiteralsTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.name.select(given | family).distinct()",
             resourceKey: "patient",
             expected: ["Peter", "James", "Chalmers", "Jim", "Windsor"],
-            expectError: false
+            expectError: false,
+            ordered: false
         },
         {
             name: "test_testExpressionsEqual",

@@ -32,7 +32,7 @@ isolated function applyIsDistinctFunction(FhirPathItem[] collection, Expr[] para
     FhirPathItem[] seen = [];
     foreach FhirPathItem item in collection {
         foreach FhirPathItem existing in seen {
-            if isJsonEqual(item, existing) {
+            if itemsEqual(item, existing) {
                 return [false];
             }
         }
@@ -45,18 +45,11 @@ isolated function applyDistinctFunction(FhirPathItem[] collection, Expr[] params
     if params.length() != 0 {
         return fnError("distinct", "0 parameters", params.length());
     }
+    // The order of the result is not defined; the last of each repeated value is kept
     FhirPathItem[] result = [];
     foreach FhirPathItem item in collection {
-        boolean found = false;
-        foreach FhirPathItem existing in result {
-            if isJsonEqual(item, existing) {
-                found = true;
-                break;
-            }
-        }
-        if !found {
-            result.push(item);
-        }
+        result = from FhirPathItem existing in result where !itemsEqual(existing, item) select existing;
+        result.push(item);
     }
     return result;
 }
@@ -166,7 +159,7 @@ isolated function applyIntersectFunction(FhirPathItem[] collection, Expr[] param
     foreach FhirPathItem item in collection {
         boolean inOther = false;
         foreach FhirPathItem otherItem in otherResult {
-            if isJsonEqual(item, otherItem) {
+            if itemsEqual(item, otherItem) {
                 inOther = true;
                 break;
             }
@@ -174,7 +167,7 @@ isolated function applyIntersectFunction(FhirPathItem[] collection, Expr[] param
         if inOther {
             boolean alreadyAdded = false;
             foreach FhirPathItem existing in result {
-                if isJsonEqual(item, existing) {
+                if itemsEqual(item, existing) {
                     alreadyAdded = true;
                     break;
                 }
@@ -196,7 +189,7 @@ isolated function applyExcludeFunction(FhirPathItem[] collection, Expr[] params,
     foreach FhirPathItem item in collection {
         boolean inOther = false;
         foreach FhirPathItem otherItem in otherResult {
-            if isJsonEqual(item, otherItem) {
+            if itemsEqual(item, otherItem) {
                 inOther = true;
                 break;
             }
@@ -362,7 +355,7 @@ isolated function applyRepeatFunction(FhirPathItem[] collection, Expr[] params, 
             foreach FhirPathItem newItem in itemResult {
                 boolean alreadyVisited = false;
                 foreach FhirPathItem v in visited {
-                    if isJsonEqual(newItem, v) {
+                    if itemsEqual(newItem, v) {
                         alreadyVisited = true;
                         break;
                     }
@@ -415,7 +408,7 @@ isolated function applySubsetOfFunction(FhirPathItem[] collection, Expr[] params
     foreach FhirPathItem item in collection {
         boolean found = false;
         foreach FhirPathItem otherItem in otherResult {
-            if isJsonEqual(item, otherItem) {
+            if itemsEqual(item, otherItem) {
                 found = true;
                 break;
             }
@@ -435,7 +428,7 @@ isolated function applySupersetOfFunction(FhirPathItem[] collection, Expr[] para
     foreach FhirPathItem item in otherResult {
         boolean found = false;
         foreach FhirPathItem selfItem in collection {
-            if isJsonEqual(item, selfItem) {
+            if itemsEqual(item, selfItem) {
                 found = true;
                 break;
             }
@@ -693,7 +686,7 @@ isolated function applyDistinctToItems(FhirPathItem[] items) returns FhirPathIte
     foreach FhirPathItem item in items {
         boolean found = false;
         foreach FhirPathItem existing in result {
-            if isJsonEqual(item, existing) {
+            if itemsEqual(item, existing) {
                 found = true;
                 break;
             }
@@ -770,38 +763,9 @@ isolated function compareJsonPayloads(json a, json b) returns int {
     return 0;
 }
 
-isolated function isJsonEqual(FhirPathItem a, FhirPathItem b) returns boolean {
-    return isJsonPayloadEqual(systemValueOf(a), systemValueOf(b));
-}
-
-isolated function isJsonPayloadEqual(json a, json b) returns boolean {
-    if a is () && b is () { return true; }
-    if a is () || b is () { return false; }
-    if a is boolean && b is boolean { return a == b; }
-    if a is string && b is string { return a == b; }
-    if (a is int || a is decimal || a is float) && (b is int || b is decimal || b is float) {
-        return toFloat(a) == toFloat(b);
-    }
-    if a is json[] && b is json[] {
-        if a.length() != b.length() { return false; }
-        foreach int i in 0 ..< a.length() {
-            if !isJsonPayloadEqual(a[i], b[i]) { return false; }
-        }
-        return true;
-    }
-    if a is map<json> && b is map<json> {
-        string[] keysA = from string k in a.keys() order by k select k;
-        string[] keysB = from string k in b.keys() order by k select k;
-        if keysA.length() != keysB.length() { return false; }
-        foreach int i in 0 ..< keysA.length() {
-            if keysA[i] != keysB[i] { return false; }
-            json valA = a[keysA[i]] ?: ();
-            json valB = b[keysA[i]] ?: ();
-            if !isJsonPayloadEqual(valA, valB) { return false; }
-        }
-        return true;
-    }
-    return false;
+// Item equality for the collection functions: the = operator returns true (false and empty both mean "not equal")
+isolated function itemsEqual(FhirPathItem a, FhirPathItem b) returns boolean {
+    return jsonValuesEqual(a, b) == true;
 }
 
 isolated function isTruthyValue(FhirPathItem item) returns boolean {
