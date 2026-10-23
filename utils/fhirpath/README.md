@@ -52,17 +52,19 @@ FHIRPath string → Scanner → Tokens → Parser → AST → Interpreter → Re
    The scanner (lexer) takes a raw FHIRPath expression string and breaks it into a sequence of tokens. Each token has a type and the corresponding lexeme text. Beyond basic identifiers, numbers, and strings, the scanner recognises: date/datetime/time literals (`@YYYY-MM-DD`, `@YYYY-MM-DDTHH:MM:SS`, `@THH:MM:SS`), delimited identifiers (backtick-quoted), the `%` prefix for external constants, the special invocations `$this`/`$index`/`$total`, all comparison and arithmetic operators, and skips line (`//`) and block (`/* */`) comments.
 
 2. **Parsing** ([parser.bal](parser.bal), [expr.bal](expr.bal))
-   A hand-written **recursive-descent (top-down) parser** consumes the token stream and builds an Abstract Syntax Tree (AST). The AST node types are defined in [expr.bal](expr.bal) and include `BinaryExpr`, `LiteralExpr`, `IdentifierExpr`, `FunctionExpr`, `MemberAccessExpr`, `IndexerExpr`, `UnaryExpr`, `ExternalConstantExpr`, and `QuantityLiteralExpr`. The parser functions in [parser.bal](parser.bal) directly correspond to the grammar rules and are organized by operator precedence (lowest → highest binding): `implies → or/xor → and → in/contains → =/~/!=/!~ → </>/<=/>= → | → is/as → +/-/& → */div/mod → unary +/- → postfix ./[] → primary`.
+   A hand-written **recursive-descent (top-down) parser** consumes the token stream and builds an Abstract Syntax Tree (AST). The AST node types are defined in [expr.bal](expr.bal) and include `BinaryExpr`, `LiteralExpr`, `IdentifierExpr`, `FunctionExpr`, `MemberAccessExpr`, `IndexerExpr`, `UnaryExpr`, `ExternalConstantExpr`, `QuantityLiteralExpr`, `SortArgumentExpr` (`sort()` keys with `asc`/`desc`) and `InstanceSelectorExpr` (object creation such as `Coding { system: ..., code: ... }`). The parser functions in [parser.bal](parser.bal) directly correspond to the grammar rules and are organized by operator precedence (lowest → highest binding): `implies → or/xor → and → in/contains → =/~/!=/!~ → </>/<=/>= → | → is/as → +/-/& → */div/mod → unary +/- → postfix ./[] → primary`.
 
 3. **Interpretation** ([interpreter.bal](interpreter.bal))
    A tree-walking interpreter traverses the AST and evaluates it against the provided FHIR JSON resource. It supports both **getting** values (collecting matching nodes) and **setting/removing** values (producing a modified copy of the resource). The interpreter handles:
    - **Member access** (`.`), **array indexing** (`[n]`), **unary polarity** (`+`/`-`)
    - **All binary operators**: `=`, `~`, `!=`, `!~`, `<`, `>`, `<=`, `>=`, `+`, `-`, `&` (string concat), `*`, `/`, `div`, `mod`, `and`, `or`, `xor`, `implies`, `in`, `contains`, `|` (union), `is`, `as`
-   - **External constants** (`%name`) resolved from the `variables` map passed at call time
-   - **Built-in functions**: `where`, `select`, `repeat`, `all`, `aggregate`, `exists`, `empty`, `not`, `hasValue`, `first`, `last`, `tail`, `skip`, `take`, `count`, `distinct`, `children`, `descendants`, `combine`, `union`, `intersect`, `exclude`, `subsetOf`, `supersetOf`, `ofType`, `iif`, `extension`, `resolve`, `memberOf`, `startsWith`, `endsWith`, `indexOf`, `substring`, `matches`, `encode`, `decode`, `upper`, `lower`, `trim`, `toInteger`, `toDecimal`, `toString`, `toDate`, `toDateTime`, `toTime`, `toQuantity`, `convertsToInteger`, `convertsToDecimal`
+   - **External constants** (`%name`) resolved from the `variables` map passed at call time, plus the environment variables `%context`, `%resource`, `%rootResource` and `%ucum`
+   - **Built-in functions**: all FHIRPath STU3 functions (see [Supported Functions](#supported-functions))
+   - **Typed values** ([values.bal](values.bal), [model_info.bal](model_info.bal)): values navigated from a resource are typed from the FHIR R4 model (generated from the official StructureDefinitions by [scripts/generate_model_info.py](scripts/generate_model_info.py)), so `is`, `as`, `ofType`, `type()` and the implicit FHIR → System conversions follow the specification
+   - **Quantities** ([units.bal](units.bal)): UCUM and calendar duration units are converted for equality, equivalence, comparison and arithmetic (e.g. `4 'g' = 4000 'mg'`, `3 'm' + 3 'cm'` → `303 'cm'`, `120 'm' / 60 's'` → `2 'm/s'`)
 
 4. **Public API** ([fhir_path_processor.bal](fhir_path_processor.bal))
-   The top-level functions `getValuesFromFhirPath` and `setValuesToFhirPath` orchestrate the full pipeline — scan, parse, interpret — and optionally validate the FHIR resource before and/or after the operation.
+   The top-level functions `getValuesFromFhirPath` and `setValuesToFhirPath` orchestrate the full pipeline — scan, parse, interpret — and optionally validate the FHIR resource before and/or after the operation. `getValuesFromFhirPath` can also check the expression against the FHIR model before evaluating it ([strict mode](#strict-mode), [strict_mode.bal](strict_mode.bal)).
 
 ### Grammar Reference
 
@@ -229,6 +231,31 @@ public function main() {
 }
 ```
 
+### Strict Mode
+
+By default, evaluation is weakly typed as the FHIRPath specification requires: a path that refers to an element that does not exist simply returns an empty collection. Pass `strictMode = true` (or set `strictModeEvaluation = true` in `Config.toml` to change the default) to check the expression against the FHIR R4 model before it is evaluated. Navigation to elements the model does not define, type names that do not match the resource, and choice elements accessed by their expanded name are then reported as errors.
+
+```ballerina
+import ballerina/io;
+import ballerinax/health.fhir.r4utils.fhirpath;
+
+public function main() {
+    json patient = {"resourceType": "Patient", "name": [{"family": "Chalmers", "given": ["Peter"]}]};
+
+    // Lenient (default): a misspelt element gives an empty result
+    json[]|fhirpath:FHIRPathError lenient = fhirpath:getValuesFromFhirPath(patient, "Patient.name.familly");
+    io:println(lenient); // []
+
+    // Strict: the same expression is reported as an error
+    json[]|fhirpath:FHIRPathError strict = fhirpath:getValuesFromFhirPath(patient, "Patient.name.familly", strictMode = true);
+    if strict is fhirpath:FHIRPathError {
+        io:println(strict.message()); // Strict mode: 'familly' is not an element of HumanName
+    }
+}
+```
+
+Where the type cannot be determined statically (e.g. after `children()`, `resolve()` or on contained resources), the expression is evaluated without further checks.
+
 ### Updating FHIR Resources
 
 ```ballerina
@@ -382,27 +409,37 @@ public function main() {
 
 ## Supported Functions
 
+All functions of the [FHIRPath STU3 (v3.0.0)](https://hl7.org/fhirpath/STU3/en/) specification are supported, together with the FHIR-specific functions `extension`, `hasValue`, `resolve`, `conformsTo` and `memberOf` (`resolve()` and `memberOf()` return empty, as no resource or terminology service is available).
+
 ### Existence & Boolean
 
 | | | | | |
 |---|---|---|---|---|
 | `empty` | `exists` | `not` | `hasValue` | `all` |
-| `isDistinct` | `subsetOf` | `supersetOf` | | |
+| `allTrue` | `anyTrue` | `allFalse` | `anyFalse` | `isDistinct` |
+| `subsetOf` | `supersetOf` | | | |
 
 ### Filtering & Projection
 
 | | | | | |
 |---|---|---|---|---|
-| `where` | `select` | `repeat` | `ofType` | |
+| `where` | `select` | `repeat` | `repeatAll` | `ofType` |
+| `coalesce` | `sort` | | | |
 
-### Collection
+### Subsetting & Combining
 
 | | | | | |
 |---|---|---|---|---|
 | `first` | `last` | `tail` | `skip` | `take` |
-| `single` | `count` | `distinct` | `combine` | `union` |
-| `intersect` | `exclude` | `children` | `descendants` | `aggregate` |
-| `sort` | `sum` | | | |
+| `single` | `distinct` | `intersect` | `exclude` | `union` |
+| `combine` | `children` | `descendants` | | |
+
+### Aggregates
+
+| | | | | |
+|---|---|---|---|---|
+| `count` | `aggregate` | `sum` | `min` | `max` |
+| `avg` | | | | |
 
 ### String
 
@@ -410,8 +447,9 @@ public function main() {
 |---|---|---|---|---|
 | `length` | `trim` | `toChars` | `split` | `join` |
 | `upper` | `lower` | `startsWith` | `endsWith` | `contains` |
-| `indexOf` | `substring` | `replace` | `matches` | `matchesFull` |
-| `replaceMatches` | `encode` | `decode` | `escape` | `unescape` |
+| `indexOf` | `lastIndexOf` | `substring` | `replace` | `matches` |
+| `matchesFull` | `replaceMatches` | `encode` | `decode` | `escape` |
+| `unescape` | | | | |
 
 ### Math
 
@@ -424,14 +462,23 @@ public function main() {
 
 | | | | | |
 |---|---|---|---|---|
-| `type` | `is` | `as` | `toInteger` |
-| `toDecimal` | `toString` | `toBoolean` | `toDate` | `toDateTime` |
-| `toTime` | `toQuantity` | `convertsToInteger` | `convertsToDecimal` | `convertsToString` |
-| `convertsToBoolean` | `convertsToDate` | `convertsToDateTime` | `convertsToTime` | `convertsToQuantity` |
+| `type` | `is` | `as` | `iif` | `comparable` |
+| `toBoolean` | `toInteger` | `toLong` | `toDecimal` | `toString` |
+| `toDate` | `toDateTime` | `toTime` | `toQuantity` | `convertsToBoolean` |
+| `convertsToInteger` | `convertsToLong` | `convertsToDecimal` | `convertsToString` | `convertsToDate` |
+| `convertsToDateTime` | `convertsToTime` | `convertsToQuantity` | | |
 
 ### Date & Time
 
 | | | | | |
 |---|---|---|---|---|
-| `today` | `now` | `precision` |
+| `today` | `now` | `timeOfDay` | `precision` | `lowBoundary` |
+| `highBoundary` | `yearOf` | `monthOf` | `dayOf` | `hourOf` |
+| `minuteOf` | `secondOf` | `millisecondOf` | `timezoneOffsetOf` | `dateOf` |
+| `timeOf` | `duration` | `difference` | | |
 
+### Utility
+
+| | | | | |
+|---|---|---|---|---|
+| `trace` | `defineVariable` | `pathname` | | |

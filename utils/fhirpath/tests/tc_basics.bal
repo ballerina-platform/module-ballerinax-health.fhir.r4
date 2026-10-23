@@ -55,8 +55,8 @@ function getBasicsTestCases() returns FHIRPathTestCase[] {
             resourceKey: "patient",
             expected: [],
             expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            // Semantic validation: only an error when the expression is checked against the model
+            strict: true
         },
         {
             name: "test_testSimpleWithContext",
@@ -73,8 +73,8 @@ function getBasicsTestCases() returns FHIRPathTestCase[] {
             resourceKey: "patient",
             expected: [],
             expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            // Semantic validation: only an error when the expression is checked against the model
+            strict: true
         }
     ];
 }

@@ -31,8 +31,8 @@ function getNavigationTestCases() returns FHIRPathTestCase[] {
             resourceKey: "observation",
             expected: [],
             expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            // Semantic validation: only an error when the expression is checked against the model
+            strict: true
         },
         {
             name: "test_testPolymorphismIsA1",
@@ -89,8 +89,8 @@ function getNavigationTestCases() returns FHIRPathTestCase[] {
             resourceKey: "observation",
             expected: [],
             expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            // Semantic validation: only an error when the expression is checked against the model
+            strict: true
         },
         {
             name: "test_testPolymorphismAsBFunction",

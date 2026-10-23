@@ -63,6 +63,7 @@ function getAllTestCases() returns FHIRPathTestCase[] {
     foreach FHIRPathTestCase tc in getStu3SemanticsTestCases() { all.push(tc); }
     foreach FHIRPathTestCase tc in getStu3QuantitiesTestCases() { all.push(tc); }
     foreach FHIRPathTestCase tc in getStu3SelectorsTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getStrictModeTestCases()  { all.push(tc); }
     return all;
 }
 
@@ -94,7 +95,7 @@ function runCases(FHIRPathTestCase[] cases) returns TestReport {
             continue;
         }
 
-        json[]|FHIRPathError evalResult = getValuesFromFhirPath(resourceResult, tc.expression, false);
+        json[]|FHIRPathError evalResult = getValuesFromFhirPath(resourceResult, tc.expression, false, strictMode = tc.strict);
 
         TestResult tr;
         if tc.expectError {

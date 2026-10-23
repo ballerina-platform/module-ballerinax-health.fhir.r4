@@ -24,6 +24,8 @@ configurable boolean inputFHIRResourceValidation = false;
 // Configurable to control whether output FHIR resource validation should be performed. Used only in setFhirPathValues() function.
 configurable boolean outputFHIRResourceValidation = false;
 
+configurable boolean strictModeEvaluation = false;
+
 # FhirpathResourceValidationError is the error object that is returned when an error occurs during FHIR resource validation.
 type FHIRPathResourceValidationError distinct error;
 
@@ -36,8 +38,11 @@ public type FHIRPathError FHIRPathScannerError|FHIRPathParserError|FHIRPathInter
 # + fhirPathExpression - fhirpath expression to get values from
 # + validateInputFHIRResource - whether to validate the input FHIR resource (default = false)
 # + variables - optional map of variable bindings available in the expression
+# + strictMode - whether to check the expression against the FHIR R4 model before evaluating it; navigation to
+#                elements that the model does not define, type names that do not match the context and choice
+#                elements accessed by their expanded name are then errors instead of empty results (default = false)
 # + return - list of results of the fhirpath expression or FHIRPathError (scanner/parser/interpreter/validation errors)
-public isolated function getValuesFromFhirPath(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation, map<json>? variables = ()) returns json[]|FHIRPathError {
+public isolated function getValuesFromFhirPath(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation, map<json>? variables = (), boolean strictMode = strictModeEvaluation) returns json[]|FHIRPathError {
     // Validate input FHIR resource and throw error if invalid
     if validateInputFHIRResource {
         check validateFhirResource(fhirResource);
@@ -59,6 +64,10 @@ public isolated function getValuesFromFhirPath(json fhirResource, string fhirPat
     if expr is () {
         log:printDebug("Parsing failed", fhirPath = fhirPathExpression);
         return error FHIRPathParserError("Failed to parse FHIRPath expression", token = tokens[tokens.length() - 1]);
+    }
+
+    if strictMode {
+        check checkStrictPaths(expr, fhirResource);
     }
 
     // Interpret the expression

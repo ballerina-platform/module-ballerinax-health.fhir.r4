@@ -45,6 +45,7 @@ FHIRPath string → Scanner → Tokens → Parser → AST → Interpreter → Re
 | `functions_*.bal` | Built-in function implementations split by category (collection, string, math, datetime, type, FHIR-specific) |
 | `values.bal` | Typed collection items (`FhirPathItem = json\|TypedValue`), FHIR→System implicit conversion, model-aware navigation (`childItems`) and type tests (`itemIsOfType`) |
 | `units.bal` | Quantity units: a UCUM subset parser and calendar durations; conversion (`convertQuantity`), alignment for equality/equivalence/comparison (`alignQuantities`), addition (`addQuantities`) and unit algebra for `*` and `/` (`multiplyQuantities`) |
+| `strict_mode.bal` | Opt-in compile-time checks (`checkStrictPaths`): infers static types from the model and reports navigation the model rules out |
 | `model_info.bal` | **Generated** FHIR R4 model: type hierarchy (`FHIR_TYPE_BASE`) and element types (`FHIR_ELEMENT_TYPES`). Regenerate with `scripts/generate_model_info.py` (see its docstring); never edit by hand |
 | `grammar.g4` | ANTLR grammar from the HL7 FHIRPath spec — the authoritative reference for parser structure. ANTLR uses left-recursive rules; `parser.bal` manually converts these into top-down recursive-descent functions. |
 
@@ -58,7 +59,8 @@ Payload conventions: System date/time payloads keep the `@` literal prefix (`"@2
 
 ### Public API (`fhir_path_processor.bal`)
 
-- `getValuesFromFhirPath(fhirResource, expression, validateInput?, variables?)` → `json[]|FHIRPathError`
+- `getValuesFromFhirPath(fhirResource, expression, validateInput?, variables?, strictMode?)` → `json[]|FHIRPathError`
+  - `strictMode = true` (default from the `strictModeEvaluation` configurable) checks the expression against the FHIR model first
 - `setValuesToFhirPath(fhirResource, expression, value|ModificationFunction, validateInput?, validateOutput?)` → `json|FHIRPathError`
   - Pass `()` as value to **remove** the element at the path
   - Pass an `isolated function(json) returns json|error` to transform the value
@@ -73,6 +75,7 @@ Tests use a data-driven pattern driven by an HTTP service in `tests/test_service
 - `tests/*_resource.bal` — fixture FHIR JSON resources indexed by string key via `getResource()`
 - `tests/service_test.bal` — single Ballerina `@test:Config` that calls the HTTP service and fails if any cases fail
 - `tests/Config.toml` — sets `skipDisabledTests = true` (disabled tests are cases not yet fully implemented)
+- A test case with `strict: true` is evaluated in strict mode (used for the official semantic-validation tests)
 - Expected results are compared structurally with numbers compared by value (`jsonValuesMatch` in `tests/runner.bal`), so a decimal result matches a literal such as `1.5875`; System Quantity results are written as `{"value": 1.5d, "unit": "mg"}`
 
 To add a new test: add a `FHIRPathTestCase` entry to the relevant `tests/tc_*.bal` file and register any new fixture resource in `tests/runner.bal:getResource()`.

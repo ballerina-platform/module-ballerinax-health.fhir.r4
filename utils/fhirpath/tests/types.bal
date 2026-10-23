@@ -22,6 +22,8 @@ type FHIRPathTestCase record {|
     json[] expected;
     boolean expectError;
     boolean disabled = false;
+    // Evaluate in strict mode (compile-time path checks against the FHIR model)
+    boolean strict = false;
 |};
 
 type TestResult record {|
