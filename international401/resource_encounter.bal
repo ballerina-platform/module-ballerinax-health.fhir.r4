@@ -777,7 +777,9 @@ public enum EncounterStatusHistoryStatus {
    CODE_STATUS_CANCELLED = "cancelled",
    CODE_STATUS_FINISHED = "finished",
    CODE_STATUS_PLANNED = "planned",
-   CODE_STATUS_IN_PROGRESS = "in-progress"
+   CODE_STATUS_IN_PROGRESS = "in-progress",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+   CODE_STATUS_UNKNOWN = "unknown"
 }
 
 # FHIR EncounterParticipant datatype record.
@@ -871,7 +873,9 @@ public enum EncounterStatus {
    CODE_STATUS_CANCELLED = "cancelled",
    CODE_STATUS_FINISHED = "finished",
    CODE_STATUS_PLANNED = "planned",
-   CODE_STATUS_IN_PROGRESS = "in-progress"
+   CODE_STATUS_IN_PROGRESS = "in-progress",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+   CODE_STATUS_UNKNOWN = "unknown"
 }
 
 # FHIR EncounterStatusHistory datatype record.
