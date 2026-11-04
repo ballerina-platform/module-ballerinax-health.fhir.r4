@@ -340,7 +340,13 @@ public enum DiagnosticReportUvIpsStatus {
    CODE_STATUS_FINAL = "final",
    CODE_STATUS_REGISTERED = "registered",
    CODE_STATUS_PRELIMINARY = "preliminary",
-   CODE_STATUS_PARTIAL = "partial"
+   CODE_STATUS_PARTIAL = "partial",
+   CODE_STATUS_AMENDED = "amended",
+   CODE_STATUS_CORRECTED = "corrected",
+   CODE_STATUS_APPENDED = "appended",
+   CODE_STATUS_CANCELLED = "cancelled",
+   CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error",
+   CODE_STATUS_UNKNOWN = "unknown"
 }
 
 # FHIR DiagnosticReportUvIpsSubject datatype record.
