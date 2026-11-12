@@ -171,7 +171,9 @@ isolated function createTypedError(string message, Severity errServerity, IssueT
             coding: [
                 {
                     system: "http://hl7.org/fhir/issue-type",
-                    code: httpStatusCode.toString()
+                    // The IssueType, not the HTTP status: that code system has only text codes
+                    // ("invalid", "not-found", ...); the HTTP status is on the error itself.
+                    code: code
                 }
             ],
             text: message
