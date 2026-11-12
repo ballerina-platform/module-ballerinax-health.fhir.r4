@@ -378,6 +378,7 @@ public enum C4BBPatientLinkType {
 
 # C4BBPatientGender enum
 public enum C4BBPatientGender {
+   CODE_GENDER_MALE = "male",
    CODE_GENDER_OTHER = "other",
    CODE_GENDER_FEMALE = "female",
    CODE_GENDER_UNKNOWN = "unknown"
@@ -871,6 +872,7 @@ public type C4BBPatientIdentifier record {|
 
 # C4BBPatientAddressUse enum
 public enum C4BBPatientAddressUse {
+   CODE_USE_HOME = "home",
    CODE_USE_TEMP = "temp",
    CODE_USE_WORK = "work",
    CODE_USE_OLD = "old",

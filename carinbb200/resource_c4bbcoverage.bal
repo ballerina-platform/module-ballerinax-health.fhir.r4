@@ -1237,6 +1237,7 @@ public type C4BBCoverageClassTypeCodingOne record {|
 
 # C4BBCoverageStatus enum
 public enum C4BBCoverageStatus {
+    CODE_STATUS_ACTIVE = "active",
     CODE_STATUS_DRAFT = "draft",
     CODE_STATUS_CANCELLED = "cancelled",
     CODE_STATUS_ENTERED_IN_ERROR = "entered-in-error"
