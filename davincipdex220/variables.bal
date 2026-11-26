@@ -22,6 +22,130 @@ public final r4:TerminologyProcessor terminologyProcessor = r4:terminologyProces
 # FHIR registry instance
 public final r4:FHIRRegistry fhirRegistry = r4:fhirRegistry;
 
+//Number of search params in DAVINCIPDEX_IG_SEARCH_PARAMS_1  = 12
+final readonly & map<r4:FHIRSearchParameterDefinition[]> DAVINCIPDEX_IG_SEARCH_PARAMS_1 = {
+"PDexConsentAction": [
+        {
+            name: "PDexConsentAction",
+            'type: r4:TOKEN,
+            base: ["Consent"],
+            expression: "Consent.provision.action"
+        }
+
+    ],
+
+"Group_Code": [
+        {
+            name: "Group_Code",
+            'type: r4:TOKEN,
+            base: ["Group"],
+            expression: "Group.code"
+        }
+
+    ],
+
+"ExplanationOfBenefit_Identifier": [
+        {
+            name: "ExplanationOfBenefit_Identifier",
+            'type: r4:TOKEN,
+            base: ["ExplanationOfBenefit"],
+            expression: "ExplanationOfBenefit.identifier"
+        }
+
+    ],
+
+"PdexMedicationDispenseStatus": [
+        {
+            name: "PdexMedicationDispenseStatus",
+            'type: r4:TOKEN,
+            base: ["MedicationDispense"],
+            expression: "MedicationDispense.status"
+        }
+
+    ],
+
+"ExplanationOfBenefit_Use": [
+        {
+            name: "ExplanationOfBenefit_Use",
+            'type: r4:TOKEN,
+            base: ["ExplanationOfBenefit"],
+            expression: "ExplanationOfBenefit.use"
+        }
+
+    ],
+
+"ExplanationOfBenefit_Patient": [
+        {
+            name: "ExplanationOfBenefit_Patient",
+            'type: r4:REFERENCE,
+            base: ["ExplanationOfBenefit"],
+            expression: "ExplanationOfBenefit.patient"
+        }
+
+    ],
+
+"ExplanationOfBenefit_ServiceDate": [
+        {
+            name: "ExplanationOfBenefit_ServiceDate",
+            'type: r4:DATE,
+            base: ["ExplanationOfBenefit"],
+            expression: "ExplanationOfBenefit.billablePeriod | ExplanationOfBenefit.item.serviced"
+        }
+
+    ],
+
+"PDexConsentProvisionType": [
+        {
+            name: "PDexConsentProvisionType",
+            'type: r4:TOKEN,
+            base: ["Consent"],
+            expression: "Consent.provision.type"
+        }
+
+    ],
+
+"PDexConsentProviderAccess": [
+        {
+            name: "PDexConsentProviderAccess",
+            'type: r4:TOKEN,
+            base: ["Consent"],
+            expression: "Consent.provision.action.extension.where(url='http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provider-access-use-case').value"
+        }
+
+    ],
+
+"PDexGroupCharacteristicValueReference": [
+        {
+            name: "PDexGroupCharacteristicValueReference",
+            'type: r4:REFERENCE,
+            base: ["Group"],
+            expression: "Group.characteristic.value.ofType(Reference)"
+        }
+
+    ],
+
+"ExplanationOfBenefit_Type": [
+        {
+            name: "ExplanationOfBenefit_Type",
+            'type: r4:TOKEN,
+            base: ["ExplanationOfBenefit"],
+            expression: "ExplanationOfBenefit.type"
+        }
+
+    ],
+
+"PdexMedicationDispensePatient": [
+        {
+            name: "PdexMedicationDispensePatient",
+            'type: r4:REFERENCE,
+            base: ["MedicationDispense"],
+            expression: "MedicationDispense.subject.where(resolve() is Patient)"
+        }
+
+    ]
+
+};
+
 public json[] FHIR_VALUE_SETS = [];
 public json[] FHIR_CODE_SYSTEMS = [];
 
