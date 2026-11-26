@@ -39,9 +39,94 @@ function init() returns r4:FHIRError? {
                 url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-parameters-multi-member-match-bundle-out",
                 resourceType: "Parameters",
                 modelType: PDexMultiMemberMatchResponseParameters
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provenance": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provenance",
+                resourceType: "Provenance",
+                modelType: Provenance
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/provider-parameters-multi-member-match-bundle-out": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/provider-parameters-multi-member-match-bundle-out",
+                resourceType: "Parameters",
+                modelType: ProviderMultiMemberMatchResponseParameters
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/mtls-organization": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/mtls-organization",
+                resourceType: "Organization",
+                modelType: MtlsOrganization
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/provider-treatment-relationship-consent": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/provider-treatment-relationship-consent",
+                resourceType: "Consent",
+                modelType: ProviderTreatmentAttestation
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provider-group": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provider-group",
+                resourceType: "Group",
+                modelType: PDexProviderGroup
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/mtls-endpoint": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/mtls-endpoint",
+                resourceType: "Endpoint",
+                modelType: MtlsEndpoint
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-member-no-match-group": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-member-no-match-group",
+                resourceType: "Group",
+                modelType: PDexMemberNoMatchGroup
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provider-member-match": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provider-member-match",
+                resourceType: "Group",
+                modelType: ProviderMemberMatchGroup
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provider-member-no-match": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provider-member-no-match",
+                resourceType: "Group",
+                modelType: ProviderMemberNoMatchGroup
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provider-consent": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-provider-consent",
+                resourceType: "Consent",
+                modelType: PDexProviderSharingConsent
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-treatment-relationship": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-treatment-relationship",
+                resourceType: "Group",
+                modelType: MemberProviderTreatmentRelationship
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-priorauthorization": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-priorauthorization",
+                resourceType: "ExplanationOfBenefit",
+                modelType: PdexPriorAuthorization
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-member-opt-out": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-member-opt-out",
+                resourceType: "Group",
+                modelType: MemberOptOut
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/provider-parameters-multi-member-match-bundle-in": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/provider-parameters-multi-member-match-bundle-in",
+                resourceType: "Parameters",
+                modelType: ProviderMultiMemberMatchRequestParameters
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-device": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-device",
+                resourceType: "Device",
+                modelType: PdexDevice
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-member-match-group": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-member-match-group",
+                resourceType: "Group",
+                modelType: PDexMemberMatchGroup
+            },
+            "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-medicationdispense": {
+                url: "http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-medicationdispense",
+                resourceType: "MedicationDispense",
+                modelType: PdexMedicationDispense
             }
         },
-        searchParameters: [],
+        searchParameters: [DAVINCIPDEX_IG_SEARCH_PARAMS_1],
         operations: DAVINCIPDEX_IG_OPERATIONS.cloneReadOnly()
     };
     r4:FHIRImplementationGuide baseImplementationGuide = new (baseIgRecord);
