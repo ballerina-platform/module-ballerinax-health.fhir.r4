@@ -266,6 +266,22 @@ function getStu3SelectorsTestCases() returns FHIRPathTestCase[] {
             expectError: false
         },
         {
+            name: "test_longDivOverflow",
+            group: "testLongArithmetic",
+            expression: "(-9223372036854775807L - 1L) div -1L",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
+        },
+        {
+            name: "test_longDivNegativeTruncates",
+            group: "testLongArithmetic",
+            expression: "-5L div 2",
+            resourceKey: "patient",
+            expected: [-2],
+            expectError: false
+        },
+        {
             name: "test_longMod",
             group: "testLongArithmetic",
             expression: "(5L mod 2).type().name",

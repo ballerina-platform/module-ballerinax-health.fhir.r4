@@ -1982,7 +1982,9 @@ isolated function numericBinaryOp(json l, json r, string op) returns FhirPathIte
         int ri = r is int ? r : <int>toFloat(r);
         if op == "div" {
             if ri == 0 { return []; }
-            return [li / ri];
+            // The quotient of the minimum Long by -1 is not representable, which results in empty
+            int|error quotient = trap (li / ri);
+            return (quotient is int) ? [quotient] : [];
         }
         if op == "mod" {
             if ri == 0 { return []; }
