@@ -251,6 +251,22 @@ function getMiscTestCases() returns FHIRPathTestCase[] {
             expectError: false
         },
         {
+            name: "test_sortSingletonMultiKeyError",
+            group: "testSort",
+            expression: "Patient.name[0].sort(given)",
+            resourceKey: "patient",
+            expected: [],
+            expectError: true
+        },
+        {
+            name: "test_sortSingletonKey",
+            group: "testSort",
+            expression: "Patient.name[0].sort(family).family",
+            resourceKey: "patient",
+            expected: ["Chalmers"],
+            expectError: false
+        },
+        {
             name: "test_testSort1",
             group: "testSort",
             expression: "(1 | 2 | 3).sort() = (1 | 2 | 3)",

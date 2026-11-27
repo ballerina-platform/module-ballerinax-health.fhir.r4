@@ -688,6 +688,54 @@ function getArithmeticTestCases() returns FHIRPathTestCase[] {
             resourceKey: "patient",
             expected: [true],
             expectError: false
+        },
+        {
+            name: "test_testPowerIntegerType",
+            group: "testPower",
+            expression: "2.power(3).type().name",
+            resourceKey: "patient",
+            expected: ["Integer"],
+            expectError: false
+        },
+        {
+            name: "test_testPowerDecimalIntegralType",
+            group: "testPower",
+            expression: "2.0.power(2).type().name",
+            resourceKey: "patient",
+            expected: ["Decimal"],
+            expectError: false
+        },
+        {
+            name: "test_testPowerMixedIntegralType",
+            group: "testPower",
+            expression: "4.power(0.5).type().name",
+            resourceKey: "patient",
+            expected: ["Decimal"],
+            expectError: false
+        },
+        {
+            name: "test_testPowerLongType",
+            group: "testPower",
+            expression: "2L.power(40)",
+            resourceKey: "patient",
+            expected: [1099511627776],
+            expectError: false
+        },
+        {
+            name: "test_testPowerIntegerOverflow",
+            group: "testPower",
+            expression: "10.power(30)",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
+        },
+        {
+            name: "test_testPowerDecimalLarge",
+            group: "testPower",
+            expression: "10.0.power(30) = 1000000000000000000000000000000.0",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
         }
     ];
 }

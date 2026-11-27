@@ -183,8 +183,29 @@ isolated function applyPowerFunction(FhirPathItem[] collection, Expr[] params, F
     if result.isNaN() || result.isInfinite() {
         return [];
     }
-    if result == float:floor(result) && exp >= 0.0 {
-        return [<int>result];
+    // Integer (or Long) operands give an Integer (or Long), computed exactly; a result that does not fit is empty
+    string baseType = systemTypeOf(collection[0]);
+    string expType = systemTypeOf(expResult[0]);
+    if (baseType == "Integer" || baseType == "Long") && (expType == "Integer" || expType == "Long") && exp >= 0.0 {
+        if float:abs(result) > 9.3e18 {
+            return [];
+        }
+        int intBase = <int>systemValueOf(collection[0]);
+        int power = 1;
+        foreach int _ in 0 ..< <int>exp {
+            int|error next = trap (power * intBase);
+            if next is error {
+                return [];
+            }
+            power = next;
+            if power == 0 || power == 1 {
+                break;
+            }
+        }
+        if power == 1 && intBase == -1 && <int>exp % 2 == 1 {
+            power = -1;
+        }
+        return integerResult([power], collection[0], expResult[0]);
     }
     decimal|error d = decimal:fromString(result.toString());
     if d is decimal {

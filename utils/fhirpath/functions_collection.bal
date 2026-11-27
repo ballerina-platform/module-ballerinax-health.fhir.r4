@@ -220,7 +220,8 @@ isolated function applySelectFunction(FhirPathItem[] collection, Expr[] params, 
 }
 
 isolated function applySortFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
-    if collection.length() <= 1 {
+    // A single item is still keyed, so a key selector returning several items is an error
+    if collection.length() == 0 {
         return collection;
     }
     // Key selectors with their direction; `-key` is accepted as a legacy form of `key desc`
