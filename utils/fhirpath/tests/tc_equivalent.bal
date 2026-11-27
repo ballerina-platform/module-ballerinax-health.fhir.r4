@@ -86,9 +86,7 @@ function getEquivalentTestCases() returns FHIRPathTestCase[] {
             expression: "1.1 ~ 1.2",
             resourceKey: "patient",
             expected: [false],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testEquivalent10",
@@ -104,9 +102,7 @@ function getEquivalentTestCases() returns FHIRPathTestCase[] {
             expression: "1.2 / 1.8 ~ 0.67",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testEquivalent12",
@@ -170,9 +166,7 @@ function getEquivalentTestCases() returns FHIRPathTestCase[] {
             expression: "name ~ name",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testEquivalent20",
@@ -284,9 +278,7 @@ function getEquivalentTestCases() returns FHIRPathTestCase[] {
             expression: "1.1 !~ 1.2",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testNotEquivalent10",
@@ -366,9 +358,7 @@ function getEquivalentTestCases() returns FHIRPathTestCase[] {
             expression: "name !~ name",
             resourceKey: "patient",
             expected: [false],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testNotEquivalent20",

@@ -25,6 +25,7 @@ enum TokenType {
     RIGHT_BRACE,   // }
     DOT,           // .
     COMMA,         // ,
+    COLON,         // : (instance selector element separator)
 
     // Arithmetic / string operators
     PLUS,          // +

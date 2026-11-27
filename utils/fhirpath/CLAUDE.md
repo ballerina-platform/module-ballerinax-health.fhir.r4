@@ -43,11 +43,24 @@ FHIRPath string → Scanner → Tokens → Parser → AST → Interpreter → Re
 | `interpreter.bal` | Tree-walking evaluator for both `get` and `set/remove` operations |
 | `fhir_path_processor.bal` | Public API: `getValuesFromFhirPath` and `setValuesToFhirPath` |
 | `functions_*.bal` | Built-in function implementations split by category (collection, string, math, datetime, type, FHIR-specific) |
+| `values.bal` | Typed collection items (`FhirPathItem = json\|TypedValue`), FHIR→System implicit conversion, model-aware navigation (`childItems`) and type tests (`itemIsOfType`) |
+| `units.bal` | Quantity units: a UCUM subset parser and calendar durations; conversion (`convertQuantity`), alignment for equality/equivalence/comparison (`alignQuantities`), addition (`addQuantities`) and unit algebra for `*` and `/` (`multiplyQuantities`) |
+| `strict_mode.bal` | Opt-in compile-time checks (`checkStrictPaths`): infers static types from the model and reports navigation the model rules out |
+| `model_info.bal` | **Generated** FHIR R4 model: type hierarchy (`FHIR_TYPE_BASE`) and element types (`FHIR_ELEMENT_TYPES`). Regenerate with `scripts/generate_model_info.py` (see its docstring); never edit by hand |
 | `grammar.g4` | ANTLR grammar from the HL7 FHIRPath spec — the authoritative reference for parser structure. ANTLR uses left-recursive rules; `parser.bal` manually converts these into top-down recursive-descent functions. |
+
+### Typed values
+
+Collections are `FhirPathItem[]`. A plain JSON primitive is a System value typed by its shape (boolean/int/decimal/string → Boolean/Integer/Decimal/String). Everything else is a `TypedValue` carrying a namespace and type name:
+- System `Long`, `Date`, `DateTime`, `Time`, `Quantity` (from literals or computations; wrap computed results with `typedResults`/`computedItem`)
+- every value navigated from a FHIR resource, typed from `model_info.bal` (choice types, content references and `_primitive` extension siblings are resolved during navigation)
+
+Payload conventions: System date/time payloads keep the `@` literal prefix (`"@2014-01-25"`, `"@T10:30"`); System Quantity payloads are `{"value", "unit"}` maps. Use `valueOf(item)` for the raw payload and `systemValueOf(item)` when the FHIR→System implicit conversion matters (operators, date/time functions). `interpret()` converts results back to plain JSON with `toOutputJson`, so the public API output format is unchanged.
 
 ### Public API (`fhir_path_processor.bal`)
 
-- `getValuesFromFhirPath(fhirResource, expression, validateInput?, variables?)` → `json[]|FHIRPathError`
+- `getValuesFromFhirPath(fhirResource, expression, validateInput?, variables?, strictMode?)` → `json[]|FHIRPathError`
+  - `strictMode = true` (default from the `strictModeEvaluation` configurable) checks the expression against the FHIR model first (navigation, `is`-guard type narrowing, `toString()` on complex types, non-Boolean `iif` criteria)
 - `setValuesToFhirPath(fhirResource, expression, value|ModificationFunction, validateInput?, validateOutput?)` → `json|FHIRPathError`
   - Pass `()` as value to **remove** the element at the path
   - Pass an `isolated function(json) returns json|error` to transform the value
@@ -62,6 +75,15 @@ Tests use a data-driven pattern driven by an HTTP service in `tests/test_service
 - `tests/*_resource.bal` — fixture FHIR JSON resources indexed by string key via `getResource()`
 - `tests/service_test.bal` — single Ballerina `@test:Config` that calls the HTTP service and fails if any cases fail
 - `tests/Config.toml` — sets `skipDisabledTests = true` (disabled tests are cases not yet fully implemented)
+- A test case with `strict: true` is evaluated in strict mode (used for the official semantic-validation tests)
+- A test case with `ordered: false` compares results regardless of order
+- A test case with `context` (and optionally `contextType`) is evaluated with each node selected by `context` as its focus, through the internal `getValuesWithContext` (used for the official semantic-check cases)
+- `tests/tc_official_r5_additions.bal` and `tests/tc_spec_examples.bal` hold official-suite cases and STU3 specification examples verified with the conformance tooling
+
+### Conformance
+
+`scripts/conformance/run.sh <work-dir>` runs the official HL7 FHIRPath suites (R4 and R5 editions) and the STU3 specification examples against the package and reports per-source pass rates; see `scripts/conformance/README.md` for the verdict categories and the documented known non-passes (where the R4 suite and the specification text conflict, the R4 suite is followed). The `runConformanceCases` test in `tests/conformance_runner.bal` does nothing unless a cases file is configured.
+- Expected results are compared structurally with numbers compared by value (`jsonValuesMatch` in `tests/runner.bal`), so a decimal result matches a literal such as `1.5875`; System Quantity results are written as `{"value": 1.5d, "unit": "mg"}`
 
 To add a new test: add a `FHIRPathTestCase` entry to the relevant `tests/tc_*.bal` file and register any new fixture resource in `tests/runner.bal:getResource()`.
 

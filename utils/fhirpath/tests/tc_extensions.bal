@@ -22,9 +22,7 @@ function getExtensionsTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.birthDate.extension('http://hl7.org/fhir/StructureDefinition/patient-birthTime').exists()",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testExtension2",
@@ -32,9 +30,7 @@ function getExtensionsTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.birthDate.extension(%`ext-patient-birthTime`).exists()",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testExtension3",

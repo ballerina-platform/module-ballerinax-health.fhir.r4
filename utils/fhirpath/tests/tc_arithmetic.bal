@@ -205,7 +205,8 @@ function getArithmeticTestCases() returns FHIRPathTestCase[] {
             group: "testPlus",
             expression: "@1973-12-25T00:00:00.000+10:00 + 0.1 's'",
             resourceKey: "patient",
-            expected: ["@1973-12-25T00:00:00.100+10:00"],
+            // R4 edition of the suite: UCUM quantities are applied in whole units (the R5 edition adds 100 ms)
+            expected: ["@1973-12-25T00:00:00.000+10:00"],
             expectError: false
         },
         {
@@ -318,9 +319,7 @@ function getArithmeticTestCases() returns FHIRPathTestCase[] {
             expression: "'a'-'b' = 'ab'",
             resourceKey: "patient",
             expected: [],
-            expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: true
         },
         {
             name: "test_testMinus5",
@@ -544,9 +543,7 @@ function getArithmeticTestCases() returns FHIRPathTestCase[] {
             expression: "-5.5 div 2 = -2",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testDivEmpty1",
@@ -688,6 +685,62 @@ function getArithmeticTestCases() returns FHIRPathTestCase[] {
             name: "test_testPowerEmpty3",
             group: "testPower",
             expression: "2.5.power({}).empty()",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
+        },
+        {
+            name: "test_testRoundBeyondInteger",
+            group: "testRound",
+            expression: "100000000000000000000.4.round() > 99999999999990000000.0",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
+        },
+        {
+            name: "test_testPowerIntegerType",
+            group: "testPower",
+            expression: "2.power(3).type().name",
+            resourceKey: "patient",
+            expected: ["Integer"],
+            expectError: false
+        },
+        {
+            name: "test_testPowerDecimalIntegralType",
+            group: "testPower",
+            expression: "2.0.power(2).type().name",
+            resourceKey: "patient",
+            expected: ["Decimal"],
+            expectError: false
+        },
+        {
+            name: "test_testPowerMixedIntegralType",
+            group: "testPower",
+            expression: "4.power(0.5).type().name",
+            resourceKey: "patient",
+            expected: ["Decimal"],
+            expectError: false
+        },
+        {
+            name: "test_testPowerLongType",
+            group: "testPower",
+            expression: "2L.power(40)",
+            resourceKey: "patient",
+            expected: [1099511627776],
+            expectError: false
+        },
+        {
+            name: "test_testPowerIntegerOverflow",
+            group: "testPower",
+            expression: "10.power(30)",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
+        },
+        {
+            name: "test_testPowerDecimalLarge",
+            group: "testPower",
+            expression: "10.0.power(30) = 1000000000000000000000000000000.0",
             resourceKey: "patient",
             expected: [true],
             expectError: false

@@ -454,9 +454,7 @@ function getLiteralsTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.birthDate = @1974-12-25",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testDateNotEqual",
@@ -496,9 +494,7 @@ function getLiteralsTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.birthDate != @T12:14:15",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testDateNotEqualTimeMinute",
@@ -506,9 +502,7 @@ function getLiteralsTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.birthDate != @T12:14",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testDateNotEqualToday",
@@ -604,7 +598,8 @@ function getLiteralsTestCases() returns FHIRPathTestCase[] {
             expression: "Patient.name.select(given | family).distinct()",
             resourceKey: "patient",
             expected: ["Peter", "James", "Chalmers", "Jim", "Windsor"],
-            expectError: false
+            expectError: false,
+            ordered: false
         },
         {
             name: "test_testExpressionsEqual",
@@ -660,9 +655,7 @@ function getLiteralsTestCases() returns FHIRPathTestCase[] {
             expression: "(0).not() = false",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testIntegerBooleanNotFalse",
@@ -670,9 +663,7 @@ function getLiteralsTestCases() returns FHIRPathTestCase[] {
             expression: "(1).not() = false",
             resourceKey: "patient",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testNotInvalid",

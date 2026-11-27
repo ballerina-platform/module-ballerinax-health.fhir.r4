@@ -32,6 +32,8 @@ function getResource(string key) returns json|error {
         "patient_name_ext" => { return getPatientNameExtResource(); }
         "questionnaire"    => { return getQuestionnaireResource(); }
         "valueset"         => { return getValuesetResource(); }
+        "parameters_decimals"   => { return getParametersDecimalsResource(); }
+        "parameters_quantities" => { return getParametersQuantitiesResource(); }
         _                  => { return error("Unknown resource key: " + key); }
     }
 }
@@ -57,6 +59,16 @@ function getAllTestCases() returns FHIRPathTestCase[] {
     foreach FHIRPathTestCase tc in getDollarTestCases()      { all.push(tc); }
     foreach FHIRPathTestCase tc in getSpecialTestCases()     { all.push(tc); }
     foreach FHIRPathTestCase tc in getMiscTestCases()        { all.push(tc); }
+    foreach FHIRPathTestCase tc in getModelTypesTestCases()  { all.push(tc); }
+    foreach FHIRPathTestCase tc in getStu3FunctionsTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getStu3ParametersTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getStu3SemanticsTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getStu3QuantitiesTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getStu3SelectorsTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getStrictModeTestCases()  { all.push(tc); }
+    foreach FHIRPathTestCase tc in getOfficialR5AdditionsTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getSpecExamplesTestCases() { all.push(tc); }
+    foreach FHIRPathTestCase tc in getSemanticChecksTestCases() { all.push(tc); }
     return all;
 }
 
@@ -88,7 +100,10 @@ function runCases(FHIRPathTestCase[] cases) returns TestReport {
             continue;
         }
 
-        json[]|FHIRPathError evalResult = getValuesFromFhirPath(resourceResult, tc.expression, false);
+        string? context = tc.context;
+        json[]|FHIRPathError evalResult = context is string
+            ? getValuesWithContext(resourceResult, context, tc.contextType, tc.expression, tc.strict)
+            : getValuesFromFhirPath(resourceResult, tc.expression, false, strictMode = tc.strict);
 
         TestResult tr;
         if tc.expectError {
@@ -108,7 +123,7 @@ function runCases(FHIRPathTestCase[] cases) returns TestReport {
                       failureReason: "Unexpected FHIRPathError: " + evalResult.message(),
                       actualResult: (), expectedResult: tc.expected};
                 failed += 1;
-            } else if evalResult == tc.expected {
+            } else if tc.ordered ? jsonValuesMatch(evalResult, tc.expected) : unorderedMatch(evalResult, tc.expected) {
                 tr = {name: tc.name, group: tc.group, status: "pass",
                       failureReason: (), actualResult: (), expectedResult: ()};
                 passed += 1;
@@ -125,4 +140,59 @@ function runCases(FHIRPathTestCase[] cases) returns TestReport {
 
     string[] failedNames = from TestResult r in results where r.status == "fail" select r.name;
     return {total: cases.length(), passed, failed, skipped, failedNames, results};
+}
+
+// Structural JSON equality that compares numbers by value, so a decimal result matches a float literal
+// written in a test case (e.g. 1.5875)
+function jsonValuesMatch(json actual, json expected) returns boolean {
+    if (actual is int|float|decimal) && (expected is int|float|decimal) {
+        decimal|error a = decimal:fromString(actual.toString());
+        decimal|error e = decimal:fromString(expected.toString());
+        return a is decimal && e is decimal && a == e;
+    }
+    if actual is json[] && expected is json[] {
+        if actual.length() != expected.length() {
+            return false;
+        }
+        foreach int i in 0 ..< actual.length() {
+            if !jsonValuesMatch(actual[i], expected[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    if actual is map<json> && expected is map<json> {
+        if actual.keys().sort() != expected.keys().sort() {
+            return false;
+        }
+        foreach string key in actual.keys() {
+            if !jsonValuesMatch(actual[key], expected[key]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return actual == expected;
+}
+
+// Matches two collections regardless of the order of their items
+function unorderedMatch(json[] actual, json[] expected) returns boolean {
+    if actual.length() != expected.length() {
+        return false;
+    }
+    json[] remaining = actual.clone();
+    foreach json item in expected {
+        int? index = ();
+        foreach int i in 0 ..< remaining.length() {
+            if jsonValuesMatch(remaining[i], item) {
+                index = i;
+                break;
+            }
+        }
+        if index is () {
+            return false;
+        }
+        _ = remaining.remove(index);
+    }
+    return true;
 }

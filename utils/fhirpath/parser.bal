@@ -657,14 +657,18 @@ isolated function parsePrimary(ParserState state) returns FHIRPathParserError|Pa
             return [createQuantityLiteralExpr(numVal, unitStr), newState];
         }
 
-        return [createLiteralExpr(numTok.literal), newState];
+        LiteralExpr literal = createLiteralExpr(numTok.literal);
+        if numTok.literal is decimal && numVal == 0d {
+            literal.text = numTok.lexeme;
+        }
+        return [literal, newState];
     }
 
     // ---- Long number ----
     [boolean, ParserState] longMatch = matchToken(state, LONGNUMBER);
     if longMatch[0] {
         FhirPathToken longTok = previousparse(longMatch[1]);
-        return [createLiteralExpr(longTok.literal), longMatch[1]];
+        return [createLiteralExpr(longTok.literal, "Long"), longMatch[1]];
     }
 
     // ---- String literal ----
@@ -678,7 +682,8 @@ isolated function parsePrimary(ParserState state) returns FHIRPathParserError|Pa
     [boolean, ParserState] dateMatch = matchToken(state, DATE, DATETIME, TIME);
     if dateMatch[0] {
         FhirPathToken dateTok = previousparse(dateMatch[1]);
-        return [createLiteralExpr(dateTok.lexeme), dateMatch[1]];
+        string systemType = dateTok.tokenType == DATE ? "Date" : (dateTok.tokenType == TIME ? "Time" : "DateTime");
+        return [createLiteralExpr(dateTok.lexeme, systemType), dateMatch[1]];
     }
 
     // ---- $this / $index / $total ----
@@ -710,7 +715,7 @@ isolated function parsePrimary(ParserState state) returns FHIRPathParserError|Pa
         [boolean, ParserState] funcParenMatch = matchToken(newState, LEFT_PAREN);
         if funcParenMatch[0] {
             newState = funcParenMatch[1];
-            ParseParamListResult paramsResult = check parseParamList(newState);
+            ParseParamListResult paramsResult = check parseParamList(newState, name == "sort");
             Expr[] params = paramsResult[0];
             newState = paramsResult[1];
 
@@ -723,12 +728,89 @@ isolated function parsePrimary(ParserState state) returns FHIRPathParserError|Pa
             return [createFunctionExpr(name, (), params), newState];
         }
 
+        // instanceSelector: qualifiedIdentifier '{' (':' | instanceElementSelector (',' instanceElementSelector)*) '}'
+        ParseResult? selector = check parseInstanceSelector(name, newState);
+        if selector is ParseResult {
+            return selector;
+        }
+
         return [createIdentifierExpr(name), newState];
     }
 
     FhirPathToken token = peekparse(state);
     return error FHIRPathParserError("Expect expression.",
         token = token);
+}
+
+// ========================================
+// INSTANCE SELECTOR PARSING
+// ========================================
+
+# Parses an instance selector when the identifier just consumed (optionally followed by '.' identifier parts)
+# is followed by '{'.
+# Grammar: instanceSelector -> qualifiedIdentifier '{' (':' | instanceElementSelector (',' instanceElementSelector)*) '}'
+#          instanceElementSelector -> identifier ':' expression
+#
+# + firstName - The first identifier of the type name
+# + state - The parser state after the first identifier
+# + return - The parsed instance selector, () when the tokens do not form one, or an error
+isolated function parseInstanceSelector(string firstName, ParserState state) returns FHIRPathParserError|ParseResult? {
+    string typeName = firstName;
+    ParserState newState = state;
+    while checkToken(newState, DOT) && newState.current + 1 < newState.tokens.length()
+            && isIdentifierLikeToken(newState.tokens[newState.current + 1]) {
+        FhirPathToken part = newState.tokens[newState.current + 1];
+        typeName += "." + (part.tokenType == DELIMITED_IDENTIFIER && part.literal is string ? <string>part.literal : part.lexeme);
+        newState = {tokens: newState.tokens, current: newState.current + 2};
+    }
+    [boolean, ParserState] braceMatch = matchToken(newState, LEFT_BRACE);
+    if !braceMatch[0] {
+        return ();
+    }
+    newState = braceMatch[1];
+    [string, Expr][] elements = [];
+
+    // An empty object is written {:}
+    [boolean, ParserState] colonMatch = matchToken(newState, COLON);
+    if colonMatch[0] {
+        newState = colonMatch[1];
+    } else {
+        while true {
+            [boolean, ParserState] nameMatch = matchIdentifierOrKeyword(newState);
+            if !nameMatch[0] {
+                return error FHIRPathParserError("Expect element name in instance selector.", token = peekparse(newState));
+            }
+            newState = nameMatch[1];
+            FhirPathToken nameToken = previousparse(newState);
+            string elementName = nameToken.tokenType == DELIMITED_IDENTIFIER && nameToken.literal is string
+                ? <string>nameToken.literal : nameToken.lexeme;
+            ConsumeResult colonResult = check consumeparse(newState, COLON, "Expect ':' after element name in instance selector.");
+            if !colonResult[0] {
+                return [(), colonResult[1]];
+            }
+            ParseResult valueResult = check Expression(colonResult[1]);
+            Expr? valueExpr = valueResult[0];
+            newState = valueResult[1];
+            if valueExpr is () {
+                return error FHIRPathParserError("Expect expression after ':' in instance selector.", token = peekparse(newState));
+            }
+            elements.push([elementName, valueExpr]);
+            [boolean, ParserState] commaMatch = matchToken(newState, COMMA);
+            if !commaMatch[0] {
+                break;
+            }
+            newState = commaMatch[1];
+        }
+    }
+    ConsumeResult closeResult = check consumeparse(newState, RIGHT_BRACE, "Expect '}' after instance selector elements.");
+    if !closeResult[0] {
+        return [(), closeResult[1]];
+    }
+    return [createInstanceSelectorExpr(typeName, elements), closeResult[1]];
+}
+
+isolated function isIdentifierLikeToken(FhirPathToken token) returns boolean {
+    return token.tokenType == IDENTIFIER || token.tokenType == DELIMITED_IDENTIFIER;
 }
 
 // ========================================
@@ -768,7 +850,7 @@ isolated function parseInvocation(ParserState state) returns FHIRPathParserError
         [boolean, ParserState] parenMatch = matchToken(newState, LEFT_PAREN);
         if parenMatch[0] {
             newState = parenMatch[1];
-            ParseParamListResult paramsResult = check parseParamList(newState);
+            ParseParamListResult paramsResult = check parseParamList(newState, name == "sort");
             Expr[] params = paramsResult[0];
             newState = paramsResult[1];
 
@@ -809,10 +891,12 @@ isolated function matchIdentifierOrKeyword(ParserState state) returns [boolean, 
 
 # Parses a comma-separated list of function parameters.
 # Grammar: paramList -> expression ( ',' expression )*
+#          sortArgument -> expression ( 'asc' | 'desc' )?   (sort() parameters)
 #
 # + state - The current parser state
+# + sortArguments - Whether the parameters are sort() key selectors that may carry a direction
 # + return - A parse result with the parameter list and updated state, or an error
-isolated function parseParamList(ParserState state) returns FHIRPathParserError|ParseParamListResult {
+isolated function parseParamList(ParserState state, boolean sortArguments = false) returns FHIRPathParserError|ParseParamListResult {
     Expr[] params = [];
     ParserState newState = state;
 
@@ -828,7 +912,9 @@ isolated function parseParamList(ParserState state) returns FHIRPathParserError|
         return [params, newState];
     }
 
-    params.push(expr);
+    [Expr, ParserState] [param, afterParam] = withSortDirection(expr, newState, sortArguments);
+    newState = afterParam;
+    params.push(param);
 
     [boolean, ParserState] matchResult = matchToken(newState, COMMA);
     while matchResult[0] {
@@ -841,11 +927,29 @@ isolated function parseParamList(ParserState state) returns FHIRPathParserError|
             return [params, newState];
         }
 
-        params.push(nextExpr);
+        [Expr, ParserState] [nextParam, afterNext] = withSortDirection(nextExpr, newState, sortArguments);
+        newState = afterNext;
+        params.push(nextParam);
         matchResult = matchToken(newState, COMMA);
     }
 
     return [params, newState];
+}
+
+// Consumes an optional 'asc' / 'desc' after a sort() key selector
+isolated function withSortDirection(Expr expr, ParserState state, boolean sortArguments) returns [Expr, ParserState] {
+    if !sortArguments {
+        return [expr, state];
+    }
+    [boolean, ParserState] ascMatch = matchToken(state, ASC);
+    if ascMatch[0] {
+        return [createSortArgumentExpr(expr, false), ascMatch[1]];
+    }
+    [boolean, ParserState] descMatch = matchToken(state, DESC);
+    if descMatch[0] {
+        return [createSortArgumentExpr(expr, true), descMatch[1]];
+    }
+    return [expr, state];
 }
 
 // ========================================

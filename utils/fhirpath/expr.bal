@@ -27,7 +27,7 @@
 # Base expression type representing any FHIRPath expression node in the AST.
 # This is a union of all possible expression types.
 type Expr BinaryExpr|LiteralExpr|IdentifierExpr|FunctionExpr|MemberAccessExpr|IndexerExpr
-        |UnaryExpr|ExternalConstantExpr|QuantityLiteralExpr;
+        |UnaryExpr|ExternalConstantExpr|QuantityLiteralExpr|SortArgumentExpr|InstanceSelectorExpr;
 
 // ========================================
 // EXPRESSION NODE TYPES
@@ -51,9 +51,14 @@ type BinaryExpr record {|
 #
 # + kind - The expression kind discriminator (always "Literal")
 # + value - The literal value (number, string, boolean, or nil)
+# + systemType - The System type for literals not typed by their value (Long, Date, DateTime, Time)
+# + text - The written form of a decimal zero literal
 type LiteralExpr record {|
     "Literal" kind;
     anydata? value;
+    string? systemType = ();
+    // The written form of a decimal zero (e.g. "0.00"), whose scale a decimal value does not keep
+    string? text = ();
 |};
 
 # Represents an identifier expression (e.g., name, resourceType, given).
@@ -137,6 +142,28 @@ type QuantityLiteralExpr record {|
     string unit;
 |};
 
+# Represents a sort() key selector with an explicit direction (e.g., family desc).
+#
+# + kind - The expression kind discriminator (always "SortArgument")
+# + key - The key selector expression
+# + isDescending - Whether the key sorts in descending order
+type SortArgumentExpr record {|
+    "SortArgument" kind;
+    Expr key;
+    boolean isDescending;
+|};
+
+# Represents an instance selector that creates an object (e.g., Coding { system: 'http://loinc.org', code: '1234-5' }).
+#
+# + kind - The expression kind discriminator (always "InstanceSelector")
+# + typeName - The (optionally namespace-qualified) name of the type to create
+# + elements - The element names with the expressions that give their values
+type InstanceSelectorExpr record {|
+    "InstanceSelector" kind;
+    string typeName;
+    [string, Expr][] elements;
+|};
+
 // ========================================
 // EXPRESSION CONSTRUCTORS
 // ========================================
@@ -161,11 +188,13 @@ isolated function createBinaryExpr(Expr left, FhirPathToken operator, Expr right
 # Creates a literal expression node.
 #
 # + value - The literal value (number, string, boolean, or nil)
+# + systemType - The System type for literals not typed by their value (Long, Date, DateTime, Time)
 # + return - A new LiteralExpr node
-isolated function createLiteralExpr(anydata? value) returns LiteralExpr {
+isolated function createLiteralExpr(anydata? value, string? systemType = ()) returns LiteralExpr {
     return {
         kind: "Literal",
-        value: value
+        value: value,
+        systemType: systemType
     };
 }
 
@@ -255,5 +284,31 @@ isolated function createQuantityLiteralExpr(decimal value, string unit) returns 
         kind: "QuantityLiteral",
         value: value,
         unit: unit
+    };
+}
+
+# Creates a sort() key selector node.
+#
+# + key - The key selector expression
+# + isDescending - Whether the key sorts in descending order
+# + return - A new SortArgumentExpr node
+isolated function createSortArgumentExpr(Expr key, boolean isDescending) returns SortArgumentExpr {
+    return {
+        kind: "SortArgument",
+        key: key,
+        isDescending: isDescending
+    };
+}
+
+# Creates an instance selector node.
+#
+# + typeName - The (optionally namespace-qualified) name of the type to create
+# + elements - The element names with the expressions that give their values
+# + return - A new InstanceSelectorExpr node
+isolated function createInstanceSelectorExpr(string typeName, [string, Expr][] elements) returns InstanceSelectorExpr {
+    return {
+        kind: "InstanceSelector",
+        typeName: typeName,
+        elements: elements
     };
 }

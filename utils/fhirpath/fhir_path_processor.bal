@@ -24,6 +24,8 @@ configurable boolean inputFHIRResourceValidation = false;
 // Configurable to control whether output FHIR resource validation should be performed. Used only in setFhirPathValues() function.
 configurable boolean outputFHIRResourceValidation = false;
 
+configurable boolean strictModeEvaluation = false;
+
 # FhirpathResourceValidationError is the error object that is returned when an error occurs during FHIR resource validation.
 type FHIRPathResourceValidationError distinct error;
 
@@ -36,8 +38,11 @@ public type FHIRPathError FHIRPathScannerError|FHIRPathParserError|FHIRPathInter
 # + fhirPathExpression - fhirpath expression to get values from
 # + validateInputFHIRResource - whether to validate the input FHIR resource (default = false)
 # + variables - optional map of variable bindings available in the expression
+# + strictMode - whether to check the expression against the FHIR R4 model before evaluating it; navigation to
+#                elements that the model does not define, type names that do not match the context and choice
+#                elements accessed by their expanded name are then errors instead of empty results (default = false)
 # + return - list of results of the fhirpath expression or FHIRPathError (scanner/parser/interpreter/validation errors)
-public isolated function getValuesFromFhirPath(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation, map<json>? variables = ()) returns json[]|FHIRPathError {
+public isolated function getValuesFromFhirPath(json fhirResource, string fhirPathExpression, boolean validateInputFHIRResource = inputFHIRResourceValidation, map<json>? variables = (), boolean strictMode = strictModeEvaluation) returns json[]|FHIRPathError {
     // Validate input FHIR resource and throw error if invalid
     if validateInputFHIRResource {
         check validateFhirResource(fhirResource);
@@ -61,6 +66,10 @@ public isolated function getValuesFromFhirPath(json fhirResource, string fhirPat
         return error FHIRPathParserError("Failed to parse FHIRPath expression", token = tokens[tokens.length() - 1]);
     }
 
+    if strictMode {
+        check checkStrictPaths(expr, fhirResource);
+    }
+
     // Interpret the expression
     FHIRPathInterpreterError|json[] evaluationResult = interpret(expr, fhirResource, variables);
     if evaluationResult is FHIRPathInterpreterError {
@@ -68,6 +77,44 @@ public isolated function getValuesFromFhirPath(json fhirResource, string fhirPat
     }
 
     return evaluationResult;
+}
+
+# Evaluates a FHIRPath expression with each node selected by a context expression as its focus (as with an
+# invariant defined on an element), used by the test suites.
+#
+# + fhirResource - Input FHIR resource
+# + contextExpression - Expression selecting the focus nodes (e.g. "Observation.effective")
+# + contextType - The declared type(s) of the focus for strict mode checks, separated by '|' (e.g. "Period|Timing");
+#                 when absent the type is inferred from the context expression
+# + fhirPathExpression - Expression to evaluate on each focus node
+# + strictMode - Whether to check the expressions against the FHIR model before evaluating them
+# + return - The combined results or FHIRPathError
+isolated function getValuesWithContext(json fhirResource, string contextExpression, string? contextType,
+        string fhirPathExpression, boolean strictMode = false) returns json[]|FHIRPathError {
+    Expr contextExpr = check parseExpression(contextExpression);
+    Expr expr = check parseExpression(fhirPathExpression);
+    if strictMode {
+        StaticType root = staticRootType(fhirResource);
+        StaticType focus;
+        if contextType is string {
+            focus = re `\|`.split(contextType);
+        } else {
+            focus = check inferStaticType(contextExpr, root, root);
+        }
+        check checkStrictPaths(contextExpr, fhirResource);
+        check checkStrictPaths(expr, fhirResource, focus);
+    }
+    return interpretInContext(contextExpr, expr, fhirResource);
+}
+
+// Scans and parses an expression
+isolated function parseExpression(string fhirPathExpression) returns Expr|FHIRPathError {
+    FhirPathToken[] tokens = check scanTokens(fhirPathExpression);
+    Expr? expr = check parse(tokens);
+    if expr is () {
+        return error FHIRPathParserError("Failed to parse FHIRPath expression", token = tokens[tokens.length() - 1]);
+    }
+    return expr;
 }
 
 # Updates a FHIR resource at the specified FHIRPath with either a new value or by applying a ModificationFunction

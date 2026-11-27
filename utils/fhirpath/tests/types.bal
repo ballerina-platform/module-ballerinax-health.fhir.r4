@@ -22,6 +22,14 @@ type FHIRPathTestCase record {|
     json[] expected;
     boolean expectError;
     boolean disabled = false;
+    // Evaluate in strict mode (compile-time path checks against the FHIR model)
+    boolean strict = false;
+    // Whether the result order matters
+    boolean ordered = true;
+    // Evaluate the expression with each node selected by this expression as its focus
+    string? context = ();
+    // Declared type(s) of the focus for strict mode checks (e.g. "Period|Timing")
+    string? contextType = ();
 |};
 
 type TestResult record {|

@@ -26,44 +26,27 @@
 # + context - The current evaluation context
 # + env - The evaluation environment
 # + return - Matching extension objects, or an error
-isolated function applyExtensionFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyExtensionFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("extension", "1 parameter", params.length());
     }
-    json[] urlResult = check evaluate(params[0], context, env);
+    FhirPathItem[] urlResult = check evaluate(params[0], context, env);
     if urlResult.length() == 0 {
         return [];
     }
-    json urlVal = urlResult[0];
+    json urlVal = systemValueOf(urlResult[0]);
     if urlVal !is string {
         return [];
     }
     string url = urlVal;
 
-    json[] result = [];
-    foreach json item in collection {
-        if item is map<json> {
-            json extField = item["extension"];
-            if extField is json[] {
-                foreach json ext in extField {
-                    if ext is map<json> {
-                        json extUrl = ext["url"];
-                        if extUrl is string && extUrl == url {
-                            result.push(ext);
-                        }
-                    }
-                }
-            }
-            // Also check modifierExtension
-            json modExtField = item["modifierExtension"];
-            if modExtField is json[] {
-                foreach json ext in modExtField {
-                    if ext is map<json> {
-                        json extUrl = ext["url"];
-                        if extUrl is string && extUrl == url {
-                            result.push(ext);
-                        }
-                    }
+    FhirPathItem[] result = [];
+    foreach FhirPathItem item in collection {
+        foreach string extField in ["extension", "modifierExtension"] {
+            foreach FhirPathItem ext in childItems(item, extField) {
+                json extVal = valueOf(ext);
+                if extVal is map<json> && extVal["url"] == url {
+                    result.push(ext);
                 }
             }
         }
@@ -78,7 +61,7 @@ isolated function applyExtensionFunction(json[] collection, Expr[] params, json 
 # + collection - The collection of references to resolve
 # + params - Function parameters (none expected)
 # + return - Resolved resources, or empty if resolution is not available
-isolated function applyResolveFunction(json[] collection, Expr[] params) returns FHIRPathInterpreterError|json[] {
+isolated function applyResolveFunction(FhirPathItem[] collection, Expr[] params) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 0 {
         return fnError("resolve", "0 parameters", params.length());
     }
@@ -94,15 +77,15 @@ isolated function applyResolveFunction(json[] collection, Expr[] params) returns
 # + context - The current evaluation context
 # + env - The evaluation environment
 # + return - [true] as a stub (requires terminology service for real validation)
-isolated function applyConformsToFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyConformsToFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("conformsTo", "1 parameter", params.length());
     }
-    json[] urlResult = check evaluate(params[0], context, env);
+    FhirPathItem[] urlResult = check evaluate(params[0], context, env);
     if urlResult.length() == 0 {
         return [];
     }
-    json urlVal = urlResult[0];
+    json urlVal = systemValueOf(urlResult[0]);
     if urlVal !is string {
         return [];
     }
@@ -117,7 +100,8 @@ isolated function applyConformsToFunction(json[] collection, Expr[] params, json
 
     string profileResourceType = url.substring(sdPrefix.length());
 
-    foreach json item in collection {
+    foreach FhirPathItem entry in collection {
+        json item = valueOf(entry);
         if item is map<json> {
             json|error rt = item["resourceType"];
             if rt is string && rt == profileResourceType {
@@ -136,7 +120,7 @@ isolated function applyConformsToFunction(json[] collection, Expr[] params, json
 # + context - The current evaluation context
 # + env - The evaluation environment
 # + return - [false] as a stub (requires terminology service for real validation)
-isolated function applyMemberOfFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
+isolated function applyMemberOfFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
     if params.length() != 1 {
         return fnError("memberOf", "1 parameter", params.length());
     }
@@ -152,7 +136,7 @@ isolated function applyMemberOfFunction(json[] collection, Expr[] params, json c
 # + context - The current evaluation context
 # + env - The evaluation environment
 # + return - Boolean result, or an error
-isolated function applyHasExtensionFunction(json[] collection, Expr[] params, json context, FhirPathEnv env) returns FHIRPathInterpreterError|json[] {
-    json[] exts = check applyExtensionFunction(collection, params, context, env);
+isolated function applyHasExtensionFunction(FhirPathItem[] collection, Expr[] params, FhirPathItem context, FhirPathEnv env) returns FHIRPathInterpreterError|FhirPathItem[] {
+    FhirPathItem[] exts = check applyExtensionFunction(collection, params, context, env);
     return [exts.length() > 0];
 }

@@ -31,8 +31,8 @@ function getNavigationTestCases() returns FHIRPathTestCase[] {
             resourceKey: "observation",
             expected: [],
             expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            // Semantic validation: only an error when the expression is checked against the model
+            strict: true
         },
         {
             name: "test_testPolymorphismIsA1",
@@ -40,9 +40,7 @@ function getNavigationTestCases() returns FHIRPathTestCase[] {
             expression: "Observation.value.is(Quantity)",
             resourceKey: "observation",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testPolymorphismIsA2",
@@ -50,9 +48,7 @@ function getNavigationTestCases() returns FHIRPathTestCase[] {
             expression: "Observation.value is Quantity",
             resourceKey: "observation",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testPolymorphismIsA3",
@@ -60,9 +56,7 @@ function getNavigationTestCases() returns FHIRPathTestCase[] {
             expression: "Observation.issued is instant",
             resourceKey: "observation",
             expected: [],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testPolymorphismIsB",
@@ -95,8 +89,8 @@ function getNavigationTestCases() returns FHIRPathTestCase[] {
             resourceKey: "observation",
             expected: [],
             expectError: true,
-            // TODO: enable once implementation supports this
-            disabled: true
+            // Semantic validation: only an error when the expression is checked against the model
+            strict: true
         },
         {
             name: "test_testPolymorphismAsBFunction",
@@ -200,9 +194,7 @@ function getNavigationTestCases() returns FHIRPathTestCase[] {
             expression: "Observation.extension('http://example.com/fhir/StructureDefinition/patient-age').value is Quantity",
             resourceKey: "observation",
             expected: [true],
-            expectError: false,
-            // TODO: enable once implementation supports this
-            disabled: true
+            expectError: false
         },
         {
             name: "test_testFHIRPathIsFunction10",
