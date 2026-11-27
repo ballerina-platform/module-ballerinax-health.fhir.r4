@@ -479,10 +479,16 @@ public isolated function mapCcdaDateTimeToFhirDateTime(xml dateTimeElement) retu
             return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}`;
         }
         17 => {
-            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(8, 10)}:${dateTimeVal.substring(10, 15)}:${dateTimeVal.substring(15, 17)}`;
+            // Format: YYYYMMDDHHmmss+ZZ or YYYYMMDDHHmmss-ZZ
+            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(8, 10)}:${dateTimeVal.substring(10, 12)}:${dateTimeVal.substring(12, 14)}${dateTimeVal.substring(14, 17)}`;
         }
         19 => {
-            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(8, 10)}:${dateTimeVal.substring(10, 15)}:${dateTimeVal.substring(15, 17)}`;
+            // Format: YYYYMMDDHHmmss+ZZZZ or YYYYMMDDHHmmss-ZZZZ
+            // Example: 20140520193605-0500 -> 2014-05-20T19:36:05-05:00
+            string tzSign = dateTimeVal.substring(14, 15); // '+' or '-'
+            string tzHours = dateTimeVal.substring(15, 17); // '05'
+            string tzMins = dateTimeVal.substring(17, 19);  // '00'
+            return string `${dateTimeVal.substring(0, 4)}-${dateTimeVal.substring(4, 6)}-${dateTimeVal.substring(6, 8)}T${dateTimeVal.substring(8, 10)}:${dateTimeVal.substring(10, 12)}:${dateTimeVal.substring(12, 14)}${tzSign}${tzHours}:${tzMins}`;
         }
         _ => {
             log:printDebug("Invalid dateTime length");
