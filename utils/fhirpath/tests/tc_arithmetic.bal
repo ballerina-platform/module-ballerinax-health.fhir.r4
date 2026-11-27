@@ -690,6 +690,14 @@ function getArithmeticTestCases() returns FHIRPathTestCase[] {
             expectError: false
         },
         {
+            name: "test_testRoundBeyondInteger",
+            group: "testRound",
+            expression: "100000000000000000000.4.round() > 99999999999990000000.0",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
+        },
+        {
             name: "test_testPowerIntegerType",
             group: "testPower",
             expression: "2.power(3).type().name",

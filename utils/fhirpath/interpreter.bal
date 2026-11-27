@@ -639,6 +639,9 @@ isolated function applyComparisonOperator(FhirPathItem[] left, FhirPathItem[] ri
 
     // Quantity comparison, converting to a common unit
     if isQuantityItem(left[0]) || isQuantityItem(right[0]) {
+        if calendarYearMonthOrdering(left[0], right[0]) {
+            return [];
+        }
         [decimal, decimal]? aligned = alignQuantityItems(left[0], right[0], false);
         if aligned is () {
             return [];
@@ -671,10 +674,10 @@ isolated function applyComparisonOperator(FhirPathItem[] left, FhirPathItem[] ri
 
     // String comparison (includes date/time literals)
     if l is string && r is string {
-        // Timezone-aware datetime comparison: normalize both to UTC minutes
+        // Timezone-aware datetime comparison: normalize both to UTC
         if l.startsWith("@") && r.startsWith("@") {
-            int? lMin = datetimeToUTCMinutes(l);
-            int? rMin = datetimeToUTCMinutes(r);
+            int? lMin = datetimeToUtcMillis(l);
+            int? rMin = datetimeToUtcMillis(r);
             if lMin is int && rMin is int {
                 if op == "<" { return [lMin < rMin]; }
                 if op == ">" { return [lMin > rMin]; }
@@ -986,11 +989,14 @@ isolated function addQuantityToDateTimeStr(string s, int tIdx, string unit, deci
     int ms = 0;
     boolean hasMs = false;
 
-    if timeNoTz.length() >= 5 {
+    if timeNoTz.length() >= 2 {
         int|error hParse = int:fromString(timeNoTz.substring(0, 2));
-        int|error minParse = int:fromString(timeNoTz.substring(3, 5));
-        if hParse is error || minParse is error { return []; }
+        if hParse is error { return []; }
         hour = hParse;
+    }
+    if timeNoTz.length() >= 5 {
+        int|error minParse = int:fromString(timeNoTz.substring(3, 5));
+        if minParse is error { return []; }
         minute = minParse;
     }
     if timeNoTz.length() >= 8 {
@@ -1060,9 +1066,16 @@ isolated function addQuantityToDateTimeStr(string s, int tIdx, string unit, deci
     }
 
     string newDatePart = year.toString() + "-" + zeroPad(month) + "-" + zeroPad(day);
+    // The result keeps the precision of the input (@2015-02-04T10Z + 1 hour = @2015-02-04T11Z)
     string newTimePart;
     if hasMs {
         newTimePart = zeroPad(hour) + ":" + zeroPad(minute) + ":" + zeroPad(second) + "." + zeroPad3(ms);
+    } else if timeNoTz.length() >= 8 {
+        newTimePart = zeroPad(hour) + ":" + zeroPad(minute) + ":" + zeroPad(second);
+    } else if timeNoTz.length() >= 5 {
+        newTimePart = zeroPad(hour) + ":" + zeroPad(minute);
+    } else if timeNoTz.length() >= 2 {
+        newTimePart = zeroPad(hour);
     } else {
         newTimePart = zeroPad(hour) + ":" + zeroPad(minute) + ":" + zeroPad(second);
     }
@@ -1656,9 +1669,9 @@ isolated function normalizeDateTimeNoTz(string s) returns string {
     return result;
 }
 
-// Converts @YYYY-MM-DDTHH:MM:SS[.sss][Z|+HH:MM|-HH:MM] to total UTC minutes for comparison.
+// Converts @YYYY-MM-DDTHH:MM:SS[.sss][Z|+HH:MM|-HH:MM] to UTC milliseconds since the epoch for comparison.
 // Returns () if the string has no timezone.
-isolated function datetimeToUTCMinutes(string s) returns int? {
+isolated function datetimeToUtcMillis(string s) returns int? {
     if !s.startsWith("@") { return (); }
     string t = s.substring(1);
     if t.length() < 19 || t.substring(10, 11) != "T" { return (); }
@@ -1671,7 +1684,8 @@ isolated function datetimeToUTCMinutes(string s) returns int? {
     if yr is error || mo is error || dy is error || hr is error || mn is error || sc is error { return (); }
 
     string suffix = t.length() > 19 ? t.substring(19) : "";
-    // Skip fractional seconds
+    // Fractional seconds (seconds and milliseconds are a single precision)
+    int millis = 0;
     if suffix.startsWith(".") {
         int i = 1;
         while i < suffix.length() {
@@ -1679,6 +1693,10 @@ isolated function datetimeToUTCMinutes(string s) returns int? {
             if ch == "+" || ch == "-" || ch == "Z" { break; }
             i += 1;
         }
+        string digits = (suffix.substring(1, i) + "000").substring(0, 3);
+        int|error ms = int:fromString(digits);
+        if ms is error { return (); }
+        millis = ms;
         suffix = i < suffix.length() ? suffix.substring(i) : "";
     }
     int tzMinutes;
@@ -1693,9 +1711,10 @@ isolated function datetimeToUTCMinutes(string s) returns int? {
     } else {
         return (); // No timezone
     }
-    // UTC = local - offset; use approximate month-days for ordering only
-    int total = <int>yr * 525960 + <int>mo * 44640 + <int>dy * 1440 + <int>hr * 60 + <int>mn - tzMinutes;
-    return total;
+    // UTC = local - offset, as milliseconds since the epoch
+    int days = daysFromCivil({year: <int>yr, month: <int>mo, day: <int>dy});
+    int minutes = days * 1440 + <int>hr * 60 + <int>mn - tzMinutes;
+    return (minutes * 60 + <int>sc) * 1000 + millis;
 }
 
 // Compares the year/month/day components a Date and a DateTime have in common.
@@ -1913,6 +1932,20 @@ isolated function quantityOf(FhirPathItem item) returns QuantityValue? {
         return {value, unit};
     }
     return ();
+}
+
+// Whether two operands are calendar durations in different units with a year or month among them, which are not
+// ordered by their values (`1 year > 2 months` is empty; equality still converts, so `1 year = 12 months` is true)
+isolated function calendarYearMonthOrdering(FhirPathItem left, FhirPathItem right) returns boolean {
+    QuantityValue? a = quantityOf(left);
+    QuantityValue? b = quantityOf(right);
+    if a is () || b is () {
+        return false;
+    }
+    string ua = normalizeCalendarUnit(a.unit);
+    string ub = normalizeCalendarUnit(b.unit);
+    return ua != ub && isCalendarUnit(ua) && isCalendarUnit(ub)
+        && (ua == "year" || ua == "month" || ub == "year" || ub == "month");
 }
 
 // Values of two quantity operands in a common unit. A FHIR Quantity is matched on its code first and on its

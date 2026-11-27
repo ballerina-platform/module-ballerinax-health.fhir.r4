@@ -4,8 +4,8 @@ These scripts measure the package against three independent sources:
 
 | Source | Cases | What it is |
 |--------|-------|------------|
-| `r5` | 1185 | The official FHIRPath test suite ([fhir-test-cases `r5/fhirpath/tests-fhir-r5.xml`](https://github.com/FHIR/fhir-test-cases/blob/master/r5/fhirpath/tests-fhir-r5.xml)), the source of truth maintained with the specification |
-| `r4` | 1027 | The R4 edition of the same suite (`r4/fhirpath/tests-fhir-r4.xml`), evaluated on the R4 inputs |
+| `r5` | 1410 | The official FHIRPath test suite ([fhir-test-cases `r5/fhirpath/tests-fhir-r5.xml`](https://github.com/FHIR/fhir-test-cases/blob/master/r5/fhirpath/tests-fhir-r5.xml)), the source of truth maintained with the specification |
+| `r4` | 1254 | The R4 edition of the same suite (`r4/fhirpath/tests-fhir-r4.xml`), evaluated on the R4 inputs |
 | `spec` | ~430 | Worked examples (`expression // result`) extracted from the [FHIRPath STU3 specification](https://hl7.org/fhirpath/STU3/en/) text |
 
 ## Running
@@ -25,7 +25,11 @@ The suite conventions are honoured: `invalid="syntax|execution"` expects an erro
 `mode="strict"` evaluate in strict mode, `context` sets the focus (and `contextType` its declared type for the static
 checks), `predicate` compares existence and
 `ordered="false"` ignores order. Terminology (`mode="tx"`), `htmlChecks()` (`mode="html"`) and CDA (`mode="cda"`)
-cases are reported as not applicable.
+cases are reported as not applicable, as are the `mode="custom"` groups (e.g. `documentFunctions`: `section()`,
+`entry()`, `sameSubject()` and others, extensions of the HL7 Java reference implementation that the suite says other
+engines run only if they choose to). Cases whose input Ballerina cannot load as `json` are also skipped:
+`parameters-example-large-exponents` holds decimals such as `1e999999999`, beyond the range of Ballerina's `decimal`,
+so no caller could pass that resource to the library (its literal-only cases are in the regular tests).
 
 ## Verdicts
 
@@ -37,9 +41,9 @@ cases are reported as not applicable.
 
 ## Known non-passes
 
-The package targets FHIR R4: **the R4 suite passes in full** (1027/1027). Where the R4 suite and the STU3 text
-differ, the R4 suite's expectation is implemented. Results at the time of writing (2026-10): r4 1027/1027,
-r5 1169/1175, spec examples 416/429. No case causes an engine panic.
+The package targets FHIR R4: **every applicable case of the R4 suite passes**. Where the R4 suite and the STU3 text
+differ, the R4 suite's expectation is implemented. Results at the time of writing (2026-11): r4 1083/1083 (169 not
+applicable), r5 1217/1223, spec examples 415/429. No case causes an engine panic.
 
 **R5 suite (all specific to the R5 edition):**
 - `testPlusDate19`: the R5 edition adds 100 ms for `+ 0.1 's'`; the R4 edition (implemented) applies UCUM time
@@ -52,7 +56,8 @@ r5 1169/1175, spec examples 416/429. No case causes an engine panic.
 - `testMultipleResolve` (`mode="element"`): `resolve()` across resources is not implemented.
 - Not applicable: terminology services (`mode="tx"`), `htmlChecks()` (`mode="html"`) and CDA (`mode="cda"`).
 
-**Spec examples:** placeholders (`A`, `B`, `q`), illustrative values (`today()`, `timeOfDay()`), an Observation
+**Spec examples:** `6 months > 1 year` (the text gives `false`; the R4 suite, implemented, does not order calendar years
+and months against other calendar units: `1 year > 2 months` is empty), placeholders (`A`, `B`, `q`), illustrative values (`today()`, `timeOfDay()`), an Observation
 example evaluated on a Patient, the typo `5 'm',convertsToQuantity('kg')`, `'in_i'` (not a UCUM code; `[in_i]`
 works), `1 minute - 30 's'` (documented as `0.5 minute`; the result `30 seconds` is equal), and the boundary examples
 `@2014-01-01T08.lowBoundary(17)` / `.highBoundary(17)` (written without the timezone and with `08:59:59.999`; the test

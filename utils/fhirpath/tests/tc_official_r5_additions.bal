@@ -887,6 +887,118 @@ function getOfficialR5AdditionsTestCases() returns FHIRPathTestCase[] {
             resourceKey: "patient_name_ext",
             expected: [],
             expectError: false
+        },
+        {
+            name: "test_testEscapedIdentifierUnicode",
+            group: "testBasics",
+            expression: "Patient.`\\u006eame`.given.first()",
+            resourceKey: "patient",
+            expected: ["Peter"],
+            expectError: false
+        },
+        {
+            name: "test_testLiteralUnicodeInvalid",
+            group: "testLiterals",
+            expression: "'\\u+041'",
+            resourceKey: "patient",
+            expected: [],
+            expectError: true
+        },
+        {
+            name: "test_testGreaterThan29",
+            group: "testGreaterThan",
+            expression: "1 year > 2 months",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
+        },
+        {
+            name: "test_testLessThan29",
+            group: "testLessThan",
+            expression: "1 year < 2 months",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
+        },
+        {
+            name: "test_testLessOrEqual28",
+            group: "testLessOrEqual",
+            expression: "1 year <= 2 days",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
+        },
+        {
+            name: "test_testLessThan28",
+            group: "testLessThan",
+            expression: "(Patient.birthDate.extension('http://hl7.org/fhir/StructureDefinition/patient-birthTime').value < @1975-01-01T00:00:00Z) and Patient.birthDate.extension('http://hl7.org/fhir/StructureDefinition/patient-birthTime').value.toString() = '1974-12-25T14:35:45-05:00'",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
+        },
+        {
+            name: "test_testMinus7",
+            group: "testMinus",
+            expression: "@2015-02-04T10:00Z - 1 day = @2015-02-03T10:00Z",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
+        },
+        {
+            name: "test_testPlusDate23",
+            group: "testPlus",
+            expression: "@2015-02-04T10:00Z + 1 hour = @2015-02-04T11:00Z",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
+        },
+        {
+            name: "test_testPlusDate24",
+            group: "testPlus",
+            expression: "@2015-02-04T10Z + 1 hour = @2015-02-04T11Z",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
+        },
+        {
+            name: "test_testRepeat6",
+            group: "testRepeat",
+            expression: "(1 | 2).repeat($this).count() = 2",
+            resourceKey: "patient",
+            expected: [true],
+            expectError: false
+        },
+        {
+            name: "test_testHugeRoundPrecision",
+            group: "testRound",
+            expression: "1.5.round(2000000000)",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
+        },
+        {
+            name: "test_testNegativeRoundPrecision",
+            group: "testRound",
+            expression: "1.5.round(-1)",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
+        },
+        {
+            name: "test_testHugeQtyLowBoundaryPrecision",
+            group: "LowBoundary",
+            expression: "1.5 'kg'.lowBoundary(999999999)",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
+        },
+        {
+            name: "test_testNegativeQtyHighBoundaryPrecision",
+            group: "HighBoundary",
+            expression: "1.5 'kg'.highBoundary(-1)",
+            resourceKey: "patient",
+            expected: [],
+            expectError: false
         }
     ];
 }

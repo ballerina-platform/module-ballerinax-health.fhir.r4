@@ -30,6 +30,9 @@ function runConformanceCases() returns error? {
     }
     json[] cases = <json[]>check io:fileReadJson(conformanceCases);
     map<json> inputs = {};
+    // Inputs Ballerina cannot load as json (e.g. a decimal beyond the range of `decimal`, such as 1e999999999),
+    // so no caller could pass them to the library: their cases are reported as skipped
+    map<string> unloadable = {};
     json[] results = [];
     foreach json entry in cases {
         map<json> tc = <map<json>>entry;
@@ -40,8 +43,18 @@ function runConformanceCases() returns error? {
         json inputResource = ();
         json inputPath = tc["input"];
         if inputPath is string {
-            if !inputs.hasKey(inputPath) {
-                inputs[inputPath] = check io:fileReadJson(inputPath);
+            if !inputs.hasKey(inputPath) && !unloadable.hasKey(inputPath) {
+                json|error loaded = io:fileReadJson(inputPath);
+                if loaded is error {
+                    unloadable[inputPath] = loaded.message();
+                } else {
+                    inputs[inputPath] = loaded;
+                }
+            }
+            if unloadable.hasKey(inputPath) {
+                results.push({name: tc["name"], suite: tc["suite"], status: "skipped",
+                    message: "input cannot be loaded as Ballerina json: " + unloadable.get(inputPath)});
+                continue;
             }
             inputResource = inputs.get(inputPath);
         }

@@ -348,8 +348,9 @@ isolated function applyRepeatFunction(FhirPathItem[] collection, Expr[] params, 
     FhirPathItem[] current = collection;
     // Keep applying criteria until no new items are produced
     boolean changed = true;
-    // Track visited items to avoid infinite loops
-    FhirPathItem[] visited = [...collection];
+    // Items already in the output are not added again, which also ends cycles; the input items themselves are
+    // only excluded once they are produced ((1 | 2).repeat($this) is (1 | 2))
+    FhirPathItem[] visited = [];
 
     while changed {
         changed = false;

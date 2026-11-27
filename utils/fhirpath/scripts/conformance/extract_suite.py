@@ -25,7 +25,8 @@ import sys
 import xml.etree.ElementTree as ET
 
 NS = "{http://hl7.org/fhirpath/tests}"
-NOT_APPLICABLE_MODES = {"tx": "terminology service", "html": "htmlChecks()", "cda": "CDA logical model"}
+NOT_APPLICABLE_MODES = {"tx": "terminology service", "html": "htmlChecks()", "cda": "CDA logical model",
+                        "custom": "engine-specific extension functions"}
 
 
 def main(label, path, inputs_dir, prefix):
@@ -44,7 +45,8 @@ def main(label, path, inputs_dir, prefix):
             if input_file:
                 candidate = os.path.join(inputs_dir, prefix + os.path.splitext(input_file)[0] + ".json")
                 input_json = candidate if os.path.exists(candidate) else None
-            mode = test.get("mode") or group_mode
+            # A not-applicable group mode (e.g. "custom") covers every test in the group
+            mode = group_mode if group_mode in NOT_APPLICABLE_MODES else (test.get("mode") or group_mode)
             skip = None
             if mode in NOT_APPLICABLE_MODES:
                 skip = "not applicable: " + NOT_APPLICABLE_MODES[mode]

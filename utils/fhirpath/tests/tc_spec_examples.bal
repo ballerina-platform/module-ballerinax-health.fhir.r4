@@ -2246,9 +2246,11 @@ function getSpecExamplesTestCases() returns FHIRPathTestCase[] {
         {
             name: "test_specExample279",
             group: "specExamples",
+            // The R4 test suite (testGreaterThan29) does not order calendar years and months by value; the spec
+            // text gives false (0.5 > 1)
             expression: "6 months > 1 year",
             resourceKey: "patient",
-            expected: [false],
+            expected: [],
             expectError: false
         },
         {

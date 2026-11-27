@@ -348,7 +348,9 @@ isolated function scanDelimitedIdentifier(ScannerState state) returns FHIRPathSc
     [string, ScannerState] result = advanceScanner(newState);
     newState = result[1];
 
-    string value = newState.sourceCode.substring(newState.startIndex + 1, newState.current - 1);
+    // Escape sequences apply in delimited identifiers as in strings (`\u006eame` is `name`)
+    string raw = newState.sourceCode.substring(newState.startIndex + 1, newState.current - 1);
+    string value = check processStringEscapes(raw, newState.startIndex);
     return addTokenWithLiteral(newState, DELIMITED_IDENTIFIER, value);
 }
 
@@ -440,17 +442,19 @@ isolated function scanString(ScannerState state) returns FHIRPathScannerError|Sc
 
     // Process escape sequences in the string value
     string raw = newState.sourceCode.substring(newState.startIndex + 1, newState.current - 1);
-    string value = processStringEscapes(raw);
+    string value = check processStringEscapes(raw, newState.startIndex);
     return addTokenWithLiteral(newState, STRING, value);
 }
 
 # Processes escape sequences in a raw string value: \\ \' \" \` \/ \n \r \t \f and \uXXXX (a UTF-16
 # code unit; surrogate pairs combine into one character). A backslash that does not start one of these
-# sequences is ignored, so '\p' is 'p', '\u005' is 'u005' and a trailing backslash disappears.
+# sequences is ignored, so '\p' is 'p', '\u005' is 'u005' (fewer than four characters follow) and a trailing
+# backslash disappears. A \u followed by four characters that are not hex digits ('\u+041') is a syntax error.
 #
 # + raw - The raw string with potential escape sequences
-# + return - The processed string with escape sequences replaced
-isolated function processStringEscapes(string raw) returns string {
+# + position - The position of the literal in the expression, for errors
+# + return - The processed string with escape sequences replaced, or an error for an invalid \u escape
+isolated function processStringEscapes(string raw, int position = 0) returns string|FHIRPathScannerError {
     string result = "";
     int i = 0;
     while i < raw.length() {
@@ -490,7 +494,11 @@ isolated function processStringEscapes(string raw) returns string {
                         continue;
                     }
                 }
-                // Not a valid \uXXXX sequence: the backslash is ignored
+                if i + 6 <= raw.length() {
+                    return error FHIRPathScannerError(
+                        string `Invalid unicode escape '\\u${raw.substring(i + 2, i + 6)}'.`, position = position);
+                }
+                // Too short to be a \uXXXX sequence: the backslash is ignored
                 result += next;
             }
             _ => {

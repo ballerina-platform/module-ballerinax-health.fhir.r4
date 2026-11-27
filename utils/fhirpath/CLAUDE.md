@@ -82,7 +82,7 @@ Tests use a data-driven pattern driven by an HTTP service in `tests/test_service
 
 ### Conformance
 
-`scripts/conformance/run.sh <work-dir>` runs the official HL7 FHIRPath suites (R4 and R5 editions) and the STU3 specification examples against the package and reports per-source pass rates; see `scripts/conformance/README.md` for the verdict categories and the documented known non-passes (spec/test conflicts follow the specification text). The `runConformanceCases` test in `tests/conformance_runner.bal` does nothing unless a cases file is configured.
+`scripts/conformance/run.sh <work-dir>` runs the official HL7 FHIRPath suites (R4 and R5 editions) and the STU3 specification examples against the package and reports per-source pass rates; see `scripts/conformance/README.md` for the verdict categories and the documented known non-passes (where the R4 suite and the specification text conflict, the R4 suite is followed). The `runConformanceCases` test in `tests/conformance_runner.bal` does nothing unless a cases file is configured.
 - Expected results are compared structurally with numbers compared by value (`jsonValuesMatch` in `tests/runner.bal`), so a decimal result matches a literal such as `1.5875`; System Quantity results are written as `{"value": 1.5d, "unit": "mg"}`
 
 To add a new test: add a `FHIRPathTestCase` entry to the relevant `tests/tc_*.bal` file and register any new fixture resource in `tests/runner.bal:getResource()`.

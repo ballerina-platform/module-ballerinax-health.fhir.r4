@@ -132,9 +132,16 @@ isolated function applyRoundFunction(FhirPathItem[] collection, Expr[] params, F
         return [];
     }
 
+    // A negative precision, or one too large to represent, gives empty
+    if precision < 0 {
+        return [];
+    }
     float factor = float:pow(10.0, <float>precision);
     float rounded = float:round(fVal * factor) / factor;
-    if precision == 0 {
+    if factor.isInfinite() || rounded.isNaN() || rounded.isInfinite() {
+        return [];
+    }
+    if precision == 0 && float:abs(rounded) < 9.2e18 {
         return [<int>rounded];
     }
     decimal|error d = decimal:fromString(rounded.toString());

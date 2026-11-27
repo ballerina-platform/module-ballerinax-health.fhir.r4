@@ -66,10 +66,18 @@ for edition in r4 r5; do
 done
 python3 -I "$HERE/extract_spec_examples.py" "$WORK/spec.html" "$WORK/json/r4_patient-example.json" > "$WORK/cases_spec.json" 2> "$WORK/spec_examples_skipped.txt"
 
+# bal test may rewrite Dependencies.toml for the local distribution, which breaks the next run: restore it each time
+cp "$PACKAGE/Dependencies.toml" "$WORK/Dependencies.toml.orig"
 for source in r4 r5 spec; do
     echo "Running $source cases..."
+    status=0
     (cd "$PACKAGE" && bal test --tests runConformanceCases -CconformanceCases="$WORK/cases_$source.json" \
-        -CconformanceResults="$WORK/results_$source.json" > "$WORK/run_$source.log" 2>&1)
+        -CconformanceResults="$WORK/results_$source.json" > "$WORK/run_$source.log" 2>&1) || status=$?
+    cp "$WORK/Dependencies.toml.orig" "$PACKAGE/Dependencies.toml"
+    if [ "$status" -ne 0 ]; then
+        echo "The $source run failed; see $WORK/run_$source.log" >&2
+        exit "$status"
+    fi
     python3 -I "$HERE/analyze.py" "$WORK/cases_$source.json" "$WORK/results_$source.json" \
         --json "$WORK/verdicts_$source.json" > "$WORK/summary_$source.txt"
     head -1 "$WORK/summary_$source.txt"
